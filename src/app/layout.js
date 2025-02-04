@@ -1,5 +1,5 @@
-"use client";
-import "./globals.css";
+'use client'
+import "../styles/globals.css";
 import { PrimeReactProvider } from "primereact/api";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
