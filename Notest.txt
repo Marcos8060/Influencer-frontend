@@ -1,0 +1,1 @@
+Under payment option brand onboarding, add the input field at the bottom for amount and currency.

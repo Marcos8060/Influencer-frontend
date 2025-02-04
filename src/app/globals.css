@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*{
+  font-family: "Inter", serif;
+}
+
+
+/* Override the container style */
+.p-multiselect {
+    border: 1px solid #DEE6EB !important; /* Custom border */
+    border-radius: 8px !important; /* Rounded corners */
+    outline: none !important;
+  }
+
+  .p-multiselect input:focus {
+    outline: none !important;
+    box-shadow: none !important; /* Ensure no box-shadow */
+  }
+  
+  /* Remove focus border for MultiSelect container */
+  .p-multiselect:focus {
+    outline: none !important;
+    border-color: #DEE6EB !important; /* Ensure the border stays as defined */
+  }
+  /* Override the focus/hover styles */
+  .p-multiselect:focus,
+  .p-multiselect:hover {
+    border-color: none !important; /* Blue border on focus */
+    outline: none !important;
+  }
+  
+  /* Override the dropdown panel */
+  .p-multiselect-panel {
+    background-color: #ffffff !important; /* Dropdown panel background */
+    border-radius: 8px !important; /* Rounded corners for the panel */
+    border: 1px solid #d1d5db !important; /* Light gray border */
+    outline: none !important;
+  }
+  
+  /* Override individual options */
+  .p-multiselect-item {
+    color: #111827 !important; /* Text color */
+    padding: 8px 12px !important; /* Padding for options */
+    outline: none !important;
+  }
+  
+  /* Change option hover styles */
+  .p-multiselect-item:hover {
+    background-color: #e5e7eb !important; /* Light gray on hover */
+    color: #1f2937 !important; /* Text color on hover */
+    outline: none !important;
+  }
+
+  /* Custom border for the checkbox */
+.p-checkbox-box {
+    border: 2px solid #DEE6EB; /* Custom border color */
+    border-radius: 4px; /* Rounded corners */
+    background-color: #ffffff; /* Light background for unselected */
+  }
+  
+  /* Custom border for checked checkbox */
+  .p-checkbox-checked .p-checkbox-box {
+    border-color: #3b82f6; /* Change border color when checked */
+    /* background-color: #3b82f6; */
+  }
+  
+  /* Custom checkmark inside the checkbox */
+  .p-checkbox-checked .p-checkbox-icon {
+    color: #142687; /* Change the color of the checkmark */
+  }
+  
+  /* Hover state for the checkbox */
+  .p-checkbox-box:hover {
+    border-color: #3b82f6; /* Border color on hover */
+  }
+  
+  /* Focus state for checkbox */
+  .p-checkbox:focus .p-checkbox-box {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Custom focus ring */
+  }
+  
+  
+  
