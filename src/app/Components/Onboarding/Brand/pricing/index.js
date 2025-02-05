@@ -1,14 +1,13 @@
 "use client";
 import React, { useEffect } from "react";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
-import CustomizedTickBoxComponent from "@/Components/SharedComponents/CustomizedTickBoxComponent";
 import { useDispatch } from "react-redux";
 import {
   nextStep,
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
-import CustomizedBackButton from "@/Components/SharedComponents/CustomizedBackComponent";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const Pricing = () => {
   const dispatch = useDispatch();

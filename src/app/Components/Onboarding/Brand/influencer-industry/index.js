@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect,useState } from "react";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
 import { useDispatch } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
   previousStep,
 } from "@/redux/features/stepper";
-import CustomizedBackButton from "@/Components/SharedComponents/CustomizedBackComponent";
-import MultiSelectCheckBox from "@/Components/SharedComponents/MultiSelectCheckBox";
+import MultiSelectCheckBox from "@/app/Components/SharedComponents/MultiSelectCheckBox";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 
 const InfluencerIndustry = () => {

@@ -1,14 +1,14 @@
 "use client";
 import React, { useEffect } from "react";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
-import TickBoxComponent from "@/Components/SharedComponents/TickBoxComponent";
 import { useDispatch } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
   previousStep,
 } from "@/redux/features/stepper";
-import CustomizedBackButton from "@/Components/SharedComponents/CustomizedBackComponent";
+import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const NumberOfInfluencers = () => {
   const dispatch = useDispatch();

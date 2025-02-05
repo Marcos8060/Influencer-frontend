@@ -1,27 +1,28 @@
 'use client'
+import AgeGroups from '@/app/Components/Onboarding/Brand/age-groups';
+import BrandDetails from '@/app/Components/Onboarding/Brand/brand-details';
+import BusinessIndustry from '@/app/Components/Onboarding/Brand/business-industry';
+import BusinessType from '@/app/Components/Onboarding/Brand/business-type/index.';
+import CampaignGoal from '@/app/Components/Onboarding/Brand/campaign-goal';
+import Collaboration from '@/app/Components/Onboarding/Brand/collaboration';
+import CompanyDetails from '@/app/Components/Onboarding/Brand/company-details';
+import Countries from '@/app/Components/Onboarding/Brand/countries';
+import DecidingFactor from '@/app/Components/Onboarding/Brand/deciding-factor';
+import Ethnicities from '@/app/Components/Onboarding/Brand/ethnicities';
+import Gender from '@/app/Components/Onboarding/Brand/gender';
+import GeographicalScope from '@/app/Components/Onboarding/Brand/geographical-scope';
+import FindAboutUs from '@/app/Components/Onboarding/Brand/hear-about-us';
+import InfluencerIndustry from '@/app/Components/Onboarding/Brand/influencer-industry';
+import MinimumFollowers from '@/app/Components/Onboarding/Brand/minimum-followers';
+import NumberOfInfluencers from '@/app/Components/Onboarding/Brand/number-of-influencers';
+import PaymentOption from '@/app/Components/Onboarding/Brand/payment-option';
+import Platforms from '@/app/Components/Onboarding/Brand/platforms';
+import Pricing from '@/app/Components/Onboarding/Brand/pricing';
+import Terms from '@/app/Components/Onboarding/Brand/terms';
+import VideoType from '@/app/Components/Onboarding/Brand/video-type';
 import React from 'react'
-import FindAboutUs from '@/Components/Onboarding/Brand/hear-about-us'
-import BrandDetails from '@/Components/Onboarding/Brand/brand-details';
-import BusinessType from '@/Components/Onboarding/Brand/business-type/index.';
 import { useSelector } from 'react-redux';
-import BusinessIndustry from '@/Components/Onboarding/Brand/business-industry';
-import CompanyDetails from '@/Components/Onboarding/Brand/company-details';
-import NumberOfInfluencers from '@/Components/Onboarding/Brand/number-of-influencers';
-import GeographicalScope from '@/Components/Onboarding/Brand/geographical-scope';
-import Platforms from '@/Components/Onboarding/Brand/platforms';
-import DecidingFactor from '@/Components/Onboarding/Brand/deciding-factor';
-import MinimumFollowers from '@/Components/Onboarding/Brand/minimum-followers';
-import Gender from '@/Components/Onboarding/Brand/gender';
-import Ethnicities from '@/Components/Onboarding/Brand/ethnicities';
-import AgeGroups from '@/Components/Onboarding/Brand/age-groups';
-import Countries from '@/Components/Onboarding/Brand/countries';
-import InfluencerIndustry from '@/Components/Onboarding/Brand/influencer-industry';
-import PaymentOption from '@/Components/Onboarding/Brand/payment-option';
-import CampaignGoal from '@/Components/Onboarding/Brand/campaign-goal';
-import Collaboration from '@/Components/Onboarding/Brand/collaboration';
-import VideoType from '@/Components/Onboarding/Brand/video-type';
-import Pricing from '@/Components/Onboarding/Brand/pricing';
-import Terms from '@/Components/Onboarding/Brand/terms';
+
 
 const BrandOnboarding = () => {
   const {currentStep} = useSelector((store) => store.stepper);

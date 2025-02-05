@@ -1,5 +1,5 @@
-import CustomizedHeader from "@/Components/Onboarding/Brand/dashboard/CustomizedHeader";
-import Sidebar from "@/Components/Onboarding/Brand/dashboard/Sidebar";
+import CustomizedHeader from "@/app/Components/Onboarding/Brand/dashboard/CustomizedHeader";
+import Sidebar from "@/app/Components/Onboarding/Brand/dashboard/Sidebar";
 
 
 export default function DashboardLayout({ children }) {

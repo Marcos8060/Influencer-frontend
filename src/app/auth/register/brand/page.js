@@ -1,6 +1,6 @@
 "use client";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
-import InputComponent from "@/Components/SharedComponents/InputComponent";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import Link from "next/link";
 import React from "react";
 

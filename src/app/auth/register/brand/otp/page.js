@@ -1,7 +1,7 @@
 "use client";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import React, { useState } from "react";
-import InputComponent from "@/Components/SharedComponents/InputComponent";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
 
 const OtpPage = () => {
   const [otp, setOtp] = useState(new Array(6).fill(""));

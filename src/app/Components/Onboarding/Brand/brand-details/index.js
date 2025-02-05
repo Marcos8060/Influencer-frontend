@@ -1,11 +1,11 @@
 'use client'
 import React,{useEffect} from "react";
-import InputComponent from "@/Components/SharedComponents/InputComponent";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
-import TextAreaComponent from "@/Components/SharedComponents/TextAreaComponent";
 import { useDispatch } from "react-redux";
 import { setCurrentStep,nextStep,previousStep } from "@/redux/features/stepper";
-import CustomizedBackButton from "@/Components/SharedComponents/CustomizedBackComponent";
+import InputComponent from "@/app/Components/SharedComponents/InputComponent";
+import TextAreaComponent from "@/app/Components/SharedComponents/TextAreaComponent";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 const BrandDetails = () => {
   const dispatch = useDispatch();
 

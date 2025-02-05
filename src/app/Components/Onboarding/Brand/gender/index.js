@@ -1,10 +1,10 @@
 'use client'
 import React,{ useEffect} from "react";
-import ButtonComponent from "@/Components/SharedComponents/ButtonComponent";
 import { useDispatch } from "react-redux";
 import { nextStep, setCurrentStep,previousStep } from "@/redux/features/stepper";
-import CustomizedBackButton from "@/Components/SharedComponents/CustomizedBackComponent";
-import TickBox from "@/Components/SharedComponents/TickBoxComponent";
+import TickBox from "@/app/Components/SharedComponents/TickBoxComponent";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const Gender = () => {
   const dispatch = useDispatch();
