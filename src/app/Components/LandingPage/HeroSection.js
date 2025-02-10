@@ -5,8 +5,8 @@ import Link from "next/link";
 const HeroSection = () => {
   return (
     <>
-      <section className="w-1/2 mx-auto text-center flex flex-col items-center justify-center h-[90vh] space-y-8 px-12">
-        <h1 className="text-5xl font-bold text-center">
+      <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center h-[90vh] space-y-8 md:px-12 px-2">
+        <h1 className="md:text-5xl text-4xl font-bold text-center">
           Building connections between brands and influencers.
         </h1>
         <p>

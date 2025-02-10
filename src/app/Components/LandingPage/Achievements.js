@@ -6,9 +6,9 @@ import { IoBulbOutline } from "react-icons/io5";
 
 const Achievements = () => {
   return (
-    <div className="h-screen my-4 px-12">
-      <section className="flex items-center justify-center h-[50vh] gap-8">
-        <div className="w-1/2 space-y-4 text-center">
+    <div className="md:h-screen my-4 md:px-12 px-4">
+      <section className="md:flex items-center justify-center md:h-[50vh] gap-8 md:space-y-0 space-y-12">
+        <div className="md:w-1/2 md:space-y-0 space-y-4 text-center">
           <h1 className="text-4xl font-bold">Some of our achievements.</h1>
           <p>
             Every milestone tells a story—of creativity, connection, and
@@ -21,7 +21,7 @@ const Achievements = () => {
             Read More
           </button>
         </div>
-        <div className="w-1/2 space-y-4">
+        <div className="md:w-1/2 space-y-4">
           <section className="flex items-center justify-center gap-4">
             <div className="bg-background rounded py-4 px-8 text-center">
               <div className="flex items-center justify-center">
@@ -56,12 +56,12 @@ const Achievements = () => {
           </section>
         </div>
       </section>
-      <section className="flex items-center justify-center h-[50vh] gap-8">
-        <div className="flex items-center gap-4 justify-between w-7/12 mx-auto">
+      <section className="flex items-center justify-center md:h-[50vh] gap-8">
+        <div className="md:flex items-center gap-4 justify-between md:w-7/12 mx-auto">
           <div className="w-4/12">
             <h1 className="text-4xl font-bold">Take a look at what</h1>
           </div>
-          <div className="w-4/12 flex items-center justify-center">
+          <div className="md:w-4/12 flex items-center justify-center">
             <p className="bg-primary text-white h-32 w-32 rounded-full flex items-center justify-center font-thin">
               All Work
             </p>

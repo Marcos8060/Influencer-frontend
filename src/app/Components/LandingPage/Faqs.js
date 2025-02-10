@@ -10,10 +10,10 @@ export default function Faqs() {
   };
 
   return (
-    <div className="h-screen py-8">
-      <section className="w-8/12 mx-auto">
-        <h1 className="uppercase text-3xl font-bold text-center mb-8">FAQs</h1>
-        <div className="bg-background rounded p-8 space-y-4">
+    <div className="md:h-screen py-8 bg-background">
+      <section className="md:w-8/12 mx-auto">
+        <h1 className="uppercase md:text-3xl text-2xl font-bold text-center">FAQs</h1>
+        <div className="rounded p-4 space-y-4">
           {faqsData.map((item, index) => (
             <div key={index} className="bg-white shadow-xl rounded-xl p-4">
               <div className="flex items-center justify-between">

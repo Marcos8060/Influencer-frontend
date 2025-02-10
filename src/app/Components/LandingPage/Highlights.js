@@ -2,11 +2,11 @@ import React from "react";
 
 const Highlights = () => {
   return (
-    <div className="h-screen bg-background py-8">
-      <h1 className="text-4xl font-bold text-center text-color">
+    <div className="md:h-screen bg-background py-8 px-4 space-y-8 sm:text-center">
+      <h1 className="md:text-4xl text-3xl font-bold text-center text-color">
         Influencer Platform Highlights
       </h1>
-      <section className="flex gap-8 items-center justify-center h-[90vh] w-8/12 mx-auto">
+      <section className="md:flex gap-8 items-center justify-center md:h-[90vh] md:w-8/12 mx-auto">
         <div className="space-y-8">
           <div>
             <h3 className=" text-primary font-semibold">
@@ -39,7 +39,7 @@ const Highlights = () => {
             </ul>
           </div>
         </div>
-        <div className="h-96 border-l-2 border-color"></div>
+        <div className="md:block hidden h-96 border-l-2 border-color"></div>
         <div className="space-y-8">
           <div>
             <h3 className="text-primary font-semibold">
