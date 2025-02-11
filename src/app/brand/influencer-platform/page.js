@@ -1,3 +1,4 @@
+import Bestrands from "@/app/Components/Brand/Influencer-platform/bestBrands";
 import InfluencerHeroSection from "@/app/Components/Brand/Influencer-platform/heroSection";
 import WorkTogether from "@/app/Components/Brand/Influencer-platform/work-together";
 import Footer from "@/app/Components/Footer";
@@ -66,6 +67,7 @@ const InfuencerPlatform = () => {
         </div>
       </section>
       <WorkTogether />
+      <Bestrands />
       <Footer />
     </>
   );
