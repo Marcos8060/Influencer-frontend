@@ -6,3 +6,15 @@
 *{
   font-family: "Inter", serif;
 }
+
+
+.heroSection {
+  display: flex;
+  gap: 14px;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.heroSection::-webkit-scrollbar {
+  display: none;
+}
