@@ -8,7 +8,7 @@ const InfluencerHeroSection = () => {
       <Navbar />
       <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center h-[80vh] space-y-8 md:px-12 px-2 my-8">
         <h1 className="md:text-6xl text-4xl font-bold text-center">
-          Work with brands on gifted and paid collaborations
+          Work with brands on gifted and paid collaborations.
         </h1>
         <div className="w-8/12 mx-auto space-y-4">
           <div className="flex items-center justify-center gap-4">

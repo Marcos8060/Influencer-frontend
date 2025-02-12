@@ -6,7 +6,7 @@ const Slider = () => {
   return (
     <div className="my-4">
       <section className="md:px-12 px-4 space-y-8">
-        <h1 className="text-5xl font-bold text-center">
+        <h1 className="text-4xl font-bold text-center">
           You could be one of them
         </h1>
         <section className="flex items-center gap-4 text-xs heroSection">
