@@ -37,7 +37,7 @@ const ForCreators = () => {
   };
 
   return (
-    <section className="mt-12 w-9/12 mx-auto">
+    <section className="mt-12 md:w-9/12 mx-auto">
       <div className="bg-background my-8 py-4 px-12 rounded-xl relative overflow-hidden">
         <button
           onClick={prevSlide}

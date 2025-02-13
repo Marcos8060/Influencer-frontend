@@ -4,9 +4,9 @@ import { MdArrowRightAlt } from "react-icons/md";
 
 const WorkTogether = () => {
   return (
-    <section className="flex items-center justify-between gap-8 md:px-12 px-4">
-      <div className="w-1/2">
-        <h1 className="text-5xl font-bold">
+    <section className="md:flex items-center justify-between gap-8 md:px-12 px-4 md:space-y-0 space-y-2">
+      <div className="md:w-1/2 w-full">
+        <h1 className="md:text-5xl text-2xl font-bold">
           Work together <br /> wherever you are
         </h1>
         <p>
@@ -22,19 +22,19 @@ const WorkTogether = () => {
           <MdArrowRightAlt />
         </Link>
       </div>
-      <div className="flex gap-4 w-1/2">
+      <div className="flex flex-wrap md:gap-4 md:w-1/2 md:space-y-0 space-y-2">
         <img
-          className="rounded-3xl h-[50vh] w-44 object-cover"
+          className="rounded-3xl h-[50vh] md:w-44 w-full object-cover"
           src="https://images.pexels.com/photos/4050294/pexels-photo-4050294.jpeg?auto=compress&cs=tinysrgb&w=600"
           alt=""
         />
         <img
-          className="rounded-3xl h-[50vh] w-44 object-cover mb-24"
+          className="rounded-3xl h-[50vh] md:w-44 w-full object-cover"
           src="https://images.pexels.com/photos/2379886/pexels-photo-2379886.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
           alt=""
         />
         <img
-          className="rounded-3xl h-[50vh] w-44 object-cover"
+          className="rounded-3xl h-[50vh] md:w-44 w-full object-cover"
           src="https://images.pexels.com/photos/4050294/pexels-photo-4050294.jpeg?auto=compress&cs=tinysrgb&w=600"
           alt=""
         />

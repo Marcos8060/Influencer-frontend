@@ -6,10 +6,10 @@ import { IoBulbOutline } from "react-icons/io5";
 
 const Achievements = () => {
   return (
-    <div className="md:h-screen my-4 md:px-12 px-4">
+    <div className="md:h-screen my-4 md:px-12 px-4 space-y-8">
       <section className="md:flex items-center justify-center md:h-[50vh] gap-8 md:space-y-0 space-y-12">
         <div className="md:w-1/2 md:space-y-0 space-y-4 text-center">
-          <h1 className="text-4xl font-bold">Some of our achievements.</h1>
+          <h1 className="md:text-4xl text-2xl font-bold">Some of our achievements.</h1>
           <p>
             Every milestone tells a story—of creativity, connection, and
             community. Here’s a look at the numbers that showcase the impact
@@ -57,17 +57,17 @@ const Achievements = () => {
         </div>
       </section>
       <section className="flex items-center justify-center md:h-[50vh] gap-8">
-        <div className="md:flex items-center gap-4 justify-between md:w-7/12 mx-auto">
-          <div className="w-4/12">
-            <h1 className="text-4xl font-bold">Take a look at what</h1>
+        <div className="md:flex items-center gap-4 justify-between md:w-7/12 mx-auto space-y-4">
+          <div className="md:w-4/12 flex items-center justify-center">
+            <h1 className="md:text-4xl text-2xl font-bold">Take a look at what</h1>
           </div>
           <div className="md:w-4/12 flex items-center justify-center">
-            <p className="bg-primary text-white h-32 w-32 rounded-full flex items-center justify-center font-thin">
+            <p className="bg-primary text-white md:h-32 h-20 md:w-32 w-20 rounded-full flex items-center justify-center font-thin">
               All Work
             </p>
           </div>
-          <div className="w-4/12">
-            <h1 className="text-4xl font-bold">You Can Do On our Platform</h1>
+          <div className="md:w-4/12 flex items-center justify-center">
+            <h1 className="md:text-4xl text-2xl font-bold">You Can Do On our Platform</h1>
           </div>
         </div>
       </section>

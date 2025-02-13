@@ -5,7 +5,7 @@ import Link from "next/link";
 const HeroSection = () => {
   return (
     <>
-      <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center h-[90vh] space-y-8 md:px-12 px-2">
+      <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center md:h-[90vh] h-[70vh] space-y-8 md:px-12 px-2">
         <h1 className="md:text-5xl text-4xl font-bold text-center">
           Building connections between brands and influencers.
         </h1>
@@ -15,7 +15,7 @@ const HeroSection = () => {
           single platform. Continue below to explore more as a brand or
           influencer.
         </p>
-        <div className="flex items-center gap-4 w-9/12 mx-auto">
+        <div className="flex flex-wrap items-center gap-4 w-9/12 mx-auto">
           <Link
             href="/onboarding/brand"
             className="bg-primary hover:scale-105 border transition duration-700 shadow-xl text-white rounded px-4 py-3 text-sm w-full flex gap-2 items-center justify-center"

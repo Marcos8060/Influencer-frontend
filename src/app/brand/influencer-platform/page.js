@@ -1,4 +1,4 @@
-import Bestrands from "@/app/Components/Brand/Influencer-platform/bestBrands";
+import BestBrands from "@/app/Components/Brand/Influencer-platform/bestBrands";
 import InfluencerHeroSection from "@/app/Components/Brand/Influencer-platform/heroSection";
 import WorkTogether from "@/app/Components/Brand/Influencer-platform/work-together";
 import Footer from "@/app/Components/Footer";
@@ -8,8 +8,8 @@ const InfuencerPlatform = () => {
   return (
     <>
       <InfluencerHeroSection />
-      <section className="flex items-center gap-4 justify-between md:px-12 px-4 my-8">
-        <div className="w-1/2 text-center">
+      <section className="md:flex items-center gap-4 justify-between md:px-12 px-4 my-8">
+        <div className="md:w-1/2 text-center">
           <div className="space-y-3 mb-3">
             <h2 className="text-xl">For Brands</h2>
             <h1 className="font-semibold">Get Influential Influencers</h1>
@@ -19,12 +19,12 @@ const InfuencerPlatform = () => {
             </p>
           </div>
           <img
-            className="rounded-3xl h-[70vh] w-8/12 mx-auto object-cover"
+            className="rounded-3xl h-[70vh] md:w-8/12 mx-auto object-cover"
             src="https://images.pexels.com/photos/3253724/pexels-photo-3253724.jpeg?auto=compress&cs=tinysrgb&w=600"
             alt=""
           />
         </div>
-        <div className="w-1/2 space-y-4">
+        <div className="md:w-1/2 space-y-4">
           <div className="space-y-3">
             <h2 className="font-bold">Streamline Your Recruitment Process</h2>
             <p className="font-light text-sm">
@@ -67,7 +67,7 @@ const InfuencerPlatform = () => {
         </div>
       </section>
       <WorkTogether />
-      <Bestrands />
+      <BestBrands />
       <Footer />
     </>
   );

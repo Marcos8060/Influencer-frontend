@@ -6,7 +6,7 @@ const Slider = () => {
   return (
     <div className="my-4">
       <section className="md:px-12 px-4 space-y-8">
-        <h1 className="text-4xl font-bold text-center">
+        <h1 className="md:text-4xl text-3xl font-bold text-center">
           You could be one of them
         </h1>
         <section className="flex items-center gap-4 text-xs heroSection">
@@ -30,6 +30,21 @@ const Slider = () => {
             src="/images/b4.png"
             alt=""
           />
+          <img
+            className="h-56 w-[30vw] object-cover rounded-3xl"
+            src="/images/sample3.png"
+            alt=""
+          />
+          <img
+            className="h-56 w-[30vw] object-cover rounded-3xl"
+            src="/images/sample4.png"
+            alt=""
+          />
+          <img
+            className="h-56 w-[30vw] object-cover rounded-3xl"
+            src="/images/sample5.png"
+            alt=""
+          />
         </section>
       </section>
       <div className="flex items-center justify-center">
@@ -42,7 +57,7 @@ const Slider = () => {
         <h1 className="text-2xl font-bold text-center">
           Join thousands of inspiring creatives.
         </h1>
-        <div className="flex items-center justify-center my-3 gap-4">
+        <div className="flex flex-wrap gap-4 items-center justify-center my-3">
           <img
             className="h-16 w-16 rounded-full object-cover"
             src="/images/b3.png"
@@ -71,11 +86,6 @@ const Slider = () => {
           <img
             className="h-16 w-16 rounded-full object-cover"
             src="/images/b1.png"
-            alt=""
-          />
-          <img
-            className="h-16 w-16 rounded-full object-cover"
-            src="/images/b18.png"
             alt=""
           />
         </div>

@@ -1,9 +1,9 @@
 import React from "react";
 
-const Bestrands = () => {
+const BestBrands = () => {
   return (
-    <section className="md:px-12 p-4 my-12 flex items-center justify-between">
-      <div className="">
+    <section className="md:px-12 p-4 my-12 md:flex gap-8 items-center justify-between md:space-y-0 space-y-6">
+      <div className="md:w-4/12 w-full">
         <h1 className="mb-4">
           <span className="font-bold text-5xl">vm</span>
           <span className="text-4xl font-medium">ware.</span>
@@ -26,7 +26,7 @@ const Bestrands = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="md:w-4/12 w-full">
         <h1 className="text-4xl font-bold mb-4">
           Docu<span className="text-5xl">S</span>ign
         </h1>
@@ -47,7 +47,7 @@ const Bestrands = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="md:w-4/12 w-full">
         <h1 className="text-4xl font-bold mb-4">frog</h1>
         <q className="font-light">
           As we used Influencer Platform we moved from skepticism to belief to
@@ -70,4 +70,4 @@ const Bestrands = () => {
   );
 };
 
-export default Bestrands;
+export default BestBrands;

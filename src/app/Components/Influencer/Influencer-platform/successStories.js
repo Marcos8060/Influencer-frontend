@@ -7,8 +7,8 @@ const SuccessStories = () => {
         Read the Latest Success Stories
       </h1>
       <div className="space-y-8">
-        <section className="flex gap-4 items-center">
-          <div className="w-1/2 text-center space-y-4">
+        <section className="md:flex gap-4 items-center">
+          <div className="md:w-1/2 text-center space-y-4">
             <h1 className="font-bold">Marvin McKinney</h1>
             <q className="font-light text-sm">
               Then we discovered Influencer Platform, and we thought this would
@@ -19,7 +19,7 @@ const SuccessStories = () => {
               <img className="w-64" src="/images/1.png" alt="" />
             </div>
           </div>
-          <div className="w-1/2 text-center space-y-4">
+          <div className="md:w-1/2 text-center space-y-4">
             <h1 className="font-bold">Guy Hawkins</h1>
             <q className="font-light text-sm">
               Before I joined, I struggled to find even 2-3 influencers per
@@ -33,8 +33,8 @@ const SuccessStories = () => {
             </div>
           </div>
         </section>
-        <section className="flex gap-4 items-center">
-          <div className="w-1/2 text-center space-y-4">
+        <section className="md:flex gap-4 items-center">
+          <div className="md:w-1/2 text-center space-y-4">
             <h1 className="font-bold">Robert Fox</h1>
             <q className="font-light text-sm">
               Amazing app that has slashed our costs and time for working with
@@ -44,7 +44,7 @@ const SuccessStories = () => {
               <img className="w-64" src="/images/3.png" alt="" />
             </div>
           </div>
-          <div className="w-1/2 text-center space-y-4">
+          <div className="md:w-1/2 text-center space-y-4">
             <h1 className="font-bold">Jane Doe</h1>
             <q className="font-light text-sm">
               The process is smooth and since using Influencer Platform, we have

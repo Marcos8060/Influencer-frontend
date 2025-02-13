@@ -13,7 +13,7 @@ const FashionSamples = () => {
           <h1 className="text-xl font-bold">
             {sample.name} | {sample.category}
           </h1>
-          <section className="grid gap-4 md:grid-cols-4 grid-cols-3 items-center justify-between">
+          <section className="flex flex-wrap md:space-y-0 space-y-2 items-center justify-between">
             <div>
               <img src="/images/sample1.png" alt="" />
             </div>
@@ -30,17 +30,17 @@ const FashionSamples = () => {
               <p className="text-sm">Engagement</p>
             </div>
             <div>
-              <button className="border border-primary rounded px-4 py-2 text-sm md:block hidden">
+              <button className="border border-primary rounded px-4 py-2 text-sm">
                 Collaborate Now
               </button>
             </div>
           </section>
           <section className="my-2">
-            <div className="grid md:grid-cols-5 grid-cols-3 items-center gap-2 text-xs text-white">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-white">
               <p className="bg-[#6F6C90] py-1 px-3 rounded">White</p>
               <p className="bg-[#6F6C90] py-1 px-3 rounded">Female</p>
               <p className="bg-[#6F6C90] py-1 px-3 rounded">Everyone</p>
-              <p className="bg-[#6F6C90] py-1 px-3 rounded">W 16-24</p>
+              <p className="bg-[#6F6C90] py-1 px-3 rounded">Women 16-24</p>
               <p className="bg-[#6F6C90] py-1 px-3 rounded">Men 16-24</p>
             </div>
             <p className="font-medium text-xs my-2">{sample.description}</p>
