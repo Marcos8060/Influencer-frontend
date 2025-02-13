@@ -16,7 +16,7 @@ const InfluencerHeroSection = () => {
   return (
     <>
       <Navbar />
-      <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center space-y-8 md:px-12 px-2 my-8">
+      <section className="md:w-1/2 mx-auto text-center flex flex-col items-center justify-center space-y-8 md:px-12 px-2 mb-8 md:mt-28">
         <h1 className="md:text-5xl text-4xl font-bold text-center">
           Influencer Platform Influencers.
         </h1>
