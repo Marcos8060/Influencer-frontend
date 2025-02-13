@@ -18,3 +18,8 @@
 .heroSection::-webkit-scrollbar {
   display: none;
 }
+
+
+.p-dropdown-label.p-placeholder {
+  font-size: 14px;
+}

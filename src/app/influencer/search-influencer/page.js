@@ -1,6 +1,7 @@
 import Footer from "@/app/Components/Footer";
 import FashionSamples from "@/app/Components/Influencer/Search-Influencer/fashion-samples";
 import InfluencerSamples from "@/app/Components/Influencer/Search-Influencer/fashion-samples";
+import SearchFields from "@/app/Components/Influencer/Search-Influencer/SearchFields";
 import Navbar from "@/app/Components/Navbar";
 import React from "react";
 
@@ -9,6 +10,7 @@ const SearchInfluencer = () => {
     <>
       <Navbar />
       <div className="md:px-12 px-4">
+        <SearchFields />
         <section className="md:flex justify-between md:gap-12 md:w-9/12 w-full mx-auto my-8">
           <div className="md:w-9/12 w-full space-y-6">
             <div className="space-y-4">
