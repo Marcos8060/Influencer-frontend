@@ -14,7 +14,7 @@ const BrandDetails = () => {
     },[dispatch])
 
   return (
-    <section className="flex items-center justify-center h-screen w-4/12 mx-auto">
+    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
       <div>
         <h1 className="text-3xl font-bold text-center my-2">Brand Details</h1>
         <p className="text-center text-sm mb-3">

@@ -16,14 +16,14 @@ const Terms = () => {
     dispatch(setCurrentStep(20));
   }, [dispatch]);
   return (
-    <section className="flex items-center justify-center h-screen w-5/12 mx-auto">
+    <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4">
       <div className="w-full">
         <h1 className="text-3xl font-bold text-center my-2">Agree Terms</h1>
         <p className="mb-4">
           To collaborate with brands on the influencer platform, you need to
           agree the following
         </p>
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <Link
             className="bg-primary text-white rounded px-6 py-3 text-sm w-full"
             href="/onboarding/brand/dashboard"
