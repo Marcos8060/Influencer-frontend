@@ -1,15 +1,21 @@
 "use client";
-import React from "react";
 import MenuChildren from "./MenuChildren";
 
-const Sidebar = () => {
+const Sidebar = ({ collapse, setCollapse, icon }) => {
+
+  const toggleSidebar = () => {
+    setCollapse(!collapse);
+  }
   return (
-    <section className="bg-primary shadow h-screen">
-      <div className="h-[10vh] flex items-center justify-center">
-        <h1 className="text-background">Logo</h1>
+    <section className="bg-primary shadow h-screen transition-all duration-500">
+      <div className="h-[10vh] flex items-center justify-center relative">
+        {!collapse && <h1 className="text-background transition-opacity duration-500">Logo</h1> }
+        <div className={`absolute transition-all duration-500 ${ collapse ? 'left-4' : 'left-60'}`}>
+          <p onClick={toggleSidebar}>{icon}</p>
+        </div>
       </div>
       <div className="space-y-10 text-background my-4 px-6 py-8">
-        <MenuChildren />
+        <MenuChildren {...{ collapse }} />
       </div>
     </section>
   );

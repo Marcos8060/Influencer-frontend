@@ -5,7 +5,7 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import { IoChevronForward } from "react-icons/io5";
 import { menu } from "@/assets/menu";
 
-const MenuChildren = () => {
+const MenuChildren = ({ collapse }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const currentPath = usePathname();
 
@@ -13,7 +13,6 @@ const MenuChildren = () => {
     // Toggle the open state: open if currently closed, close if currently open
     setOpenIndex(openIndex === index ? null : index);
   };
-
 
   return (
     <>
@@ -27,14 +26,18 @@ const MenuChildren = () => {
               <section>
                 <Link
                   href={`${item.path}`}
-                  className={`flex items-center gap-4 ${
+                  className={`flex items-center ${collapse ? 'justify-center' : ''} gap-4 ${
                     currentPath === item.path
                       ? "bg-primary rounded-3xl px-3 py-2 text-background"
                       : "text-background"
                   }`}
                 >
-                  <p className="text-xl">{item.icon}</p>
-                  <p className="font-light">{item.label}</p>
+                  <div className={`${collapse ? '' : ''}`}>
+                    <p className={`${collapse ? "text-2xl" : "text-xl"}`}>
+                      {item.icon}
+                    </p>
+                  </div>
+                  {!collapse && <p className="font-light">{item.label}</p>}
                 </Link>
               </section>
             ) : (
