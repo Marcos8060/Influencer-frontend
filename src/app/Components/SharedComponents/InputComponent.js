@@ -6,7 +6,7 @@ const InputComponent = ({ ...props }) => {
     <div>
       <InputText
         {...props}
-        className="border border-background focus:outline-none rounded px-4 py-3 text-sm w-full"
+        className="border border-input focus:outline-none rounded px-4 py-3 text-sm w-full"
       />
     </div>
   );

@@ -21,7 +21,7 @@ export default function MultiSelectCheckBox({
         display={display}
         placeholder={placeholder}
         maxSelectedLabels={maxSelectedLabels}
-        className="w-full"
+        className="w-full border border-input"
       />
     </div>
   );
