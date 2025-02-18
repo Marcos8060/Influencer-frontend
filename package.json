@@ -11,7 +11,9 @@
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
     "@reduxjs/toolkit": "^2.5.0",
+    "@rollup/plugin-inject": "^5.0.5",
     "axios": "^1.7.9",
+    "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "next": "15.1.4",
     "primeicons": "^7.0.0",
@@ -20,6 +22,7 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
+    "react-owl-carousel": "^2.3.3",
     "react-redux": "^9.2.0",
     "react-world-flags": "^1.6.0"
   },

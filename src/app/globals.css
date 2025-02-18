@@ -23,3 +23,70 @@
 .p-dropdown-label.p-placeholder {
   font-size: 14px;
 }
+
+.owl-item.center {
+  z-index: 1;
+}
+
+.owl-item.active.center {
+  z-index: 2;
+}
+
+.owl-item.active.center .slider-card {
+  transform: scale(1.2);
+  position: relative;
+  padding-left: 20px;
+  padding-right: 20px;
+  opacity: 1;
+  background: #14002A;
+  color: #fff;
+  z-index: 3;
+  box-shadow: 1px 1px 1px #00FFFF;
+}
+
+
+@media (max-width: 576px) {
+  .owl-item.active.center .slider-card{
+    transform: scale(0.9);
+    position: relative;
+    padding-left: 20px;
+    padding-right: 20px;
+    opacity: 1;
+    background: #14002A;
+    border-radius: 20px;
+    color: #fff;
+    z-index: 3;
+    /* box-shadow: 1px 1px 1px #00FFFF; */
+  }
+}
+
+.slider-card {
+  /* background: #F7F7F7; */
+  /* border: 1px solid #e4dede; */
+  opacity: 0.8;
+  color: black;
+  padding: 0px 0px;
+  margin-top: 50px;
+  transform: scale(0.9);
+  opacity: 0.5;
+  transition: all 0.3s;
+  box-shadow: 10px 10px 10px 10px #ffffff;
+}
+
+/* contribute carousel */
+.owl-item.active.center .slider {
+  transform: scale(0.9);
+}
+.slider {
+  transform: scale(0.6);
+}
+
+.owl-item.active.center .sliderText {
+  transform: scale(0.99);
+  color: #00FFFF;
+}
+
+.sliderText {
+  transform: scale(0.99);
+  color: #E4DEDE;
+}
