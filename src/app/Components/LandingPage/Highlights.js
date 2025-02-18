@@ -1,4 +1,5 @@
 import React from "react";
+import { LuSettings2 } from "react-icons/lu";
 
 const Highlights = () => {
   return (
@@ -39,7 +40,20 @@ const Highlights = () => {
             </ul>
           </div>
         </div>
-        <div className="md:block hidden h-96 border-l-2 border-color"></div>
+        <div className="md:block hidden h-[70vh] border-l-2 border-color relative">
+          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5">
+            <LuSettings2 className="text-2xl" />
+          </div>
+          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 top-48">
+            <LuSettings2 className="text-2xl" />
+          </div>
+          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 bottom-44">
+            <LuSettings2 className="text-2xl" />
+          </div>
+          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 -bottom-2">
+            <LuSettings2 className="text-2xl" />
+          </div>
+        </div>
         <div className="space-y-8">
           <div>
             <h3 className="text-primary font-semibold">
