@@ -3,7 +3,7 @@ import { LuSettings2 } from "react-icons/lu";
 
 const Highlights = () => {
   return (
-    <div className="md:h-screen bg-background py-8 px-4 space-y-8 sm:text-center">
+    <div className="md:h-screen bg-background py-8 px-4 space-y-4 sm:text-center">
       <h1 className="md:text-4xl text-3xl font-bold text-center text-color">
         Influencer Platform Highlights
       </h1>
@@ -40,14 +40,11 @@ const Highlights = () => {
             </ul>
           </div>
         </div>
-        <div className="md:block hidden h-[70vh] border-l-2 border-color relative">
+        <div className="md:block hidden h-[60vh] border-l-2 border-color relative">
           <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5">
             <LuSettings2 className="text-2xl" />
           </div>
-          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 top-48">
-            <LuSettings2 className="text-2xl" />
-          </div>
-          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 bottom-44">
+          <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 top-40">
             <LuSettings2 className="text-2xl" />
           </div>
           <div className="absolute border border-dashed rounded-lg bg-white p-2 border-red -right-5 -bottom-2">
