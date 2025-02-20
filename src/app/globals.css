@@ -19,6 +19,15 @@
   display: none;
 }
 
+.filterResult {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* .filterResult::-webkit-scrollbar {
+  display: none;
+} */
+
 .filterInfluencer{
   display: grid;
   gap: 14px;

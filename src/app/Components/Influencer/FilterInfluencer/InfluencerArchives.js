@@ -4,6 +4,7 @@ import FilterInfuencer from "./FilterInfuencer";
 import { influencerData } from "./influencerData";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
+import Link from "next/link";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -13,7 +14,7 @@ const chunkArray = (array, size) => {
 
 const InfluencerArchives = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
   const totalPages = Math.ceil(influencerData.length / itemsPerPage);
 
   //   get current page data
@@ -39,15 +40,16 @@ const InfluencerArchives = () => {
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
-            className="grid md:grid-cols-4 gap-2 md:border-b border-input"
+            className="grid md:grid-cols-4 gap-4 md:border-b border-input"
           >
             {row.map((data) => (
-              <div
+              <Link
+                href={`/influencer/filter-influencer/${data.id}`}
                 key={data.id}
-                className="space-y-3 text-sm cursor-pointer hover:bg-background p-2 font-light"
+                className="space-y-3 text-sm cursor-pointer hover:bg-background p-2 font-light text-color"
               >
                 <p>{data.name}</p>
-              </div>
+              </Link>
             ))}
           </div>
         ))}
@@ -65,7 +67,7 @@ const InfluencerArchives = () => {
               className={` ${
                 currentPage === index + 1
                   ? "font-bold text-primary border-b-2"
-                  : "font-thin"
+                  : "font-thin text-color"
               }`}
             >
               {index + 1}
