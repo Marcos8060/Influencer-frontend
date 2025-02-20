@@ -1,3 +1,4 @@
+import Footer from "@/app/Components/Footer";
 import FilterInfuencer from "@/app/Components/Influencer/FilterInfluencer/FilterInfuencer";
 import FilterInfluencerHeroSection from "@/app/Components/Influencer/FilterInfluencer/Hero";
 import InfluencerArchives from "@/app/Components/Influencer/FilterInfluencer/InfluencerArchives";
@@ -10,6 +11,7 @@ const FilterInfluencers = () => {
       <Navbar />
       <FilterInfluencerHeroSection />
       <InfluencerArchives />
+      <Footer />
     </>
   );
 };
