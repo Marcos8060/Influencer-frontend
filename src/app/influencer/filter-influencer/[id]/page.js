@@ -35,7 +35,7 @@ const FilterResults = () => {
           </p>
         </div>
         <section className="filterResult w-full">
-          <div className="min-w-[800px]">
+          <div className="min-w-[800px] border-t border-input">
             {rows.map((row, rowIndex) => (
               <div
                 key={rowIndex}
