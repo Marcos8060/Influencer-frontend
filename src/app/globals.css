@@ -19,6 +19,26 @@
   display: none;
 }
 
+.filterResult {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* .filterResult::-webkit-scrollbar {
+  display: none;
+} */
+
+.filterInfluencer{
+  display: grid;
+  gap: 14px;
+  overflow-y: hidden;
+  overflow-y: scroll;
+}
+
+.filterInfluencer::-webkit-scrollbar {
+  display: none;
+}
+
 
 .p-dropdown-label.p-placeholder {
   font-size: 14px;

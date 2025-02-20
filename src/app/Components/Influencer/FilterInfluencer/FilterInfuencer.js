@@ -55,7 +55,7 @@ const FilterInfuencer = () => {
           </div>
         </section>
         <div className="flex items-center justify-center mt-3">
-          <button className="bg-primary text-white rounded-md text-sm px-4 py-3">
+          <button className="bg-primary text-white text-sm px-4 py-3">
             Find Influencers
           </button>
         </div>
