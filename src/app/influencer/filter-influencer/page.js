@@ -10,7 +10,6 @@ const FilterInfluencers = () => {
       <Navbar />
       <FilterInfluencerHeroSection />
       <InfluencerArchives />
-      <FilterInfuencer />
     </>
   );
 };

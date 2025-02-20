@@ -20,7 +20,7 @@ const FilterInfuencer = () => {
     { name: "United Kingdom" },
   ];
   return (
-    <div className="md:px-12 px-4 md:w-9/12 mx-auto mt-8 mb-16">
+    <div className="md:w-9/12 mx-auto mt-8 mb-16">
       <form>
         <section className="flex md:flex-row flex-col gap-4 items-center justify-between">
           <div className="w-full">
