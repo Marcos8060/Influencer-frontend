@@ -1,8 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Dropdown } from "primereact/dropdown";
 import Navbar from "../../Navbar";
 import { IoIosArrowForward } from "react-icons/io";
+import FilterDropdown from "../../SharedComponents/FilterDropDownComponent";
+import Link from "next/link";
 
 const InfluencerHeroSection = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -12,7 +13,7 @@ const InfluencerHeroSection = () => {
     { name: "Food and Drinks", code: "LDN" },
     { name: "Lifestyle", code: "IST" },
     { name: "Family", code: "PRS" },
-  ];
+  ]
   return (
     <>
       <Navbar />
@@ -22,7 +23,7 @@ const InfluencerHeroSection = () => {
         </h1>
         <div className="w-8/12 mx-auto space-y-4">
           <p>Find the right influencers for your brand</p>
-          <Dropdown
+          <FilterDropdown
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.value)}
             options={cities}
@@ -31,10 +32,10 @@ const InfluencerHeroSection = () => {
             className="border-2 border-background w-full md:w-14rem text-left"
           />
           <div className="flex items-center justify-center">
-            <button className="bg-primary hover:scale-105 border transition duration-700 shadow-xl text-white px-4 py-3 text-sm flex gap-2 items-center justify-center">
+            <Link href="/influencer/influencer-results" className="bg-primary hover:scale-105 border transition duration-700 shadow-xl text-white px-4 py-3 text-sm flex gap-2 items-center justify-center">
               Find Influencers
               <IoIosArrowForward className="text-white" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
