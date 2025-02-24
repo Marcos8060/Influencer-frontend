@@ -8,6 +8,7 @@ import { FaRegEnvelope } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { datum } from "./influencersData";
 import Footer from "@/app/Components/Footer";
+import Filters from "./filters";
 
 const CreateCampaign = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -19,30 +20,35 @@ const CreateCampaign = () => {
 
   return (
     <>
-      <div className="bg-primary md:px-12 px-4 py-12 flex items-center justify-center md:h-[40vh]">
-        <section className="md:w-1/2 w-full mx-auto">
-          <div className="flex md:flex-row flex-col gap-4 items-center justify-center">
-            <div className="w-full">
-              <FilterDropdown
-                options={niches}
-                value={selectedCountry}
-                onChange={setSelectedCountry}
-                placeholder="Platform"
-                className="bg-background"
-              />
-            </div>
-            <div className="w-full">
-              <FilterDropdown
-                options={niches}
-                value={selectedCountry}
-                onChange={setSelectedCountry}
-                placeholder="Category"
-                className="bg-background"
-              />
-            </div>
+      <section className="bg-primary md:px-12 px-4 py-12 md:h-[40vh] flex items-center justify-center space-y-4">
+        <div className="w-full space-y-4">
+          <div className="md:w-1/2 w-full mx-auto">
+            <section className="mx-auto">
+              <div className="flex md:flex-row flex-col gap-4 items-center justify-center">
+                <div className="w-full">
+                  <FilterDropdown
+                    options={niches}
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    placeholder="Platform"
+                    className="bg-primary"
+                  />
+                </div>
+                <div className="w-full">
+                  <FilterDropdown
+                    options={niches}
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    placeholder="Category"
+                    className="bg-primary"
+                  />
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
+          <Filters />
+        </div>
+      </section>
       <section className="md:px-12 px-4 py-12 bg-background">
         <h1 className="font-bold text-2xl text-color mb-8">
           Beauty TikTok Influencers in the United Kingdom
