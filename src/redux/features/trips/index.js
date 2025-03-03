@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchTrips } from '../../services/trips'
+import { fetchTrips } from '../../services/auth'
 
 const initialState = {
   trips: [],
