@@ -27,7 +27,7 @@ const CreateCampaign = () => {
         <section className="bg-white w-full rounded p-1 shadow-2xl mx-auto flex items-center gap-4 text-color text-sm">
           <div
             className={`${
-              currentTab === 1 ? "bg-background p-2" : ""
+              currentTab === 1 ? "bg-background p-2 font-bold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(1)}
           >
@@ -35,7 +35,7 @@ const CreateCampaign = () => {
           </div>
           <div
             className={`${
-              currentTab === 2 ? "bg-background p-2" : ""
+              currentTab === 2 ? "bg-background p-2 font-bold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(2)}
           >
@@ -43,7 +43,7 @@ const CreateCampaign = () => {
           </div>
           <div
             className={`${
-              currentTab === 3 ? "bg-background p-2" : ""
+              currentTab === 3 ? "bg-background p-2 font-bold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(3)}
           >
@@ -51,7 +51,7 @@ const CreateCampaign = () => {
           </div>
           <div
             className={`${
-              currentTab === 4 ? "bg-background p-2" : ""
+              currentTab === 4 ? "bg-background p-2 font-bold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(4)}
           >

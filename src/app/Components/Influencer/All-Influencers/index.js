@@ -1,17 +1,17 @@
-'use client'
-import React,{ useState } from "react";
+"use client";
+import React, { useState } from "react";
 import { results } from "../FilterInfluencer/filterResultsData";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 
 const chunkArray = (array, size) => {
-    return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
-      array.slice(index * size, index * size + size)
-    );
-  };
+  return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
+    array.slice(index * size, index * size + size)
+  );
+};
 const AllInfluencers = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const totalPages = Math.ceil(results.length / itemsPerPage);
 
   //   get current page data
@@ -20,6 +20,7 @@ const AllInfluencers = () => {
   const rows = chunkArray(currentData, 1);
   return (
     <>
+      <p className="font-bold text-primary text-sm cursor-pointer">Select All</p>
       <section className="filterResult w-full">
         <div className="min-w-[800px] border-t border-input">
           {rows.map((row, rowIndex) => (
@@ -32,7 +33,11 @@ const AllInfluencers = () => {
                   key={data.id}
                   className="flex items-center gap-4 justify-between w-full text-color"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      className="cursor-pointer scale-150"
+                      type="checkbox"
+                    ></input>
                     <img
                       className="w-16 h-16 rounded-full object-cover"
                       src={data.img}
