@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import "./globals.css";
 import { PrimeReactProvider } from "primereact/api";
 import { Provider } from "react-redux";
@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primeicons/primeicons.css";
+import { AuthProvider } from "@/assets/context/use-context";
 
 export default function RootLayout({ children }) {
   return (
@@ -15,14 +16,19 @@ export default function RootLayout({ children }) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Influencer Platform</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> 
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+          rel="stylesheet"
+        />
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
       </head>
       <body>
         <PrimeReactProvider>
           <Provider store={store}>
-            <Toaster position="top-center" />
-            {children}
+            <AuthProvider>
+              <Toaster position="top-center" />
+              {children}
+            </AuthProvider>
           </Provider>
         </PrimeReactProvider>
       </body>

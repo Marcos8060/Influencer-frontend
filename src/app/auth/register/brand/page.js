@@ -4,6 +4,7 @@ import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import { RegisterBrand } from "@/redux/services/auth";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const BrandRegister = () => {
   const [loading, setLoading] = useState(false);
@@ -12,7 +13,9 @@ const BrandRegister = () => {
     lastName: "",
     email: "",
     password: "",
+    phoneNumber: "",
   });
+  const router = useRouter();
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -22,10 +25,18 @@ const BrandRegister = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await RegisterBrand(formData);
-      console.log("REGISTER_RESPONSE ", response);
+      await RegisterBrand(formData);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+      });      
+      router.push("/auth/login/brand");
     } catch (error) {
-      console.log("ERROR_REGISTERING", error.message);
+      console.log("ERROR ",error);
+      // toast.error(error.me);
     } finally {
       setLoading(false);
     }
@@ -45,28 +56,34 @@ const BrandRegister = () => {
         </p>
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="text-xs" htmlFor="firstname">
+            <label className="text-xs" htmlFor="firstName">
               First Name*
             </label>
-            <InputComponent name="firstName" value={formData.firstName} onChange={handleChange} required />
+            <InputComponent type="text" name="firstName" value={formData.firstName} onChange={handleChange} required />
           </div>
           <div>
-            <label className="text-xs" htmlFor="firstname">
+            <label className="text-xs" htmlFor="lastName">
               Last Name*
             </label>
-            <InputComponent name="lastName" value={formData.lastName} onChange={handleChange} required />
+            <InputComponent type="text" name="lastName" value={formData.lastName} onChange={handleChange} required />
           </div>
           <div>
-            <label className="text-xs" htmlFor="firstname">
+            <label className="text-xs" htmlFor="email">
               Email*
             </label>
-            <InputComponent name="email" value={formData.email} onChange={handleChange} required />
+            <InputComponent type="email" name="email" value={formData.email} onChange={handleChange} required />
           </div>
           <div>
-            <label className="text-xs" htmlFor="firstname">
+            <label className="text-xs" htmlFor="phoneNumber">
+              Phone  Number*
+            </label>
+            <InputComponent type="number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="password">
               Password*
             </label>
-            <InputComponent name="password" value={formData.password} onChange={handleChange} required />
+            <InputComponent type="password" name="password" value={formData.password} onChange={handleChange} required />
           </div>
           <ButtonComponent type="submit" label={loading ? "Registering..." : "Register as a Brand"} disabled={loading} />
         </form>
