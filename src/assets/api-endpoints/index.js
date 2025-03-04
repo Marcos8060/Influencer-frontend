@@ -4,6 +4,7 @@ export const API_URL = {
   LOGIN: "http://147.78.141.95:8075/api/auth/login/",
   LOGOUT: "/api/auth/logout",
   REGISTER_BRAND: "http://147.78.141.95:8075/api/auth/register/brand/",
+  SEND_OTP: "http://147.78.141.95:8075/api/auth/otp/verify/",
   REGISTER_INFLUENCER: "/api/auth/auth/register/influencer",
 };
 
@@ -13,6 +14,7 @@ export const APP_API_URL = {
   LOGIN: "/api/auth/login",
   LOGOUT: "/api/fetch-trips",
   REGISTER_BRAND: "/api/auth/register-brand",
+  SEND_OTP: "/api/auth/otp",
   REGISTER_INFLUENCER: "/api/auth/register-influencer",
 };
 

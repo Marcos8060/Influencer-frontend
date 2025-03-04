@@ -1,15 +1,17 @@
 "use client";
 import React, { useState, useRef } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import InputComponent from "@/app/Components/SharedComponents/InputComponent";
+import { SendOtp } from "@/redux/services/auth";
 
 const OtpPage = () => {
   const otpLength = 6;
   const [otp, setOtp] = useState(new Array(otpLength).fill(""));
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
 
   const handleChange = (e, index) => {
     let value = e.target.value;
+
     if (!/^\d?$/.test(value)) return; // Allow only one digit
 
     const newOtp = [...otp];
@@ -23,10 +25,50 @@ const OtpPage = () => {
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace") {
+      if (!otp[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const otpCode = otp.join("");
+    
+    if (otpCode.length !== otpLength) {
+      return;
+    }
+
+    setLoading(true);
+  
+    // Ensure localStorage is available and email exists
+    let email = null;
+    if (typeof window !== "undefined") {
+      email = localStorage.getItem("registration_email") || "";
+    }
+    if (!email) {
+      console.error("No email found in localStorage");
+      setLoading(false);
+      return;
+    }
+    const payload = {
+      email,
+      otpCode,
+      notificationType: "Registration otp",
+    };
+    try {
+      const response = await SendOtp(payload);
+      console.log("RESPONSE:", response);
+      setSuccess("OTP verified successfully!");
+      setOtp(new Array(otpLength).fill(""));
+    } catch (error) {
+      console.error("OTP Verification Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <section className="flex items-center justify-center h-screen w-3/12 mx-auto">
@@ -35,22 +77,24 @@ const OtpPage = () => {
         <p className="text-center text-sm mb-4">
           Please enter the 6-digit code sent to your email for verification.
         </p>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="flex gap-4">
             {otp.map((char, index) => (
-              <InputComponent
+              <input
                 key={index}
                 ref={(el) => (inputRefs.current[index] = el)}
+                type="text"
                 value={char}
                 onChange={(e) => handleChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="text-center w-12 h-12 text-lg border rounded-md"
+                className="text-center w-12 h-12 text-lg border border-primary rounded-md"
                 maxLength={1}
               />
             ))}
           </div>
 
-          <ButtonComponent label="Verify" onClick={() => console.log("OTP:", otp.join(""))} />
+
+          <ButtonComponent label={loading ? "Verifying..." : "Verify"} disabled={loading} />
         </form>
         <p className="text-xs mt-2 text-center">
           Didn't receive any code? Request a new code in 30s
