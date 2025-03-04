@@ -1,9 +1,9 @@
 //------------------------ Backend APIs ----------------------//
 export const API_URL = {
   /***************** AUTH APIS **********************/
-  LOGIN: "/api/auth/login",
+  LOGIN: "http://147.78.141.95:8075/api/auth/login/",
   LOGOUT: "/api/auth/logout",
-  REGISTER_BRAND: "/api/auth/auth/register/brand",
+  REGISTER_BRAND: "http://147.78.141.95:8075/api/auth/register/brand/",
   REGISTER_INFLUENCER: "/api/auth/auth/register/influencer",
 };
 

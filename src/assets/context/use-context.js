@@ -3,9 +3,8 @@ import { useState, createContext, useEffect } from "react";
 import { APP_API_URL } from "../api-endpoints";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import UseAxios from "../hooks/use-axios";
 import { jwtDecode } from "jwt-decode";
-
+import axios from "axios";
 
 export const authContext = createContext();
 
@@ -14,9 +13,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const loginUser = async (email, password) => {
-    const axiosInstance = UseAxios();
     try {
-      const response = await axiosInstance.post(APP_API_URL.LOGIN, {
+      const response = await axios.post(APP_API_URL.LOGIN, {
         email: email,
         password: password,
       });
@@ -25,7 +23,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", userDetails);
         const decodedUser = jwtDecode(userDetails);
         setUser(decodedUser);
-        router.push("/dashboard");
+        // router.push("/auth/register/brand/otp");
       } else {
         toast.error(response.data.status.status_text);
       }
