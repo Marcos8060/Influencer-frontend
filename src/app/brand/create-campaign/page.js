@@ -8,6 +8,7 @@ import { FaRegEnvelope } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import Footer from "@/app/Components/Footer";
 import AllInfluencers from "@/app/Components/Influencer/All-Influencers";
+import BucketList from "@/app/Components/Brand/BucketList";
 
 const CreateCampaign = () => {
   const [currentTab, setCurrentTab] = useState(1);
@@ -47,7 +48,7 @@ const CreateCampaign = () => {
             } cursor-pointer `}
             onClick={() => setCurrentTab(3)}
           >
-            <p>Tab Three</p>
+            <p>Bucket List</p>
           </div>
           <div
             className={`${
@@ -118,6 +119,7 @@ const CreateCampaign = () => {
           </section>
         )}
         {currentTab === 2 && <AllInfluencers />}
+        {currentTab === 3 && <BucketList />}
       </div>
       <Footer />
     </>

@@ -5,7 +5,7 @@ const InputComponent = forwardRef(({ ...props }, ref) => {
   return (
     <div>
       <InputText
-        ref={ref} // ✅ Pass ref properly
+        ref={ref} 
         {...props}
         className="border border-input focus:outline-none rounded px-4 py-2 text-sm w-full"
       />
