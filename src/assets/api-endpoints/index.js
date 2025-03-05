@@ -5,7 +5,7 @@ export const API_URL = {
   LOGOUT: "/api/auth/logout",
   REGISTER_BRAND: "http://147.78.141.95:8075/api/auth/register/brand/",
   SEND_OTP: "http://147.78.141.95:8075/api/auth/otp/verify/",
-  REGISTER_INFLUENCER: "/api/auth/auth/register/influencer",
+  REGISTER_INFLUENCER: "http://147.78.141.95:8075/api/auth/register/influencer/",
 };
 
 //------------------------ Application APIs ----------------------//

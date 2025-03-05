@@ -31,7 +31,7 @@ const FindAboutUs = () => {
           <TickBoxComponent label='Influencer Platform blog' />
           <TickBoxComponent label='Other' />
           <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
-          <BackComponent href="/auth/register/brand/otp" />
+          {/* <BackComponent href="/auth/register/otp" /> */}
         </div>
       </div>
     </section>
