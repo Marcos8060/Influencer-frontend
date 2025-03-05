@@ -5,6 +5,7 @@ import { RegisterBrand } from "@/redux/services/auth";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const BrandRegister = () => {
   const [loading, setLoading] = useState(false);
@@ -25,17 +26,24 @@ const BrandRegister = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await RegisterBrand(formData);
+      const response = await RegisterBrand(formData);
       setFormData({
         firstName: "",
         lastName: "",
         email: "",
         password: "",
         phoneNumber: "",
-      });      
-      router.push("/auth/login/brand");
+      });
+      console.log("REGISTER_RESPONSE ", response);
+      if (response?.email && typeof response.email === "string") {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("registration_email", response.email);
+        }
+      }      
+      toast.success("Please check your email for the OTP!");
+      router.push("/auth/register/brand/otp");
     } catch (error) {
-      console.log("ERROR ",error);
+      console.log("ERROR ", error);
       // toast.error(error.me);
     } finally {
       setLoading(false);
@@ -54,38 +62,72 @@ const BrandRegister = () => {
             here.
           </Link>
         </p>
-        <form onSubmit={handleRegister} className="space-y-4">
+        <form onSubmit={handleRegister} className="space-y-2">
           <div>
             <label className="text-xs" htmlFor="firstName">
               First Name*
             </label>
-            <InputComponent type="text" name="firstName" value={formData.firstName} onChange={handleChange} required />
+            <InputComponent
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div>
             <label className="text-xs" htmlFor="lastName">
               Last Name*
             </label>
-            <InputComponent type="text" name="lastName" value={formData.lastName} onChange={handleChange} required />
+            <InputComponent
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div>
             <label className="text-xs" htmlFor="email">
               Email*
             </label>
-            <InputComponent type="email" name="email" value={formData.email} onChange={handleChange} required />
+            <InputComponent
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div>
             <label className="text-xs" htmlFor="phoneNumber">
-              Phone  Number*
+              Phone Number*
             </label>
-            <InputComponent type="number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+            <InputComponent
+              type="number"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div>
             <label className="text-xs" htmlFor="password">
               Password*
             </label>
-            <InputComponent type="password" name="password" value={formData.password} onChange={handleChange} required />
+            <InputComponent
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
           </div>
-          <ButtonComponent type="submit" label={loading ? "Registering..." : "Register as a Brand"} disabled={loading} />
+          <ButtonComponent
+            type="submit"
+            label={loading ? "Registering..." : "Register as a Brand"}
+            disabled={loading}
+          />
         </form>
         <p className="text-xs mt-2">
           Already have an account?{" "}
