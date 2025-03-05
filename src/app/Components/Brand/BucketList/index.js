@@ -1,15 +1,16 @@
 "use client";
 import React, { useState } from "react";
-import { results } from "../FilterInfluencer/filterResultsData";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
+import { results } from "../../Influencer/FilterInfluencer/filterResultsData";
+import BucketListDialog from "./bucket-list-dialog";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
     array.slice(index * size, index * size + size)
   );
 };
-const AllInfluencers = () => {
+const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(results.length / itemsPerPage);
@@ -24,14 +25,12 @@ const AllInfluencers = () => {
         <p className="font-bold text-primary text-sm cursor-pointer">
           Select All
         </p>
-        {/* <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <button className="border border-primary text-primary rounded text-xs px-4 py-2">
             Add to Campaign
           </button>
-          <button className="bg-primary text-white rounded text-xs px-4 py-2">
-            Create Bucket List
-          </button>
-        </div> */}
+          <BucketListDialog />
+        </div>
       </section>
       <section className="filterResult w-full">
         <div className="min-w-[800px] border-t border-input">
@@ -113,4 +112,4 @@ const AllInfluencers = () => {
   );
 };
 
-export default AllInfluencers;
+export default BucketList;
