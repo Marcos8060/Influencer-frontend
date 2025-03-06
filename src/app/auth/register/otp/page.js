@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import { SendOtp } from "@/redux/services/auth";
+import toast from "react-hot-toast";
 
 const OtpPage = () => {
   const otpLength = 6;
@@ -60,10 +61,10 @@ const OtpPage = () => {
     try {
       const response = await SendOtp(payload);
       console.log("RESPONSE:", response);
-      setSuccess("OTP verified successfully!");
+      toast.success("OTP verified successfully!");
       setOtp(new Array(otpLength).fill(""));
     } catch (error) {
-      console.error("OTP Verification Error:", error);
+      console.log("OTP Verification Error:", error);
     } finally {
       setLoading(false);
     }
