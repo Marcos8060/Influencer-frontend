@@ -17,6 +17,7 @@ module.exports = {
         yellow: '#FFC250',
         input: '#D1D5DB',
         red: '#FF0000',
+        green: '#108833',
       },
       fontWeight: {
         hairline: '100',

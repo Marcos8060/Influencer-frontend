@@ -14,55 +14,43 @@ const CreateCampaign = () => {
   const [currentTab, setCurrentTab] = useState(1);
   const tabHeadings = {
     1: "Influencers in your Bucket List",
-    2: "All Influencers",
-    3: "Bucket List",
-    4: "Influencers on Tab Four",
+    2: "Bucket List",
+    3: "Tab Three",
   };
 
   return (
     <>
-      <div className="bg-primary p-4 text-white text-4xl font-bold h-[20vh] flex items-center justify-center">
-        <h1>Find Influencers to collaborate with</h1>
-      </div>
-      <div className="bg-background md:px-12 px-4 py-4">
-        <section className="bg-white w-full rounded p-1 shadow-2xl mx-auto flex items-center gap-4 text-color text-sm">
+      <div className="md:px-12 px-4 py-4">
+        <section className="border border-background shadow-sm w-full rounded p-1 mx-auto flex items-center gap-4 text-color text-sm">
           <div
             className={`${
-              currentTab === 1 ? "bg-background p-2 font-bold" : ""
+              currentTab === 1 ? "bg-primary rounded text-white p-2 font-semibold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(1)}
           >
-            <p>Bucket List</p>
+            <p>Influencers</p>
           </div>
           <div
             className={`${
-              currentTab === 2 ? "bg-background p-2 font-bold" : ""
+              currentTab === 2 ? "bg-primary rounded text-white p-2 font-semibold" : ""
             } cursor-pointer `}
             onClick={() => setCurrentTab(2)}
           >
-            <p>All Influencers</p>
-          </div>
-          <div
-            className={`${
-              currentTab === 3 ? "bg-background p-2 font-bold" : ""
-            } cursor-pointer `}
-            onClick={() => setCurrentTab(3)}
-          >
             <p>Bucket List</p>
           </div>
           <div
             className={`${
-              currentTab === 4 ? "bg-background p-2 font-bold" : ""
+              currentTab === 3 ? "bg-primary rounded text-white p-2 font-semibold" : ""
             } cursor-pointer `}
-            onClick={() => setCurrentTab(4)}
+            onClick={() => setCurrentTab(3)}
           >
-            <p>Tab Four</p>
+            <p>Tab Three</p>
           </div>
         </section>
         <h1 className="text-2xl font-bold text-color my-4">
           {tabHeadings[currentTab] || ""}
         </h1>
-        {currentTab === 1 && (
+        {currentTab === 0 && (
           <section className="grid md:grid-cols-5 grid-cols-1 gap-4 mb-8">
             {datum.map((data, index) => (
               <div key={index} className="bg-white shadow-xl rounded-lg p-4">
@@ -118,8 +106,8 @@ const CreateCampaign = () => {
             ))}
           </section>
         )}
-        {currentTab === 2 && <AllInfluencers />}
-        {currentTab === 3 && <BucketList />}
+        {currentTab === 1 && <AllInfluencers />}
+        {currentTab === 2 && <BucketList />}
       </div>
       <Footer />
     </>

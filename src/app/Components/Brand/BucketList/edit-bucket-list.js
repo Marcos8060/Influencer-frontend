@@ -3,17 +3,18 @@ import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
-import { createBucketList } from "@/redux/services/auth/brand/bucketList";
+import { editBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
+import { MdModeEditOutline } from "react-icons/md";
 
-export default function BucketListDialog() {
+export default function EditBucketListDialog({ data }) {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+    name: data.name,
+    description: data.description,
   });
   const auth = useAuth();
 
@@ -26,12 +27,12 @@ export default function BucketListDialog() {
     setLoading(true);
     try {
       if (auth) {
-        await createBucketList(auth, formData);
+        await editBucketList(auth,data.id,formData);
         setFormData({
           name: "",
           description: "",
         });
-        toast.success("Bucket List created successfully");
+        toast.success("Bucket List edited successfully");
         setVisible(false);
       }
     } catch (error) {
@@ -43,16 +44,12 @@ export default function BucketListDialog() {
 
   return (
     <div className="card flex justify-content-center">
-      <button
-        className="bg-primary text-white rounded text-xs px-4 py-2"
-        label="Show"
-        icon="pi pi-external-link"
+      <MdModeEditOutline
         onClick={() => setVisible(true)}
-      >
-        Add New List
-      </button>
+        className="text-green"
+      />
       <Dialog
-        header="Create Bucket List"
+        header="Edit Bucket List"
         visible={visible}
         style={{ width: "40vw" }}
         onHide={() => {
@@ -78,7 +75,7 @@ export default function BucketListDialog() {
           />
           <ButtonComponent
             type="submit"
-            label={loading ? "Processing..." : "Create New List"}
+            label={loading ? "Editing..." : "Edit Bucket List"}
             disabled={loading}
           />
         </form>

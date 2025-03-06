@@ -3,12 +3,14 @@ import React, { useState, useRef } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import { SendOtp } from "@/redux/services/auth";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const OtpPage = () => {
   const otpLength = 6;
   const [otp, setOtp] = useState(new Array(otpLength).fill(""));
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
+  const router = useRouter();
 
   const handleChange = (e, index) => {
     let value = e.target.value;
@@ -62,6 +64,7 @@ const OtpPage = () => {
       const response = await SendOtp(payload);
       console.log("RESPONSE:", response);
       toast.success("OTP verified successfully!");
+      router.push('/auth/login/brand')
       setOtp(new Array(otpLength).fill(""));
     } catch (error) {
       console.log("OTP Verification Error:", error);
