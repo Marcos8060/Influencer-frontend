@@ -15,7 +15,7 @@ const CreateCampaign = () => {
   const tabHeadings = {
     1: "Influencers in your Bucket List",
     2: "All Influencers",
-    3: "Influencers on Tab Three",
+    3: "Bucket List",
     4: "Influencers on Tab Four",
   };
 

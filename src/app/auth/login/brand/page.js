@@ -3,9 +3,7 @@ import React, { useState, useContext } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { authContext } from "@/assets/context/use-context";
-import toast from "react-hot-toast";
 
 const BrandLogin = () => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +11,6 @@ const BrandLogin = () => {
     email: "",
     password: "",
   });
-  const router = useRouter();
   const { loginUser } = useContext(authContext);
 
   const handleChange = (event) => {
@@ -30,7 +27,6 @@ const BrandLogin = () => {
         password: "",
       });
     } catch (error) {
-      console.log("ERROR ",error);
     } finally {
       setLoading(false);
     }
