@@ -19,18 +19,17 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
       if (response.status === 200) {
-        const userDetails = response.data;
-        localStorage.setItem("token", userDetails);
-        const decodedUser = jwtDecode(userDetails);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", response.data.access);
+        }
+        const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
-        // router.push("/auth/register/brand/otp");
-      } else {
-        toast.error(response.data.status.status_text);
+        toast.success("Login successful");
+        router.push("/brand/create-campaign");
       }
     } catch (error) {
-      if (error.response.data.error === "Request failed with status code 400") {
-        toast.error("please check your email and password");
-      }
+      console.log("ERROR ", error);
+      toast.error("Please check your email or password");
     }
   };
 
@@ -48,7 +47,10 @@ export const AuthProvider = ({ children }) => {
 
   // decode the token and set the user when a component mounts
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    let storedToken;
+    if (typeof window !== "undefined") {
+      storedToken = localStorage.getItem("token");
+    }
     let decodedUser;
     if (storedToken) {
       decodedUser = jwtDecode(storedToken);

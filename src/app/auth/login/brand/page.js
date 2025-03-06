@@ -2,9 +2,7 @@
 import React, { useState, useContext } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
-import { RegisterBrand } from "@/redux/services/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { authContext } from "@/assets/context/use-context";
 
 const BrandLogin = () => {
@@ -13,7 +11,6 @@ const BrandLogin = () => {
     email: "",
     password: "",
   });
-  const router = useRouter();
   const { loginUser } = useContext(authContext);
 
   const handleChange = (event) => {
@@ -24,15 +21,12 @@ const BrandLogin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await loginUser(formData.email, formData.password);
-      console.log(res);
+      await loginUser(formData.email, formData.password);
       setFormData({
         email: "",
         password: "",
       });
-      // router.push("/auth/register/brand/otp");
     } catch (error) {
-      console.log("ERROR ",error);
     } finally {
       setLoading(false);
     }

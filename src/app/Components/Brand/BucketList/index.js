@@ -4,6 +4,8 @@ import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { results } from "../../Influencer/FilterInfluencer/filterResultsData";
 import BucketListDialog from "./bucket-list-dialog";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import { bucketList } from "./buketListData";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -12,19 +14,16 @@ const chunkArray = (array, size) => {
 };
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(results.length / itemsPerPage);
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(bucketList.length / itemsPerPage);
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = results.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = bucketList.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
   return (
     <>
-      <section className="flex items-center justify-between mb-2">
-        <p className="font-bold text-primary text-sm cursor-pointer">
-          Select All
-        </p>
+      <section className="flex items-center justify-end mb-4">
         <div className="flex items-center gap-4">
           <button className="border border-primary text-primary rounded text-xs px-4 py-2">
             Add to Campaign
@@ -33,49 +32,48 @@ const BucketList = () => {
         </div>
       </section>
       <section className="filterResult w-full">
+        <section className="flex gap-4 items-center w-full justify-between px-4 font-bold text-color">
+          <div className="text-center basis-5/12 flex items-center justify-center">
+            <p>List Name</p>
+          </div>
+          <div className="text-center basis-5/12 flex items-center justify-center">
+            <p>Description</p>
+          </div>
+          <div className="text-center basis-5/12 flex items-center justify-center">
+            <p>No of Influencers</p>
+          </div>
+          <div className="text-center basis-5/12 flex items-center justify-center">
+            <p>Created At</p>
+          </div>
+          <div className="text-center basis-5/12 flex items-center justify-center">
+            <p>Action</p>
+          </div>
+        </section>
         <div className="min-w-[800px] border-t border-input">
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}
               className="border-b border-r border-l border-input p-4"
             >
-              {row.map((data) => (
+              {row.map((data,index) => (
                 <section
-                  key={data.id}
+                  key={index}
                   className="flex items-center gap-4 justify-between w-full text-color"
                 >
-                  <div className="flex items-center gap-3">
-                    <input
-                      className="cursor-pointer scale-150"
-                      type="checkbox"
-                    ></input>
-                    <img
-                      className="w-16 h-16 rounded-full object-cover"
-                      src={data.img}
-                      alt=""
-                    />
-                    <small className="font-bold">katiebrueckner</small>
+                  <div className="text-center basis-5/12 flex items-center justify-center">
+                    <small className="font-light">Crypto Campaign</small>
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-sm">1.3M</p>
-                    <small className="font-light">Followers</small>
+                  <div className="text-center basis-5/12 flex items-center justify-center">
+                    <small className="font-light">Test Description</small>
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-sm">15.43%</p>
-                    <small className="font-light">Engagement Rate</small>
+                  <div className="text-center basis-5/12 flex items-center justify-center">
+                    <small className="font-light">50</small>
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-sm">193169</p>
-                    <small className="font-light">Average Likes</small>
+                  <div className="text-center basis-5/12 flex items-center justify-center">
+                    <small className="font-light">14/02/2024</small>
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-sm">193169</p>
-                    <small className="font-light">Average Comments</small>
-                  </div>
-                  <div className="text-center">
-                    <button className="border border-primary text-xs px-3 py-2 rounded ">
-                      Add To Bucket List
-                    </button>
+                  <div className="text-center basis-5/12 flex items-center justify-center cursor-pointer">
+                  <HiOutlineDotsVertical />
                   </div>
                 </section>
               ))}

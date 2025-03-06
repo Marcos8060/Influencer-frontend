@@ -1,19 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { Dialog } from "primereact/dialog";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import { createBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
+import { useAuth } from "@/assets/hooks/use-auth";
+import { authContext } from "@/assets/context/use-context";
 
 export default function BucketListDialog() {
   const [visible, setVisible] = useState(false);
   const [loading,setLoading] = useState(false);
+  const { user } = useContext(authContext)
+  console.log("USER ",user);
   const [formData, setFormData] = useState({
+    brand: user.user_id,
     name: "",
     description: "",
   });
+  const auth = useAuth();
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -23,7 +29,7 @@ export default function BucketListDialog() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await createBucketList(formData);
+      const response = await createBucketList(auth,formData);
       setFormData({
         name: "",
         description: "",
