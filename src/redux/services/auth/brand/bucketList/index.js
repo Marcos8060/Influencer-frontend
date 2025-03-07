@@ -14,3 +14,45 @@ export const createBucketList = async (auth,payload) => {
         return error.response?.data || error.message;
     }
 };
+
+export const fetchBucketList = async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.FETCH_BUCKETLIST}`, {
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching buckets:", error);
+        return error.response?.data || error.message;
+    }
+};
+
+export const deleteBucketList = async(id,auth) =>{
+    try {
+        const response = await axios.delete(`${APP_API_URL.DELETE_BUCKETLIST}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            data: { id: id }
+        })
+        return response.data;
+    } catch (error) {
+        return error.message
+    }
+}
+
+export const editBucketList = async(auth,id,formData) =>{
+    try {
+        const response = await axios.patch(`${APP_API_URL.EDIT_BUCKETLIST}`,formData,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            data: { id: id }
+        })
+        return response.data;
+    } catch (error) {
+        return error.message
+    }
+}
