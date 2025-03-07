@@ -35,13 +35,15 @@ const BrandRegister = () => {
         phoneNumber: "",
       });
       console.log("REGISTER_RESPONSE ", response);
-      if (response?.email && typeof response.email === "string") {
+      if (response?.data.email && typeof response.data.email === "string") {
         if (typeof window !== "undefined") {
-          localStorage.setItem("registration_email", response.email);
+          localStorage.setItem("registration_email", response.data.email);
         }
-      }      
-      toast.success("Please check your email for the OTP!");
-      router.push("/auth/register/otp");
+      }
+      if (response.status === 200) {
+        toast.success("Please check your email for the OTP!");
+        router.push("/auth/register/otp");
+      }
     } catch (error) {
       console.log("ERROR ", error);
       // toast.error(error.me);
