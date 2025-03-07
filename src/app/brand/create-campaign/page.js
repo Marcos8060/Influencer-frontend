@@ -9,6 +9,7 @@ import { FaHeart } from "react-icons/fa";
 import Footer from "@/app/Components/Footer";
 import AllInfluencers from "@/app/Components/Influencer/All-Influencers";
 import BucketList from "@/app/Components/Brand/BucketList";
+import LogoutComponent from "@/app/Components/LogoutComponent";
 
 const CreateCampaign = () => {
   const [currentTab, setCurrentTab] = useState(1);
@@ -21,30 +22,42 @@ const CreateCampaign = () => {
   return (
     <>
       <div className="md:px-12 px-4 py-4">
-        <section className="border border-background shadow-sm w-full rounded p-1 mx-auto flex items-center gap-4 text-color text-sm">
-          <div
-            className={`${
-              currentTab === 1 ? "bg-primary rounded text-white p-2 font-semibold" : ""
-            } cursor-pointer `}
-            onClick={() => setCurrentTab(1)}
-          >
-            <p>Influencers</p>
+        <section className="border border-background shadow-sm w-full rounded py-1 px-2 mx-auto flex items-center justify-between text-color text-sm">
+          <div className="flex items-center gap-4">
+            <div
+              className={`${
+                currentTab === 1
+                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  : ""
+              } cursor-pointer `}
+              onClick={() => setCurrentTab(1)}
+            >
+              <p>Influencers</p>
+            </div>
+            <div
+              className={`${
+                currentTab === 2
+                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  : ""
+              } cursor-pointer `}
+              onClick={() => setCurrentTab(2)}
+            >
+              <p>Bucket List</p>
+            </div>
+            <div
+              className={`${
+                currentTab === 3
+                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  : ""
+              } cursor-pointer `}
+              onClick={() => setCurrentTab(3)}
+            >
+              <p>Tab Three</p>
+            </div>
           </div>
-          <div
-            className={`${
-              currentTab === 2 ? "bg-primary rounded text-white p-2 font-semibold" : ""
-            } cursor-pointer `}
-            onClick={() => setCurrentTab(2)}
-          >
-            <p>Bucket List</p>
-          </div>
-          <div
-            className={`${
-              currentTab === 3 ? "bg-primary rounded text-white p-2 font-semibold" : ""
-            } cursor-pointer `}
-            onClick={() => setCurrentTab(3)}
-          >
-            <p>Tab Three</p>
+          <div className="flex items-center gap-3">
+            <p className="font-bold">Marcos</p>
+            <LogoutComponent />
           </div>
         </section>
         <h1 className="text-2xl font-bold text-color my-4">
