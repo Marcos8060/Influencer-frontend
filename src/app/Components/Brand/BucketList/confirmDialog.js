@@ -5,7 +5,6 @@ import { deleteBucketList } from "@/redux/services/auth/brand/bucketList";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { MdDelete } from "react-icons/md";
-import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 
