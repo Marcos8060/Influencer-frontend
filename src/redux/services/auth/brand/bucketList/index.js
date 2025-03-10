@@ -31,7 +31,7 @@ export const fetchBucketList = async (auth) => {
 
 export const deleteBucketList = async(id,auth) =>{
     try {
-        const response = await axios.delete(`${APP_API_URL.DELETE_BUCKETLIST}`,{
+        const response = await axios.delete(APP_API_URL.DELETE_BUCKETLIST,{
             headers:{
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
