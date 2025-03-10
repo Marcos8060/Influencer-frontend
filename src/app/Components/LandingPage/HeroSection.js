@@ -17,7 +17,7 @@ const HeroSection = () => {
         </p>
         <div className="md:flex grid items-center gap-4 w-9/12 mx-auto">
           <Link
-            href="/onboarding/brand"
+            href="/auth/register/brand"
             className="bg-primary hover:scale-105 border transition duration-700 shadow-xl text-white rounded px-4 py-3 text-sm w-full flex gap-2 items-center justify-center"
           >
             For Brands
