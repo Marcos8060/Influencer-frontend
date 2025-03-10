@@ -37,22 +37,25 @@ export const deleteBucketList = async(id,auth) =>{
             },
             data: { id: id }
         })
-        return response.data;
+        return response;
     } catch (error) {
         return error.message
     }
 }
 
-export const editBucketList = async(auth,id,formData) =>{
+export const editBucketList = async (auth, id, formData) => {
+    const payload = {
+        ...formData,
+        id
+    }
     try {
-        const response = await axios.patch(`${APP_API_URL.EDIT_BUCKETLIST}`,formData,{
-            headers:{
+        const response = await axios.patch(`${APP_API_URL.EDIT_BUCKETLIST}`, payload,{
+            headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            data: { id: id }
-        })
-        return response.data;
+        });
+        return response;
     } catch (error) {
-        return error.message
+        return error.message;
     }
-}
+};

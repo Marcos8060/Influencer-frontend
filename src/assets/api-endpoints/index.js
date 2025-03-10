@@ -13,7 +13,7 @@ export const API_URL = {
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
     FETCH_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/",
     DELETE_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/delete/",
-    EDIT_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/delete/",
+    EDIT_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/update/",
 };
 
 
