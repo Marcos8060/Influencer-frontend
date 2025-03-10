@@ -5,11 +5,13 @@ import { deleteBucketList } from "@/redux/services/auth/brand/bucketList";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { MdDelete } from "react-icons/md";
-import ButtonComponent from "../../SharedComponents/ButtonComponent";
+import { useDispatch } from "react-redux";
+import { fetchAllBuckets } from "@/redux/features/bucket-list";
 
 export default function ConfirmDialog({ data }) {
   const [visible, setVisible] = useState(false);
   const [loading,setLoading] = useState(false);
+  const dispatch = useDispatch();
  
   const auth = useAuth();
 
@@ -18,6 +20,7 @@ export default function ConfirmDialog({ data }) {
         setLoading(true);
         await deleteBucketList(id,auth)
         toast.success('Bucket deleted successfully')
+        dispatch(fetchAllBuckets(auth));
         setVisible(false);
         setLoading(false);
     } catch (error) {

@@ -8,10 +8,13 @@ import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { MdModeEditOutline } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { fetchAllBuckets } from "@/redux/features/bucket-list";
 
 export default function EditBucketListDialog({ data }) {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: data.name,
     description: data.description,
@@ -26,15 +29,14 @@ export default function EditBucketListDialog({ data }) {
     e.preventDefault();
     setLoading(true);
     try {
-      if (auth) {
         await editBucketList(auth,data.id,formData);
         setFormData({
           name: "",
           description: "",
         });
         toast.success("Bucket List edited successfully");
+        dispatch(fetchAllBuckets(auth));
         setVisible(false);
-      }
     } catch (error) {
       console.log("ERROR ", error);
     } finally {

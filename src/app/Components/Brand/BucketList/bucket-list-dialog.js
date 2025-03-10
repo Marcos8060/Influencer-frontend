@@ -7,10 +7,13 @@ import { createBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
+import { useDispatch } from "react-redux";
+import { fetchAllBuckets } from "@/redux/features/bucket-list";
 
 export default function BucketListDialog() {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -33,6 +36,7 @@ export default function BucketListDialog() {
         });
         toast.success("Bucket List created successfully");
         setVisible(false);
+        dispatch(fetchAllBuckets(auth));
       }
     } catch (error) {
       console.log("ERROR ", error);

@@ -4,19 +4,16 @@ import { backendAxiosInstance } from "../../../../assets/hooks/backend-axios-ins
 export async function DELETE(req) {
   const token = req.headers.get("authorization");
   console.log("Authorization Header:", token);
-  try {
-    const config = {
-      headers: {
-        Authorization: req.headers.get("authorization"),
-      },
-    };
 
+  try {
     const { id } = await req.json();
 
-    const response = await backendAxiosInstance.delete(
-      `${API_URL.DELETE_BUCKETLIST}/?bucket_list_id=${id}`,
-      config
-    );
+    const response = await backendAxiosInstance.delete(API_URL.DELETE_BUCKETLIST, {
+      headers: {
+        Authorization: token, 
+      },
+      params: { bucket_list_id: id },
+    });
 
     return new Response(JSON.stringify(response.data), {
       status: 200,

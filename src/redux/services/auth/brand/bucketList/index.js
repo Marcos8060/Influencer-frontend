@@ -31,28 +31,31 @@ export const fetchBucketList = async (auth) => {
 
 export const deleteBucketList = async(id,auth) =>{
     try {
-        const response = await axios.delete(`${APP_API_URL.DELETE_BUCKETLIST}`,{
+        const response = await axios.delete(APP_API_URL.DELETE_BUCKETLIST,{
             headers:{
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
             data: { id: id }
         })
-        return response.data;
+        return response;
     } catch (error) {
         return error.message
     }
 }
 
-export const editBucketList = async(auth,id,formData) =>{
+export const editBucketList = async (auth, id, formData) => {
+    const payload = {
+        ...formData,
+        id
+    }
     try {
-        const response = await axios.patch(`${APP_API_URL.EDIT_BUCKETLIST}`,formData,{
-            headers:{
+        const response = await axios.patch(`${APP_API_URL.EDIT_BUCKETLIST}`, payload,{
+            headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            data: { id: id }
-        })
-        return response.data;
+        });
+        return response;
     } catch (error) {
-        return error.message
+        return error.message;
     }
-}
+};
