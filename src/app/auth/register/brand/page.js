@@ -34,7 +34,6 @@ const BrandRegister = () => {
         password: "",
         phoneNumber: "",
       });
-      console.log("REGISTER_RESPONSE ", response);
       if (response?.data.email && typeof response.data.email === "string") {
         if (typeof window !== "undefined") {
           localStorage.setItem("registration_email", response.data.email);
