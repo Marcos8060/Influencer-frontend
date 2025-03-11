@@ -33,16 +33,18 @@ const InfluencerRegister = () => {
         password: "",
       });
       console.log("REGISTER_RESPONSE ", response);
-      if (response?.email && typeof response.email === "string") {
+      if (response?.data.email && typeof response.data.email === "string") {
         if (typeof window !== "undefined") {
-          localStorage.setItem("registration_email", response.email);
+          localStorage.setItem("influencer_email", response.data.email);
         }
-      }      
-      toast.success("Please check your email for the OTP!");
-      // router.push("/auth/register/otp");
+      }
+      if (response.status === 200) {
+        toast.success("Please check your email for the OTP!");
+        router.push("/auth/register/influencer/otp");
+      }   
     } catch (error) {
       console.log("ERROR ", error);
-      // toast.error(error.me);
+      toast.error(error);
     } finally {
       setLoading(false);
     }

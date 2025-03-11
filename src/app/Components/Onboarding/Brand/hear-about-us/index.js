@@ -1,17 +1,34 @@
-'use client'
-import React,{ useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setCurrentStep,nextStep } from "@/redux/features/stepper";
+"use client";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCurrentStep,
+  nextStep,
+  updateFormData,
+} from "@/redux/features/stepper";
 import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import BackComponent from "@/app/Components/SharedComponents/BackComponent";
+import toast from "react-hot-toast";
 
 const FindAboutUs = () => {
   const dispatch = useDispatch();
+  const [selectedOption, setSelectedOption] = useState("");
+  const formData = useSelector((store) => store.stepper.formData);
 
   useEffect(() => {
-    dispatch(setCurrentStep(0))
-  },[dispatch])
+    dispatch(setCurrentStep(0));
+    setSelectedOption(formData.platformIntroductionSource || "");
+  }, [dispatch, formData.businessType]);
+
+  const handleNext = () => {
+    if (!selectedOption) {
+      toast.error("Please select an option");
+      return;
+    }
+    dispatch(updateFormData({ platformIntroductionSource: selectedOption }));
+    dispatch(nextStep());
+  };
 
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
@@ -24,13 +41,22 @@ const FindAboutUs = () => {
           our marketting strategies.
         </p>
         <div className="space-y-4">
-          <TickBoxComponent label='Someone recommended me' />
-          <TickBoxComponent label='Facebook or Instagram Ads' />
-          <TickBoxComponent label='Google or Bing' />
-          <TickBoxComponent label='Review on a blog, website, etc' />
-          <TickBoxComponent label='Influencer Platform blog' />
-          <TickBoxComponent label='Other' />
-          <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
+          {[
+            "Someone recommended me",
+            "Facebook or Instagram Ads",
+            "Google or Bing",
+            "Review on a blog, website, etc",
+            "Influencer Platform blog",
+            "Other",
+          ].map((option) => (
+            <TickBoxComponent
+              key={option}
+              label={option}
+              checked={selectedOption === option}
+              onChange={() => setSelectedOption(option)}
+            />
+          ))}
+          <ButtonComponent onClick={handleNext} label="Next" />
           {/* <BackComponent href="/auth/register/otp" /> */}
         </div>
       </div>

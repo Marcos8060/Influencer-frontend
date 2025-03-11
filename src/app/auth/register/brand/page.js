@@ -34,7 +34,6 @@ const BrandRegister = () => {
         password: "",
         phoneNumber: "",
       });
-      console.log("REGISTER_RESPONSE ", response);
       if (response?.data.email && typeof response.data.email === "string") {
         if (typeof window !== "undefined") {
           localStorage.setItem("registration_email", response.data.email);
@@ -42,7 +41,7 @@ const BrandRegister = () => {
       }
       if (response.status === 200) {
         toast.success("Please check your email for the OTP!");
-        router.push("/auth/register/otp");
+        router.push("/auth/register/brand/otp");
       }
     } catch (error) {
       console.log("ERROR ", error);
