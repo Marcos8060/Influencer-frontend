@@ -3,11 +3,11 @@ import React, { useContext } from "react";
 import { BsChevronDown } from "react-icons/bs";
 // import Menu from "@mui/material/Menu";
 // import MenuItem from "@mui/material/MenuItem";
-import Link from "next/link";
+import { authContext } from "@/assets/context/use-context";
 
 const CustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-//   const { logoutUser, user } = useContext(authContext);
+  const { logoutUser, user } = useContext(authContext);
 
   const open = Boolean(anchorEl);
 
@@ -22,7 +22,7 @@ const CustomizedHeader = () => {
   return (
     <section className="h-[10vh] py-6 px-6 flex items-center justify-between">
       <div>
-        <h1 className="font-bold text-2xl">Welcome John Doe</h1>
+        <h1 className="font-bold text-2xl">Welcome {user?.firstName}</h1>
       </div>
       <div>
         <div className="flex items-center gap-2">

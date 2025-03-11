@@ -20,12 +20,32 @@ export const AuthProvider = ({ children }) => {
       });
       if (response.status === 200) {
         if (typeof window !== "undefined") {
-          localStorage.setItem("token", response.data.access);
+          localStorage.setItem("brand_token", response.data.access);
         }
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
         router.push("/brand/create-campaign");
+      }
+    } catch (error) {
+      console.log("ERROR ", error);
+      toast.error("Please check your email or password");
+    }
+  };
+  const logInfluencer = async (email, password) => {
+    try {
+      const response = await axios.post(APP_API_URL.LOGIN, {
+        email: email,
+        password: password,
+      });
+      if (response.status === 200) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("influencer_token", response.data.access);
+        }
+        const decodedUser = jwtDecode(response.data.access);
+        setUser(decodedUser);
+        toast.success("Login successful");
+        router.push("/onboarding/influencer/dashboard");
       }
     } catch (error) {
       console.log("ERROR ", error);
@@ -41,20 +61,26 @@ export const AuthProvider = ({ children }) => {
 
   let contextData = {
     loginUser: loginUser,
+    logInfluencer: logInfluencer,
     logoutUser: logoutUser,
     user: user,
   };
 
   // decode the token and set the user when a component mounts
   useEffect(() => {
-    let storedToken;
-    if (typeof window !== "undefined") {
-      storedToken = localStorage.getItem("token");
-    }
     let decodedUser;
-    if (storedToken) {
-      decodedUser = jwtDecode(storedToken);
+
+    if (typeof window !== "undefined") {
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+
+      if (brandToken) {
+        decodedUser = jwtDecode(brandToken);
+      }else if(influencerToken){
+        decodedUser = jwtDecode(influencerToken);
+      }
     }
+    
     setUser(decodedUser);
   }, []);
 

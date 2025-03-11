@@ -5,13 +5,17 @@ export const useAuth = () => {
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    let token;
     if (typeof window !== "undefined") {
-      token = localStorage.getItem("token");
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("brand_token");
+
+      if (brandToken) {
+        setAuth(brandToken);
+      }else if(influencerToken){
+        setAuth(influencerToken);
+      }
     }
-    if (token) {
-      setAuth(token);
-    }
+    
   }, []);
 
   return auth;

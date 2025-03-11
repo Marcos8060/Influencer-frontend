@@ -42,7 +42,7 @@ const BrandRegister = () => {
       }
       if (response.status === 200) {
         toast.success("Please check your email for the OTP!");
-        router.push("/auth/register/otp");
+        router.push("/auth/register/brand/otp");
       }
     } catch (error) {
       console.log("ERROR ", error);
