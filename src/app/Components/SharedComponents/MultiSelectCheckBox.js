@@ -1,7 +1,7 @@
 import React from "react";
 import { MultiSelect } from "primereact/multiselect";
 
-export default function MultiSelectCheckBox({
+const MultiSelectCheckBox = ({
   value,
   onChange,
   options,
@@ -9,20 +9,24 @@ export default function MultiSelectCheckBox({
   placeholder = "Select Options",
   display = "chip",
   maxSelectedLabels = 3,
-}) {
+  className = "w-full border border-input",
+  optionRenderer, // Custom render function for options (e.g., flag support)
+}) => {
   return (
     <div className="w-full">
       <MultiSelect
-        
         value={value}
         onChange={onChange}
         options={options}
         optionLabel={optionLabel}
-        display={display}
         placeholder={placeholder}
+        display={display}
         maxSelectedLabels={maxSelectedLabels}
-        className="w-full border border-input"
+        className={className}
+        itemTemplate={optionRenderer} // Custom renderer for options
       />
     </div>
   );
-}
+};
+
+export default MultiSelectCheckBox;

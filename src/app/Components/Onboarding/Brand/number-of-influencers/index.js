@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect,useState } from "react";
+import { useDispatch,useSelector } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
@@ -9,14 +9,29 @@ import {
 import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
+import { updateFormData } from "@/redux/features/stepper";
+import toast from "react-hot-toast";
 
 const NumberOfInfluencers = () => {
+  const [selectedOption, setSelectedOption] = useState("");
+  const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
+
+  const options = ["1", "2-5", "6-19", "20+"];
 
   useEffect(() => {
     dispatch(setCurrentStep(5));
-  }, [dispatch]);
-
+    setSelectedOption(formData.monthlyNumberOfInfluencers || "")
+  }, [dispatch, formData.monthlyNumberOfInfluencers]);
+  
+  const handleNext = () => {
+    if (!selectedOption) {
+      toast.error("Please select an option");
+      return;
+    }
+    dispatch(updateFormData({ monthlyNumberOfInfluencers: selectedOption }));
+    dispatch(nextStep());
+  }
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
       <div className="w-full">
@@ -28,17 +43,18 @@ const NumberOfInfluencers = () => {
         </p>
         <section className="flex items-center justify-center gap-4 mb-2">
           <div className="space-y-3 w-full">
-            <TickBoxComponent label="1-5" />
-            <TickBoxComponent label="11-19" />
-            
-          </div>
-          <div className="space-y-3 w-full">
-            <TickBoxComponent label="6-10" />
-            <TickBoxComponent label="20+" />
+            {options.map((option) => (
+              <TickBoxComponent
+                key={option}
+                label={option}
+                checked={selectedOption === option}
+                onChange={() => setSelectedOption(option)}
+              />
+            ))}
           </div>
         </section>
         <div className="mt-2 space-y-2">
-          <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
+          <ButtonComponent onClick={handleNext} label="Next" />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>
