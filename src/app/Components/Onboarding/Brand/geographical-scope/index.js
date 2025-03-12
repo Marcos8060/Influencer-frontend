@@ -1,36 +1,52 @@
 "use client";
-import React, { useEffect,useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
   previousStep,
+  updateFormData,
 } from "@/redux/features/stepper";
 import MultiSelectCheckBox from "@/app/Components/SharedComponents/MultiSelectCheckBox";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
-
+import toast from "react-hot-toast";
 
 const GeographicalScope = () => {
-    const [selectedCountries,setSelectedCountries] = useState([]);
+  const formData = useSelector(( store) => store.stepper.formData)
+  const [selectedCountries, setSelectedCountries] = useState(formData.geographicalScopeOfOperations || []);
   const dispatch = useDispatch();
 
+  const getFlagEmoji = (countryCode) => {
+    return countryCode
+      .toUpperCase()
+      .split("")
+      .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+      .join("");
+  };
   const countries = [
-    { name: "Australia", code: "AU" },
-    { name: "Brazil", code: "BR" },
-    { name: "China", code: "CN" },
-    { name: "Egypt", code: "EG" },
-    { name: "France", code: "FR" },
-    { name: "Germany", code: "DE" },
-    { name: "India", code: "IN" },
-    { name: "Japan", code: "JP" },
-    { name: "Spain", code: "ES" },
-    { name: "United States", code: "US" },
+    { name: "Kenya", code: "KE", flag: getFlagEmoji("KE") },
+    { name: "United States", code: "US", flag: getFlagEmoji("US") },
+    { name: "India", code: "IN", flag: getFlagEmoji("IN") },
+    { name: "France", code: "FR", flag: getFlagEmoji("FR") },
+      { name: "Australia", code: "AU", flag: getFlagEmoji("AU") },
+    { name: "Brazil", code: "BR", flag: getFlagEmoji("BR") },
+    { name: "China", code: "CN", flag: getFlagEmoji("CN") },
+    { name: "Egypt", code: "EG", flag: getFlagEmoji("EG") },
   ];
 
   useEffect(() => {
     dispatch(setCurrentStep(6));
   }, [dispatch]);
+
+  const handleNext = () => {
+    if(selectedCountries.length === 0) {
+      toast.error('Please select at least one country')
+      return;
+    }
+    dispatch(updateFormData({ geographicalScopeOfOperations: selectedCountries }))
+    dispatch(nextStep());
+  }
 
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
@@ -42,14 +58,14 @@ const GeographicalScope = () => {
         <div className="my-4">
           <MultiSelectCheckBox
             value={selectedCountries}
-            onChange={(e) => setSelectedCountries(e.value)} 
+            onChange={(e) => setSelectedCountries(e.value)}
             options={countries}
-            optionLabel="name"
+            optionLabel={(option) => `${option.flag} ${option.name}`}
             placeholder="Select Countries"
           />
         </div>
         <div className="mt-2 space-y-2">
-          <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
+          <ButtonComponent onClick={handleNext} label="Next" />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>

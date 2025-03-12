@@ -10,6 +10,7 @@ import CustomizedTickBoxComponent from "@/app/Components/SharedComponents/Custom
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import { updateFormData } from "@/redux/features/stepper";
+import toast from "react-hot-toast";
 
 const BusinessType = () => {
   const [selectedOption, setSelectedOption] = useState("");

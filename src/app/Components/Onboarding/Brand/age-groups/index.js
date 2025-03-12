@@ -1,21 +1,50 @@
 "use client";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   nextStep,
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
-import TickBox from "@/app/Components/SharedComponents/TickBoxComponent";
+import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
+import { updateFormData } from "@/redux/features/stepper";
+import toast from "react-hot-toast";
 
 const AgeGroups = () => {
+  const formData = useSelector((state) => state.stepper.formData);
+  const [selectedAge, setSelectedAge] = useState(
+    formData.preferredInfluencerAgeGroups || []
+  );
   const dispatch = useDispatch();
+
+  const options = ["Any", "45+", "18-24", "25-34","35-44"];
+
+  const toggleAge = (age) => {
+    setSelectedAge((prev) =>
+      prev.includes(age) ? prev.filter((p) => p !== age) : [...prev, age]
+    );
+  };
+
+  const handleNext = () => {
+    if (selectedAge.length === 0) {
+      toast.error("Please select at least one option.");
+      return;
+    }
+
+    dispatch(
+      updateFormData({
+        preferredInfluencerAgeGroups: selectedAge,
+      })
+    );
+    dispatch(nextStep());
+  };
 
   useEffect(() => {
     dispatch(setCurrentStep(12));
   }, [dispatch]);
+
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
       <div className="w-full">
@@ -24,14 +53,17 @@ const AgeGroups = () => {
           What influencer age group(s) are you targeting?
         </p>
         <div className="flex items-center justify-center gap-4 w-full mb-4 text-center">
-          <TickBox label="Any" />
-          <TickBox label="45+" />
-          <TickBox label="18-24" />
-          <TickBox label="25-34" />
-          <TickBox label="35-44" />
+          {options.map((option) => (
+            <TickBoxComponent
+              key={option}
+              label={option}
+              checked={selectedAge.includes(option)}
+              onChange={() => toggleAge(option)}
+            />
+          ))}
         </div>
         <div>
-          <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
+          <ButtonComponent onClick={handleNext} label="Next" />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>
