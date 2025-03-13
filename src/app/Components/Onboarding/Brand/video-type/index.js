@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   nextStep,
   setCurrentStep,
@@ -9,9 +9,57 @@ import {
 import CustomizedTickBoxComponent from "@/app/Components/SharedComponents/CustomizedTickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
+import { updateFormData } from "@/redux/features/stepper";
+import toast from "react-hot-toast";
 
 const VideoType = () => {
+  const formData = useSelector((store) => store.stepper.formData);
+  const [selectedOptions, setSelectedOptions] = useState(
+    formData.preferredVideoType || []
+  );
   const dispatch = useDispatch();
+
+  const options = [
+    {
+      label: "Up to the creator",
+      description: "Our creators will send you their most creative takes",
+    },
+    {
+      label: "Testimonials",
+      description: "our creators will send you their testimonial reviews",
+    },
+    {
+      label: "Unboxing",
+      description: "For me, the quality of the comments is the key factor",
+    },
+    {
+      label: "How To",
+      description: "Creators will record themselves explaining how your products work",
+    },
+  ];
+
+  const toggleOption = (option) => {
+    setSelectedOptions((prev) => {
+      const exists = prev.some((item) => item.label === option.label);
+      return exists
+        ? prev.filter((item) => item.label !== option.label)
+        : [...prev, option]; // Store the entire object { label, description }
+    });
+  };
+
+  const handleNext = () => {
+    if (selectedOptions.length === 0) {
+      toast.error("Please select at least one option.");
+      return;
+    }
+
+    dispatch(
+      updateFormData({
+        preferredVideoType: selectedOptions,
+      })
+    );
+    dispatch(nextStep());
+  };
 
   useEffect(() => {
     dispatch(setCurrentStep(18));
@@ -24,23 +72,18 @@ const VideoType = () => {
           Which type of videos do you want?
         </p>
         <div className="space-y-2">
-          <CustomizedTickBoxComponent
-            label="Up to the creator"
-            description="Our creators will send you their most creative takes"
-          />
-          <CustomizedTickBoxComponent
-            label="Testimonial"
-            description="our creators will send you their most creative takes"
-          />
-          <CustomizedTickBoxComponent
-            label="Unboxing"
-            description="our creators will send you their most creative takes"
-          />
-          <CustomizedTickBoxComponent
-            label="How to"
-            description="Creators will record themselves explaining how your products work"
-          />
-          <ButtonComponent onClick={() => dispatch(nextStep())} label="Next" />
+          {options.map((option) => (
+            <CustomizedTickBoxComponent
+              key={option.label}
+              label={option.label}
+              description={option.description}
+              checked={selectedOptions.some(
+                (item) => item.label === option.label
+              )}
+              onChange={() => toggleOption(option)}
+            />
+          ))}
+          <ButtonComponent onClick={handleNext} label="Next" />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>
