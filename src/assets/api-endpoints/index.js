@@ -6,6 +6,7 @@ export const API_URL = {
   REGISTER_BRAND: "http://147.78.141.95:8075/api/auth/register/brand/",
   SEND_OTP: "http://147.78.141.95:8075/api/auth/otp/verify/",
   REGISTER_INFLUENCER: "http://147.78.141.95:8075/api/auth/register/influencer/",
+  ONBOARD_BRAND: "http://147.78.141.95:8075/api/brands/onboarding/post/",
 
 
 
@@ -25,6 +26,7 @@ export const APP_API_URL = {
   REGISTER_BRAND: "/api/auth/register-brand",
   SEND_OTP: "/api/auth/otp",
   REGISTER_INFLUENCER: "/api/auth/register-influencer",
+  ONBOARD_BRAND: "/api/onboarding/brand",
 
 
   /***************** BUCKET LIST APIs **********************/
