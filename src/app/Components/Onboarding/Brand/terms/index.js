@@ -2,22 +2,22 @@
 import React, { useEffect,useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
 import {
-  nextStep,
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
-import Link from "next/link";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import { updateFormData } from "@/redux/features/stepper";
 import { brandOnboarding } from "@/redux/services/auth/brand/onboarding";
 import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Terms = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const [loading,setLoading] = useState(false)
   const dispatch = useDispatch();
+  const router = useRouter();
   const auth = useAuth();
 
   const handleSubmit = async() => {
@@ -27,8 +27,11 @@ const Terms = () => {
     try {
       const updatedFormData = { ...formData, agreedToTerms: true,finishedOnboarding: true };
       const response = await brandOnboarding(auth, updatedFormData)
+      if(response.status === 200){
+        setLoading(false)
+        router.push('/onboarding/brand/dashboard')
+      }
       console.log("response ", response);
-      setLoading(false)
     } catch (error) {
       toast.error(error)
     }finally{
