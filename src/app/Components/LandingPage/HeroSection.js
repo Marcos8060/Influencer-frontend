@@ -24,7 +24,7 @@ const HeroSection = () => {
             <IoIosArrowForward className="text-white" />
           </Link>
           <Link
-            href=""
+            href="/auth/register/influencer"
             className="hover:scale-105 border transition duration-700 border-primary rounded px-4 py-3 text-sm w-full flex gap-2 items-center justify-center"
           >
             For Influencers
