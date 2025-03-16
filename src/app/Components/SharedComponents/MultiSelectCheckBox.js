@@ -9,7 +9,7 @@ const MultiSelectCheckBox = ({
   placeholder = "Select Options",
   display = "chip",
   maxSelectedLabels = 3,
-  className = "w-full border border-input",
+  className = "w-full border border-input rounded",
   optionRenderer, // Custom render function for options (e.g., flag support)
 }) => {
   return (

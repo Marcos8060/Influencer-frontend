@@ -9,6 +9,8 @@ export const API_URL = {
   ONBOARD_BRAND: "http://147.78.141.95:8075/api/brands/onboarding/post/",
 
 
+    /***************** INFLUENCER APIS **********************/
+  ONBOARD_INFLUENCER: "http://147.78.141.95:8075/api/influencers/onboarding/post/",
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
@@ -27,6 +29,10 @@ export const APP_API_URL = {
   SEND_OTP: "/api/auth/otp",
   REGISTER_INFLUENCER: "/api/auth/register-influencer",
   ONBOARD_BRAND: "/api/onboarding/brand",
+
+
+    /***************** INFLUENCER APIS **********************/
+    ONBOARD_INFLUENCER: '/api/onboarding/influencer',
 
 
   /***************** BUCKET LIST APIs **********************/

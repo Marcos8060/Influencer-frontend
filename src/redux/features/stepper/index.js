@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchTrips } from '../../services/auth'
 
 const initialState = {
   currentStep: 0,
