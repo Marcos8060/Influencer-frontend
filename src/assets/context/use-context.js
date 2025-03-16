@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
-        router.push("/brand/create-campaign");
+        router.push("/onboarding/brand");
       }
     } catch (error) {
       console.log("ERROR ", error);
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
-        router.push("/onboarding/influencer/dashboard");
+        router.push("/onboarding/influencer");
       }
     } catch (error) {
       console.log("ERROR ", error);

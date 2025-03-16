@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchTrips } from '../../services/auth'
 
 const initialState = {
   currentStep: 0,
@@ -8,11 +7,11 @@ const initialState = {
     brandWebsite: "",
     brandName: "",
     brandDescription: "",
-    brandUniqueness: "",
+    brandUniqueness: null,
     businessType: "",
     businessIndustry: "",
     companySize: "",
-    companyType: "",
+    companyType: null,
     monthlyNumberOfInfluencers: "",
     geographicalScopeOfOperations: [],
     preferredSocialMediaPlatforms: [],
@@ -24,12 +23,11 @@ const initialState = {
     preferredInfluencerCountries: [],
     preferredInfluencerCategories: [],
     preferredPaymentOption: [],
-    preferredPaidMinimumPay: "",
-    preferredPaidMaximumPay: "",
+    preferredPaidMinimumPay: null,
+    preferredPaidMaximumPay: null,
     campaignGoal: "",
     preferredContentFormats: [],
     preferredVideoType: [],
-    userId: "", // Will be set when the user is authenticated
     agreedToTerms: false,
     finishedOnboarding: false
   }

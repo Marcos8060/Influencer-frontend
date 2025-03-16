@@ -1,46 +1,54 @@
 "use client";
-import React, { useEffect,useState } from "react";
-import { useDispatch,useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
   previousStep,
-} from "@/redux/features/stepper";
+  updateFormData,
+} from "@/redux/features/stepper/influencer-stepper";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import { updateFormData } from "@/redux/features/stepper";
-import { brandOnboarding } from "@/redux/services/auth/brand/onboarding";
 import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { influencerOnboarding } from "@/redux/services/influencer/onboarding";
 
-const Terms = () => {
-  const formData = useSelector((store) => store.stepper.formData);
-  const [loading,setLoading] = useState(false)
+const InfluencerTerms = () => {
+  const influencerData = useSelector(
+    (store) => store.influencerStepper.influencerData
+  );
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
   const auth = useAuth();
 
-  const handleSubmit = async() => {
-    dispatch(updateFormData({ agreedToTerms: true }))
-    dispatch(updateFormData({ finishedOnboarding: true }))
-    setLoading(true)
+  console.log(auth);
+  const handleSubmit = async () => {
+    dispatch(updateFormData({ agreedToTerms: true }));
+    dispatch(updateFormData({ finishedOnboarding: true }));
+    setLoading(true);
     try {
-      const updatedFormData = { ...formData, agreedToTerms: true,finishedOnboarding: true };
-      const response = await brandOnboarding(auth, updatedFormData)
-      if(response.status === 200){
-        setLoading(false)
-        router.push('/onboarding/brand/dashboard')
+      const updatedFormData = {
+        ...influencerData,
+        agreedToTerms: true,
+        finishedOnboarding: true,
+      };
+      if (auth) {
+        const response = await influencerOnboarding(auth, updatedFormData);
+        if (response.status === 200) {
+          setLoading(false);
+          router.push("/onboarding/influencer/dashboard");
+        }
       }
-      console.log("response ", response);
     } catch (error) {
-      toast.error(error)
-    }finally{
+      toast.error(error);
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    dispatch(setCurrentStep(20));
+    dispatch(setCurrentStep(11));
   }, [dispatch]);
   return (
     <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4">
@@ -88,7 +96,11 @@ const Terms = () => {
               for these purposes.
             </p>
           </div>
-          <ButtonComponent disabled={loading} onClick={handleSubmit} label={loading ? "Submitting..." : "Agree"} />
+          <ButtonComponent
+            disabled={loading}
+            onClick={handleSubmit}
+            label={loading ? "Submitting..." : "Agree"}
+          />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </section>
       </div>
@@ -96,4 +108,4 @@ const Terms = () => {
   );
 };
 
-export default Terms;
+export default InfluencerTerms;
