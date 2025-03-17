@@ -1,38 +1,28 @@
 "use client";
 import React, { useState } from "react";
-import { results } from "../FilterInfluencer/filterResultsData";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
+import { FaUserCircle } from "react-icons/fa";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
     array.slice(index * size, index * size + size)
   );
 };
-const AllInfluencers = () => {
+const AllInfluencers = ({ filterResults }) => {
+  console.log(filterResults);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const totalPages = Math.ceil(results.length / itemsPerPage);
+  const totalPages = Math.ceil(filterResults?.length / itemsPerPage);
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = results.slice(startIndex, startIndex + itemsPerPage);
+  const currentData =
+    Array.isArray(filterResults) &&
+    filterResults.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
   return (
     <>
-      <section className="flex items-center justify-between mb-2">
-        <p className="font-bold text-primary text-sm cursor-pointer">
-          Select All
-        </p>
-        {/* <div className="flex items-center gap-4">
-          <button className="border border-primary text-primary rounded text-xs px-4 py-2">
-            Add to Campaign
-          </button>
-          <button className="bg-primary text-white rounded text-xs px-4 py-2">
-            Create Bucket List
-          </button>
-        </div> */}
-      </section>
       <section className="filterResult w-full">
         <div className="min-w-[800px] border-t border-input h-[70vh]">
           {rows.map((row, rowIndex) => (
@@ -50,29 +40,33 @@ const AllInfluencers = () => {
                       className="cursor-pointer scale-150"
                       type="checkbox"
                     ></input>
-                    <img
-                      className="w-16 h-16 rounded-full object-cover"
-                      src={data.img}
-                      alt=""
-                    />
-                    <small className="font-bold">katiebrueckner</small>
+                    {!data.img ? (
+                      <FaUserCircle className="text-2xl" />
+                    ) : (
+                      <img
+                        className="w-16 h-16 rounded-full object-cover"
+                        src={data.img}
+                        alt=""
+                      />
+                    )}
+                    <small className="font-bold">{data?.fullName}</small>
                   </div>
                   <div className="text-center">
-                    <p className="font-bold text-sm">1.3M</p>
-                    <small className="font-light">Followers</small>
+                    {/* <p className="font-bold text-sm">1.3M</p> */}
+                    <small className="font-light">{data?.email}</small>
                   </div>
                   <div className="text-center">
-                    <p className="font-bold text-sm">15.43%</p>
-                    <small className="font-light">Engagement Rate</small>
+                    {/* <p className="font-bold text-sm">15.43%</p> */}
+                    <small className="font-light">{data.country}</small>
                   </div>
-                  <div className="text-center">
+                  {/* <div className="text-center">
                     <p className="font-bold text-sm">193169</p>
                     <small className="font-light">Average Likes</small>
-                  </div>
-                  <div className="text-center">
+                  </div> */}
+                  {/* <div className="text-center">
                     <p className="font-bold text-sm">193169</p>
                     <small className="font-light">Average Comments</small>
-                  </div>
+                  </div> */}
                   <div className="text-center">
                     <button className="border border-primary text-xs px-3 py-2 rounded ">
                       Add To Bucket List
