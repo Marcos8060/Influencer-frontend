@@ -36,24 +36,27 @@ const FilterInfluencer = () => {
   const handleFindInfluencers = async (e) => {
     e.preventDefault();
 
-    // ✅ Only add filters if they have a value
     const filters = {};
     if (selectedNiche) filters.niche = selectedNiche;
     if (selectedCountry) filters.country = selectedCountry;
     if (selectedRace) filters.ethnicBackground = selectedRace;
 
-    // ✅ Prevent form submission if no filters are selected
     if (Object.keys(filters).length === 0) {
       toast.error("Please select at least one filter.");
       return;
     }
 
     const queryString = new URLSearchParams(filters).toString();
-    router.push(`/brand/create-campaign/?${queryString}`);
 
     setLoading(true);
     try {
-      await dispatch(fetchAllFilterResults(auth, filters));
+      const response = await dispatch(fetchAllFilterResults(auth, filters));
+      console.log(response);
+      if(response && response.length > 0) {
+        router.push(`/brand/create-campaign/?${queryString}`);
+      }else{
+        toast.error('No Influencers found')
+      }
     } catch (error) {
       toast.error("Failed to fetch influencers");
       console.error(error);

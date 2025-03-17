@@ -10,7 +10,6 @@ const chunkArray = (array, size) => {
   );
 };
 const AllInfluencers = ({ filterResults }) => {
-  console.log(filterResults);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filterResults?.length / itemsPerPage);

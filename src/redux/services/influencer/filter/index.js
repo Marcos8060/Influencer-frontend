@@ -7,8 +7,6 @@ export const filterInfluencer = async (auth, payload) => {
         const queryString = new URLSearchParams(payload).toString();
         const url = `${APP_API_URL.FILTER_INFLUENCER}?${queryString}`; // Append query params
 
-        console.log("Final API URL:", url); // Debugging
-
         const response = await axios.get(url, {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,

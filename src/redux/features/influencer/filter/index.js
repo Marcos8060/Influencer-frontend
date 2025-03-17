@@ -25,6 +25,7 @@ export const fetchAllFilterResults = (auth,payload) => async (dispatch) => {
   try {
     const data = await filterInfluencer(auth,payload);
     dispatch(setResults(data));
+    return data;
   } catch (error) {
     console.log(error);
   }

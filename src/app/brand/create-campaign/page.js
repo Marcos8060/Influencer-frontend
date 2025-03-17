@@ -14,7 +14,6 @@ import { useSelector } from "react-redux";
 
 const CreateCampaign = () => {
   const { filterResults } = useSelector((store) => store.filterResults)
-  console.log("FILTER_RESULTS ",filterResults);
   const [currentTab, setCurrentTab] = useState(1);
   const tabHeadings = {
     1: "Influencers",
