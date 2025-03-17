@@ -10,11 +10,13 @@ import Footer from "@/app/Components/Footer";
 import AllInfluencers from "@/app/Components/Influencer/All-Influencers";
 import BucketList from "@/app/Components/Brand/BucketList";
 import LogoutComponent from "@/app/Components/LogoutComponent";
+import { useSelector } from "react-redux";
 
 const CreateCampaign = () => {
+  const { filterResults } = useSelector((store) => store.filterResults)
   const [currentTab, setCurrentTab] = useState(1);
   const tabHeadings = {
-    1: "Influencers in your Bucket List",
+    1: "Influencers",
     2: "Bucket List",
     3: "Tab Three",
   };
@@ -119,7 +121,7 @@ const CreateCampaign = () => {
             ))}
           </section>
         )}
-        {currentTab === 1 && <AllInfluencers />}
+        {currentTab === 1 && <AllInfluencers {...{ filterResults }} />}
         {currentTab === 2 && <BucketList />}
       </div>
       <Footer />
