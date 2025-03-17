@@ -3,6 +3,10 @@ import React, { useState } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
+import { moveToBucket } from "@/redux/services/influencer/bucket";
+import { useAuth } from "@/assets/hooks/use-auth";
+import toast from "react-hot-toast";
+import AddToBucketListModal from "./add-to-bucket-modal";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -13,6 +17,7 @@ const AllInfluencers = ({ filterResults }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filterResults?.length / itemsPerPage);
+  const auth = useAuth();
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -20,6 +25,7 @@ const AllInfluencers = ({ filterResults }) => {
     Array.isArray(filterResults) &&
     filterResults.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
+
   return (
     <>
       <section className="filterResult w-full">
@@ -67,9 +73,7 @@ const AllInfluencers = ({ filterResults }) => {
                     <small className="font-light">Average Comments</small>
                   </div> */}
                   <div className="text-center">
-                    <button className="border border-primary text-xs px-3 py-2 rounded ">
-                      Add To Bucket List
-                    </button>
+                    <AddToBucketListModal {...{ data }} />
                   </div>
                 </section>
               ))}

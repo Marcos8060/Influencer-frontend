@@ -51,7 +51,6 @@ const FilterInfluencer = () => {
     setLoading(true);
     try {
       const response = await dispatch(fetchAllFilterResults(auth, filters));
-      console.log(response);
       if(response && response.length > 0) {
         router.push(`/brand/create-campaign/?${queryString}`);
       }else{
