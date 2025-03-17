@@ -36,9 +36,13 @@ export default function AddToBucketListModal({ data }) {
     try {
       const payload = {
         toBrandBucketList: selectedBucket.id,
-        influencerIds: [String(data.id)]
+        influencerIds: [String(data.userId)]
       }
       const response = await moveToBucket(auth,payload)
+      if(response.status === 200){
+        toast.success('Move to bucket successfully')
+        setVisible(false);
+      }
       console.log("MOVE_RESPONSE ",response)
     } catch (error) {
       console.log("ERROR ", error);

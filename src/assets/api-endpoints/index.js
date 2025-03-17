@@ -12,7 +12,7 @@ export const API_URL = {
     /***************** INFLUENCER APIS **********************/
   ONBOARD_INFLUENCER: "http://147.78.141.95:8075/api/influencers/onboarding/post/",
   FILTER_INFLUENCER: "http://147.78.141.95:8075/api/search/influencers/",
-  MOVE_TO_BUCKET: "http://147.78.141.95:8075/api/brands/bucketList/influencers/move",
+  MOVE_TO_BUCKET: "http://147.78.141.95:8075/api/brands/bucketList/influencers/move/",
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
