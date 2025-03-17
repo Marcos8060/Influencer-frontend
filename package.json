@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fullcalendar/core": "^6.1.15",
+    "@mui/material": "^6.4.8",
     "@reduxjs/toolkit": "^2.5.0",
     "@rollup/plugin-inject": "^5.0.5",
     "axios": "^1.7.9",
