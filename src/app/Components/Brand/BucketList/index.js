@@ -36,13 +36,13 @@ const BucketList = () => {
 
   useEffect(() => {
     if (auth) {
-      dispatch(fetchAllBuckets(auth))
-        .then(() => {
-          setLoading(false);
-        })
-        .catch(() => {
-          setLoading(false);
-        });
+        dispatch(fetchAllBuckets(auth))
+          .then(() => {
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
     }
   }, [auth]);
 
@@ -60,7 +60,7 @@ const BucketList = () => {
         <Skeleton
           baseColor="#E6E7EB"
           highlightColor="#f0f0f0"
-          count={5}
+          count={4}
           height={100}
         />
       ) : (

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { datum } from "@/app/influencer/influencer-results/influencersData";
 import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
@@ -10,16 +10,27 @@ import Footer from "@/app/Components/Footer";
 import AllInfluencers from "@/app/Components/Influencer/All-Influencers";
 import BucketList from "@/app/Components/Brand/BucketList";
 import LogoutComponent from "@/app/Components/LogoutComponent";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 const CreateCampaign = () => {
-  const { filterResults } = useSelector((store) => store.filterResults)
+  const { filterResults } = useSelector((store) => store.filterResults);
+  const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
+  const auth = useAuth();
+
   const tabHeadings = {
     1: "Influencers",
     2: "Bucket List",
     3: "Tab Three",
   };
+
+  useEffect(() => {
+    if (auth) {
+      dispatch(fetchAllBuckets(auth));
+    }
+  }, [auth]);
 
   return (
     <>
