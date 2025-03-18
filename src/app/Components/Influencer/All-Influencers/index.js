@@ -7,6 +7,7 @@ import { moveToBucket } from "@/redux/services/influencer/bucket";
 import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
 import AddToBucketListModal from "./add-to-bucket-modal";
+import ButtonComponent from "../../SharedComponents/ButtonComponent";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -28,6 +29,9 @@ const AllInfluencers = ({ filterResults }) => {
 
   return (
     <>
+     <div className=" mb-2">
+      <button className="bg-primary text-white p-2 rounded font-light text-xs" >Add To Bucket List</button>
+     </div>
       <section className="filterResult w-full">
         <div className="min-w-[800px] border-t border-input h-[70vh]">
           {rows.map((row, rowIndex) => (

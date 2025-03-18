@@ -1,18 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Dialog } from "primereact/dialog";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import { createBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import { moveToBucket } from "@/redux/services/influencer/bucket";
 
-export default function AddToBucketListModal({ data }) {
+export default function AddToBucketListModal() {
   const { bucketList } = useSelector((store) => store.bucket);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,29 +26,36 @@ export default function AddToBucketListModal({ data }) {
   const auth = useAuth();
 
   const [selectedBucket, setSelectedBucket] = useState(null);
-   
 
-  
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    if(!selectedBucket){
-        toast.error('Please select a bucket')
-        return;
+    if (!selectedBucket) {
+      toast.error("Please select a bucket");
+      return;
     }
     try {
       const payload = {
         toBrandBucketList: selectedBucket.id,
-        influencerIds: [String(data.userId)]
+        influencerIds: [String(data.userId)],
+      };
+      const response = await moveToBucket(auth, payload);
+      if (response.status === 200) {
+        toast.success("Move to bucket successfully");
+        setOpen(false);
       }
-      const response = await moveToBucket(auth,payload)
-      if(response.status === 200){
-        toast.success('Move to bucket successfully')
-        setVisible(false);
-      }
-      console.log("MOVE_RESPONSE ",response)
+      console.log("MOVE_RESPONSE ", response);
     } catch (error) {
       console.log("ERROR ", error);
     } finally {
@@ -51,41 +63,46 @@ export default function AddToBucketListModal({ data }) {
     }
   };
 
-
-
   return (
-    <div className="card flex justify-content-center">
+    <React.Fragment>
       <button
         className="border border-primary text-xs px-3 py-2 rounded"
-        label="Show"
         icon="pi pi-external-link"
-        onClick={() => setVisible(true)}
+        onClick={handleClickOpen}
       >
         Add To Bucket List
       </button>
       <Dialog
-        header="Select Bucket List"
-        visible={visible}
-        style={{ width: "40vw" }}
-        onHide={() => {
-          if (!visible) return;
-          setVisible(false);
-        }}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-          <DropdownComponent
-            options={bucketList}
-            value={selectedBucket}
-            onChange={setSelectedBucket}
-            placeholder="Select a Bucket"
-          />
-          <ButtonComponent
-            type="submit"
-            label={loading ? "Processing..." : "Add To Bucket"}
-            disabled={loading}
-          />
-        </form>
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+            <DropdownComponent
+              options={bucketList}
+              value={selectedBucket}
+              onChange={setSelectedBucket}
+              placeholder="Select a Bucket"
+            />
+            <ButtonComponent
+              type="submit"
+              label={loading ? "Processing..." : "Add To Bucket"}
+              disabled={loading}
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Disagree</Button>
+          <Button onClick={handleClose} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
       </Dialog>
-    </div>
+    </React.Fragment>
   );
 }
