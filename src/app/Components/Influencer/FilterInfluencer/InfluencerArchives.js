@@ -1,28 +1,30 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import FilterInfuencer from "./FilterInfuencer";
-import { influencerData } from "./influencerData";
-import { HiArrowLongLeft } from "react-icons/hi2";
-import { HiArrowLongRight } from "react-icons/hi2";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Button } from "primereact/button";
 import Link from "next/link";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllInfluencers } from "@/redux/features/influencer/filter";
+import "react-loading-skeleton/dist/skeleton.css";
+import Skeleton from "react-loading-skeleton";
 
 const InfluencerArchives = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const { influencers } = useSelector((store) => store.filterResults);
-
-  const paginatorLeft = <Button type="button" icon="pi pi-refresh" text />;
-  const paginatorRight = <Button type="button" icon="pi pi-download" text />;
 
   useEffect(() => {
     if (auth) {
-      dispatch(getAllInfluencers(auth));
+      dispatch(getAllInfluencers(auth))
+        .then(() => {
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
     }
   }, [auth]);
 
@@ -37,47 +39,55 @@ const InfluencerArchives = () => {
       </p>
       <FilterInfuencer />
 
-      <div className="card">
-        <DataTable
-          value={influencers}
-          paginator
-          rows={5}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          tableStyle={{ minWidth: "50rem" }}
-          headerClassName="bg-blue-500 text-white text-center font-thin"
-        >
-          <Column
-            field="fullName"
-            header="Name"
-            className="border border-input text-sm"
-            style={{ width: "25%" }}
-          ></Column>
-          <Column
-            field="email"
-            header="Email"
-            className="border border-input text-sm"
-            style={{ width: "25%" }}
-          ></Column>
-          <Column
-            field="phoneNumber"
-            header="Phone Number"
-            className="border border-input text-sm"
-            style={{ width: "15%" }}
-          ></Column>
-          <Column
-            field="country"
-            header="Country"
-            className="border border-input text-sm"
-            style={{ width: "15%" }}
-          ></Column>
-          <Column
-            field="city"
-            header="City"
-            className="border border-input text-sm"
-            style={{ width: "30%" }}
-          ></Column>
-        </DataTable>
-      </div>
+      {loading ? (
+        <Skeleton
+          baseColor="#E6E7EB"
+          highlightColor="#f0f0f0"
+          count={3}
+          height={100}
+        />
+      ) : (
+        <div className="card">
+          <DataTable
+            value={influencers}
+            paginator
+            rows={5}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            tableStyle={{ minWidth: "50rem" }}
+          >
+            <Column
+              field="fullName"
+              header="Name"
+              className="border border-input text-sm"
+              style={{ width: "25%" }}
+            ></Column>
+            <Column
+              field="email"
+              header="Email"
+              className="border border-input text-sm"
+              style={{ width: "25%" }}
+            ></Column>
+            <Column
+              field="phoneNumber"
+              header="Phone Number"
+              className="border border-input text-sm"
+              style={{ width: "15%" }}
+            ></Column>
+            <Column
+              field="country"
+              header="Country"
+              className="border border-input text-sm"
+              style={{ width: "15%" }}
+            ></Column>
+            <Column
+              field="city"
+              header="City"
+              className="border border-input text-sm"
+              style={{ width: "30%" }}
+            ></Column>
+          </DataTable>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,6 +7,10 @@
   font-family: "Inter", serif;
 }
 
+/* Add this to your global CSS or inside a style tag */
+.p-paginator .p-paginator-pages .p-highlight {
+  @apply bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center;
+}
 
 
 .heroSection {
