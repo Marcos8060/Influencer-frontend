@@ -13,16 +13,31 @@ import LogoutComponent from "@/app/Components/LogoutComponent";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { useAuth } from "@/assets/hooks/use-auth";
+import { FaUsersBetweenLines } from "react-icons/fa6";
+import { MdOutlineSegment } from "react-icons/md";
+import { AiOutlineShopping } from "react-icons/ai";
+
 
 const CreateCampaign = () => {
   const { filterResults } = useSelector((store) => store.filterResults);
+    const { bucketList } = useSelector((store) => store.bucket);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
 
   const tabHeadings = {
-    1: "Influencers",
-    2: "Bucket List",
+    1: (
+      <>
+        We found <span className="font-black text-sm">{filterResults.length}</span> Results
+        based on your search parameters
+      </>
+    ),
+    2: (
+      <>
+        We found <span className="font-black text-sm">{bucketList.length}</span> Buckets
+        in your Repository.
+      </>
+    ),
     3: "Tab Three",
   };
 
@@ -35,36 +50,39 @@ const CreateCampaign = () => {
   return (
     <>
       <div className="md:px-12 px-4 py-4">
-        <section className="border border-background shadow-sm w-full rounded py-1 px-2 mx-auto flex items-center justify-between text-color text-sm">
-          <div className="flex items-center gap-4">
+        <section className="border-b border-b-input w-full pt-1 px-2 mx-auto flex items-center justify-between text-color text-sm">
+          <div className="flex items-center gap-8">
             <div
               className={`${
                 currentTab === 1
-                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  ? "text-link p-2 font-semibold border-b-2 border-link"
                   : ""
-              } cursor-pointer `}
+              } cursor-pointer flex gap-2 items-center`}
               onClick={() => setCurrentTab(1)}
             >
+              <FaUsersBetweenLines className="text-xl" />
               <p>Influencers</p>
             </div>
             <div
               className={`${
                 currentTab === 2
-                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  ? "text-link p-2 font-semibold border-b-2 border-link"
                   : ""
-              } cursor-pointer `}
+              } cursor-pointer flex items-center gap-2`}
               onClick={() => setCurrentTab(2)}
             >
+              <AiOutlineShopping className="text-xl" />
               <p>Bucket List</p>
             </div>
             <div
               className={`${
                 currentTab === 3
-                  ? "bg-primary rounded text-white p-2 font-semibold"
+                  ? "text-link p-2 font-semibold border-b-2 border-link"
                   : ""
-              } cursor-pointer `}
+              } cursor-pointer flex items-center gap-2`}
               onClick={() => setCurrentTab(3)}
             >
+              <MdOutlineSegment className="text-xl" />
               <p>Tab Three</p>
             </div>
           </div>
@@ -73,7 +91,7 @@ const CreateCampaign = () => {
             <LogoutComponent />
           </div>
         </section>
-        <h1 className="text-2xl font-bold text-color my-4">
+        <h1 className="bg-background text-link text-xs p-2 rounded-md mt-8">
           {tabHeadings[currentTab] || ""}
         </h1>
         {currentTab === 0 && (

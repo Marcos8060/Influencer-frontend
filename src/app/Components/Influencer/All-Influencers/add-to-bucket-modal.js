@@ -1,29 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
+import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import InputComponent from "../../SharedComponents/InputComponent";
-import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
-import { createBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import { useSelector } from "react-redux";
 import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import { moveToBucket } from "@/redux/services/influencer/bucket";
+import Slide from "@mui/material/Slide";
 
-export default function AddToBucketListModal() {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+export default function AddToBucketListModal({ data }) {
   const { bucketList } = useSelector((store) => store.bucket);
-  const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
 
   const auth = useAuth();
+  console.log(auth);
 
   const [selectedBucket, setSelectedBucket] = useState(null);
 
@@ -43,21 +38,27 @@ export default function AddToBucketListModal() {
 
     if (!selectedBucket) {
       toast.error("Please select a bucket");
+      setLoading(false);
       return;
     }
     try {
+
+      const influencerIds = Array.isArray(data)
+        ? data.map((influencer) => String(influencer.userId)) // ✅ Handle multiple influencers
+        : [String(data.userId)]; // ✅ Handle single influencer
+
       const payload = {
         toBrandBucketList: selectedBucket.id,
-        influencerIds: [String(data.userId)],
+        influencerIds,
       };
+
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
         toast.success("Move to bucket successfully");
         setOpen(false);
       }
-      console.log("MOVE_RESPONSE ", response);
     } catch (error) {
-      console.log("ERROR ", error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -66,23 +67,24 @@ export default function AddToBucketListModal() {
   return (
     <React.Fragment>
       <button
-        className="border border-primary text-xs px-3 py-2 rounded"
+        className={`${Array.isArray(data) && data.length > 0 ? 'bg-primary text-white text-xs px-3 py-2 rounded' : 'border border-primary text-xs px-3 py-2 rounded'} `}
         icon="pi pi-external-link"
         onClick={handleClickOpen}
       >
-        Add To Bucket List
+        Add To Bucket
       </button>
       <Dialog
         open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        maxWidth="xs"
+        fullWidth
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        aria-describedby="alert-dialog-slide-description"
+        sx={{ zIndex: 1000 }}
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-          <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+        <DialogContent >
+        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
             <DropdownComponent
               options={bucketList}
               value={selectedBucket}
@@ -96,12 +98,6 @@ export default function AddToBucketListModal() {
             />
           </form>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
       </Dialog>
     </React.Fragment>
   );

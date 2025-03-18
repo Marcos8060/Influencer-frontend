@@ -36,6 +36,7 @@ export const APP_API_URL = {
     /***************** INFLUENCER APIS **********************/
     ONBOARD_INFLUENCER: '/api/onboarding/influencer',
     FILTER_INFLUENCER: '/api/influencer/filter-influencer',
+    FETCH_INFLUENCERS: '/api/influencer/fetch-influencers',
     MOVE_TO_BUCKET: '/api/influencer/move-to-bucket',
 
 

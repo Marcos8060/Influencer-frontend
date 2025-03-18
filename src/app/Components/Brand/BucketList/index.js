@@ -48,7 +48,7 @@ const BucketList = () => {
 
   return (
     <>
-      <section className="flex items-center justify-end mb-4">
+      <section className="flex items-center justify-end my-4">
         <div className="flex items-center gap-4">
           <button className="border border-primary text-primary rounded text-xs px-4 py-2">
             Add to Campaign
