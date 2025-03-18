@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
-import { useAuth } from "@/assets/hooks/use-auth";
 import AddToBucketListModal from "./add-to-bucket-modal";
 
 const chunkArray = (array, size) => {
@@ -16,7 +15,6 @@ const AllInfluencers = ({ filterResults }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filterResults?.length / itemsPerPage);
-  const auth = useAuth();
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -42,8 +40,8 @@ const AllInfluencers = ({ filterResults }) => {
           <AddToBucketListModal data={selectedInfluencers} />
         </div>
       )}
-      <section className="filterResult w-full">
-        <div className="min-w-[800px] border-t border-input h-[70vh]">
+      <section className="filterResult w-full mt-4 ">
+        <div className="min-w-[800px] h-[70vh] border-t border-input">
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}

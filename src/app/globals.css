@@ -13,6 +13,11 @@
 }
 
 
+.p-datatable-thead > tr > th {
+  background-color: #EEEEFD !important; /* Adjust to your theme */
+  color: #3F3D56 !important;
+}
+
 .heroSection {
   display: flex;
   gap: 14px;
