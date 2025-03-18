@@ -3,11 +3,8 @@ import React, { useState } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
-import { moveToBucket } from "@/redux/services/influencer/bucket";
 import { useAuth } from "@/assets/hooks/use-auth";
-import toast from "react-hot-toast";
 import AddToBucketListModal from "./add-to-bucket-modal";
-import ButtonComponent from "../../SharedComponents/ButtonComponent";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -15,6 +12,7 @@ const chunkArray = (array, size) => {
   );
 };
 const AllInfluencers = ({ filterResults }) => {
+  const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(filterResults?.length / itemsPerPage);
@@ -27,11 +25,23 @@ const AllInfluencers = ({ filterResults }) => {
     filterResults.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
 
+  const handleCheckboxChange = (influencer) => {
+    setSelectedInfluencers((prevSelected) => {
+      const isSelected = prevSelected.some((item) => item.id === influencer.id);
+      return isSelected
+        ? prevSelected.filter((item) => item.id !== influencer.id) // Remove if already selected
+        : [...prevSelected, influencer]; // Add if not selected
+    });
+  };
+
+
   return (
     <>
-     <div className=" mb-2">
-      <button className="bg-primary text-white p-2 rounded font-light text-xs" >Add To Bucket List</button>
-     </div>
+      {Array.isArray(selectedInfluencers) && selectedInfluencers.length > 0 && (
+        <div className=" mb-2">
+          <AddToBucketListModal data={selectedInfluencers} />
+        </div>
+      )}
       <section className="filterResult w-full">
         <div className="min-w-[800px] border-t border-input h-[70vh]">
           {rows.map((row, rowIndex) => (
@@ -48,7 +58,11 @@ const AllInfluencers = ({ filterResults }) => {
                     <input
                       className="cursor-pointer scale-150"
                       type="checkbox"
-                    ></input>
+                      checked={selectedInfluencers.some(
+                        (item) => item.id === data.id
+                      )}
+                      onChange={() => handleCheckboxChange(data)}
+                    />
                     {!data.img ? (
                       <FaUserCircle className="text-2xl" />
                     ) : (
@@ -61,21 +75,11 @@ const AllInfluencers = ({ filterResults }) => {
                     <small className="font-bold">{data?.fullName}</small>
                   </div>
                   <div className="text-center">
-                    {/* <p className="font-bold text-sm">1.3M</p> */}
                     <small className="font-light">{data?.email}</small>
                   </div>
                   <div className="text-center">
-                    {/* <p className="font-bold text-sm">15.43%</p> */}
                     <small className="font-light">{data.country}</small>
                   </div>
-                  {/* <div className="text-center">
-                    <p className="font-bold text-sm">193169</p>
-                    <small className="font-light">Average Likes</small>
-                  </div> */}
-                  {/* <div className="text-center">
-                    <p className="font-bold text-sm">193169</p>
-                    <small className="font-light">Average Comments</small>
-                  </div> */}
                   <div className="text-center">
                     <AddToBucketListModal {...{ data }} />
                   </div>

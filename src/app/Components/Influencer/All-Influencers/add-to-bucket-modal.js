@@ -18,6 +18,7 @@ export default function AddToBucketListModal({ data }) {
   const [loading, setLoading] = useState(false);
 
   const auth = useAuth();
+  console.log(auth);
 
   const [selectedBucket, setSelectedBucket] = useState(null);
 
@@ -41,10 +42,16 @@ export default function AddToBucketListModal({ data }) {
       return;
     }
     try {
+
+      const influencerIds = Array.isArray(data)
+        ? data.map((influencer) => String(influencer.userId)) // ✅ Handle multiple influencers
+        : [String(data.userId)]; // ✅ Handle single influencer
+
       const payload = {
         toBrandBucketList: selectedBucket.id,
-        influencerIds: [String(data.userId)],
+        influencerIds,
       };
+
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
         toast.success("Move to bucket successfully");
@@ -60,7 +67,7 @@ export default function AddToBucketListModal({ data }) {
   return (
     <React.Fragment>
       <button
-        className="border border-primary text-xs px-3 py-2 rounded"
+        className={`${Array.isArray(data) && data.length > 0 ? 'bg-primary text-white text-xs px-3 py-2 rounded' : 'border border-primary text-xs px-3 py-2 rounded'} `}
         icon="pi pi-external-link"
         onClick={handleClickOpen}
       >
