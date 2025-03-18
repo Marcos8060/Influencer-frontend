@@ -54,7 +54,7 @@ const FilterInfluencer = () => {
       if(response && response.length > 0) {
         router.push(`/brand/create-campaign/?${queryString}`);
       }else{
-        toast.error('No Influencers found')
+        toast.error('No Influencers found matching your criteria')
       }
     } catch (error) {
       toast.error("Failed to fetch influencers");

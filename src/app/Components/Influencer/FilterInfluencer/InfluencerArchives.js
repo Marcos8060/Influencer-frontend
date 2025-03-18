@@ -1,32 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FilterInfuencer from "./FilterInfuencer";
 import { influencerData } from "./influencerData";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Button } from "primereact/button";
 import Link from "next/link";
-
-const chunkArray = (array, size) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
-    array.slice(index * size, index * size + size)
-  );
-};
+import { useAuth } from "@/assets/hooks/use-auth";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllInfluencers } from "@/redux/features/influencer/filter";
 
 const InfluencerArchives = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 30;
-  const totalPages = Math.ceil(influencerData.length / itemsPerPage);
+  const auth = useAuth();
+  const dispatch = useDispatch();
+  const { influencers } = useSelector((store) => store.filterResults);
 
-  //   get current page data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = influencerData.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-  const rows = chunkArray(currentData, 4);
+  const paginatorLeft = <Button type="button" icon="pi pi-refresh" text />;
+  const paginatorRight = <Button type="button" icon="pi pi-download" text />;
+
+  useEffect(() => {
+    if (auth) {
+      dispatch(getAllInfluencers(auth));
+    }
+  }, [auth]);
 
   return (
-    <div className="mt-16 md:px-12 px-4 mb-12 md:w-9/12 mx-auto">
+    <div className="mt-16 md:px-12 px-4 mb-12 md:w-10/12 mx-auto">
       <h1 className="font-bold md:text-3xl text-2xl text-center">
         Influencers By Archives: Find Influencers
       </h1>
@@ -36,49 +37,47 @@ const InfluencerArchives = () => {
       </p>
       <FilterInfuencer />
 
-      <div className="">
-        {rows.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className="grid md:grid-cols-4 gap-4 md:border-b border-input"
-          >
-            {row.map((data) => (
-              <Link
-                href={`/influencer/filter-influencer/${data.id}`}
-                key={data.id}
-                className="space-y-3 text-sm cursor-pointer hover:bg-background p-2 font-light text-color"
-              >
-                <p>{data.name}</p>
-              </Link>
-            ))}
-          </div>
-        ))}
+      <div className="card">
+        <DataTable
+          value={influencers}
+          paginator
+          rows={5}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          tableStyle={{ minWidth: "50rem" }}
+          headerClassName="bg-blue-500 text-white text-center font-thin"
+        >
+          <Column
+            field="fullName"
+            header="Name"
+            className="border border-input text-sm"
+            style={{ width: "25%" }}
+          ></Column>
+          <Column
+            field="email"
+            header="Email"
+            className="border border-input text-sm"
+            style={{ width: "25%" }}
+          ></Column>
+          <Column
+            field="phoneNumber"
+            header="Phone Number"
+            className="border border-input text-sm"
+            style={{ width: "15%" }}
+          ></Column>
+          <Column
+            field="country"
+            header="Country"
+            className="border border-input text-sm"
+            style={{ width: "15%" }}
+          ></Column>
+          <Column
+            field="city"
+            header="City"
+            className="border border-input text-sm"
+            style={{ width: "30%" }}
+          ></Column>
+        </DataTable>
       </div>
-      <section className="flex gap-4 items-center justify-around my-8">
-        <div className="flex items-center gap-2">
-          <HiArrowLongLeft />
-          <small className="text-xs">Prev 10</small>
-        </div>
-        <div className="space-x-6 text-sm">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={` ${
-                currentPage === index + 1
-                  ? "font-bold text-primary border-b-2"
-                  : "font-thin text-color"
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <small className="text-xs">Next 10</small>
-          <HiArrowLongRight />
-        </div>
-      </section>
     </div>
   );
 };

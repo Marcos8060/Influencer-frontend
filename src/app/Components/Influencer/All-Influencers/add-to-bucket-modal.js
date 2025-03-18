@@ -1,13 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import InputComponent from "../../SharedComponents/InputComponent";
-import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import { createBucketList } from "@/redux/services/auth/brand/bucketList";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
@@ -96,12 +91,12 @@ export default function AddToBucketListModal() {
             />
           </form>
         </DialogContent>
-        <DialogActions>
+        {/* <DialogActions>
           <Button onClick={handleClose}>Disagree</Button>
           <Button onClick={handleClose} autoFocus>
             Agree
           </Button>
-        </DialogActions>
+        </DialogActions> */}
       </Dialog>
     </React.Fragment>
   );

@@ -48,7 +48,7 @@ const OtpPage = () => {
     // Ensure localStorage is available and email exists
     let email = null;
     if (typeof window !== "undefined") {
-      email = localStorage.getItem("influencer_email") || "";
+      email = localStorage.getItem("registration_email") || "";
     }
     if (!email) {
       console.error("No email found in localStorage");
