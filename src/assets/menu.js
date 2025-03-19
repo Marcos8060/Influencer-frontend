@@ -4,12 +4,18 @@ import { FaCarAlt } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa";
 import { FaMessage } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
+import { FaUsersGear } from "react-icons/fa6";
 
 export const menu = [
   {
     label: "Dashboard",
     path: "/onboarding/brand/dashboard",
     icon: <BiSolidDashboard />,
+  },
+  {
+    label: "Influencer Discovery",
+    path: "/brand/influencer-discovery",
+    icon: <FaUsersGear />,
   },
   {
     label: "Opportunities",

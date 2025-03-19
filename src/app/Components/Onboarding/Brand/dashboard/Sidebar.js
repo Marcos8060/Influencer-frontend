@@ -14,7 +14,7 @@ const Sidebar = ({ collapse, setCollapse, icon }) => {
           <p onClick={toggleSidebar}>{icon}</p>
         </div>
       </div>
-      <div className="space-y-10 text-background my-4 px-6 py-8">
+      <div className="space-y-6 text-sm text-background my-4 pl-4 py-8">
         <MenuChildren {...{ collapse }} />
       </div>
     </section>

@@ -18,7 +18,7 @@ const chunkArray = (array, size) => {
 };
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { bucketList } = useSelector((store) => store.bucket);
   const dispatch = useDispatch();
 
@@ -35,16 +35,18 @@ const BucketList = () => {
   const rows = chunkArray(currentData, 1);
 
   useEffect(() => {
-    if (auth) {
-        dispatch(fetchAllBuckets(auth))
-          .then(() => {
-            setLoading(false);
-          })
-          .catch(() => {
-            setLoading(false);
-          });
+    if (auth && bucketList.length === 0) {
+      setLoading(true);
+      dispatch(fetchAllBuckets(auth))
+        .then(() => {})
+        .catch(() => {
+          setLoading(false);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
-  }, [auth]);
+  }, [auth, bucketList.length]);
 
   return (
     <>
@@ -66,49 +68,41 @@ const BucketList = () => {
       ) : (
         <div>
           <section className="filterResult w-full h-[70vh]">
-            <section className="flex gap-4 items-center w-full justify-between px-4 font-bold text-color">
-              <div className="text-center basis-5/12 flex items-center justify-center">
-                <p>List Name</p>
-              </div>
-              <div className="text-center basis-5/12 flex items-center justify-center">
-                <p>Description</p>
-              </div>
-              <div className="text-center basis-5/12 flex items-center justify-center">
-                <p>No of Influencers</p>
-              </div>
-              <div className="text-center basis-5/12 flex items-center justify-center">
-                <p>Created At</p>
-              </div>
-              <div className="text-center basis-5/12 flex items-center justify-center">
-                <p>Action</p>
-              </div>
-            </section>
-            <div className="min-w-[800px] border-t border-input">
+            {/* Table Header */}
+            <div className="min-w-[800px] flex items-center justify-between bg-background text-sm font-semibold text-color p-3 border border-input rounded-t-lg">
+              <div className="text-left w-1/5">Bucket Name</div>
+              <div className="text-center w-1/5">Description</div>
+              <div className="text-center w-1/5">No. Of Influencers</div>
+              <div className="text-center w-1/5">Created At</div>
+              <div className="text-center w-1/5">Action</div>
+            </div>
+
+            {/* Table Body */}
+            <div className="min-w-[800px] border border-input border-t-0">
               {rows.map((row, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className="border-b border-r border-l border-input p-4"
-                >
+                <div key={rowIndex} className="border-b border-input">
                   {row.map((data) => (
                     <section
                       key={data.id}
-                      className="flex items-center gap-4 justify-between w-full text-color"
+                      className="flex items-center justify-between w-full text-color p-4"
                     >
-                      <div className="text-center basis-5/12 flex items-center justify-center">
-                        <small className="font-light">{data.name}</small>
+                      <div className="text-left w-1/5">
+                        <small className="font-light">{data?.name}</small>
                       </div>
-                      <div className="text-center basis-5/12 flex items-center justify-center">
-                        <small className="font-light">{data.description}</small>
+                      <div className="text-center w-1/5">
+                        <small className="font-light">
+                          {data?.description}
+                        </small>
                       </div>
-                      <div className="text-center basis-5/12 flex items-center justify-center">
+                      <div className="text-center w-1/5">
                         <small className="font-light">50</small>
                       </div>
-                      <div className="text-center basis-5/12 flex items-center justify-center">
+                      <div className="text-center w-1/5">
                         <small className="font-light">
                           {new Date(data.createdAt).toLocaleDateString()}
                         </small>
                       </div>
-                      <div className="text-center basis-5/12 flex items-center gap-4 justify-center cursor-pointer">
+                      <div className="text-center w-1/5 flex justify-center gap-2">
                         <EditBucketListDialog {...{ data }} />
                         <ConfirmDialog {...{ data }} />
                       </div>
