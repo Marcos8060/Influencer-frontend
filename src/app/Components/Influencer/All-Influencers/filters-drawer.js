@@ -3,9 +3,7 @@ import { Sidebar } from "primereact/sidebar";
 import { LuFilter } from "react-icons/lu";
 import InputComponent from "../../SharedComponents/InputComponent";
 import FilterDropdown from "../../SharedComponents/FilterDropDownComponent";
-import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import MultiSelectCheckBox from "../../SharedComponents/MultiSelectCheckBox";
-import { Checkbox } from "primereact/checkbox";
 
 export default function FiltersDrawer() {
   const [selectedGender, setSelectedGender] = useState("");
