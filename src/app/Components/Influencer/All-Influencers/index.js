@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
+import FiltersDrawer from "./filters-drawer";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -37,8 +38,8 @@ const AllInfluencers = () => {
     setSelectedInfluencers((prevSelected) => {
       const isSelected = prevSelected.some((item) => item.id === influencer.id);
       return isSelected
-        ? prevSelected.filter((item) => item.id !== influencer.id) // Remove if already selected
-        : [...prevSelected, influencer]; // Add if not selected
+        ? prevSelected.filter((item) => item.id !== influencer.id)
+        : [...prevSelected, influencer]; 
     });
   };
 
@@ -58,15 +59,24 @@ const AllInfluencers = () => {
           setLoading(false);
         });
     }
-  }, [auth, dispatch,influencers.length]);
+  }, [auth, dispatch, influencers.length]);
 
   return (
     <>
-      {Array.isArray(selectedInfluencers) && selectedInfluencers.length > 0 && (
-        <div className=" mb-2">
-          <AddToBucketListModal data={selectedInfluencers} />
+      <section className="flex items-center justify-between mt-4">
+        <div>
+          {Array.isArray(selectedInfluencers) &&
+            selectedInfluencers.length > 0 && (
+              <div className="">
+                <AddToBucketListModal data={selectedInfluencers} />
+              </div>
+            )}
         </div>
-      )}
+        <div className="">
+          <FiltersDrawer />
+        </div>
+      </section>
+
       {loading ? (
         <Skeleton
           baseColor="#E6E7EB"
@@ -77,7 +87,7 @@ const AllInfluencers = () => {
       ) : (
         <>
           <section className="filterResult w-full mt-2 ">
-            <div className="min-w-[800px] h-[70vh] ">
+            <div className="min-w-[800px] h-[65vh] ">
               <div className="flex items-center justify-between w-full bg-background text-sm font-semibold text-color p-2 border border-input rounded-t-lg">
                 <div className="text-left w-1/6">Full Name</div>
                 <div className="text-center w-1/6">Country</div>
@@ -131,12 +141,13 @@ const AllInfluencers = () => {
                       </div>
                       <div className="text-center w-1/6">
                         <small className="font-light">
-                          {Array.isArray(data.tags) && data.tags.map((item, index) => (
-                            <small key={index}>{item}</small>
-                          ))}
+                          {Array.isArray(data.tags) &&
+                            data.tags.map((item, index) => (
+                              <small key={index}>{item}</small>
+                            ))}
                         </small>
                       </div>
-                      
+
                       <div className="text-center w-1/6">
                         <AddToBucketListModal {...{ data }} />
                       </div>
