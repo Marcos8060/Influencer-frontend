@@ -22,7 +22,7 @@ export default function FiltersDrawer() {
           <div className="space-y-8">
             <section className="flex items-center gap-2">
               <div className="w-3/12">
-                <small>Engagement Rate</small>
+                <small>Location</small>
               </div>
               <div className="w-9/12 flex items-center gap-2">
                 <InputComponent className="w-full" placeholder="Country" />
