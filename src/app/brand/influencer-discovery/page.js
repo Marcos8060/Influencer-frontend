@@ -19,8 +19,8 @@ import { AiOutlineShopping } from "react-icons/ai";
 
 
 const CreateCampaign = () => {
-  const { filterResults } = useSelector((store) => store.filterResults);
-    const { bucketList } = useSelector((store) => store.bucket);
+  const { bucketList } = useSelector((store) => store.bucket);
+  const { influencers } = useSelector((store) => store.filterResults);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
@@ -28,13 +28,12 @@ const CreateCampaign = () => {
   const tabHeadings = {
     1: (
       <>
-        We found <span className="font-black text-sm">{filterResults.length}</span> Results
-        based on your search parameters
+        We found <span className="font-black text-sm">{influencers.length}</span> Total Influencers
       </>
     ),
     2: (
       <>
-        We found <span className="font-black text-sm">{bucketList.length}</span> Buckets
+        We found <span className="font-black text-sm">{bucketList.length}</span> Bucket(s)
         in your Repository.
       </>
     ),
@@ -150,7 +149,7 @@ const CreateCampaign = () => {
             ))}
           </section>
         )}
-        {currentTab === 1 && <AllInfluencers {...{ filterResults }} />}
+        {currentTab === 1 && <AllInfluencers />}
         {currentTab === 2 && <BucketList />}
       </div>
       <Footer />

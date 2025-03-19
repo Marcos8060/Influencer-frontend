@@ -26,7 +26,7 @@ const CustomizedHeader = () => {
       </div>
       <div>
         <div className="flex items-center gap-2">
-          <span className=" text-sm">Jarib</span>
+          <span className=" text-sm">{user?.firstName}</span>
           <BsChevronDown onClick={handleClick} className=" cursor-pointer" />
         </div>
         {/* <Menu
