@@ -48,7 +48,7 @@ export default function BucketListDialog() {
   return (
     <div className="card flex justify-content-center">
       <button
-        className="bg-primary text-white rounded text-xs px-4 py-2"
+        className="bg-gradient-to-r from-primary to-secondary text-white rounded-3xl text-xs px-4 py-3"
         label="Show"
         icon="pi pi-external-link"
         onClick={() => setVisible(true)}

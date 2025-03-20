@@ -105,14 +105,14 @@ export default function FiltersDrawer() {
               </div>
             </section>
             <section className="flex justify-end">
-                <button className="bg-primary text-white rounded px-8 py-2 text-sm">Search</button>
+                <button className="bg-gradient-to-r from-primary to-secondary text-white shadow-2xl rounded-3xl px-8 py-3 text-sm">Search</button>
             </section>
           </div>
         </form>
       </Sidebar>
       <button
         onClick={() => setVisible(true)}
-        className="border border-primary rounded text-xs px-3 py-2 flex items-center gap-2"
+        className="bg-gradient-to-r from-primary to-secondary rounded-3xl shadow-2xl text-white text-xs px-4 py-3 flex items-center gap-2"
       >
         <LuFilter />
         Add Filters

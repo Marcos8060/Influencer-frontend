@@ -88,12 +88,12 @@ const AllInfluencers = () => {
         <>
           <section className="filterResult w-full mt-2 ">
             <div className="min-w-[800px] h-[65vh] ">
-              <div className="flex items-center justify-between w-full bg-background text-sm font-semibold text-color p-2 border border-input rounded-t-lg">
-                <div className="text-left w-1/6">Full Name</div>
+              <div className="flex items-center justify-between w-full bg-gradient-to-r from-background text-xs text-color uppercase px-2 py-3 border border-input rounded-t-lg">
+                <div className="text-center w-1/6">Full Name</div>
                 <div className="text-center w-1/6">Country</div>
                 <div className="text-center w-1/6">City</div>
                 <div className="text-center w-1/6">Race</div>
-                <div className="text-center w-1/6">Race</div>
+                <div className="text-center w-1/6">Tags</div>
                 <div className="text-center w-1/6">Actions</div>
               </div>
               {rows.map((row, rowIndex) => (
@@ -124,7 +124,7 @@ const AllInfluencers = () => {
                             alt=""
                           />
                         )}
-                        <small className="font-bold">{data?.fullName}</small>
+                        <small className="font-semibold text-color">{data?.fullName}</small>
                       </div>
                       <div className="text-center w-1/6">
                         <small className="font-light">{data?.country}</small>
