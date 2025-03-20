@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { IoChevronForward } from "react-icons/io5";
-import { menu } from "@/assets/menu";
+import { influencerMenu } from "@/assets/menu";
 
 const MenuChildren = ({ collapse }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -16,7 +16,7 @@ const MenuChildren = ({ collapse }) => {
 
   return (
     <>
-      {menu.map((item, index) => {
+      {influencerMenu.map((item, index) => {
         const isOpen = openIndex === index;
         const icon = isOpen ? <IoChevronDownOutline /> : <IoChevronForward />;
 
@@ -28,16 +28,16 @@ const MenuChildren = ({ collapse }) => {
                   href={`${item.path}`}
                   className={`flex items-center ${collapse ? 'justify-center' : ''} gap-4 ${
                     currentPath === item.path
-                      ? "bg-primary rounded-3xl px-3 py-2 text-background"
-                      : "text-background"
+                      ? "bg-gradient-to-r from-primary to-secondary rounded-3xl px-3 py-3 text-background"
+                      : "text-color"
                   }`}
                 >
                   <div className={`${collapse ? '' : ''}`}>
-                    <p className={`${collapse ? "text-2xl" : "text-xl"}`}>
+                    <p className={`${collapse ? "" : ""}`}>
                       {item.icon}
                     </p>
                   </div>
-                  {!collapse && <p className="font-light">{item.label}</p>}
+                  {!collapse && <p className="">{item.label}</p>}
                 </Link>
               </section>
             ) : (
