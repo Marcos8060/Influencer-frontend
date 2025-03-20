@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import FiltersDrawer from "./filters-drawer";
+import { filterInfluencer } from "@/redux/services/influencer/filter";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -18,20 +19,21 @@ const chunkArray = (array, size) => {
   );
 };
 const AllInfluencers = () => {
-  const { influencers } = useSelector((store) => store.filterResults);
+  const { influencers,filterResults } = useSelector((store) => store.filterResults);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const totalPages = Math.ceil(influencers?.length / itemsPerPage);
+  const displayedInfluencers = filterResults.length > 0 ? filterResults : influencers
+  const totalPages = Math.ceil(displayedInfluencers?.length / itemsPerPage);
   const dispatch = useDispatch();
   const auth = useAuth();
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData =
-    Array.isArray(influencers) &&
-    influencers.slice(startIndex, startIndex + itemsPerPage);
+    Array.isArray(displayedInfluencers) &&
+    displayedInfluencers.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
 
   const handleCheckboxChange = (influencer) => {
@@ -60,6 +62,10 @@ const AllInfluencers = () => {
         });
     }
   }, [auth, dispatch, influencers.length]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  },[filterResults])
 
   return (
     <>
