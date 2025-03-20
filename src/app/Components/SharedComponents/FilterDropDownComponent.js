@@ -7,7 +7,7 @@ export default function FilterDropdown({
   value,
   onChange,
   placeholder = "Select an option",
-  className = "",
+  className = "w-full",
 }) {
   return (
     <div className="card flex justify-content-center">
@@ -19,7 +19,7 @@ export default function FilterDropdown({
         filter
         className={`w-full border border-input rounded-md ${className}`}
         pt={{
-          filterInput: { className: "border border-input rounded-md p-1" },
+          filterInput: { className: "border border-input rounded-md p-1 w-full" },
         }}
       />
     </div>

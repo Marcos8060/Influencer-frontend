@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,Suspense } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
+import FiltersDrawer from "./filters-drawer";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -17,28 +18,29 @@ const chunkArray = (array, size) => {
   );
 };
 const AllInfluencers = () => {
-  const { influencers } = useSelector((store) => store.filterResults);
+  const { influencers,filterResults } = useSelector((store) => store.filterResults);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const totalPages = Math.ceil(influencers?.length / itemsPerPage);
+  const displayedInfluencers = filterResults.length > 0 ? filterResults : influencers
+  const totalPages = Math.ceil(displayedInfluencers?.length / itemsPerPage);
   const dispatch = useDispatch();
   const auth = useAuth();
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData =
-    Array.isArray(influencers) &&
-    influencers.slice(startIndex, startIndex + itemsPerPage);
+    Array.isArray(displayedInfluencers) &&
+    displayedInfluencers.slice(startIndex, startIndex + itemsPerPage);
   const rows = chunkArray(currentData, 1);
 
   const handleCheckboxChange = (influencer) => {
     setSelectedInfluencers((prevSelected) => {
       const isSelected = prevSelected.some((item) => item.id === influencer.id);
       return isSelected
-        ? prevSelected.filter((item) => item.id !== influencer.id) // Remove if already selected
-        : [...prevSelected, influencer]; // Add if not selected
+        ? prevSelected.filter((item) => item.id !== influencer.id)
+        : [...prevSelected, influencer]; 
     });
   };
 
@@ -58,15 +60,28 @@ const AllInfluencers = () => {
           setLoading(false);
         });
     }
-  }, [auth, dispatch,influencers.length]);
+  }, [auth, dispatch, influencers.length]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  },[filterResults])
 
   return (
     <>
-      {Array.isArray(selectedInfluencers) && selectedInfluencers.length > 0 && (
-        <div className=" mb-2">
-          <AddToBucketListModal data={selectedInfluencers} />
+      <section className="flex items-center justify-between mt-4">
+        <div>
+          {Array.isArray(selectedInfluencers) &&
+            selectedInfluencers.length > 0 && (
+              <div className="">
+                <AddToBucketListModal data={selectedInfluencers} />
+              </div>
+            )}
         </div>
-      )}
+        <Suspense fallback={<div>Loading filters...</div>}>
+          <FiltersDrawer />
+        </Suspense>
+      </section>
+
       {loading ? (
         <Skeleton
           baseColor="#E6E7EB"
@@ -77,13 +92,13 @@ const AllInfluencers = () => {
       ) : (
         <>
           <section className="filterResult w-full mt-2 ">
-            <div className="min-w-[800px] h-[70vh] ">
-              <div className="flex items-center justify-between w-full bg-background text-sm font-semibold text-color p-2 border border-input rounded-t-lg">
-                <div className="text-left w-1/6">Full Name</div>
+            <div className="min-w-[800px] h-[65vh] ">
+              <div className="flex items-center justify-between w-full bg-gradient-to-r from-background text-xs text-color uppercase px-2 py-3 border border-input rounded-t-lg">
+                <div className="text-center w-1/6">Full Name</div>
                 <div className="text-center w-1/6">Country</div>
                 <div className="text-center w-1/6">City</div>
                 <div className="text-center w-1/6">Race</div>
-                <div className="text-center w-1/6">Race</div>
+                <div className="text-center w-1/6">Tags</div>
                 <div className="text-center w-1/6">Actions</div>
               </div>
               {rows.map((row, rowIndex) => (
@@ -114,7 +129,7 @@ const AllInfluencers = () => {
                             alt=""
                           />
                         )}
-                        <small className="font-bold">{data?.fullName}</small>
+                        <small className="font-semibold text-color">{data?.fullName}</small>
                       </div>
                       <div className="text-center w-1/6">
                         <small className="font-light">{data?.country}</small>
@@ -131,12 +146,13 @@ const AllInfluencers = () => {
                       </div>
                       <div className="text-center w-1/6">
                         <small className="font-light">
-                          {Array.isArray(data.tags) && data.tags.map((item, index) => (
-                            <small key={index}>{item}</small>
-                          ))}
+                          {Array.isArray(data.tags) &&
+                            data.tags.map((item, index) => (
+                              <small key={index}>{item}</small>
+                            ))}
                         </small>
                       </div>
-                      
+
                       <div className="text-center w-1/6">
                         <AddToBucketListModal {...{ data }} />
                       </div>

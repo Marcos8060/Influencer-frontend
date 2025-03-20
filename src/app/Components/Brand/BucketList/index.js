@@ -52,7 +52,7 @@ const BucketList = () => {
     <>
       <section className="flex items-center justify-end my-4">
         <div className="flex items-center gap-4">
-          <button className="border border-primary text-primary rounded text-xs px-4 py-2">
+          <button className="border border-primary text-primary rounded-3xl text-xs px-4 py-3">
             Add to Campaign
           </button>
           <BucketListDialog />
@@ -69,8 +69,8 @@ const BucketList = () => {
         <div>
           <section className="filterResult w-full h-[70vh]">
             {/* Table Header */}
-            <div className="min-w-[800px] flex items-center justify-between bg-background text-sm font-semibold text-color p-3 border border-input rounded-t-lg">
-              <div className="text-left w-1/5">Bucket Name</div>
+            <div className="min-w-[800px] flex items-center justify-between bg-background uppercase text-xs text-color p-3 border border-input rounded-t-lg">
+              <div className="text-center w-1/5">Bucket Name</div>
               <div className="text-center w-1/5">Description</div>
               <div className="text-center w-1/5">No. Of Influencers</div>
               <div className="text-center w-1/5">Created At</div>

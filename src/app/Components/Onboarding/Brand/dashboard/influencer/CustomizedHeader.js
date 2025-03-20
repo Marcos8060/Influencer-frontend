@@ -1,11 +1,12 @@
 "use client";
 import React, { useContext } from "react";
 import { BsChevronDown } from "react-icons/bs";
-// import Menu from "@mui/material/Menu";
-// import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { authContext } from "@/assets/context/use-context";
+import Link from "next/link";
 
-const CustomizedHeader = () => {
+const InfluencerCustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { logoutUser, user } = useContext(authContext);
 
@@ -22,14 +23,14 @@ const CustomizedHeader = () => {
   return (
     <section className="h-[10vh] py-6 px-6 flex items-center justify-between">
       <div>
-        <h1 className="font-bold text-2xl">Welcome {user?.firstName}</h1>
+        <h1 className="font-bold text-2xl text-color">Welcome {user?.firstName}</h1>
       </div>
       <div>
         <div className="flex items-center gap-2">
           <span className=" text-sm">{user?.firstName}</span>
           <BsChevronDown onClick={handleClick} className=" cursor-pointer" />
         </div>
-        {/* <Menu
+        <Menu
           id="basic-menu"
           anchorEl={anchorEl}
           open={open}
@@ -47,15 +48,15 @@ const CustomizedHeader = () => {
           }}
         >
           <MenuItem>
-            <Link className="text-sm" href="/profile">Profile</Link>
+            <Link className="text-sm" href="/onboarding/influencer/profile">Profile</Link>
           </MenuItem>
           <MenuItem onClick={logoutUser}>
             <p className="text-sm">Logout</p>
           </MenuItem>
-        </Menu> */}
+        </Menu>
       </div>
     </section>
   );
 };
 
-export default CustomizedHeader;
+export default InfluencerCustomizedHeader;

@@ -66,7 +66,7 @@ export default function AddToBucketListModal({ data }) {
   return (
     <React.Fragment>
       <button
-        className={`${Array.isArray(data) && data.length > 0 ? 'bg-primary text-white text-xs px-3 py-2 mt-2' : 'border border-primary text-xs px-3 py-2 rounded'} `}
+        className={`${Array.isArray(data) && data.length > 0 ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-3xl text-xs px-3 py-3' : 'border border-secondary text-xs px-3 py-2 rounded-3xl'} `}
         icon="pi pi-external-link"
         onClick={handleClickOpen}
       >

@@ -7,13 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#14002A",
-        secondary: "#00FFDC",
+        primary: "#091ad9",
+        secondary: "#5373d4",
         white: "#FFFFFF",
-        background: "#EEEEFD",
+        background: "#f5f7f7",
         gray: '#404B52',
         link: '#0055CC',
-        color: '#3F3D56',
+        color: '#0a2c50',
         yellow: '#FFC250',
         input: '#D1D5DB',
         red: '#FF0000',

@@ -32,6 +32,7 @@ const FilterInfluencer = () => {
     "Native Hawaiian / Pacific Islander",
     "White",
   ];
+  
 
   const handleFindInfluencers = async (e) => {
     e.preventDefault();
