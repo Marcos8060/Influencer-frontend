@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+'use client'
+import React, { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { LuFilter } from "react-icons/lu";
 import InputComponent from "../../SharedComponents/InputComponent";

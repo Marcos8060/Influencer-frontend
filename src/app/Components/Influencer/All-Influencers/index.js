@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,Suspense } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import FiltersDrawer from "./filters-drawer";
-import { filterInfluencer } from "@/redux/services/influencer/filter";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -78,9 +77,9 @@ const AllInfluencers = () => {
               </div>
             )}
         </div>
-        <div className="">
+        <Suspense fallback={<div>Loading filters...</div>}>
           <FiltersDrawer />
-        </div>
+        </Suspense>
       </section>
 
       {loading ? (
