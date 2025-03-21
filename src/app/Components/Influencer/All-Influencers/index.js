@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect,Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { HiArrowLongLeft } from "react-icons/hi2";
 import { HiArrowLongRight } from "react-icons/hi2";
 import { FaUserCircle } from "react-icons/fa";
@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import FiltersDrawer from "./filters-drawer";
+import { TiEye } from "react-icons/ti";
+import { useRouter } from "next/navigation";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -18,12 +20,16 @@ const chunkArray = (array, size) => {
   );
 };
 const AllInfluencers = () => {
-  const { influencers,filterResults } = useSelector((store) => store.filterResults);
+  const { influencers, filterResults } = useSelector(
+    (store) => store.filterResults
+  );
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
   const itemsPerPage = 8;
-  const displayedInfluencers = filterResults.length > 0 ? filterResults : influencers
+  const displayedInfluencers =
+    filterResults.length > 0 ? filterResults : influencers;
   const totalPages = Math.ceil(displayedInfluencers?.length / itemsPerPage);
   const dispatch = useDispatch();
   const auth = useAuth();
@@ -40,7 +46,7 @@ const AllInfluencers = () => {
       const isSelected = prevSelected.some((item) => item.id === influencer.id);
       return isSelected
         ? prevSelected.filter((item) => item.id !== influencer.id)
-        : [...prevSelected, influencer]; 
+        : [...prevSelected, influencer];
     });
   };
 
@@ -64,7 +70,12 @@ const AllInfluencers = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  },[filterResults])
+  }, [filterResults]);
+
+  const handleViewProfile = (data) => {
+    localStorage.setItem("influencerData", JSON.stringify(data));
+    router.push(`/brand/influencer-discovery/influencerProfile/${data.userId}`);
+  };
 
   return (
     <>
@@ -98,7 +109,7 @@ const AllInfluencers = () => {
                 <div className="text-center w-1/6">Country</div>
                 <div className="text-center w-1/6">City</div>
                 <div className="text-center w-1/6">Race</div>
-                <div className="text-center w-1/6">Tags</div>
+                <div className="text-center w-1/6">View Profile</div>
                 <div className="text-center w-1/6">Actions</div>
               </div>
               {rows.map((row, rowIndex) => (
@@ -129,7 +140,9 @@ const AllInfluencers = () => {
                             alt=""
                           />
                         )}
-                        <small className="font-semibold text-color">{data?.fullName}</small>
+                        <small className="font-semibold text-color">
+                          {data?.fullName}
+                        </small>
                       </div>
                       <div className="text-center w-1/6">
                         <small className="font-light">{data?.country}</small>
@@ -138,21 +151,15 @@ const AllInfluencers = () => {
                         <small className="font-light">{data.city}</small>
                       </div>
                       <div className="text-center w-1/6">
-                        <small className="font-light">
-                          {data.ethnicBackground.map((item, index) => (
-                            <small key={index}>{item}</small>
-                          ))}
-                        </small>
+                        {data.ethnicBackground.map((item, index) => (
+                          <small className="font-light" key={index}>
+                            {item}
+                          </small>
+                        ))}
                       </div>
-                      <div className="text-center w-1/6">
-                        <small className="font-light">
-                          {Array.isArray(data.tags) &&
-                            data.tags.map((item, index) => (
-                              <small key={index}>{item}</small>
-                            ))}
-                        </small>
+                      <div className="flex items-center justify-center w-1/6">
+                        <TiEye onClick={() => handleViewProfile(data)} className="text-xl text-color cursor-pointer" />
                       </div>
-
                       <div className="text-center w-1/6">
                         <AddToBucketListModal {...{ data }} />
                       </div>
