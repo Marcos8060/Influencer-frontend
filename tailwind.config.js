@@ -18,6 +18,7 @@ module.exports = {
         input: '#D1D5DB',
         red: '#FF0000',
         green: '#108833',
+        muted: '#8798ad'
       },
       fontWeight: {
         hairline: '100',

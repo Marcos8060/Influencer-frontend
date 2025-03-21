@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { LuFilter } from "react-icons/lu";
@@ -24,17 +24,17 @@ export default function FiltersDrawer() {
     country: "",
     city: "",
     race: [],
-    followersFrom: "",
-    followersTo: "",
+    minimumNumberOfFollowers: "",
+    maximumNumberOfFollowers: "",
     niche: [],
-    engagementRateFrom: "",
-    engagementRateTo: "",
+    minimumEngagementRate: "",
+    maximumEngagementRate: "",
     category: "",
-    ageFrom: "",
-    ageTo: "",
+    minimumAge: "",
+    maximumAge: "",
     gender: "",
     onlyVerified: false,
-    platformVerified: false,
+    isPlatformVerified: false,
   });
 
   const genders = ["Male", "Female", "Other"];
@@ -62,11 +62,11 @@ export default function FiltersDrawer() {
 
     const isFiltersEmpty = Object.values(filters).every(
       (value) =>
-        value === "" || 
-        (Array.isArray(value) && value.length === 0) || 
+        value === "" ||
+        (Array.isArray(value) && value.length === 0) ||
         value === false
     );
-    
+
     if (isFiltersEmpty) {
       toast.error("Please select at least one filter.");
       return;
@@ -110,19 +110,19 @@ export default function FiltersDrawer() {
       country: "",
       city: "",
       race: [],
-      followersFrom: "",
-      followersTo: "",
+      minimumNumberOfFollowers: "",
+      maximumNumberOfFollowers: "",
       niche: [],
-      engagementRateFrom: "",
-      engagementRateTo: "",
+      minimumEngagementRate: "",
+      maximumEngagementRate: "",
       category: "",
-      ageFrom: "",
-      ageTo: "",
+      minimumAge: "",
+      maximumAge: "",
       gender: "",
       onlyVerified: false,
-      platformVerified: false,
+      isPlatformVerified: false,
     });
-  
+
     // Reset URL by removing all filters
     router.push("?", { scroll: false });
   };
@@ -185,18 +185,18 @@ export default function FiltersDrawer() {
                   type="number"
                   className="w-full"
                   placeholder="From"
-                  value={filters.followersFrom}
+                  value={filters.minimumNumberOfFollowers}
                   onChange={(e) =>
-                    handleFilterChange("followersFrom", e.target.value)
+                    handleFilterChange("minimumNumberOfFollowers", e.target.value)
                   }
                 />
                 <InputComponent
                   type="number"
                   className="w-full"
                   placeholder="To"
-                  value={filters.followersTo}
+                  value={filters.maximumNumberOfFollowers}
                   onChange={(e) =>
-                    handleFilterChange("followersTo", e.target.value)
+                    handleFilterChange("maximumNumberOfFollowers", e.target.value)
                   }
                 />
               </div>
@@ -228,18 +228,18 @@ export default function FiltersDrawer() {
                   type="number"
                   className="w-full"
                   placeholder="From"
-                  value={filters.engagementRateFrom}
+                  value={filters.minimumEngagementRate}
                   onChange={(e) =>
-                    handleFilterChange("engagementRateFrom", e.target.value)
+                    handleFilterChange("minimumEngagementRate", e.target.value)
                   }
                 />
                 <InputComponent
                   type="number"
                   className="w-full"
                   placeholder="To"
-                  value={filters.engagementRateTo}
+                  value={filters.maximumEngagementRate}
                   onChange={(e) =>
-                    handleFilterChange("engagementRateTo", e.target.value)
+                    handleFilterChange("maximumEngagementRate", e.target.value)
                   }
                 />
               </div>
@@ -271,17 +271,17 @@ export default function FiltersDrawer() {
                   type="number"
                   className="w-full"
                   placeholder="From"
-                  value={filters.ageFrom}
+                  value={filters.minimumAge}
                   onChange={(e) =>
-                    handleFilterChange("ageFrom", e.target.value)
+                    handleFilterChange("minimumAge", e.target.value)
                   }
                 />
                 <InputComponent
                   type="number"
                   className="w-full"
                   placeholder="To"
-                  value={filters.ageTo}
-                  onChange={(e) => handleFilterChange("ageTo", e.target.value)}
+                  value={filters.maximumAge}
+                  onChange={(e) => handleFilterChange("maximumAge", e.target.value)}
                 />
               </div>
             </section>
@@ -323,9 +323,9 @@ export default function FiltersDrawer() {
                   <input
                     type="checkbox"
                     className="scale-150 cursor-pointer"
-                    checked={filters.platformVerified}
+                    checked={filters.isPlatformVerified}
                     onChange={(e) =>
-                      handleFilterChange("platformVerified", e.target.checked)
+                      handleFilterChange("isPlatformVerified", e.target.checked)
                     }
                   />{" "}
                   Platform Verified
@@ -335,8 +335,18 @@ export default function FiltersDrawer() {
 
             <section className="flex justify-end">
               <div className="flex items-center gap-4">
-              <button type="button" className="px-4 py-3 text-sm border border-primary rounded-3xl" onClick={handleClearFilters} >Clear Filters</button>
-              <ButtonComponent disabled={loading} label={loading ? 'Processing...' : 'Search'} onClick={handleFilterInfluencers} />
+                <button
+                  type="button"
+                  className="px-4 py-3 text-sm border border-primary rounded-3xl"
+                  onClick={handleClearFilters}
+                >
+                  Clear Filters
+                </button>
+                <ButtonComponent
+                  disabled={loading}
+                  label={loading ? "Processing..." : "Search"}
+                  onClick={handleFilterInfluencers}
+                />
               </div>
             </section>
           </div>

@@ -13,10 +13,17 @@ export const API_URL = {
   ONBOARD_INFLUENCER: "http://147.78.141.95:8075/api/influencers/onboarding/post/",
   FILTER_INFLUENCER: "http://147.78.141.95:8075/api/search/influencers/",
   MOVE_TO_BUCKET: "http://147.78.141.95:8075/api/brands/bucketList/influencers/move/",
+  FETCH_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/get/",
+  FETCH_INFLUENCER_PREFERENCES: "http://147.78.141.95:8075/api/influencers/preferences/get/",
+  FETCH_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/get/",
+  EDIT_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/update/",
+  EDIT_INFLUENCER_PREFENCES: "http://147.78.141.95:8075/api/influencers/preferences/update/",
+  EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/update/",
+  EDIT_PROFILE_PHOTO: "http://147.78.141.95:8075/api/auth/users/photos/add/",
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
-    FETCH_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/",
+    FETCH_BUCKETLIST: "http://147.78.141.95:8075/api/search/bucketList/",
     DELETE_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/delete/",
     EDIT_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/update/",
 };
@@ -34,10 +41,17 @@ export const APP_API_URL = {
 
 
     /***************** INFLUENCER APIS **********************/
-    ONBOARD_INFLUENCER: '/api/onboarding/influencer',
-    FILTER_INFLUENCER: '/api/influencer/filter-influencer',
-    FETCH_INFLUENCERS: '/api/influencer/fetch-influencers',
-    MOVE_TO_BUCKET: '/api/influencer/move-to-bucket',
+  ONBOARD_INFLUENCER: '/api/onboarding/influencer',
+  FILTER_INFLUENCER: '/api/influencer/filter-influencer',
+  FETCH_INFLUENCERS: '/api/influencer/fetch-influencers',
+  MOVE_TO_BUCKET: '/api/influencer/move-to-bucket',
+  FETCH_INFLUENCER_DETAILS: "/api/influencer/profile/influencer-details",
+  FETCH_INFLUENCER_PREFERENCES: "/api/influencer/profile/preferences",
+  FETCH_INFLUENCER_ONBOARDING: "/api/influencer/profile/onboarding-details",
+  EDIT_INFLUENCER_DETAILS: "/api/influencer/profile/edit-influencer-details",
+  EDIT_INFLUENCER_PREFERENCES: "/api/influencer/profile/edit-influencer-preferences",
+  EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
+  EDIT_PROFILE_PHOTO: "/api/influencer/profile/edit-profile-photo",
 
 
   /***************** BUCKET LIST APIs **********************/

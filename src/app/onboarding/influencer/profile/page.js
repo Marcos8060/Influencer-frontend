@@ -1,3 +1,4 @@
+'use client'
 import LeftBar from "@/app/Components/Influencer/profile/LeftBar";
 import RightBar from "@/app/Components/Influencer/profile/RightBar";
 import React from "react";

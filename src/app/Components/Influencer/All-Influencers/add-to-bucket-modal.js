@@ -5,10 +5,11 @@ import DialogContent from "@mui/material/DialogContent";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import { moveToBucket } from "@/redux/services/influencer/bucket";
 import Slide from "@mui/material/Slide";
+import { fetchAllBuckets } from "@/redux/features/bucket-list";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -16,6 +17,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function AddToBucketListModal({ data }) {
   const { bucketList } = useSelector((store) => store.bucket);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const auth = useAuth();
 
@@ -43,8 +45,8 @@ export default function AddToBucketListModal({ data }) {
     try {
 
       const influencerIds = Array.isArray(data)
-        ? data.map((influencer) => String(influencer.userId)) // ✅ Handle multiple influencers
-        : [String(data.userId)]; // ✅ Handle single influencer
+        ? data.map((influencer) => String(influencer.influencerId)) // ✅ Handle multiple influencers
+        : [String(data.influencerId)]; // ✅ Handle single influencer
 
       const payload = {
         toBrandBucketList: selectedBucket.id,
@@ -54,6 +56,7 @@ export default function AddToBucketListModal({ data }) {
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
         toast.success("Move to bucket successfully");
+        dispatch(fetchAllBuckets(auth));
         setOpen(false);
       }
     } catch (error) {

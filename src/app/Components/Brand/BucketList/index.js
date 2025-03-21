@@ -95,7 +95,7 @@ const BucketList = () => {
                         </small>
                       </div>
                       <div className="text-center w-1/5">
-                        <small className="font-light">50</small>
+                        <small className="font-light">{data.influencers.length}</small>
                       </div>
                       <div className="text-center w-1/5">
                         <small className="font-light">
