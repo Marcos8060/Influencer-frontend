@@ -2,22 +2,21 @@
 import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import Slide from "@mui/material/Slide";
-import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
-import { MdEdit } from "react-icons/md";
 import { editInfluencerOnboarding } from "@/redux/services/influencer/profile";
 import { fetchAllInfluencerOnboarding } from "@/redux/features/influencer/profile";
+import { FaCamera } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="left" ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
-export default function EditBioModal({ influencerOnboarding }) {
+export default function EditProfilePhotoModal({ influencerDetails }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    bio: influencerOnboarding?.bio || "",
+    bio: influencerDetails?.profilePhotoUrl || "",
   });
 
   const auth = useAuth();
@@ -67,47 +66,51 @@ export default function EditBioModal({ influencerOnboarding }) {
   };
 
   useEffect(() => {
-    if (influencerOnboarding) {
+    if (influencerDetails) {
       setFormData({
-        bio: influencerOnboarding.bio || "",
+        bio: influencerDetails.profilePhotoUrl || "",
       });
     }
-  }, [influencerOnboarding]);
+  }, [influencerDetails]);
 
   return (
     <React.Fragment>
-      <div
+      <img
         onClick={handleClickOpen}
-        className="border border-secondary rounded-3xl px-3 py-1 flex items-center gap-2 cursor-pointer"
-      >
-        <MdEdit className="text-secondary" />
-        <small className="text-xs font-bold text-secondary">Edit</small>
-      </div>
+        className="w-28 h-28 rounded-full object-cover cursor-pointer"
+        src="https://images.pexels.com/photos/3779676/pexels-photo-3779676.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        alt=""
+      />
       <Dialog
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        maxWidth="xs"
+        maxWidth="sm"
         fullWidth
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
         sx={{ zIndex: 1000 }}
       >
         <DialogContent>
-          <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-            <TextAreaComponent
-              placeholder="bio"
-              type="text"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
+          <h2 className="text-color font-semibold">Profile Photo</h2>
+          <div className="flex items-center justify-center">
+            <img
+              onClick={handleClickOpen}
+              className="w-40 h-40 rounded-full object-cover cursor-pointer"
+              src="https://images.pexels.com/photos/3779676/pexels-photo-3779676.jpeg?auto=compress&cs=tinysrgb&w=1200"
+              alt=""
             />
-            <ButtonComponent
-              type="submit"
-              label={loading ? "Processing..." : "Edit Bio"}
-              disabled={loading}
-            />
-          </form>
+          </div>
+          <footer className="flex items-center justify-between border-t border-input my-2 pt-2">
+            <div>
+              <FaCamera className="text-secondary text-center text-xl" />
+              <p className="text-sm">Change Photo</p>
+            </div>
+            <div>
+              <MdDelete className="text-red text-center text-xl" />
+              <p className="text-sm">Delete</p>
+            </div>
+          </footer>
         </DialogContent>
       </Dialog>
     </React.Fragment>

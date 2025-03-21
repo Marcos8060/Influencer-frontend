@@ -17,6 +17,8 @@ export const API_URL = {
   FETCH_INFLUENCER_PREFERENCES: "http://147.78.141.95:8075/api/influencers/preferences/get/",
   FETCH_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/get/",
   EDIT_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/update/",
+  EDIT_INFLUENCER_PREFENCES: "http://147.78.141.95:8075/api/influencers/preferences/update/",
+  EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/update/",
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
@@ -46,6 +48,8 @@ export const APP_API_URL = {
   FETCH_INFLUENCER_PREFERENCES: "/api/influencer/profile/preferences",
   FETCH_INFLUENCER_ONBOARDING: "/api/influencer/profile/onboarding-details",
   EDIT_INFLUENCER_DETAILS: "/api/influencer/profile/edit-influencer-details",
+  EDIT_INFLUENCER_PREFERENCES: "/api/influencer/profile/edit-influencer-preferences",
+  EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
 
 
   /***************** BUCKET LIST APIs **********************/

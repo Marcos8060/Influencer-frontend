@@ -32,9 +32,9 @@ export const {
 } = profileSlice.actions;
 
 
-export const fetchAllInfluencerPreferences = (auth,payload) => async (dispatch) => {
+export const fetchAllInfluencerPreferences = (auth) => async (dispatch) => {
   try {
-    const data = await fetchInfluencerPreferences(auth,payload);
+    const data = await fetchInfluencerPreferences(auth);
     dispatch(setPreferences(data));
     return data;
   } catch (error) {

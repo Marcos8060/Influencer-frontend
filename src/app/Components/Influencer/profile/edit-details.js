@@ -60,7 +60,6 @@ export default function EditDetailsModal({ influencerDetails }) {
         email: "",
         phoneNumber: "",
       });
-      console.log("EDIT_RESPONSE ", response);
       if (response.status === 200) {
         toast.success("User details edited successfully");
         dispatch(fetchAllInfluencerDetails(auth));
@@ -89,7 +88,7 @@ export default function EditDetailsModal({ influencerDetails }) {
     <React.Fragment>
       <div
         onClick={handleClickOpen}
-        className="border border-secondary rounded-3xl px-3 py-2 flex items-center gap-2 cursor-pointer w-1/2 mx-auto mt-4"
+        className="border border-secondary rounded-3xl px-3 py-1 flex items-center gap-2 cursor-pointer"
       >
         <MdEdit className="text-secondary" />
         <small className="text-xs font-bold text-secondary">Edit</small>

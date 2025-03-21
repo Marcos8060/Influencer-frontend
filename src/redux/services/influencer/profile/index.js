@@ -45,6 +45,22 @@ export const fetchInfluencerPreferences = async (auth) => {
     }
 };
 
+export const editInfluencerPreferences = async (auth, formData) => {
+    const payload = {
+        ...formData,
+    }
+    try {
+        const response = await axios.patch(`${APP_API_URL.EDIT_INFLUENCER_PREFERENCES}`, payload,{
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+        });
+        return response;
+    } catch (error) {
+        return error.message;
+    }
+};
+
 export const fetchInfluencerOnboarding = async (auth) => {
     try {
         const response = await axios.get(`${APP_API_URL.FETCH_INFLUENCER_ONBOARDING}`,{
@@ -56,5 +72,21 @@ export const fetchInfluencerOnboarding = async (auth) => {
     } catch (error) {
         console.error("Error fetching influencers:", error);
         return error.response?.data || error.message;
+    }
+};
+
+export const editInfluencerOnboarding = async (auth, formData) => {
+    const payload = {
+        ...formData,
+    }
+    try {
+        const response = await axios.patch(`${APP_API_URL.EDIT_INFLUENCER_ONBOARDING}`, payload,{
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+        });
+        return response;
+    } catch (error) {
+        return error.message;
     }
 };
