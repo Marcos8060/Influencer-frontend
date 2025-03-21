@@ -90,3 +90,18 @@ export const editInfluencerOnboarding = async (auth, formData) => {
         return error.message;
     }
 };
+
+export const editProfilePhoto = async (auth, formData) => {
+    
+    try {
+        const response = await axios.post(`${APP_API_URL.EDIT_PROFILE_PHOTO}`, formData,{
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response;
+    } catch (error) {
+        return error.message;
+    }
+};

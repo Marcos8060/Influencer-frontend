@@ -19,6 +19,7 @@ export const API_URL = {
   EDIT_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/update/",
   EDIT_INFLUENCER_PREFENCES: "http://147.78.141.95:8075/api/influencers/preferences/update/",
   EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/update/",
+  EDIT_PROFILE_PHOTO: "http://147.78.141.95:8075/api/auth/users/photos/add/",
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
@@ -50,6 +51,7 @@ export const APP_API_URL = {
   EDIT_INFLUENCER_DETAILS: "/api/influencer/profile/edit-influencer-details",
   EDIT_INFLUENCER_PREFERENCES: "/api/influencer/profile/edit-influencer-preferences",
   EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
+  EDIT_PROFILE_PHOTO: "/api/influencer/profile/edit-profile-photo",
 
 
   /***************** BUCKET LIST APIs **********************/

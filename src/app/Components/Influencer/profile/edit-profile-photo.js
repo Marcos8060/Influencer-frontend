@@ -1,86 +1,94 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import Slide from "@mui/material/Slide";
-import { editInfluencerOnboarding } from "@/redux/services/influencer/profile";
-import { fetchAllInfluencerOnboarding } from "@/redux/features/influencer/profile";
+import { editProfilePhoto } from "@/redux/services/influencer/profile";
 import { FaCamera } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { FaRegCircleUser } from "react-icons/fa6";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
 export default function EditProfilePhotoModal({ influencerDetails }) {
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    bio: influencerDetails?.profilePhotoUrl || "",
-  });
-
   const auth = useAuth();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  // Initialize form data
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(
+    influencerDetails?.profilePhotoUrl || null
+  );
+
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file)); // Show preview
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!auth) {
-      toast.error("Authentication required.");
-      return;
+
+    if (!imageFile) {
+        toast.error("Please select an image first.");
+        return;
     }
 
-    setLoading(true);
+    const form_data = new FormData();
+    form_data.append("picture", imageFile, imageFile.name);
+
     try {
-      const updatedData = Object.fromEntries(
-        Object.entries(formData).map(([key, value]) => [
-          key,
-          value.length === 0 ? null : value,
-        ])
-      );
+        setLoading(true);
+        const res = await editProfilePhoto(auth, form_data);
+        setLoading(false);
 
-      const response = await editInfluencerOnboarding(auth, updatedData);
-      console.log("EDIT_RESPONSE ", response);
-
-      if (response.status === 200) {
-        toast.success("Bio edited successfully");
-        dispatch(fetchAllInfluencerOnboarding(auth));
-      }
-      setOpen(false);
+        if (res.status === 200) {
+            toast.success("Profile photo updated successfully");
+            setPreviewImage(URL.createObjectURL(imageFile));
+            setOpen(false);
+        } else {
+            toast.error("Failed to upload photo");
+        }
     } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
+        setLoading(false);
+        toast.error(error.message);
     }
-  };
+};
+
 
   useEffect(() => {
-    if (influencerDetails) {
-      setFormData({
-        bio: influencerDetails.profilePhotoUrl || "",
-      });
+    if (influencerDetails?.profilePhotoUrl) {
+      setPreviewImage(influencerDetails.profilePhotoUrl);
     }
   }, [influencerDetails]);
 
   return (
     <React.Fragment>
-      <img
+      <div
         onClick={handleClickOpen}
-        className="w-28 h-28 rounded-full object-cover cursor-pointer"
-        src="https://images.pexels.com/photos/3779676/pexels-photo-3779676.jpeg?auto=compress&cs=tinysrgb&w=1200"
-        alt=""
-      />
+        className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
+      >
+        {previewImage ? (
+          <img className="w-full h-full object-cover" src={previewImage} alt="Profile" />
+        ) : (
+          <FaRegCircleUser className="text-gray-500 text-6xl" />
+        )}
+      </div>
+
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -92,25 +100,44 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
         sx={{ zIndex: 1000 }}
       >
         <DialogContent>
-          <h2 className="text-color font-semibold">Profile Photo</h2>
-          <div className="flex items-center justify-center">
-            <img
-              onClick={handleClickOpen}
-              className="w-40 h-40 rounded-full object-cover cursor-pointer"
-              src="https://images.pexels.com/photos/3779676/pexels-photo-3779676.jpeg?auto=compress&cs=tinysrgb&w=1200"
-              alt=""
-            />
+          <div>
+            <h2 className="text-color text-center font-semibold">
+              {influencerDetails?.firstName}, help brands recognize you
+            </h2>
+          </div>
+          <div className="flex items-center justify-center my-4">
+            <div className="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+              {previewImage ? (
+                <img className="w-full h-full object-cover" src={previewImage} alt="Profile Preview" />
+              ) : (
+                <FaRegCircleUser className="text-gray-500 text-8xl" />
+              )}
+            </div>
           </div>
           <footer className="flex items-center justify-between border-t border-input my-2 pt-2">
-            <div>
-              <FaCamera className="text-secondary text-center text-xl" />
-              <p className="text-sm">Change Photo</p>
+            <div className="space-y-1 cursor-pointer" onClick={triggerFileInput}>
+              <FaCamera className="text-secondary ml-8 text-xl" />
+              <p className="text-xs">Upload Photo</p>
             </div>
             <div>
-              <MdDelete className="text-red text-center text-xl" />
-              <p className="text-sm">Delete</p>
+              {imageFile && (
+                <button
+                  onClick={handleSubmit}
+                  className="bg-secondary text-white px-4 py-2 rounded text-xs"
+                  disabled={loading}
+                >
+                  {loading ? "Uploading..." : "Save Photo"}
+                </button>
+              )}
             </div>
           </footer>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
         </DialogContent>
       </Dialog>
     </React.Fragment>
