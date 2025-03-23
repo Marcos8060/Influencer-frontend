@@ -102,15 +102,15 @@ const AllInfluencers = () => {
         />
       ) : (
         <>
-          <section className="filterResult w-full mt-2 ">
-            <div className="min-w-[800px] h-[65vh] ">
+          <section className="filterResult w-full mt-2 overflow-x-auto">
+            <div className="min-w-[1000px] h-[65vh]">
               <div className="flex items-center justify-between w-full bg-gradient-to-r from-background text-xs text-color uppercase px-2 py-3 border border-input rounded-t-lg">
-                <div className="text-center w-1/6">Full Name</div>
-                <div className="text-center w-1/6">Country</div>
-                <div className="text-center w-1/6">City</div>
-                <div className="text-center w-1/6">Race</div>
-                <div className="text-center w-1/6">View Profile</div>
-                <div className="text-center w-1/6">Actions</div>
+                <div className="text-center min-w-[150px]">Full Name</div>
+                <div className="text-center min-w-[150px]">Country</div>
+                <div className="text-center min-w-[150px]">City</div>
+                <div className="text-center min-w-[150px]">Race</div>
+                <div className="text-center min-w-[150px]">View Profile</div>
+                <div className="text-center min-w-[150px]">Actions</div>
               </div>
               {rows.map((row, rowIndex) => (
                 <div
@@ -122,7 +122,7 @@ const AllInfluencers = () => {
                       key={data.id}
                       className="flex items-center justify-between w-full text-color"
                     >
-                      <div className="flex items-center gap-3 w-1/6">
+                      <div className="flex items-center gap-3 min-w-[150px]">
                         <input
                           className="cursor-pointer scale-150"
                           type="checkbox"
@@ -131,12 +131,12 @@ const AllInfluencers = () => {
                           )}
                           onChange={() => handleCheckboxChange(data)}
                         />
-                        {!data.img ? (
-                          <FaUserCircle className="text-2xl" />
+                        {!data.profilePicture ? (
+                          <FaUserCircle className="w-12 h-12" />
                         ) : (
                           <img
-                            className="w-16 h-16 rounded-full object-cover"
-                            src={data.img}
+                            className="w-12 h-12 rounded-full object-cover"
+                            src={data.profilePicture}
                             alt=""
                           />
                         )}
@@ -144,23 +144,26 @@ const AllInfluencers = () => {
                           {data?.fullName}
                         </small>
                       </div>
-                      <div className="text-center w-1/6">
+                      <div className="flex items-center justify-center min-w-[150px]">
                         <small className="font-light">{data?.country}</small>
                       </div>
-                      <div className="text-center w-1/6">
+                      <div className="flex items-center justify-center min-w-[150px]">
                         <small className="font-light">{data.city}</small>
                       </div>
-                      <div className="text-center w-1/6">
+                      <div className="flex items-center justify-center min-w-[150px]">
                         {data.ethnicBackground.map((item, index) => (
                           <small className="font-light" key={index}>
                             {item}
                           </small>
                         ))}
                       </div>
-                      <div className="flex items-center justify-center w-1/6">
-                        <TiEye onClick={() => handleViewProfile(data)} className="text-xl text-color cursor-pointer" />
+                      <div className="flex items-center justify-center min-w-[150px]">
+                        <TiEye
+                          onClick={() => handleViewProfile(data)}
+                          className="text-xl text-color cursor-pointer"
+                        />
                       </div>
-                      <div className="text-center w-1/6">
+                      <div className="flex items-center justify-center min-w-[150px]">
                         <AddToBucketListModal {...{ data }} />
                       </div>
                     </section>
@@ -169,6 +172,7 @@ const AllInfluencers = () => {
               ))}
             </div>
           </section>
+
           <section className="flex gap-4 items-center justify-around my-8">
             <div className="flex items-center gap-2">
               <HiArrowLongLeft />

@@ -10,12 +10,14 @@ import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import { MdEdit } from "react-icons/md";
 import { editInfluencerOnboarding } from "@/redux/services/influencer/profile";
 import { fetchAllInfluencerOnboarding } from "@/redux/features/influencer/profile";
+import { useDispatch } from "react-redux";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />;
 });
 export default function EditBioModal({ influencerOnboarding }) {
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     bio: influencerOnboarding?.bio || "",
   });
@@ -52,7 +54,6 @@ export default function EditBioModal({ influencerOnboarding }) {
       );
 
       const response = await editInfluencerOnboarding(auth, updatedData);
-      console.log("EDIT_RESPONSE ", response);
 
       if (response.status === 200) {
         toast.success("Bio edited successfully");
