@@ -14,3 +14,21 @@ export const moveToBucket = async (auth,payload) => {
         return error.response?.data || error.message;
     }
 };
+
+export const fetchInfluencersInBucket = async (auth, id) => {
+    try {
+        const url = `${APP_API_URL.FETCH_INFLUENCERS_IN_BUCKET}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { bucket_list_id: id }, // ✅ Pass the ID as a query param
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
