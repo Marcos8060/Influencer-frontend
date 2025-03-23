@@ -119,7 +119,7 @@ const InfluencerRegister = () => {
         </form>
         <p className="text-xs mt-2">
           Already have an account?{" "}
-          <Link href="/auth/login/brand" className="text-link">
+          <Link href="/auth/login/influencer" className="text-link">
             Login here
           </Link>
         </p>
