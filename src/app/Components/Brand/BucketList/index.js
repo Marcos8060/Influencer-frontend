@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { HiArrowLongLeft } from "react-icons/hi2";
-import { HiArrowLongRight } from "react-icons/hi2";
+import { HiArrowLongLeft, HiArrowLongRight } from "react-icons/hi2";
 import BucketListDialog from "./bucket-list-dialog";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { useAuth } from "@/assets/hooks/use-auth";
@@ -10,12 +9,9 @@ import ConfirmDialog from "./confirmDialog";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import EditBucketListDialog from "./edit-bucket-list";
+import { TiEye } from "react-icons/ti";
+import Link from "next/link";
 
-const chunkArray = (array, size) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
-    array.slice(index * size, index * size + size)
-  );
-};
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -24,27 +20,17 @@ const BucketList = () => {
 
   const itemsPerPage = 8;
   const totalPages = Math.ceil(bucketList.length / itemsPerPage);
-
   const auth = useAuth();
 
-  //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentData =
     Array.isArray(bucketList) &&
     bucketList.slice(startIndex, startIndex + itemsPerPage);
-  const rows = chunkArray(currentData, 1);
 
   useEffect(() => {
     if (auth && bucketList.length === 0) {
       setLoading(true);
-      dispatch(fetchAllBuckets(auth))
-        .then(() => {})
-        .catch(() => {
-          setLoading(false);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      dispatch(fetchAllBuckets(auth)).finally(() => setLoading(false));
     }
   }, [auth, bucketList.length]);
 
@@ -58,6 +44,7 @@ const BucketList = () => {
           <BucketListDialog />
         </div>
       </section>
+
       {loading ? (
         <Skeleton
           baseColor="#E6E7EB"
@@ -66,57 +53,53 @@ const BucketList = () => {
           height={100}
         />
       ) : (
-        <div>
-          <section className="filterResult w-full h-[70vh]">
-            {/* Table Header */}
-            <div className="min-w-[800px] flex items-center justify-between bg-background uppercase text-xs text-color p-3 border border-input rounded-t-lg">
-              <div className="text-center w-1/5">Bucket Name</div>
-              <div className="text-center w-1/5">Description</div>
-              <div className="text-center w-1/5">No. Of Influencers</div>
-              <div className="text-center w-1/5">Created At</div>
-              <div className="text-center w-1/5">Action</div>
-            </div>
+        <div className="w-full overflow-x-auto h-[65vh]">
+          <table className="w-full min-w-[1000px] border border-input table-fixed">
+            <thead className="bg-background uppercase text-xs text-color border-b border-input">
+              <tr>
+                <th className="w-[150px] p-3">Bucket Name</th>
+                <th className="w-[200px] p-3">Description</th>
+                <th className="w-[150px] p-3">No. Of Influencers</th>
+                <th className="w-[150px] p-3">Created At</th>
+                <th className="w-[150px] p-3 text-center">View</th>
+                <th className="w-[200px] p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.map((data) => (
+                <tr key={data.id} className="border-b border-input text-center text-xs">
+                  <td className="p-3">{data?.name}</td>
+                  <td className="p-3 truncate">{data?.description}</td>
+                  <td className="p-3">{data.influencers.length}</td>
+                  <td className="p-3">
+                    {new Date(data.createdAt).toLocaleDateString()}
+                  </td>
 
-            {/* Table Body */}
-            <div className="min-w-[800px] border border-input border-t-0">
-              {rows.map((row, rowIndex) => (
-                <div key={rowIndex} className="border-b border-input">
-                  {row.map((data) => (
-                    <section
-                      key={data.id}
-                      className="flex items-center justify-between w-full text-color p-4"
-                    >
-                      <div className="text-left w-1/5">
-                        <small className="font-light">{data?.name}</small>
-                      </div>
-                      <div className="text-center w-1/5">
-                        <small className="font-light">
-                          {data?.description}
-                        </small>
-                      </div>
-                      <div className="text-center w-1/5">
-                        <small className="font-light">{data.influencers.length}</small>
-                      </div>
-                      <div className="text-center w-1/5">
-                        <small className="font-light">
-                          {new Date(data.createdAt).toLocaleDateString()}
-                        </small>
-                      </div>
-                      <div className="text-center w-1/5 flex justify-center gap-2">
-                        <EditBucketListDialog {...{ data }} />
-                        <ConfirmDialog {...{ data }} />
-                      </div>
-                    </section>
-                  ))}
-                </div>
+                  {/* ✅ FIXED: Center the eye icon correctly */}
+                  <td className="p-3">
+                    <Link href={`/brand/influencer-discovery/influencerBuckets/${data.id}`} className="flex justify-center">
+                      <TiEye className="text-xl text-color cursor-pointer" />
+                    </Link>
+                  </td>
+
+                  <td className="p-3 flex justify-center gap-2">
+                    <EditBucketListDialog {...{ data }} />
+                    <ConfirmDialog {...{ data }} />
+                  </td>
+                </tr>
               ))}
-            </div>
-          </section>
+            </tbody>
+          </table>
+
+          {/* Pagination */}
           <section className="flex gap-4 items-center justify-around my-8">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="flex items-center gap-2 text-xs"
+            >
               <HiArrowLongLeft />
-              <small className="text-xs">Prev {itemsPerPage}</small>
-            </div>
+              Prev {itemsPerPage}
+            </button>
             <div className="space-x-6 text-sm">
               {Array.from({ length: totalPages }, (_, index) => (
                 <button
@@ -132,10 +115,15 @@ const BucketList = () => {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-2">
-              <small className="text-xs">Next {itemsPerPage}</small>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              className="flex items-center gap-2 text-xs"
+            >
+              Next {itemsPerPage}
               <HiArrowLongRight />
-            </div>
+            </button>
           </section>
         </div>
       )}

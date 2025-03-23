@@ -102,102 +102,94 @@ const AllInfluencers = () => {
         />
       ) : (
         <>
-          <section className="filterResult w-full mt-2 overflow-x-auto">
-            <div className="min-w-[1000px] h-[65vh]">
-              <div className="flex items-center justify-between w-full bg-gradient-to-r from-background text-xs text-color uppercase px-2 py-3 border border-input rounded-t-lg">
-                <div className="text-center min-w-[150px]">Full Name</div>
-                <div className="text-center min-w-[150px]">Country</div>
-                <div className="text-center min-w-[150px]">City</div>
-                <div className="text-center min-w-[150px]">Race</div>
-                <div className="text-center min-w-[150px]">View Profile</div>
-                <div className="text-center min-w-[150px]">Actions</div>
-              </div>
-              {rows.map((row, rowIndex) => (
-                <div
-                  key={rowIndex}
-                  className="border-b border-r border-l border-input p-4"
-                >
-                  {row.map((data) => (
-                    <section
-                      key={data.id}
-                      className="flex items-center justify-between w-full text-color"
-                    >
-                      <div className="flex items-center gap-3 min-w-[150px]">
-                        <input
-                          className="cursor-pointer scale-150"
-                          type="checkbox"
-                          checked={selectedInfluencers.some(
-                            (item) => item.id === data.id
-                          )}
-                          onChange={() => handleCheckboxChange(data)}
-                        />
-                        {!data.profilePicture ? (
-                          <FaUserCircle className="w-12 h-12" />
-                        ) : (
-                          <img
-                            className="w-12 h-12 rounded-full object-cover"
-                            src={data.profilePicture}
-                            alt=""
-                          />
+          <div className="w-full overflow-x-auto h-[65vh] my-2">
+            <table className="w-full min-w-[1000px] border border-input table-fixed">
+              <thead className="bg-background uppercase text-xs text-color border-b border-input">
+                <tr>
+                  <th className="w-[150px] p-3">Full Name</th>
+                  <th className="w-[150px] p-3">Country</th>
+                  <th className="w-[150px] p-3">City</th>
+                  <th className="w-[150px] p-3">Race</th>
+                  <th className="w-[150px] p-3 text-center">View Profile</th>
+                  <th className="w-[150px] p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentData.map((data) => (
+                  <tr
+                    key={data.id}
+                    className="border-b border-input text-center text-xs"
+                  >
+                    <td className="p-3 flex items-center gap-3">
+                      <input
+                        className="cursor-pointer scale-150"
+                        type="checkbox"
+                        checked={selectedInfluencers.some(
+                          (item) => item.id === data.id
                         )}
-                        <small className="font-semibold text-color">
-                          {data?.fullName}
-                        </small>
-                      </div>
-                      <div className="flex items-center justify-center min-w-[150px]">
-                        <small className="font-light">{data?.country}</small>
-                      </div>
-                      <div className="flex items-center justify-center min-w-[150px]">
-                        <small className="font-light">{data.city}</small>
-                      </div>
-                      <div className="flex items-center justify-center min-w-[150px]">
-                        {data.ethnicBackground.map((item, index) => (
-                          <small className="font-light" key={index}>
-                            {item}
-                          </small>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-center min-w-[150px]">
+                        onChange={() => handleCheckboxChange(data)}
+                      />
+                      {!data.profilePicture ? (
+                        <FaUserCircle className="w-12 h-12" />
+                      ) : (
+                        <img
+                          className="w-12 h-12 rounded-full object-cover"
+                          src={data.profilePicture}
+                          alt=""
+                        />
+                      )}
+                      <p className="font-semibold text-color">
+                        {data?.fullName}
+                      </p>
+                    </td>
+                    <td className="p-3">{data?.country}</td>
+                    <td className="p-3">{data?.city}</td>
+                    <td className="p-3">{data.ethnicBackground.join(", ")}</td>
+
+                    {/* ✅ FIXED: Center the eye icon correctly */}
+                    <td className="p-3">
+                      <div className="flex justify-center">
                         <TiEye
                           onClick={() => handleViewProfile(data)}
                           className="text-xl text-color cursor-pointer"
                         />
                       </div>
-                      <div className="flex items-center justify-center min-w-[150px]">
-                        <AddToBucketListModal {...{ data }} />
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </section>
+                    </td>
 
-          <section className="flex gap-4 items-center justify-around my-8">
-            <div className="flex items-center gap-2">
-              <HiArrowLongLeft />
-              <small className="text-xs">Prev {itemsPerPage}</small>
-            </div>
-            <div className="space-x-6 text-sm">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={` ${
-                    currentPage === index + 1
-                      ? "font-bold text-primary border-b-2"
-                      : "font-thin text-color"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <small className="text-xs">Next {itemsPerPage}</small>
-              <HiArrowLongRight />
-            </div>
-          </section>
+                    <td className="p-3 flex justify-center">
+                      <AddToBucketListModal {...{ data }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* pagination */}
+            <section className="flex gap-4 items-center justify-around my-8">
+              <div className="flex items-center gap-2">
+                <HiArrowLongLeft />
+                <small className="text-xs">Prev {itemsPerPage}</small>
+              </div>
+              <div className="space-x-6 text-sm">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={` ${
+                      currentPage === index + 1
+                        ? "font-bold text-primary border-b-2"
+                        : "font-thin text-color"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <small className="text-xs">Next {itemsPerPage}</small>
+                <HiArrowLongRight />
+              </div>
+            </section>
+          </div>
         </>
       )}
     </>
