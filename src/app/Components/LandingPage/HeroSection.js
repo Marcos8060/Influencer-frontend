@@ -5,7 +5,7 @@ import Link from "next/link";
 const HeroSection = () => {
   return (
     <>
-      <section className="md:flex items-center justify-center md:h-[90vh] h-[50vh] w-9/12 mx-auto mt-24">
+      <section className="md:flex items-center justify-center md:h-[90vh] h-[50vh] w-9/12 mx-auto md:mt-0 mt-24">
         <div className="md:w-1/2 space-y-4">
           <h1 className="md:text-7xl text-4xl font-bold text-color">
             Showcase. Discover. Connect
