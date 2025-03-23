@@ -8,6 +8,8 @@ import Slide from "@mui/material/Slide";
 import { editProfilePhoto } from "@/redux/services/influencer/profile";
 import { FaCamera } from "react-icons/fa";
 import { FaRegCircleUser } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
+import { fetchAllInfluencerDetails } from "@/redux/features/influencer/profile";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -18,6 +20,7 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   // Initialize form data
   const [imageFile, setImageFile] = useState(null);
@@ -59,6 +62,7 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
         if (res.status === 200) {
             toast.success("Profile photo updated successfully");
             setPreviewImage(URL.createObjectURL(imageFile));
+            dispatch(fetchAllInfluencerDetails(auth));
             setOpen(false);
         } else {
             toast.error("Failed to upload photo");
