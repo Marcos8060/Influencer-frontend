@@ -7,9 +7,10 @@ import { FaRegEnvelope } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import Footer from "@/app/Components/Footer";
 import { datum } from "@/app/influencer/influencer-results/influencersData";
+import { useSelector } from "react-redux";
 
 const BucketListInfluencers = () => {
-
+  const { influencersInBucket } = useSelector((store) => store.bucket);
   return (
     <>
       <section className="md:px-12 px-4 py-12 bg-background">
@@ -17,7 +18,7 @@ const BucketListInfluencers = () => {
           Influencers in your Bucket List
         </h1>
         <section className="grid md:grid-cols-5 grid-cols-1 gap-4">
-          {datum.map((data, index) => (
+          {influencersInBucket.map((data, index) => (
             <div key={index} className="bg-white shadow-xl rounded-lg p-4">
               <img
                 className=" h-[180px] object-cover rounded-md mb-1"
@@ -26,8 +27,8 @@ const BucketListInfluencers = () => {
               />
               <section className="border-b border-input flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-sm font-bold">Orkun Işıtmak</p>
-                  <small className="text-color text-xs">Istanbul, TR</small>
+                  <p className="text-sm font-bold">{data.fullName}</p>
+                  <small className="text-color text-xs">{data.city}, {data.country}</small>
                 </div>
                 <div>
                   <p className="text-sm font-bold">10M</p>
