@@ -51,7 +51,7 @@ const InfluencerTerms = () => {
     dispatch(setCurrentStep(11));
   }, [dispatch]);
   return (
-    <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4">
+    <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4 text-color">
       <div className="w-full">
         <h1 className="text-2xl font-bold text-center my-2">Agree Terms</h1>
         <p className="mb-4 text-sm">

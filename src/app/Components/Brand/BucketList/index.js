@@ -38,7 +38,7 @@ const BucketList = () => {
     <>
       <section className="flex items-center justify-end my-4">
         <div className="flex items-center gap-4">
-          <button className="border border-primary text-primary rounded-3xl text-xs px-4 py-3">
+          <button className="border border-primary text-primary rounded text-xs px-4 py-3">
             Add to Campaign
           </button>
           <BucketListDialog />

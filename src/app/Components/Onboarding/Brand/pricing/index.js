@@ -16,7 +16,7 @@ const Pricing = () => {
     dispatch(setCurrentStep(19));
   }, [dispatch]);
   return (
-    <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4">
+    <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4 text-color">
       <div className="w-full">
         <h1 className="text-3xl font-bold text-center my-2 mb-8">
           7 Day Free Trial
