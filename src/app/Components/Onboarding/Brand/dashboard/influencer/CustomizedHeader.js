@@ -23,7 +23,7 @@ const InfluencerCustomizedHeader = () => {
   return (
     <section className="h-[10vh] py-6 px-6 flex items-center justify-between">
       <div>
-        <h1 className="font-bold text-2xl text-color">Welcome {user?.firstName}</h1>
+        <h1 className="font-bold text-2xl text-color">Welcome <span className="font-light">{user?.firstName}</span></h1>
       </div>
       <div>
         <div className="flex items-center gap-2">
