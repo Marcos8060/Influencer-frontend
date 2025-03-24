@@ -25,7 +25,11 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
-        router.push("/onboarding/brand");
+        if (user.finishedOnboarding) {
+          router.push("/onboarding/brand/dashboard");
+        } else {
+          router.push("/onboarding/brand");
+        }
       }
     } catch (error) {
       console.log("ERROR ", error);
@@ -45,7 +49,11 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
-        router.push("/onboarding/influencer");
+        if (user.finishedOnboarding) {
+          router.push("/onboarding/influencer/dashboard");
+        } else {
+          router.push("/onboarding/influencer");
+        }
       }
     } catch (error) {
       console.log("ERROR ", error);
@@ -76,11 +84,11 @@ export const AuthProvider = ({ children }) => {
 
       if (brandToken) {
         decodedUser = jwtDecode(brandToken);
-      }else if(influencerToken){
+      } else if (influencerToken) {
         decodedUser = jwtDecode(influencerToken);
       }
     }
-    
+
     setUser(decodedUser);
   }, []);
 

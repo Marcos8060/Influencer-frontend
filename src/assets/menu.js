@@ -6,6 +6,7 @@ import { FaMessage } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { FaUsersGear } from "react-icons/fa6";
 import { FaUserEdit } from "react-icons/fa";
+import { MdCampaign } from "react-icons/md";
 
 export const menu = [
   {
@@ -19,33 +20,28 @@ export const menu = [
     icon: <FaUsersGear />,
   },
   {
+    label: "Create Campaign",
+    path: "/brand/influencer-discovery",
+    icon: <MdCampaign />,
+  },
+  {
     label: "Opportunities",
-    path: "/onboarding/brand/dashboard",
+    path: "/dashboard/opportunities",
     icon: <FaCarAlt />,
   },
   {
     label: "Collaboration",
-    path: "/onboarding/brand/dashboard",
+    path: "/dashboard/collaboration",
     icon: <FaUsers />,
   },
   {
-    label: "Invitations",
-    path: "/onboarding/brand/dashboard",
-    icon: <FaCarAlt />,
-  },
-  {
-    label: "Content",
-    path: "/onboarding/brand/dashboard",
-    icon: <FaCarAlt />,
-  },
-  {
     label: "Inbox",
-    path: "/onboarding/brand/dashboard",
+    path: "/dashboard/inbox",
     icon: <FaMessage />,
   },
   {
     label: "Settings",
-    path: "/onboarding/brand/dashboard",
+    path: "/dashboard/settings",
     icon: <IoMdSettings />,
   },
 ];
@@ -55,11 +51,6 @@ export const influencerMenu = [
     label: "Dashboard",
     path: "/onboarding/influencer/dashboard",
     icon: <BiSolidDashboard />,
-  },
-  {
-    label: "Influencer Discovery",
-    path: "/brand/influencer-discovery",
-    icon: <FaUsersGear />,
   },
   {
     label: "Opportunities",
