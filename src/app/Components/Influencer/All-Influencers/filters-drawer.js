@@ -337,7 +337,7 @@ export default function FiltersDrawer() {
               <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  className="px-4 py-3 text-sm border border-primary rounded-3xl"
+                  className="px-4 py-3 text-xs border border-primary rounded"
                   onClick={handleClearFilters}
                 >
                   Clear Filters
@@ -355,7 +355,7 @@ export default function FiltersDrawer() {
 
       <button
         onClick={() => setVisible(true)}
-        className="bg-gradient-to-r from-primary to-secondary rounded-3xl shadow-2xl text-white text-xs px-4 py-3 flex items-center gap-2"
+        className="bg-gradient-to-r from-primary to-secondary rounded shadow-2xl text-white text-xs px-4 py-3 flex items-center gap-2"
       >
         <LuFilter /> Add Filters
       </button>

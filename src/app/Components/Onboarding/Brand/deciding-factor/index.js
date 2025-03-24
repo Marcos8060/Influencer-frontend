@@ -66,7 +66,7 @@ const DecidingFactor = () => {
   }, [dispatch]);
 
   return (
-    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4">
+    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">
       <div>
         <h1 className="text-3xl font-bold text-center my-2">Deciding Factor</h1>
         <p className="text-center text-sm mb-3">
