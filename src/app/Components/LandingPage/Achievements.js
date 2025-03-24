@@ -9,7 +9,7 @@ const Achievements = () => {
     <div className="md:h-[90vh] flex items-center justify-center my-4 md:px-12 px-4 space-y-8">
       <section className="md:w-9/12 mx-auto md:flex items-center justify-center md:h-[50vh] gap-8 md:space-y-0 space-y-12">
         <div className="md:w-1/2 mx-auto md:space-y-3 space-y-4">
-          <h1 className="md:text-4xl text-2xl font-bold text-color">
+          <h1 className="md:text-4xl text-2xl font-bold text-color md:text-left text-center">
             About Our Platform.
           </h1>
           <p className="text-color font-light text-sm">
@@ -26,9 +26,11 @@ const Achievements = () => {
             For those looking to hire, find verified and talented professionals
             ready to bring your next big project to life.
           </p>
-          <button className="bg-primary shadow-xl hover:scale-105 border transition duration-700 text-white rounded px-6 py-3 text-sm">
-            Read More
-          </button>
+          <div className="flex items-center md:justify-start justify-center">
+            <button className="bg-primary shadow-xl hover:scale-105 border transition duration-700 text-white rounded px-6 py-3 text-sm">
+              Read More
+            </button>
+          </div>
         </div>
         <div className="md:w-1/2 flex items-center justify-center">
           <img className="w-72" src="/images/camera.png" alt="" />
