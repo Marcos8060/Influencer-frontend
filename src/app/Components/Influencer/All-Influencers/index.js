@@ -144,7 +144,7 @@ const AllInfluencers = () => {
                     </td>
                     <td className="p-3">{data?.country}</td>
                     <td className="p-3">{data?.city}</td>
-                    <td className="p-3">{data.ethnicBackground.join(", ")}</td>
+                    <td className="p-3">{data.ethnicBackground}</td>
 
                     {/* ✅ FIXED: Center the eye icon correctly */}
                     <td className="p-3">
