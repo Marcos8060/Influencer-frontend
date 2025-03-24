@@ -52,11 +52,12 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
     }
 
     const form_data = new FormData();
-    form_data.append("picture", imageFile, imageFile.name);
+    form_data.append("file", imageFile); // Ensure it's assigned as "file"
+    form_data.append("file_section", "profilePicture"); // Add file_section
 
     try {
         setLoading(true);
-        const res = await editProfilePhoto(auth, form_data);
+        const res = await editProfilePhoto(auth, form_data); // Send FormData
         setLoading(false);
 
         if (res.status === 200) {
@@ -72,6 +73,7 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
         toast.error(error.message);
     }
 };
+
 
 
   useEffect(() => {
