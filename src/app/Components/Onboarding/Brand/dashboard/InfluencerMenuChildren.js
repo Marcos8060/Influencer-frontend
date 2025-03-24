@@ -5,7 +5,7 @@ import { IoChevronDownOutline } from "react-icons/io5";
 import { IoChevronForward } from "react-icons/io5";
 import { influencerMenu } from "@/assets/menu";
 
-const MenuChildren = ({ collapse }) => {
+const InfluencerMenuChildren = ({ collapse }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const currentPath = usePathname();
 
@@ -81,4 +81,4 @@ const MenuChildren = ({ collapse }) => {
   );
 };
 
-export default MenuChildren;
+export default InfluencerMenuChildren;

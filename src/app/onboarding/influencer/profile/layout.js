@@ -1,6 +1,6 @@
 'use client'
 import React,{ useState } from 'react'
-import Sidebar from "@/app/Components/Onboarding/Brand/dashboard/Sidebar";
+import Sidebar from "@/app/Components/Onboarding/Brand/dashboard/InfluencerSidebar";
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleFill } from "react-icons/ri";
 import InfluencerCustomizedHeader from '@/app/Components/Onboarding/Brand/dashboard/influencer/CustomizedHeader';

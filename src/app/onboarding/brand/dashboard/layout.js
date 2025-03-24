@@ -1,9 +1,9 @@
 'use client'
 import React,{ useState } from 'react'
-import Sidebar from "@/app/Components/Onboarding/Brand/dashboard/Sidebar";
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleFill } from "react-icons/ri";
 import BrandCustomizedHeader from '@/app/Components/Onboarding/Brand/dashboard/brand/CustomizedHeader';
+import BrandSidebar from '@/app/Components/Onboarding/Brand/dashboard/BrandSidebar';
 
 export default function DashboardLayout({ children }) {
     const [collapse, setCollapse] = useState(false);
@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="flex h-screen flex-row md:overflow-hidden bg-background">
       <section className={`flex-none ${collapse ? 'w-16' : 'w-64'}`}>
-        <Sidebar {...{ collapse, setCollapse, icon }} />
+        <BrandSidebar {...{ collapse, setCollapse, icon }} />
       </section>
       <section className="w-full overflow-y-auto">
         <BrandCustomizedHeader />

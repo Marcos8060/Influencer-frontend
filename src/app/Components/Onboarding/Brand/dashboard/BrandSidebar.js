@@ -1,7 +1,7 @@
 "use client";
 import BrandMenuChildren from "./BrandMenuChildren";
 
-const Sidebar = ({ collapse, setCollapse, icon }) => {
+const BrandSidebar = ({ collapse, setCollapse, icon }) => {
 
   const toggleSidebar = () => {
     setCollapse(!collapse);
@@ -21,4 +21,4 @@ const Sidebar = ({ collapse, setCollapse, icon }) => {
   );
 };
 
-export default Sidebar;
+export default BrandSidebar;
