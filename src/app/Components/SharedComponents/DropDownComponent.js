@@ -10,7 +10,8 @@ const DropdownComponent = ({ options, value, onChange, placeholder = "Select an 
                 options={options} 
                 optionLabel="name" 
                 placeholder={placeholder} 
-                className={className} 
+                className={className}
+                panelClassName="custom-dropdown-panel"
             />
         </div>
     );
