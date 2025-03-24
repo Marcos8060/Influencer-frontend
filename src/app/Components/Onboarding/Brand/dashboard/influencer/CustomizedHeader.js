@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const InfluencerCustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { logoutUser, user } = useContext(authContext);
+  const { logoutInfluencer, user } = useContext(authContext);
 
   const open = Boolean(anchorEl);
 
@@ -50,7 +50,7 @@ const InfluencerCustomizedHeader = () => {
           <MenuItem>
             <Link className="text-sm" href="/onboarding/influencer/profile">Profile</Link>
           </MenuItem>
-          <MenuItem onClick={logoutUser}>
+          <MenuItem onClick={logoutInfluencer}>
             <p className="text-sm">Logout</p>
           </MenuItem>
         </Menu>

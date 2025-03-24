@@ -5,6 +5,7 @@ import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import {
   nextStep,
+  previousStep,
   setCurrentStep,
   updateFormData,
 } from "@/redux/features/stepper/campaign-stepper";
@@ -40,7 +41,7 @@ const CampaignRequirements = () => {
   };
 
   return (
-    <div className="bg-background p-4 flex items-center justify-center text-color">
+    <div className="bg-background px-4 py-8 flex items-center justify-center text-color">
       <div className="md:w-5/12 mx-auto space-y-4">
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
@@ -130,7 +131,17 @@ const CampaignRequirements = () => {
           </div>
           <InputComponent placeholder="Video url" />
         </section>
-        <ButtonComponent onClick={handleNext} label="Preview" />
+        <footer className="flex items-center justify-center gap-4">
+          <div className="w-1/2">
+            <ButtonComponent
+              onClick={() => dispatch(previousStep())}
+              label="Back"
+            />
+          </div>
+          <div className="w-1/2">
+            <ButtonComponent onClick={handleNext} label="Preview" />
+          </div>
+        </footer>
       </div>
     </div>
   );
