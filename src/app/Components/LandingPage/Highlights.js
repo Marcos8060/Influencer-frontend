@@ -3,7 +3,7 @@ import { LuSettings2 } from "react-icons/lu";
 
 const Highlights = () => {
   return (
-    <div className="md:h-[90vh] bg-primary py-8 px-4 space-y-4 sm:text-center">
+    <div className="md:h-[90vh] bg-gradient-to-r from-primary to-secondary py-8 px-4 space-y-4 sm:text-center">
       <h1 className="md:text-4xl text-3xl font-bold text-center text-white">
         Influencer Platform Highlights
       </h1>
