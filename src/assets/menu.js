@@ -21,7 +21,7 @@ export const menu = [
   },
   {
     label: "Create Campaign",
-    path: "/brand/influencer-discovery",
+    path: "/brand/create-campaign",
     icon: <MdCampaign />,
   },
   {
