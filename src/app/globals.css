@@ -12,6 +12,9 @@
   @apply bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center;
 }
 
+.custom-dropdown-panel .p-dropdown-item {
+  font-size: 14px !important;
+}
 
 .p-datatable-thead > tr > th {
   background-color: #EEEEFD !important; /* Adjust to your theme */
