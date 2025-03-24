@@ -1,5 +1,5 @@
 "use client";
-import React,{ useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import DateFieldComponent from "../../SharedComponents/DateFieldComponent";
@@ -10,6 +10,7 @@ import {
   updateFormData,
 } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 
 const CampaignBasics = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -118,7 +119,16 @@ const CampaignBasics = () => {
           </div>
           <CampaignProfileImageModal />
         </section>
-        <ButtonComponent onClick={handleNext} label="Next" />
+        <footer className="flex items-center gap-4 justify-center">
+          <div className="w-1/2">
+            <button className="border border-primary rounded px-8 py-3 text-xs w-full text-color">
+              <Link href="/onboarding/brand/dashboard">Back to Dashboard</Link>
+            </button>
+          </div>
+          <div className="w-1/2">
+            <ButtonComponent onClick={handleNext} label="Next" />
+          </div>
+        </footer>
       </div>
     </div>
   );

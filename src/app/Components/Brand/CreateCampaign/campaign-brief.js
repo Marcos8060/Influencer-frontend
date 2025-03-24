@@ -5,6 +5,7 @@ import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import {
   nextStep,
+  previousStep,
   setCurrentStep,
   updateFormData,
 } from "@/redux/features/stepper/campaign-stepper";
@@ -45,7 +46,7 @@ const CampaignBrief = () => {
   };
 
   return (
-    <div className="bg-background p-4 flex items-center justify-center text-color">
+    <div className="bg-background p-4 flex items-center justify-center h-screen text-color">
       <div className="md:w-5/12 mx-auto space-y-4">
         <section className="bg-white rounded shadow p-4">
           <h2 className="mb-4 font-bold">Campaign Brief</h2>
@@ -114,7 +115,17 @@ const CampaignBrief = () => {
             ))}
           </div>
         </section>
-        <ButtonComponent onClick={handleNext} label="Next" />
+        <footer className="flex items-center justify-center gap-4">
+          <div className="w-1/2">
+            <ButtonComponent
+              onClick={() => dispatch(previousStep())}
+              label="Back"
+            />
+          </div>
+          <div className="w-1/2">
+            <ButtonComponent onClick={handleNext} label="Next" />
+          </div>
+        </footer>
       </div>
     </div>
   );

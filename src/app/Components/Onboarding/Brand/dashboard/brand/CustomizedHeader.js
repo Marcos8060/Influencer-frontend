@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const BrandCustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { logoutUser, user } = useContext(authContext);
+  const { logoutBrand, user } = useContext(authContext);
 
   const open = Boolean(anchorEl);
 
@@ -50,7 +50,7 @@ const BrandCustomizedHeader = () => {
           <MenuItem>
             <Link className="text-sm" href="/profile">Profile</Link>
           </MenuItem>
-          <MenuItem onClick={logoutUser}>
+          <MenuItem onClick={logoutBrand}>
             <p className="text-sm">Logout</p>
           </MenuItem>
         </Menu>

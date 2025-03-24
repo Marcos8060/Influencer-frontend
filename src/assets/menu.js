@@ -22,7 +22,7 @@ export const menu = [
   {
     label: "Create Campaign",
     path: "/brand/create-campaign",
-    icon: <MdCampaign />,
+    icon: <MdCampaign className="text-xl" />,
   },
   {
     label: "Opportunities",
