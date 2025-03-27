@@ -47,9 +47,9 @@ const InfluencerCustomizedHeader = () => {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem>
+          {/* <MenuItem>
             <Link className="text-sm" href="/onboarding/influencer/profile">Profile</Link>
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem onClick={logoutInfluencer}>
             <p className="text-sm">Logout</p>
           </MenuItem>
