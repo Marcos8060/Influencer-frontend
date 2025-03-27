@@ -5,8 +5,8 @@ const initialState = {
   campaignData: {
     title: "",
     description: "",
-    startDate: null,
-    endDate: null,
+    startDate: "",
+    endDate: "",
     coverImageUrl: "",
     products: [],
     services: [],
@@ -26,7 +26,7 @@ const initialState = {
     },
     campaignCollaborators: [
       {
-        influencerId: null,
+        influencerId: "",
         status: "pending",
       },
     ],
@@ -47,7 +47,7 @@ const CampaignSlice = createSlice({
       state.currentStep = Math.max(0, state.currentStep - 1);
     },
     updateFormData: (state, action) => {
-      state.influencerData = { ...state.influencerData, ...action.payload };
+      state.campaignData = { ...state.campaignData, ...action.payload };
     },
   },
 });
