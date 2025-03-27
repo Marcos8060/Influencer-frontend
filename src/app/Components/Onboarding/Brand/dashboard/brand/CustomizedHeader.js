@@ -47,9 +47,9 @@ const BrandCustomizedHeader = () => {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem>
+          {/* <MenuItem>
             <Link className="text-sm" href="/profile">Profile</Link>
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem onClick={logoutBrand}>
             <p className="text-sm">Logout</p>
           </MenuItem>
