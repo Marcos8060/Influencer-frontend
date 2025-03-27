@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CampaignProfileImageModal({ influencerDetails }) {
+export default function CampaignProfileImageModal({ details }) {
   const auth = useAuth();
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
@@ -25,7 +25,7 @@ export default function CampaignProfileImageModal({ influencerDetails }) {
   // Initialize form data
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(
-    influencerDetails?.profilePhotoUrl || null
+    details?.coverImageUrl || null
   );
 
   const handleClickOpen = () => setOpen(true);
@@ -74,10 +74,10 @@ export default function CampaignProfileImageModal({ influencerDetails }) {
   };
 
   useEffect(() => {
-    if (influencerDetails?.profilePhotoUrl) {
-      setPreviewImage(influencerDetails.profilePhotoUrl);
+    if (details?.coverImageUrl) {
+      setPreviewImage(details.coverImageUrl);
     }
-  }, [influencerDetails]);
+  }, [details]);
 
   return (
     <React.Fragment>
