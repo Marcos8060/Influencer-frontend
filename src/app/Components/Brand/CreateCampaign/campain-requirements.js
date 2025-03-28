@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import InputComponent from "../../SharedComponents/InputComponent";
-import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import {
   nextStep,
@@ -12,14 +11,15 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import TickBoxComponent from "../../SharedComponents/TickBoxComponent";
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
-import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import ProductServiceDrawer from "./ProductServiceDrawer";
+import { createCampaign } from "@/redux/services/campaign";
+import { useAuth } from "@/assets/hooks/use-auth";
+import toast from "react-hot-toast";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
-  const [selectedOption,setSelectedOption] = useState('')
-  // State management
+  const auth = useAuth();
   const [details, setDetails] = useState({
     products: campaignData.products || [],
     services: campaignData.services || [],
@@ -77,10 +77,6 @@ const CampaignRequirements = () => {
       },
     }));
   };
-
-  const options = ['product', 'service']
-
-  console.log("I AM SELECTED ",selectedOption)
 
   return (
     <div className="bg-background px-4 py-8 flex items-center justify-center text-color">

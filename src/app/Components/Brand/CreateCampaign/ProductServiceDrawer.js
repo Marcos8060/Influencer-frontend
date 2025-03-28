@@ -195,7 +195,7 @@ export default function ProductServiceDrawer() {
         </Sidebar>
         <button
           onClick={() => setVisible(true)}
-          className="border-2 border-primary rounded text-xs px-4 py-2"
+          className="bg-primary text-white rounded text-xs px-4 py-2"
         >
           Select a product or service
         </button>
