@@ -27,6 +27,10 @@ export const API_URL = {
     FETCH_BUCKETLIST: "http://147.78.141.95:8075/api/search/bucketList/",
     DELETE_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/delete/",
     EDIT_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/update/",
+
+
+    /***************** CAMPAIGN APIS **********************/
+    CREATE_CAMPAIGN: "http://147.78.141.95:8075/api/campaigns/create/",
 };
 
 
@@ -54,6 +58,10 @@ export const APP_API_URL = {
   EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
   EDIT_PROFILE_PHOTO: "/api/influencer/profile/edit-profile-photo",
   FETCH_INFLUENCERS_IN_BUCKET: '/api/bucketList/fetch-influencers-in-bucket',
+
+
+    /***************** CAMPAIGN APIS **********************/
+  CREATE_CAMPAIGN: '/api/campaign/create-campaign',
 
 
   /***************** BUCKET LIST APIs **********************/

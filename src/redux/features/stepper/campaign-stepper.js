@@ -7,12 +7,11 @@ const initialState = {
     description: "",
     startDate: "",
     endDate: "",
-    coverImageUrl: "",
+    coverImageUrl: null,
     products: [],
     services: [],
-    successfulCampaignCreationBrief: "",
     exampleVideoUrl: "",
-    numberOfInfluencers: null,
+    numberOfInfluencers: 8,
     campaignPreferences: {
       videoStyle: "",
       videosPerCreator: null,
@@ -26,7 +25,7 @@ const initialState = {
     },
     campaignCollaborators: [
       {
-        influencerId: "",
+        influencerId: null,
         status: "pending",
       },
     ],

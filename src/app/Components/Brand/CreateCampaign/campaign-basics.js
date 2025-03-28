@@ -28,7 +28,7 @@ const CampaignBasics = () => {
     description: campaignData.description || "",
     startDate: parseDate(campaignData.startDate),
     endDate: parseDate(campaignData.endDate),
-    coverImageUrl: campaignData.coverImageUrl || "",
+    coverImageUrl: campaignData.coverImageUrl || null,
   });
 
   // Handle DateField changes and update state
