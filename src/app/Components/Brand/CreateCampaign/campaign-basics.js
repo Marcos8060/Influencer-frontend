@@ -7,7 +7,6 @@ import CampaignProfileImageModal from "./campaignImageModal";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { nextStep, updateFormData } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
 
 // Function to convert stored date strings to Date objects
 const parseDate = (dateString) => (dateString ? new Date(dateString) : null);
