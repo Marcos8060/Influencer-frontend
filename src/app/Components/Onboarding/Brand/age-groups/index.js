@@ -19,7 +19,7 @@ const AgeGroups = () => {
   );
   const dispatch = useDispatch();
 
-  const options = ["Any", "45+", "18-24", "25-34","35-44"];
+  const options = ["Any", "18-24", "25-34","35-44", "45+", ];
 
   const toggleAge = (age) => {
     setSelectedAge((prev) =>
