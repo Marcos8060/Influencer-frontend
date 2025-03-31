@@ -17,7 +17,7 @@ const NumberOfInfluencers = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
 
-  const options = ["1", "2-5", "6-19", "20+"];
+  const options = ["1-10", "10-20", "20-30", "40-50","50+"];
 
   useEffect(() => {
     dispatch(setCurrentStep(5));

@@ -12,7 +12,9 @@ import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 const Address = () => {
-  const influencerData = useSelector((store) => store.influencerStepper.influencerData);
+  const influencerData = useSelector(
+    (store) => store.influencerStepper.influencerData
+  );
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
     influencerAddressLine1: influencerData.influencerAddressLine1 || "",
@@ -41,12 +43,13 @@ const Address = () => {
   };
 
   return (
-    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">
+    <section className="flex items-center justify-center py-4 md:w-4/12 mx-auto px-4 text-color">
       <div>
         <h1 className="text-3xl font-bold text-center my-2">Address</h1>
         <p className="text-center text-sm mb-3">
-          We will use this to match you with brands in your local area and to
-          easily share it with brands to get the products shipped
+          Your details will not be publicly available except for Brands with
+          whom you work with. Otherwise, the city and country will be used for
+          matching purposes.
         </p>
         <section className="space-y-4 mb-3">
           <div>
@@ -56,7 +59,10 @@ const Address = () => {
             <InputComponent
               value={details.influencerAddressLine1}
               onChange={(e) =>
-                setDetails({ ...details, influencerAddressLine1: e.target.value })
+                setDetails({
+                  ...details,
+                  influencerAddressLine1: e.target.value,
+                })
               }
             />
           </div>
@@ -67,7 +73,10 @@ const Address = () => {
             <InputComponent
               value={details.influencerAddressLine2}
               onChange={(e) =>
-                setDetails({ ...details, influencerAddressLine2: e.target.value })
+                setDetails({
+                  ...details,
+                  influencerAddressLine2: e.target.value,
+                })
               }
             />
           </div>
@@ -111,7 +120,10 @@ const Address = () => {
             <InputComponent
               value={details.influencerPhoneNumber}
               onChange={(e) =>
-                setDetails({ ...details, influencerPhoneNumber: e.target.value })
+                setDetails({
+                  ...details,
+                  influencerPhoneNumber: e.target.value,
+                })
               }
             />
           </div>
