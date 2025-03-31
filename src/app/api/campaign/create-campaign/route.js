@@ -16,7 +16,7 @@ export async function POST(req) {
       },
     };
 
-    const response = await backendAxiosInstance.post(`${API_URL.ONBOARD_BRAND}`, payload, config);
+    const response = await backendAxiosInstance.post(`${API_URL.CREATE_CAMPAIGN}`, payload, config);
 
     return new Response(JSON.stringify(response.data), {
       status: 200,

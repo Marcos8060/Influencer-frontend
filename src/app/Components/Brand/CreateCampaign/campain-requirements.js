@@ -24,12 +24,12 @@ const CampaignRequirements = () => {
     products: campaignData.products || [],
     services: campaignData.services || [],
     campaignPreferences: {
-      videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || "",
-      videoDuration: campaignData.campaignPreferences?.videoDuration || "",
+      videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || null,
+      videoDuration: campaignData.campaignPreferences?.videoDuration || null,
       showFace: campaignData.campaignPreferences?.showFace || true,
       videoFormat: campaignData.campaignPreferences?.videoFormat || "Vertical",
     },
-    exampleVideoUrl: campaignData.exampleVideoUrl || "",
+    exampleVideoUrl: campaignData.exampleVideoUrl || null,
   });
 
   useEffect(() => {
@@ -41,9 +41,9 @@ const CampaignRequirements = () => {
     dispatch(nextStep());
   };
 
-  const durations = ["15s", "30s", "60s"];
+  const durations = [15, 30, 60];
   const requirements = ["Yes Include their face", "No, face not needed"];
-  const formats = ["Vertical", "Horizontal", "Square"];
+  const formats = ["vertical", "horizontal", "square"];
 
   // Update state for video duration
   const toggleVideoDuration = (duration) => {
@@ -80,7 +80,7 @@ const CampaignRequirements = () => {
 
   return (
     <div className="bg-background px-4 py-8 flex items-center justify-center text-color">
-      <div className="md:w-5/12 w-full mx-auto space-y-4">
+      <div className="md:w-8/12 w-full mx-auto space-y-4">
         {/* Product or Service Selection */}
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
@@ -102,7 +102,7 @@ const CampaignRequirements = () => {
                     ...details,
                     campaignPreferences: {
                       ...details.campaignPreferences,
-                      videosPerCreator: e.target.value,
+                      videosPerCreator: parseInt(e.target.value),
                     },
                   })
                 }

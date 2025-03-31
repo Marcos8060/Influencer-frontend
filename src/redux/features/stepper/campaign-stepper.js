@@ -5,19 +5,20 @@ const initialState = {
   campaignData: {
     title: "",
     description: "",
+    briefTitle: "",
+    briefDescription: "",
     startDate: "",
     endDate: "",
-    coverImageUrl: null,
+    coverImageUrl: "",
     products: [],
     services: [],
     exampleVideoUrl: "",
-    numberOfInfluencers: 8,
     campaignPreferences: {
       videoStyle: "",
       videosPerCreator: null,
       videoDuration: null,
       showFace: true,
-      videoFormat: "",
+      videoFormat: "vertical",
       socialChannels: "",
       collaborationType: "",
       campaignObjective: "",
@@ -25,7 +26,7 @@ const initialState = {
     },
     campaignCollaborators: [
       {
-        influencerId: null,
+        influencerId: '4d757a99-183e-4fe1-a1b1-d3f23edb2791',
         status: "pending",
       },
     ],
