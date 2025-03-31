@@ -132,7 +132,7 @@ export default function FiltersDrawer() {
       <Sidebar
         visible={visible}
         onHide={() => setVisible(false)}
-        className="md:w-1/3 w-full"
+        className="md:w-5/12 w-full"
       >
         <form className="my-4">
           <div className="space-y-8">
@@ -308,27 +308,27 @@ export default function FiltersDrawer() {
                 <small>More Filters</small>
               </div>
               <div className="w-9/12 flex items-center justify-between gap-2">
-                <label className="text-sm">
+                <label className="text-xs">
                   <input
-                    className="scale-150 cursor-pointer"
+                    className="scale-150 cursor-pointer mx-1"
                     type="checkbox"
                     checked={filters.onlyVerified}
                     onChange={(e) =>
                       handleFilterChange("onlyVerified", e.target.checked)
                     }
                   />{" "}
-                  Only Verified
+                  Verified in social media
                 </label>
-                <label className="text-sm">
+                <label className="text-xs">
                   <input
                     type="checkbox"
-                    className="scale-150 cursor-pointer"
+                    className="scale-150 cursor-pointer mx-1"
                     checked={filters.isPlatformVerified}
                     onChange={(e) =>
                       handleFilterChange("isPlatformVerified", e.target.checked)
                     }
                   />{" "}
-                  Platform Verified
+                  Verified in our platform
                 </label>
               </div>
             </section>
