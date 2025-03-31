@@ -28,7 +28,7 @@ const page = () => {
   }, [auth]);
   return (
     <div>
-      <BucketListInfluencers />
+      <BucketListInfluencers {...{ loading }} />
     </div>
   );
 };
