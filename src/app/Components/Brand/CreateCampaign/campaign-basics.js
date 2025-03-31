@@ -7,7 +7,6 @@ import CampaignProfileImageModal from "./campaignImageModal";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { nextStep, updateFormData } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
 
 // Function to convert stored date strings to Date objects
 const parseDate = (dateString) => (dateString ? new Date(dateString) : null);
@@ -24,8 +23,8 @@ const CampaignBasics = () => {
 
   // Initialize state with parsed date objects
   const [details, setDetails] = useState({
-    title: campaignData.title || "",
-    description: campaignData.description || "",
+    title: campaignData.title || null,
+    description: campaignData.description || null,
     startDate: parseDate(campaignData.startDate),
     endDate: parseDate(campaignData.endDate),
     coverImageUrl: campaignData.coverImageUrl || null,
@@ -52,8 +51,8 @@ const CampaignBasics = () => {
   };
 
   return (
-    <div className="bg-background px-4 h-screen flex items-center justify-center text-color">
-      <div className="md:w-5/12 w-full mx-auto space-y-4">
+    <div className="bg-background px-4 py-8 flex items-center justify-center text-color">
+      <div className="md:w-8/12 w-full mx-auto space-y-4">
         <section className="bg-white rounded shadow p-4">
           <h2 className="mb-4 font-bold">Campaign Basics</h2>
           <section className="space-y-2">
@@ -111,12 +110,8 @@ const CampaignBasics = () => {
           <CampaignProfileImageModal details={details} />
         </section>
 
-        <footer className="flex items-center gap-4 justify-center">
-          <div className="w-1/2">
-            <button className="border border-primary rounded px-8 py-3 text-xs w-full text-color">
-              <Link href="/onboarding/brand/dashboard">Back to Dashboard</Link>
-            </button>
-          </div>
+        <footer className="flex items-center gap-4 justify-end">
+          
           <div className="w-1/2">
             <ButtonComponent onClick={handleNext} label="Next" />
           </div>

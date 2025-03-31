@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import { MdAdd } from "react-icons/md";
+
 
 export default function BucketListDialog() {
   const [visible, setVisible] = useState(false);
@@ -48,12 +50,14 @@ export default function BucketListDialog() {
   return (
     <div className="card flex justify-content-center">
       <button
-        className="bg-gradient-to-r from-primary to-secondary text-white rounded text-xs px-4 py-3"
+        className="flex items-center gap-1 border border-primary rounded text-xs px-4 py-3"
         label="Show"
+        type="button"
         icon="pi pi-external-link"
         onClick={() => setVisible(true)}
       >
-        Add New List
+        <MdAdd className="text-md" />
+        Add Bucket
       </button>
       <Dialog
         header="Create Bucket List"

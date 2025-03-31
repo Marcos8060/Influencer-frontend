@@ -19,8 +19,8 @@ const CampaignBrief = () => {
 
   // State to manage form inputs
   const [details, setDetails] = useState({
-    title: campaignData.title || "",
-    description: campaignData.description || "",
+    briefTitle: campaignData.briefTitle || null,
+    briefDescription: campaignData.briefDescription || null,
     campaignPreferences: {
       socialChannels: campaignData.campaignPreferences?.socialChannels || [],
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
@@ -72,8 +72,8 @@ const CampaignBrief = () => {
   };
 
   return (
-    <div className="bg-background p-4 flex items-center justify-center h-screen text-color">
-      <div className="md:w-5/12 w-full mx-auto space-y-4">
+    <div className="bg-background px-4 py-8 flex items-center justify-center text-color">
+      <div className="md:w-8/12 w-full mx-auto space-y-4">
         {/* Campaign Brief */}
         <section className="bg-white rounded shadow p-4">
           <h2 className="mb-4 font-bold">Campaign Brief</h2>
@@ -81,9 +81,9 @@ const CampaignBrief = () => {
             <div>
               <label className="text-xs font-semibold mb-4">Give your Brief a title</label>
               <InputComponent
-                value={details.title}
+                value={details.briefTitle}
                 onChange={(e) =>
-                  setDetails({ ...details, title: e.target.value })
+                  setDetails({ ...details, briefTitle: e.target.value })
                 }
                 placeholder="E.g New Product Launch..."
               />
@@ -91,9 +91,9 @@ const CampaignBrief = () => {
             <div>
               <label className="text-xs font-semibold mb-4">Brief Description</label>
               <TextAreaComponent
-                value={details.description}
+                value={details.briefDescription}
                 onChange={(e) =>
-                  setDetails({ ...details, description: e.target.value })
+                  setDetails({ ...details, briefDescription: e.target.value })
                 }
                 placeholder="Type here..."
               />

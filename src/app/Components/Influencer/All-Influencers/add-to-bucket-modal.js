@@ -10,6 +10,7 @@ import DropdownComponent from "../../SharedComponents/DropDownComponent";
 import { moveToBucket } from "@/redux/services/influencer/bucket";
 import Slide from "@mui/material/Slide";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import BucketListDialog from "../../Brand/BucketList/bucket-list-dialog";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -43,7 +44,6 @@ export default function AddToBucketListModal({ data }) {
       return;
     }
     try {
-
       const influencerIds = Array.isArray(data)
         ? data.map((influencer) => String(influencer.influencerId)) // ✅ Handle multiple influencers
         : [String(data.influencerId)]; // ✅ Handle single influencer
@@ -69,7 +69,11 @@ export default function AddToBucketListModal({ data }) {
   return (
     <React.Fragment>
       <button
-        className={`${Array.isArray(data) && data.length > 0 ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-3xl text-xs px-3 py-3' : 'border border-secondary text-xs px-3 py-2 rounded text-color font-semibold'} `}
+        className={`${
+          Array.isArray(data) && data.length > 0
+            ? "bg-gradient-to-r from-primary to-secondary text-white rounded-3xl text-xs px-3 py-3"
+            : "border border-secondary text-xs px-3 py-2 rounded text-color font-semibold"
+        } `}
         icon="pi pi-external-link"
         onClick={handleClickOpen}
       >
@@ -85,19 +89,22 @@ export default function AddToBucketListModal({ data }) {
         aria-describedby="alert-dialog-slide-description"
         sx={{ zIndex: 1000 }}
       >
-        <DialogContent >
-        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+        <DialogContent>
+          <form onSubmit={handleSubmit} className="space-y-3 mt-4">
             <DropdownComponent
               options={bucketList}
               value={selectedBucket}
               onChange={setSelectedBucket}
               placeholder="Select a Bucket"
             />
-            <ButtonComponent
-              type="submit"
-              label={loading ? "Processing..." : "Add To Bucket"}
-              disabled={loading}
-            />
+            <footer className="flex items-center justify-between gap-4">
+              <BucketListDialog />
+              <ButtonComponent
+                type="submit"
+                label={loading ? "Processing..." : "Add To Bucket"}
+                disabled={loading}
+              />
+            </footer>
           </form>
         </DialogContent>
       </Dialog>
