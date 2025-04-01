@@ -9,7 +9,6 @@ export const RegisterBrand = async (brandData) => {
     );
     return response;
   } catch (error) {
-    console.log("AXIOS_ERROR ",error)
     return error.response?.data || error.message;
   }
 };
