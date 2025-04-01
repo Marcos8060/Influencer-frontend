@@ -41,7 +41,7 @@ export default function BucketListDialog() {
         dispatch(fetchAllBuckets(auth));
       }
     } catch (error) {
-      console.log("ERROR ", error);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }
