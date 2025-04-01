@@ -46,7 +46,7 @@ const CampaignsTable = () => {
   };
 
   useEffect(() => {
-    if (auth) {
+    if (auth && brandCampaigns.length === 0) {
       getCampaigns();
     }
   }, [auth]);
@@ -71,7 +71,7 @@ const CampaignsTable = () => {
             <table className="w-full min-w-[1000px] border border-input table-fixed">
               <thead className="bg-background uppercase text-xs text-color border-b border-input">
                 <tr>
-                  <th className="w-[150px] p-3">Name</th>
+                  <th className="w-[150px] p-3">Title</th>
                   <th className="w-[150px] p-3">Status</th>
                   <th className="w-[150px] p-3">Description</th>
                   <th className="w-[150px] p-3">No. of Influencers</th>
@@ -98,7 +98,7 @@ const CampaignsTable = () => {
                     {/* ✅ FIXED: Center the eye icon correctly */}
                     <td className="p-3">
                       <div className="flex justify-center">
-                        <button onClick={() => handleViewProfile(data)} className="border border-primary rounded px-4 py-2 text-xs">Open Report</button>
+                        <button onClick={() => handleViewProfile(data)} className="border border-primary rounded px-4 py-2 text-xs">View Report</button>
                       </div>
                     </td>
                   </tr>

@@ -22,7 +22,6 @@ const InfluencerTerms = () => {
   const router = useRouter();
   const auth = useAuth();
 
-  console.log(auth);
   const handleSubmit = async () => {
     dispatch(updateFormData({ agreedToTerms: true }));
     dispatch(updateFormData({ finishedOnboarding: true }));
@@ -41,7 +40,7 @@ const InfluencerTerms = () => {
         }
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }

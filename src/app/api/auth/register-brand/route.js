@@ -1,14 +1,11 @@
-import { backendAxiosInstance } from "@/assets/hooks/backend-axios-instance";
 import { API_URL } from "@/assets/api-endpoints";
+import { backendAxiosInstance } from "@/assets/hooks/backend-axios-instance";
 
-// For handling POST requests in Next.js 13+ using the app folder structure
 export async function POST(req) {
   try {
     const body = await req.json();
 
-    const payload = {
-      ...body,
-    };
+    const payload = { ...body };
 
     const config = {
       headers: {
@@ -22,7 +19,13 @@ export async function POST(req) {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
+
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+
+    // If the backend returns a structured error, pass it back
+    return new Response(
+      JSON.stringify(e.response?.data || { error: "Unknown server error" }),
+      { status: e.response?.status || 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

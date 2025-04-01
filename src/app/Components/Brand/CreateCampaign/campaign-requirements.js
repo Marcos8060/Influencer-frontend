@@ -12,24 +12,26 @@ import { useDispatch, useSelector } from "react-redux";
 import TickBoxComponent from "../../SharedComponents/TickBoxComponent";
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
 import ProductServiceDrawer from "./ProductServiceDrawer";
-import { createCampaign } from "@/redux/services/campaign";
-import { useAuth } from "@/assets/hooks/use-auth";
-import toast from "react-hot-toast";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
-  const auth = useAuth();
+
   const [details, setDetails] = useState({
     products: campaignData.products || [],
     services: campaignData.services || [],
+    exampleVideoUrl: campaignData.exampleVideoUrl || null,
     campaignPreferences: {
       videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || null,
       videoDuration: campaignData.campaignPreferences?.videoDuration || null,
-      showFace: campaignData.campaignPreferences?.showFace || true,
+      showFace: campaignData.campaignPreferences?.showFace ?? true,
       videoFormat: campaignData.campaignPreferences?.videoFormat || "Vertical",
+      videoStyle: campaignData.campaignPreferences?.videoStyle || [],
+      socialChannels: campaignData.campaignPreferences?.socialChannels || [],
+      collaborationType: campaignData.campaignPreferences?.collaborationType || [],
+      campaignObjective: campaignData.campaignPreferences?.campaignObjective || "",
+      contentLanguages: campaignData.campaignPreferences?.contentLanguages || "en,es,fr",
     },
-    exampleVideoUrl: campaignData.exampleVideoUrl || null,
   });
 
   useEffect(() => {
@@ -37,7 +39,17 @@ const CampaignRequirements = () => {
   }, [dispatch]);
 
   const handleNext = () => {
-    dispatch(updateFormData(details));
+    const updatedData = { 
+      ...campaignData, 
+      ...details, 
+      campaignPreferences: { 
+        ...campaignData.campaignPreferences, 
+        ...details.campaignPreferences 
+      } 
+    };
+
+    console.log("Updating Redux with:", updatedData);
+    dispatch(updateFormData(updatedData));
     dispatch(nextStep());
   };
 
@@ -45,18 +57,16 @@ const CampaignRequirements = () => {
   const requirements = ["Yes Include their face", "No, face not needed"];
   const formats = ["vertical", "horizontal", "square"];
 
-  // Update state for video duration
   const toggleVideoDuration = (duration) => {
     setDetails((prev) => ({
       ...prev,
       campaignPreferences: {
         ...prev.campaignPreferences,
-        videoDuration: prev.campaignPreferences.videoDuration === duration ? "" : duration,
+        videoDuration: prev.campaignPreferences.videoDuration === duration ? null : duration,
       },
     }));
   };
 
-  // Update state for creator face requirement
   const toggleShowFace = (requirement) => {
     setDetails((prev) => ({
       ...prev,
@@ -67,7 +77,6 @@ const CampaignRequirements = () => {
     }));
   };
 
-  // Update state for video format
   const toggleVideoFormat = (format) => {
     setDetails((prev) => ({
       ...prev,

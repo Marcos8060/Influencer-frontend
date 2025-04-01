@@ -35,7 +35,7 @@ export default function ConfirmDialog({ data }) {
         setOpen(false);
         setLoading(false);
     } catch (error) {
-        toast.error(error)
+      toast.error(error.response.data.errorMessage[0])
     }finally{
         setLoading(false);
     }

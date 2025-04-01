@@ -45,8 +45,8 @@ export default function AddToBucketListModal({ data }) {
     }
     try {
       const influencerIds = Array.isArray(data)
-        ? data.map((influencer) => String(influencer.influencerId)) // ✅ Handle multiple influencers
-        : [String(data.influencerId)]; // ✅ Handle single influencer
+        ? data.map((influencer) => String(influencer.influencerId))
+        : [String(data.influencerId)];
 
       const payload = {
         toBrandBucketList: selectedBucket.id,
@@ -60,7 +60,7 @@ export default function AddToBucketListModal({ data }) {
         setOpen(false);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }

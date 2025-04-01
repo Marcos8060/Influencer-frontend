@@ -22,6 +22,7 @@ import CampaignsTable from "@/app/Components/Brand/CampaignsTable";
 const CreateCampaign = () => {
   const { bucketList } = useSelector((store) => store.bucket);
   const { influencers } = useSelector((store) => store.filterResults);
+  const { brandCampaigns } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
@@ -40,7 +41,7 @@ const CreateCampaign = () => {
     ),
     3: (
       <>
-        We found <span className="font-black text-sm">{bucketList.length}</span> Campaigns
+        We found <span className="font-black text-sm">{brandCampaigns.length}</span> Campaigns
         in your Repository.
       </>
     )

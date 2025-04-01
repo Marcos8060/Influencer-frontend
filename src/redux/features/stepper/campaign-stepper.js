@@ -11,24 +11,24 @@ const initialState = {
     briefDescription: "",
     startDate: "",
     endDate: "",
-    coverImageUrl: "",
+    coverImageUrl: null,
     products: [],
     services: [],
     exampleVideoUrl: "",
     campaignPreferences: {
-      videoStyle: "",
+      videoStyle: [],
       videosPerCreator: null,
       videoDuration: null,
       showFace: true,
       videoFormat: "vertical",
-      socialChannels: "",
-      collaborationType: "",
+      socialChannels: [],
+      collaborationType: [],
       campaignObjective: "",
-      contentLanguages: "",
+      contentLanguages: "en,es,fr",
     },
     campaignCollaborators: [
       {
-        influencerId: '4d757a99-183e-4fe1-a1b1-d3f23edb2791',
+        influencerId: "4d757a99-183e-4fe1-a1b1-d3f23edb2791",
         status: "pending",
       },
     ],
@@ -54,22 +54,29 @@ const CampaignSlice = createSlice({
     updateFormData: (state, action) => {
       state.campaignData = { ...state.campaignData, ...action.payload };
     },
+    resetCampaignData: (state) => {
+      state.campaignData = initialState.campaignData;
+    }
   },
 });
 
-export const { setCurrentStep, nextStep, previousStep, updateFormData,setCampaigns } =
-  CampaignSlice.actions;
+export const {
+  setCurrentStep,
+  nextStep,
+  previousStep,
+  updateFormData,
+  setCampaigns,
+  resetCampaignData,
+} = CampaignSlice.actions;
 
-
-
-  export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
-    try {
-      const data = await fetchBrandCampaigns(auth);
-      dispatch(setCampaigns(data));
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
+  try {
+    const data = await fetchBrandCampaigns(auth);
+    dispatch(setCampaigns(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export default CampaignSlice.reducer;

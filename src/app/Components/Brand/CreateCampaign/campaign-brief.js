@@ -19,8 +19,8 @@ const CampaignBrief = () => {
 
   // State to manage form inputs
   const [details, setDetails] = useState({
-    briefTitle: campaignData.briefTitle || null,
-    briefDescription: campaignData.briefDescription || null,
+    briefTitle: campaignData.briefTitle || "",
+    briefDescription: campaignData.briefDescription || "",
     campaignPreferences: {
       socialChannels: campaignData.campaignPreferences?.socialChannels || [],
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
@@ -28,7 +28,19 @@ const CampaignBrief = () => {
   });
 
   const handleNext = () => {
-    dispatch(updateFormData(details));
+    const updatedData = {
+      ...campaignData,
+      briefTitle: details.briefTitle,
+      briefDescription: details.briefDescription,
+      campaignPreferences: {
+        ...campaignData.campaignPreferences, // Preserve existing values
+        socialChannels: details.campaignPreferences.socialChannels,
+        videoStyle: details.campaignPreferences.videoStyle,
+      },
+    };
+
+    console.log("Updated Data Before Dispatch:", updatedData);
+    dispatch(updateFormData(updatedData));
     dispatch(nextStep());
   };
 

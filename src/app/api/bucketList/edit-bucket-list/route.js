@@ -22,8 +22,9 @@ export async function PATCH(req) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: e.response?.status ?? 500,
-    });
+    return new Response(
+      JSON.stringify(e.response?.data || { error: "Unknown server error" }),
+      { status: e.response?.status || 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
