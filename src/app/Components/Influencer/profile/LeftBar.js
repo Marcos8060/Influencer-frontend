@@ -42,7 +42,7 @@ const LeftBar = () => {
           height={100}
         />
       ) : (
-        <section className="bg-white shadow-sm rounded-lg p-4 h-[70vh] text-color">
+        <section className="bg-white shadow-sm rounded-lg p-4 md:h-[70vh] text-color">
           <div className="flex items-center justify-between text-xs text-secondary font-bold mb-8">
             <p>Active</p>
             <EditDetailsModal {...{ influencerDetails }} />
