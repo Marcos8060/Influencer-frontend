@@ -7,7 +7,7 @@ const HeroSection = () => {
     <>
       <section className="md:flex items-center justify-center md:h-[90vh] h-[50vh] w-9/12 mx-auto md:mt-0 mt-24">
         <div className="md:w-1/2 space-y-4">
-          <h1 className="md:text-7xl text-4xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
+          <h1 className="md:text-6xl text-4xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
             Showcase. Discover. Connect
           </h1>
           <p className="text-color">
