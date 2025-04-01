@@ -34,8 +34,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.log("ERROR ", error);
-      toast.error("Please check your email or password");
+      toast.error(error.response.data.errorMessage[0]);
     }
   };
   const logInfluencer = async (email, password) => {
@@ -59,8 +58,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      console.log("ERROR ", error);
-      toast.error("Please check your email or password");
+      toast.error(error.response.data.errorMessage[0])
     }
   };
 
@@ -87,7 +85,7 @@ export const AuthProvider = ({ children }) => {
         toast.error("Logout failed. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred while logging out.");
+      toast.error(error.response.data.errorMessage[0])
     }
   };
 

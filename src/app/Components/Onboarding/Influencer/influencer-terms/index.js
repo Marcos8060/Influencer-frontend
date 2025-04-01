@@ -40,7 +40,7 @@ const InfluencerTerms = () => {
         }
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }

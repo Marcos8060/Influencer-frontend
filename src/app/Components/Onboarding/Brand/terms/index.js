@@ -31,9 +31,8 @@ const Terms = () => {
         setLoading(false)
         router.push('/onboarding/brand/dashboard')
       }
-      console.log("response ", response);
     } catch (error) {
-      toast.error(error)
+      toast.error(error.response.data.errorMessage[0])
     }finally{
       setLoading(false);
     }

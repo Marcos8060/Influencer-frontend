@@ -27,29 +27,46 @@ const BrandRegister = () => {
     setLoading(true);
     try {
       const response = await RegisterBrand(formData);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        phoneNumber: "",
-      });
-      if (response?.data.email && typeof response.data.email === "string") {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("registration_email", response.data.email);
+  
+      // Check if response is a valid Axios response object
+      if (response?.status === 200) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+        });
+  
+        if (response?.data?.email && typeof response.data.email === "string") {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("registration_email", response.data.email);
+          }
         }
-      }
-      if (response.status === 200) {
+  
         toast.success("Please check your email for the OTP!");
         router.push("/auth/register/brand/otp");
+      } else {
+        // Handle error messages properly
+        const errorMessage = response?.errorMessage?.[0] || "Something went wrong. Please try again.";
+        toast.error(errorMessage);
       }
     } catch (error) {
-      console.log("ERROR ", error);
-      // toast.error(error.me);
+      console.error("REGISTER_ERROR:", error);
+  
+      // Extract error message properly
+      let errorMessage = "Something went wrong. Please try again.";
+  
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.errorMessage?.[0] || errorMessage;
+      }
+  
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+  
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 w-11/12 mx-auto">
       <div>

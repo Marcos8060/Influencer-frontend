@@ -25,7 +25,7 @@ const CampaignPreview = () => {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ const CampaignPreview = () => {
     <div className="bg-background h-screen py-8 px-4">
       {success ? (
         <div className="flex items-center justify-center h-[50vh]">
-          <section className="bg-white rounded-lg shadow-sm p-4 w-5/12 flex items-center justify-center">
+          <section className="bg-white rounded-lg shadow-sm p-4 md:w-5/12 w-full flex items-center justify-center">
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-green text-center">
                 🎉 Campaign Created Successfully!
