@@ -72,7 +72,7 @@ const RightBar = () => {
               <h2 className="font-bold text-color">Preferences</h2>
               <EditPreferencesModal {...{ influencerPreferences }} />
             </div>
-            <section className="flex items-center gap-4">
+            <section className="flex items-center gap-4 border-b border-input py-2">
               <div>
                 <p className="text-sm text-color">Preferred Brands:</p>
               </div>
@@ -87,19 +87,19 @@ const RightBar = () => {
                 ))}
               </div>
             </section>
-            <section className="flex items-center gap-4">
+            <section className="flex items-center gap-4 border-b border-input py-2">
               <div>
                 <p className="text-sm text-color">Preferred Content:</p>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-1">
                 {influencerPreferences?.preferredCollaborationContentFormat?.map(
                   (brand, index) => (
-                    <small
+                    <p
                       className="bg-secondary text-white py-1 px-3 text-[10px] rounded-3xl"
                       key={index}
                     >
                       {brand}
-                    </small>
+                    </p>
                   )
                 )}
               </div>

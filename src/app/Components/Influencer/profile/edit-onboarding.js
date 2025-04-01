@@ -57,7 +57,6 @@ export default function EditOnboardingModal({ influencerOnboarding }) {
       );
 
       const response = await editInfluencerOnboarding(auth, updatedData);
-      console.log("EDIT_RESPONSE ", response);
 
       if (response.status === 200) {
         toast.success("Onboarding details edited successfully");
