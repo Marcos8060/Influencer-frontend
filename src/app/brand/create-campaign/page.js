@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import CampaignBasics from '@/app/Components/Brand/CreateCampaign/campaign-basics';
 import CampaignBrief from '@/app/Components/Brand/CreateCampaign/campaign-brief';
 import CampaignPreview from '@/app/Components/Brand/CreateCampaign/campaign-preview';
-import CampaignRequirements from '@/app/Components/Brand/CreateCampaign/campain-requirements';
+import CampaignRequirements from '@/app/Components/Brand/CreateCampaign/campaign-requirements';
 
 const CreateCampaign = () => {
   const { currentStep } = useSelector(( store ) => store.campaign);
@@ -16,6 +16,7 @@ const CreateCampaign = () => {
         return <CampaignBrief />;
       case 2:
         return <CampaignRequirements />;
+      case 3:
       default:
         return <CampaignPreview />;
     }

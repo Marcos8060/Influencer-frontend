@@ -22,7 +22,6 @@ const InfluencerTerms = () => {
   const router = useRouter();
   const auth = useAuth();
 
-  console.log(auth);
   const handleSubmit = async () => {
     dispatch(updateFormData({ agreedToTerms: true }));
     dispatch(updateFormData({ finishedOnboarding: true }));
