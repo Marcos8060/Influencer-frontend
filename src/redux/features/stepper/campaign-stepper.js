@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchBrandCampaigns } from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
+  brandCampaigns: [],
   campaignData: {
     title: "",
     description: "",
@@ -40,6 +42,9 @@ const CampaignSlice = createSlice({
     setCurrentStep: (state, action) => {
       state.currentStep = action.payload;
     },
+    setCampaigns: (state, action) => {
+      state.brandCampaigns = action.payload;
+    },
     nextStep: (state) => {
       state.currentStep += 1;
     },
@@ -52,7 +57,19 @@ const CampaignSlice = createSlice({
   },
 });
 
-export const { setCurrentStep, nextStep, previousStep, updateFormData } =
+export const { setCurrentStep, nextStep, previousStep, updateFormData,setCampaigns } =
   CampaignSlice.actions;
+
+
+
+  export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
+    try {
+      const data = await fetchBrandCampaigns(auth);
+      dispatch(setCampaigns(data));
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 export default CampaignSlice.reducer;

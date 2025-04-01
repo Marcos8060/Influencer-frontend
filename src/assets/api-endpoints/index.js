@@ -31,6 +31,7 @@ export const API_URL = {
 
     /***************** CAMPAIGN APIS **********************/
     CREATE_CAMPAIGN: "http://147.78.141.95:8075/api/campaigns/create/",
+    FETCH_BRAND_CAMPAIGNS: "http://147.78.141.95:8075/api/campaigns/brand/list/",
 };
 
 
@@ -62,6 +63,7 @@ export const APP_API_URL = {
 
     /***************** CAMPAIGN APIS **********************/
   CREATE_CAMPAIGN: '/api/campaign/create-campaign',
+  FETCH_BRAND_CAMPAIGNS: '/api/campaign/fetch-brand-campaigns',
 
 
   /***************** BUCKET LIST APIs **********************/

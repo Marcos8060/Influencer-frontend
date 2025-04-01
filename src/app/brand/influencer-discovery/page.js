@@ -14,8 +14,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { FaUsersBetweenLines } from "react-icons/fa6";
-import { MdOutlineSegment } from "react-icons/md";
 import { AiOutlineShopping } from "react-icons/ai";
+import { MdCampaign } from "react-icons/md";
+import CampaignsTable from "@/app/Components/Brand/CampaignsTable";
 
 
 const CreateCampaign = () => {
@@ -37,7 +38,12 @@ const CreateCampaign = () => {
         in your Repository.
       </>
     ),
-    3: "Tab Three",
+    3: (
+      <>
+        We found <span className="font-black text-sm">{bucketList.length}</span> Campaigns
+        in your Repository.
+      </>
+    )
   };
 
   useEffect(() => {
@@ -81,8 +87,8 @@ const CreateCampaign = () => {
               } cursor-pointer flex items-center gap-2`}
               onClick={() => setCurrentTab(3)}
             >
-              <MdOutlineSegment className="text-xl" />
-              <p>Tab Three</p>
+              <MdCampaign className="text-xl" />
+              <p>Campaigns</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -151,6 +157,7 @@ const CreateCampaign = () => {
         )}
         {currentTab === 1 && <AllInfluencers />}
         {currentTab === 2 && <BucketList />}
+        {currentTab === 3 && <CampaignsTable />}
       </div>
       <Footer />
     </>
