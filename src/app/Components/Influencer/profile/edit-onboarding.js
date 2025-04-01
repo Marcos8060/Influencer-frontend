@@ -65,7 +65,7 @@ export default function EditOnboardingModal({ influencerOnboarding }) {
       }
       setOpen(false);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }

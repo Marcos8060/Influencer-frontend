@@ -59,7 +59,7 @@ export default function EditPreferencesModal({
       }
       setOpen(false);
     } catch (error) {
-      toast.error(error.message || "Failed to update preferences");
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }
