@@ -70,7 +70,7 @@ export default function EditProfilePhotoModal({ influencerDetails }) {
         }
     } catch (error) {
         setLoading(false);
-        toast.error(error.message);
+        toast.error(error.response.data.errorMessage[0])
     }
 };
 

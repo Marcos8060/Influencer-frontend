@@ -66,7 +66,7 @@ export default function EditDetailsModal({ influencerDetails }) {
       }
       setOpen(false);
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.errorMessage[0])
     } finally {
       setLoading(false);
     }
