@@ -7,15 +7,18 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import Slide from "@mui/material/Slide";
 import { editProfilePhoto } from "@/redux/services/influencer/profile";
 import { FaCamera } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import { getAllProducts } from "@/redux/features/stepper/campaign-stepper";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllProducts,
+  updateFormData,
+} from "@/redux/features/stepper/campaign-stepper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function ProductCoverImageModal({ setDetails }) {
+  const { campaignData } = useSelector((store) => store.campaign);
   const auth = useAuth();
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
@@ -55,11 +58,17 @@ export default function ProductCoverImageModal({ setDetails }) {
 
     try {
       setLoading(true);
-      const res = await editProfilePhoto(auth, form_data); 
+      const res = await editProfilePhoto(auth, form_data);
       setDetails((prevDetails) => ({
         ...prevDetails,
-        productImages: [...prevDetails.productImages, {url : res.data.url}],
+        coverImage: { url: res.data.url },
       }));
+      dispatch(
+        updateFormData({
+          ...campaignData,
+          coverImage: { url: res.data.url },
+        })
+      );
       setLoading(false);
 
       if (res.status === 200) {
@@ -88,6 +97,12 @@ export default function ProductCoverImageModal({ setDetails }) {
             src={previewImage}
             alt="Profile"
           />
+        ) : campaignData.coverImage?.url ? (
+          <img
+            className="w-full h-40 object-cover"
+            src={campaignData.coverImage.url}
+            alt="Campaign Cover"
+          />
         ) : (
           <div className="">
             <FaCamera className="text-gray-500 text-4xl" />
@@ -115,12 +130,20 @@ export default function ProductCoverImageModal({ setDetails }) {
             <div className="w-full rounded bg-gray-200 flex items-center justify-center overflow-hidden">
               {previewImage ? (
                 <img
-                  className="w-full h-36 object-cover"
+                  className="w-full h-40 object-cover"
                   src={previewImage}
-                  alt="Profile Preview"
+                  alt="Profile"
+                />
+              ) : campaignData.coverImage?.url ? (
+                <img
+                  className="w-full h-40 object-cover"
+                  src={campaignData.coverImage.url}
+                  alt="Campaign Cover"
                 />
               ) : (
-                <FaCamera className="text-gray-500 text-6xl" />
+                <div className="">
+                  <FaCamera className="text-gray-500 text-4xl" />
+                </div>
               )}
             </div>
           </div>

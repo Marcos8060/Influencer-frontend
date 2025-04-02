@@ -27,7 +27,7 @@ const CampaignBasics = () => {
     description: campaignData.description || null,
     startDate: parseDate(campaignData.startDate),
     endDate: parseDate(campaignData.endDate),
-    coverImageUrl: campaignData.coverImageUrl || null,
+    coverImage: campaignData.coverImage || null,
   });
 
   // Handle DateField changes and update state
@@ -104,9 +104,9 @@ const CampaignBasics = () => {
 
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
-            <h2 className="font-bold">Campaign Cover Image</h2>
+            <h2 className="font-semibold text-sm text-center">Campaign Cover Image</h2>
           </div>
-          <CampaignProfileImageModal details={details} />
+          <CampaignProfileImageModal setDetails={setDetails} />
         </section>
 
         <footer className="flex items-center gap-4 justify-end">
