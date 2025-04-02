@@ -26,29 +26,45 @@ const InfluencerRegister = () => {
     setLoading(true);
     try {
       const response = await RegisterInfluencer(formData);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-      });
-      console.log("REGISTER_RESPONSE ", response);
-      if (response?.data.email && typeof response.data.email === "string") {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("influencer_email", response.data.email);
+  
+      // Check if response is a valid Axios response object
+      if (response?.status === 200) {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+        });
+  
+        if (response?.data?.email && typeof response.data.email === "string") {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("influencer_email", response.data.email);
+          }
         }
-      }
-      if (response.status === 200) {
+  
         toast.success("Please check your email for the OTP!");
         router.push("/auth/register/influencer/otp");
-      }   
-    } catch (error) {
-      console.log("ERROR ", error);
-      toast.error(error);
+      } else {
+        // Handle error messages properly
+        const errorMessage =
+          response?.errorMessage?.[0] || "Something went wrong. Please try again.";
+        toast.error(errorMessage);
+      }
+    } catch (error) {  
+      console.log(response)
+      // Extract error message properly
+      let errorMessage = "Something went wrong. Please try again.";
+  
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data.errorMessage?.[0] || errorMessage;
+      }
+  
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+  
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 w-11/12 mx-auto">
       <div className="w-full">
