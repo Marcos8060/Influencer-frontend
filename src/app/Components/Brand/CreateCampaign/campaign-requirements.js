@@ -15,6 +15,7 @@ import ProductServiceDrawer from "./ProductServiceDrawer";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
+  const [selectedProducts,setSelectedProducts] = useState([]);
   const dispatch = useDispatch();
 
   const [details, setDetails] = useState({
@@ -42,13 +43,14 @@ const CampaignRequirements = () => {
     const updatedData = { 
       ...campaignData, 
       ...details, 
+      products: campaignData.products.filter((product) =>
+        selectedProducts.includes(product.id)),
       campaignPreferences: { 
         ...campaignData.campaignPreferences, 
         ...details.campaignPreferences 
       } 
     };
 
-    console.log("Updating Redux with:", updatedData);
     dispatch(updateFormData(updatedData));
     dispatch(nextStep());
   };
@@ -99,7 +101,7 @@ const CampaignRequirements = () => {
           <div className="flex items-center gap-4 justify-between">
             <div className="w-1/2">
               <label className="text-xs font-semibold mb-4">Select product or service</label>
-              <ProductServiceDrawer />
+              <ProductServiceDrawer selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />
             </div>
             <div className="w-1/2">
               <label className="text-xs font-semibold mb-4">Videos per creator</label>

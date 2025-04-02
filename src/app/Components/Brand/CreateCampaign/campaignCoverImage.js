@@ -7,15 +7,15 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import Slide from "@mui/material/Slide";
 import { editProfilePhoto } from "@/redux/services/influencer/profile";
 import { FaCamera } from "react-icons/fa";
-import { AiOutlinePicture } from "react-icons/ai";
 import { useDispatch } from "react-redux";
-import { fetchAllInfluencerDetails } from "@/redux/features/influencer/profile";
+import { getAllProducts } from "@/redux/features/stepper/campaign-stepper";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CampaignProfileImageModal({ details }) {
+export default function ProductCoverImageModal({ setDetails }) {
   const auth = useAuth();
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
@@ -24,9 +24,7 @@ export default function CampaignProfileImageModal({ details }) {
 
   // Initialize form data
   const [imageFile, setImageFile] = useState(null);
-  const [previewImage, setPreviewImage] = useState(
-    details?.coverImageUrl || null
-  );
+  const [previewImage, setPreviewImage] = useState(null);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -52,48 +50,47 @@ export default function CampaignProfileImageModal({ details }) {
     }
 
     const form_data = new FormData();
-    form_data.append("picture", imageFile, imageFile.name);
+    form_data.append("file", imageFile); // Ensure it's assigned as "file"
+    form_data.append("file_section", "campaignCoverPhoto"); // Add file_section
 
     try {
       setLoading(true);
-      const res = await editProfilePhoto(auth, form_data);
+      const res = await editProfilePhoto(auth, form_data); 
+      setDetails((prevDetails) => ({
+        ...prevDetails,
+        productImages: [...prevDetails.productImages, {url : res.data.url}],
+      }));
       setLoading(false);
 
       if (res.status === 200) {
-        toast.success("Profile photo updated successfully");
+        toast.success("Image saved successfully");
         setPreviewImage(URL.createObjectURL(imageFile));
-        dispatch(fetchAllInfluencerDetails(auth));
+        dispatch(getAllProducts(auth));
         setOpen(false);
       } else {
         toast.error("Failed to upload photo");
       }
     } catch (error) {
       setLoading(false);
-      toast.error(error.message);
+      toast.error(error.response.data.errorMessage[0]);
     }
   };
-
-  useEffect(() => {
-    if (details?.coverImageUrl) {
-      setPreviewImage(details.coverImageUrl);
-    }
-  }, [details]);
 
   return (
     <React.Fragment>
       <div
         onClick={handleClickOpen}
-        className="w-28 h-28 rounded bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
+        className="rounded bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden"
       >
         {previewImage ? (
           <img
-            className="w-full h-full object-cover"
+            className="w-full h-40 object-cover"
             src={previewImage}
             alt="Profile"
           />
         ) : (
-          <div className="border border-input rounded p-4">
-            <AiOutlinePicture className="text-gray-500 text-3xl" />
+          <div className="">
+            <FaCamera className="text-gray-500 text-4xl" />
           </div>
         )}
       </div>
@@ -106,26 +103,24 @@ export default function CampaignProfileImageModal({ details }) {
         fullWidth
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
-        sx={{ zIndex: 1000 }}
+        sx={{ zIndex: 1500 }}
       >
         <DialogContent>
           <div>
-            <h2 className="text-color text-center font-semibold">
-              A great campaign starts with a great picture!
+            <h2 className="text-color text-center font-semibold text-sm">
+              Help Influencers identify with your product
             </h2>
           </div>
           <div className="flex items-center justify-center my-4">
-            <div className="w-40 h-40 rounded bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="w-full rounded bg-gray-200 flex items-center justify-center overflow-hidden">
               {previewImage ? (
                 <img
-                  className="w-full h-full object-cover"
+                  className="w-full h-36 object-cover"
                   src={previewImage}
                   alt="Profile Preview"
                 />
               ) : (
-                <div className="border border-input rounded p-4">
-                  <AiOutlinePicture className="text-gray-500 text-5xl" />
-                </div>
+                <FaCamera className="text-gray-500 text-6xl" />
               )}
             </div>
           </div>

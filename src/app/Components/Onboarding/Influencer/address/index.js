@@ -17,12 +17,12 @@ const Address = () => {
   );
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    influencerAddressLine1: influencerData.influencerAddressLine1 || "",
-    influencerAddressLine2: influencerData.influencerAddressLine2 || "",
-    influencerCity: influencerData.influencerCity || "",
-    influencerCountry: influencerData.influencerCountry || "",
-    influencerZipCode: influencerData.influencerZipCode || "",
-    influencerPhoneNumber: influencerData.influencerPhoneNumber || "",
+    influencerAddressLine1: influencerData.influencerAddressLine1 || null,
+    influencerAddressLine2: influencerData.influencerAddressLine2 || null,
+    influencerCity: influencerData.influencerCity ||  null,
+    influencerCountry: influencerData.influencerCountry || null,
+    influencerZipCode: influencerData.influencerZipCode || null,
+    influencerPhoneNumber: influencerData.influencerPhoneNumber || null,
   });
 
   useEffect(() => {

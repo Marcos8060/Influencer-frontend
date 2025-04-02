@@ -31,7 +31,9 @@ export const API_URL = {
 
     /***************** CAMPAIGN APIS **********************/
     CREATE_CAMPAIGN: "http://147.78.141.95:8075/api/campaigns/create/",
+    CREATE_PRODUCT: "http://147.78.141.95:8075/api/productService/user/product/create/",
     FETCH_BRAND_CAMPAIGNS: "http://147.78.141.95:8075/api/campaigns/brand/list/",
+    FETCH_PRODUCTS: "http://147.78.141.95:8075/api/productService/user/products/",
 };
 
 
@@ -57,13 +59,15 @@ export const APP_API_URL = {
   EDIT_INFLUENCER_DETAILS: "/api/influencer/profile/edit-influencer-details",
   EDIT_INFLUENCER_PREFERENCES: "/api/influencer/profile/edit-influencer-preferences",
   EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
-  EDIT_PROFILE_PHOTO: "/api/influencer/profile/edit-profile-photo",
+  EDIT_PROFILE_PHOTO: "/api/influencer/profile/upload-photo",
   FETCH_INFLUENCERS_IN_BUCKET: '/api/bucketList/fetch-influencers-in-bucket',
 
 
     /***************** CAMPAIGN APIS **********************/
   CREATE_CAMPAIGN: '/api/campaign/create-campaign',
+  CREATE_PRODUCT: '/api/campaign/create-product',
   FETCH_BRAND_CAMPAIGNS: '/api/campaign/fetch-brand-campaigns',
+  FETCH_PRODUCTS: '/api/campaign/fetch-products',
 
 
   /***************** BUCKET LIST APIs **********************/
