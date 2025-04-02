@@ -137,7 +137,7 @@ const OtpPage = () => {
           <button
             onClick={handleResendOtp}
             disabled={countdown > 0}
-            className={`${countdown > 0 ? 'cursor-not-allowed' : ''} text-link`}
+            className={`${countdown > 0 ? 'cursor-not-allowed opacity-50' : ''} text-link`}
           >
             {countdown > 0 ? `Request new code in ${countdown}s` : "Request a new code"}
           </button>
