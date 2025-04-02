@@ -39,7 +39,6 @@ const CampaignBrief = () => {
       },
     };
 
-    console.log("Updated Data Before Dispatch:", updatedData);
     dispatch(updateFormData(updatedData));
     dispatch(nextStep());
   };

@@ -2,86 +2,49 @@
 import React, { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
 import InputComponent from "../../SharedComponents/InputComponent";
-import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { fetchAllFilterResults } from "@/redux/features/influencer/filter";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { useRouter, useSearchParams } from "next/navigation";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import ExistingProducts from "./ExistingProducts";
+import { createProduct } from "@/redux/services/campaign";
+import toast from "react-hot-toast";
+import ProductCoverImageModal from "./productCoverImage";
 
-export default function ProductServiceDrawer() {
+export default function ProductServiceDrawer({ setSelectedProducts,selectedProducts }) {
   const dispatch = useDispatch();
   const auth = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState(1);
   const [visible, setVisible] = useState(false);
-  const [filters, setFilters] = useState({
-    country: "",
-    city: "",
-    race: [],
-    minimumNumberOfFollowers: "",
-    maximumNumberOfFollowers: "",
-    niche: [],
-    minimumEngagementRate: "",
-    maximumEngagementRate: "",
-    category: "",
-    minimumAge: "",
-    maximumAge: "",
-    gender: "",
-    onlyVerified: false,
-    isPlatformVerified: false,
+  const [details, setDetails] = useState({
+    name: "",
+    description: "",
+    productManualUrl: "",
+    productManualText: "",
+    price: "",
+    productImages: []
   });
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleFilterInfluencers = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const isFiltersEmpty = Object.values(filters).every(
-      (value) =>
-        value === "" ||
-        (Array.isArray(value) && value.length === 0) ||
-        value === false
-    );
-
-    if (isFiltersEmpty) {
-      toast.error("Please select at least one filter.");
-      return;
-    }
-
-    // Preserve existing query parameters
-    const existingParams = new URLSearchParams(searchParams.toString());
-
-    // Update query parameters with new filters
-    Object.keys(filters).forEach((key) => {
-      if (filters[key] && filters[key] !== "" && filters[key].length !== 0) {
-        existingParams.set(
-          key,
-          Array.isArray(filters[key]) ? filters[key].join(",") : filters[key]
-        );
-      } else {
-        existingParams.delete(key); // Remove empty filters from URL
-      }
-    });
-
-    // Update URL without reloading the page
-    router.push(`?${existingParams.toString()}`, { scroll: false });
     setLoading(true);
+
     try {
-      const response = await dispatch(fetchAllFilterResults(auth, filters));
-      if (response && response.length > 0) {
-        toast.success("Operations completed successfully");
+      const response = await createProduct(auth, details);
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Product saved successfully");
+        setVisible(false);
       } else {
-        toast.error("No Influencers found.");
+        toast.error(response.response.data.errorMessage[0]);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response?.data?.errorMessage) {
+        toast.error(error.response.data.errorMessage[0]);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
       setVisible(false);
@@ -121,77 +84,125 @@ export default function ProductServiceDrawer() {
             </div>
           </section>
           {currentTab === 1 && (
-            <form className="my-4">
-              <div className="space-y-4">
-                {/* NAME */}
-                <section className="">
-                  <label className="text-xs font-semibold" htmlFor="">
-                    Product/Service Name
-                  </label>
-                  <InputComponent
-                    className="w-full"
-                    placeholder="name"
-                    value={filters.country}
-                    onChange={(e) =>
-                      handleFilterChange("country", e.target.value)
-                    }
-                  />
-                </section>
-                {/* DESCRIPTION */}
-                <section className="">
-                  <label className="text-xs font-semibold" htmlFor="">
-                    Product/Service Description
-                  </label>
-                  <TextAreaComponent
-                    className="w-full"
-                    placeholder="description"
-                    value={filters.country}
-                    onChange={(e) =>
-                      handleFilterChange("country", e.target.value)
-                    }
-                  />
-                </section>
-                {/* WEBSITE */}
-                <section className="">
-                  <label className="text-xs font-semibold" htmlFor="">
-                    Website
-                  </label>
-                  <InputComponent
-                    className="w-full"
-                    placeholder="website"
-                    value={filters.country}
-                    onChange={(e) =>
-                      handleFilterChange("country", e.target.value)
-                    }
-                  />
-                </section>
-                {/* ACCESS INSTRUCTIONS */}
-                <section className="">
-                  <label className="text-xs font-semibold" htmlFor="">
-                    Access Instructions
-                  </label>
-                  <TextAreaComponent
-                    className="w-full"
-                    placeholder="instructions"
-                    value={filters.country}
-                    onChange={(e) =>
-                      handleFilterChange("country", e.target.value)
-                    }
-                  />
-                </section>
-                <section className="flex justify-end">
-                  <div className="flex items-center gap-4">
-                    <ButtonComponent
-                      disabled={loading}
-                      label={loading ? "Processing..." : "Save New Product"}
-                      onClick={handleFilterInfluencers}
+            <div>
+              <section className="border border-input rounded p-4 mt-4">
+                <div className="mb-4">
+                  <h2 className="font-semibold text-xs text-center">Product | Service Image</h2>
+                </div>
+                <ProductCoverImageModal setDetails={setDetails} />
+              </section>
+              <form className="my-4">
+                <div className="space-y-4">
+                  {/* NAME */}
+                  <section className="">
+                    <label className="text-xs font-semibold" htmlFor="">
+                      Product/Service Name
+                    </label>
+                    <InputComponent
+                      className="w-full"
+                      required
+                      placeholder="name"
+                      name="name"
+                      value={details.name}
+                      onChange={(e) =>
+                        setDetails((prevDetails) => ({
+                          ...prevDetails,
+                          [e.target.name]: e.target.value,
+                        }))
+                      }
                     />
-                  </div>
-                </section>
-              </div>
-            </form>
+                  </section>
+                  {/* DESCRIPTION */}
+                  <section className="">
+                    <label className="text-xs font-semibold" htmlFor="">
+                      Product/Service Description
+                    </label>
+                    <TextAreaComponent
+                      className="w-full"
+                      required
+                      placeholder="description"
+                      name="description"
+                      value={details.description}
+                      onChange={(e) =>
+                        setDetails((prevDetails) => ({
+                          ...prevDetails,
+                          [e.target.name]: e.target.value,
+                        }))
+                      }
+                    />
+                  </section>
+                  {/* PRICE */}
+                  <section className="">
+                    <label className="text-xs font-semibold" htmlFor="">
+                      Price
+                    </label>
+                    <InputComponent
+                      className="w-full"
+                      required
+                      placeholder="price"
+                      name="price"
+                      type="number"
+                      value={details.price}
+                      onChange={(e) =>
+                        setDetails((prevDetails) => ({
+                          ...prevDetails,
+                          [e.target.name]: e.target.value,
+                        }))
+                      }
+                    />
+                  </section>
+                  {/* WEBSITE */}
+                  <section className="">
+                    <label className="text-xs font-semibold" htmlFor="">
+                      Website
+                    </label>
+                    <InputComponent
+                      className="w-full"
+                      placeholder="website"
+                      required
+                      name="productManualUrl"
+                      value={details.productManualUrl}
+                      onChange={(e) =>
+                        setDetails((prevDetails) => ({
+                          ...prevDetails,
+                          [e.target.name]: e.target.value,
+                        }))
+                      }
+                    />
+                  </section>
+                  {/* ACCESS INSTRUCTIONS */}
+                  <section className="">
+                    <label className="text-xs font-semibold" htmlFor="">
+                      Access Instructions
+                    </label>
+                    <TextAreaComponent
+                      className="w-full"
+                      placeholder="instructions"
+                      name="productManualText"
+                      required
+                      value={details.productManualText}
+                      onChange={(e) =>
+                        setDetails((prevDetails) => ({
+                          ...prevDetails,
+                          [e.target.name]: e.target.value,
+                        }))
+                      }
+                    />
+                  </section>
+                  <section className="flex justify-end">
+                    <div className="flex items-center gap-4">
+                      <ButtonComponent
+                        disabled={loading}
+                        label={loading ? "Processing..." : "Save"}
+                        onClick={handleSubmit}
+                      />
+                    </div>
+                  </section>
+                </div>
+              </form>
+            </div>
           )}
-          {currentTab === 2 && <ExistingProducts />}
+          {currentTab === 2 && <ExistingProducts selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />}
         </Sidebar>
         <button
           onClick={() => setVisible(true)}

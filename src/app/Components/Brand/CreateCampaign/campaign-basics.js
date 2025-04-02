@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import DateFieldComponent from "../../SharedComponents/DateFieldComponent";
-import CampaignProfileImageModal from "./campaignImageModal";
+import CampaignProfileImageModal from "./campaignCoverImage";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { nextStep, updateFormData } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
@@ -105,7 +105,6 @@ const CampaignBasics = () => {
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
             <h2 className="font-bold">Campaign Cover Image</h2>
-            <small>We recommend a square image with dimensions around 500px by 500px</small>
           </div>
           <CampaignProfileImageModal details={details} />
         </section>

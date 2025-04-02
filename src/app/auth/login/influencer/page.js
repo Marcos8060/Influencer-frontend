@@ -70,7 +70,7 @@ const InfluencerLogin = () => {
         </form>
         <p className="text-xs mt-2">
           Dont have an account?{" "}
-          <Link href="/auth/register/brand" className="text-link">
+          <Link href="/auth/register/influencer" className="text-link">
             Sign Up here
           </Link>
         </p>
