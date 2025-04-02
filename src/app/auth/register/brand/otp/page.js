@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import { SendOtp } from "@/redux/services/auth";
 import toast from "react-hot-toast";
@@ -9,8 +9,21 @@ const OtpPage = () => {
   const otpLength = 6;
   const [otp, setOtp] = useState(new Array(otpLength).fill(""));
   const [loading, setLoading] = useState(false);
+  const [countdown, setCountdown] = useState(30);
+  const [canResend,setCanResend] = useState(false);
   const inputRefs = useRef([]);
   const router = useRouter();
+
+  // Start the countdown timer when the component mounts
+  useEffect(() => {
+    if (countdown === 0) return; // Stop the timer when it reaches 0
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+      setCanResend(true);
+    }, 1000);
+
+    return () => clearInterval(timer); // Clean up the timer on unmount
+  }, [countdown]);
 
   const handleChange = (e, index) => {
     let value = e.target.value;
@@ -35,16 +48,26 @@ const OtpPage = () => {
     }
   };
 
+  const handlePaste = (e) => {
+    const pastedText = e.clipboardData.getData("Text");
+
+    // Only proceed if the pasted text is the right length (6 digits)
+    if (pastedText.length === otpLength && /^\d{6}$/.test(pastedText)) {
+      const newOtp = pastedText.split("").map((char) => char);
+      setOtp(newOtp);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const otpCode = otp.join("");
-    
+
     if (otpCode.length !== otpLength) {
       return;
     }
 
     setLoading(true);
-  
+
     // Ensure localStorage is available and email exists
     let email = null;
     if (typeof window !== "undefined") {
@@ -64,7 +87,7 @@ const OtpPage = () => {
       const response = await SendOtp(payload);
       console.log("RESPONSE:", response);
       toast.success("OTP verified successfully!");
-      router.push('/auth/login/brand')
+      router.push('/auth/login/brand');
       setOtp(new Array(otpLength).fill(""));
     } catch (error) {
       console.log("OTP Verification Error:", error);
@@ -72,7 +95,17 @@ const OtpPage = () => {
       setLoading(false);
     }
   };
-  
+
+  const handleResendOtp = async () => {
+    // You can implement the resend OTP functionality here
+    if (countdown === 0) {
+      setCountdown(30); // Reset the countdown
+      // Call the SendOtp API or logic to resend OTP
+      toast.success("New OTP sent!");
+    } else {
+      toast.error("Please wait until the timer runs out.");
+    }
+  };
 
   return (
     <section className="flex items-center justify-center h-screen w-3/12 mx-auto">
@@ -82,7 +115,7 @@ const OtpPage = () => {
           Please enter the 6-digit code sent to your email for verification.
         </p>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="flex gap-4">
+          <div className="flex gap-4" onPaste={handlePaste}>
             {otp.map((char, index) => (
               <input
                 key={index}
@@ -97,11 +130,17 @@ const OtpPage = () => {
             ))}
           </div>
 
-
           <ButtonComponent label={loading ? "Verifying..." : "Verify"} disabled={loading} />
         </form>
         <p className="text-xs mt-2 text-center">
-          Didn't receive any code? Request a new code in 30s
+          Didn't receive any code?{" "}
+          <button
+            onClick={handleResendOtp}
+            disabled={countdown > 0}
+            className={`${countdown > 0 ? 'cursor-not-allowed' : ''} text-link`}
+          >
+            {countdown > 0 ? `Request new code in ${countdown}s` : "Request a new code"}
+          </button>
         </p>
       </div>
     </section>
