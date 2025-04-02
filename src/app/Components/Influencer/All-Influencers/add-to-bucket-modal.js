@@ -55,9 +55,12 @@ export default function AddToBucketListModal({ data }) {
 
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
+        console.log("ADD_TO_BUCKET_MODAL ",response)
         toast.success("Move to bucket successfully");
         dispatch(fetchAllBuckets(auth));
         setOpen(false);
+      }else{
+        toast.error('Something went wrong')
       }
     } catch (error) {
       toast.error(error.response.data.errorMessage[0])

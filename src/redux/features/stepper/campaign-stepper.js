@@ -12,7 +12,7 @@ const initialState = {
     briefDescription: "",
     startDate: "",
     endDate: "",
-    coverImageUrl: null,
+    coverImage: null,
     products: [],
     services: [],
     exampleVideoUrl: "",

@@ -57,7 +57,7 @@ const PreferredCompanies = () => {
             onChange={(e) => setSelectedCompanies(e.value)}
             options={races.map((item) => ({ label: item, value: item }))}
             optionLabel="label"
-            placeholder="Select Ethicity"
+            placeholder="Select Company"
           />
         </div>
         <div className="mt-2 space-y-2">

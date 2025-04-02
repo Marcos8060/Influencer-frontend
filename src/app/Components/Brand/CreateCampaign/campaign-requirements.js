@@ -21,10 +21,10 @@ const CampaignRequirements = () => {
   const [details, setDetails] = useState({
     products: campaignData.products || [],
     services: campaignData.services || [],
-    exampleVideoUrl: campaignData.exampleVideoUrl || null,
+    exampleVideoUrl: campaignData.exampleVideoUrl || "",
     campaignPreferences: {
-      videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || null,
-      videoDuration: campaignData.campaignPreferences?.videoDuration || null,
+      videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || "",
+      videoDuration: campaignData.campaignPreferences?.videoDuration || "",
       showFace: campaignData.campaignPreferences?.showFace ?? true,
       videoFormat: campaignData.campaignPreferences?.videoFormat || "Vertical",
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
@@ -40,20 +40,27 @@ const CampaignRequirements = () => {
   }, [dispatch]);
 
   const handleNext = () => {
+    // Combine existing and new product IDs, then remove duplicates using Set
+    const uniqueProductIds = [...new Set([
+        ...campaignData.products,
+        ...selectedProducts
+    ])];
+
     const updatedData = { 
-      ...campaignData, 
-      ...details, 
-      products: campaignData.products.filter((product) =>
-        selectedProducts.includes(product.id)),
-      campaignPreferences: { 
-        ...campaignData.campaignPreferences, 
-        ...details.campaignPreferences 
-      } 
+        ...campaignData,  // Keep existing campaign data
+        ...details,       // Merge with details (if any)
+        products: uniqueProductIds,  // Ensures no duplicate IDs
+        campaignPreferences: { 
+            ...campaignData.campaignPreferences,  // Keep existing preferences
+            ...details.campaignPreferences        // Merge with new preferences
+        } 
     };
 
     dispatch(updateFormData(updatedData));
     dispatch(nextStep());
-  };
+};
+  console.log("CAMPAIGN_DATA ",campaignData)
+  console.log("SELECTED ",selectedProducts)
 
   const durations = [15, 30, 60];
   const requirements = ["Yes Include their face", "No, face not needed"];
@@ -64,7 +71,7 @@ const CampaignRequirements = () => {
       ...prev,
       campaignPreferences: {
         ...prev.campaignPreferences,
-        videoDuration: prev.campaignPreferences.videoDuration === duration ? null : duration,
+        videoDuration: prev.campaignPreferences.videoDuration === duration ? "" : duration,
       },
     }));
   };
