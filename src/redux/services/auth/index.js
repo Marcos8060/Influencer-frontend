@@ -53,3 +53,12 @@ export const SendOtp = async (payload) => {
     return error.response?.data || error.message;
   }
 };
+
+export const RequestOtp = async (payload) => {
+  try {
+    const response = await axios.post(`${APP_API_URL.REQUEST_OTP}`, payload);
+    return response;
+  } catch (error) {
+    return error.response?.data || error.message;
+  }
+};
