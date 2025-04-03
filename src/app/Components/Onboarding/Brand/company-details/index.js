@@ -6,8 +6,6 @@ import {
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
-import { FaPerson } from "react-icons/fa6";
-import { FaBuilding } from "react-icons/fa";
 import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
@@ -22,7 +20,7 @@ const CompanyDetails = () => {
   const options = ["1", "2-5", "6-19", "20+"];
 
   useEffect(() => {
-    dispatch(setCurrentStep(4));
+    dispatch(setCurrentStep(3));
     setSelectedOption(formData.companySize || "")
   }, [dispatch, formData.companySize]);
 

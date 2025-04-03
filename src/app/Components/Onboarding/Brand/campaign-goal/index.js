@@ -52,7 +52,7 @@ const CampaignGoal = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(16));
+    dispatch(setCurrentStep(14));
   }, [dispatch]);
 
   return (
