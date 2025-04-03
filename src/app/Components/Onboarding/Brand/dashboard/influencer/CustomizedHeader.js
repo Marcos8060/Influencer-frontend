@@ -4,7 +4,6 @@ import { BsChevronDown } from "react-icons/bs";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { authContext } from "@/assets/context/use-context";
-import Link from "next/link";
 
 const InfluencerCustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
