@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { datum } from "@/app/influencer/influencer-results/influencersData";
 import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
@@ -17,34 +17,51 @@ import { FaUsersBetweenLines } from "react-icons/fa6";
 import { AiOutlineShopping } from "react-icons/ai";
 import { MdCampaign } from "react-icons/md";
 import CampaignsTable from "@/app/Components/Brand/CampaignsTable";
-
+import { authContext } from "@/assets/context/use-context";
+import { BsChevronDown } from "react-icons/bs";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const CreateCampaign = () => {
   const { bucketList } = useSelector((store) => store.bucket);
   const { influencers } = useSelector((store) => store.filterResults);
   const { brandCampaigns } = useSelector((store) => store.campaign);
+  const { logoutInfluencer, user } = useContext(authContext);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const tabHeadings = {
     1: (
       <>
-        We found <span className="font-black text-sm">{influencers.length}</span> Total Influencers
+        We found{" "}
+        <span className="font-black text-sm">{influencers.length}</span> Total
+        Influencers
       </>
     ),
     2: (
       <>
-        We found <span className="font-black text-sm">{bucketList.length}</span> Bucket(s)
-        in your Repository.
+        We found <span className="font-black text-sm">{bucketList.length}</span>{" "}
+        Bucket(s) in your Repository.
       </>
     ),
     3: (
       <>
-        We found <span className="font-black text-sm">{brandCampaigns.length}</span> Campaigns
-        in your Repository.
+        We found{" "}
+        <span className="font-black text-sm">{brandCampaigns.length}</span>{" "}
+        Campaigns in your Repository.
       </>
-    )
+    ),
   };
 
   useEffect(() => {
@@ -92,9 +109,35 @@ const CreateCampaign = () => {
               <p>Campaigns</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <p className="font-bold">Marcos</p>
-            <LogoutComponent />
+          <div>
+            <div className="flex items-center gap-2">
+              <span className=" text-sm">{user?.firstName}</span>
+              <BsChevronDown
+                onClick={handleClick}
+                className=" cursor-pointer"
+              />
+            </div>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={logoutInfluencer}>
+                <p className="text-sm">Logout</p>
+              </MenuItem>
+            </Menu>
           </div>
         </section>
         <h1 className="bg-background text-link text-xs p-2 rounded-md mt-8">
