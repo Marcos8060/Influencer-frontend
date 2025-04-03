@@ -39,7 +39,7 @@ const PreferredCompanies = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(5));
+    dispatch(setCurrentStep(6));
   }, [dispatch]);
 
   return (

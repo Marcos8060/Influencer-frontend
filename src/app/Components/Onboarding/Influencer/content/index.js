@@ -38,7 +38,7 @@ const InfluencerContent = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(4));
+    dispatch(setCurrentStep(0));
   }, [dispatch]);
 
   return (
@@ -62,7 +62,7 @@ const InfluencerContent = () => {
         </div>
         <div className="mt-2 space-y-2">
           <ButtonComponent onClick={handleNext} label="Next" />
-          <CustomizedBackButton onClick={() => dispatch(previousStep())} />
+          {/* <CustomizedBackButton onClick={() => dispatch(previousStep())} /> */}
         </div>
       </div>
     </section>

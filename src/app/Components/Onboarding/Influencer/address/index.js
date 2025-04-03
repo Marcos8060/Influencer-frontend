@@ -26,7 +26,7 @@ const Address = () => {
   });
 
   useEffect(() => {
-    dispatch(setCurrentStep(8));
+    dispatch(setCurrentStep(2));
   }, [
     dispatch,
     influencerData.influencerAddressLine1,

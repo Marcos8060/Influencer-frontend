@@ -25,7 +25,7 @@ const FindAboutUs = () => {
   };
 
   useEffect(() => {
-    // dispatch(setCurrentStep(0));
+    dispatch(setCurrentStep(10));
     setSelectedOption(influencerData.platformIntroductionSource || "");
   }, [influencerData.platformIntroductionSource]);
 

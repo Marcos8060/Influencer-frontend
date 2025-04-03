@@ -41,7 +41,7 @@ const EthnicBackground = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(3));
+    dispatch(setCurrentStep(5));
   }, [dispatch]);
 
   return (

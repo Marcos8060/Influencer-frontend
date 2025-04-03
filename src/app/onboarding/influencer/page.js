@@ -21,27 +21,27 @@ const InfluencerOnboarding = () => {
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 0:
-        return <FindAboutUs />;
-      case 1:
-        return <Gender />;
-      case 2:
-        return <DateOfBirth />;
-      case 3:
-        return <EthnicBackground />;
-      case 4:
         return <InfluencerContent />;
-      case 5:
-        return <PreferredCompanies />;
-      case 6:
-        return <PreferredBrandTypes />;
-      case 7:
+      case 1:
         return <Topics />;
-      case 8:
+      case 2:
         return <Address />;
-      case 9:
+      case 3:
+        return <DateOfBirth />;
+      case 4:
+        return <Gender />;
+      case 5:
+        return <EthnicBackground />;
+      case 6:
+        return <PreferredCompanies />;
+      case 7:
+        return <PreferredBrandTypes />;
+      case 8:
         return <InfluencerCollaboration />;
-      case 10:
+      case 9:
         return <LeadTime />;
+      case 10:
+        return <FindAboutUs />;
       case 11:
       default:
         return <InfluencerTerms />;

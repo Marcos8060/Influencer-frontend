@@ -21,7 +21,7 @@ const LeadTime = () => {
   });
 
   useEffect(() => {
-    dispatch(setCurrentStep(10));
+    dispatch(setCurrentStep(9));
   }, [dispatch, influencerData.preferredLeadTimeForProjectDays]);
 
   const handleNext = () => {

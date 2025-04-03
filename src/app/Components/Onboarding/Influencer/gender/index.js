@@ -36,7 +36,7 @@ const Gender = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(1));
+    dispatch(setCurrentStep(4));
   }, [dispatch]);
 
   return (
