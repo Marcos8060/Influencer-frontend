@@ -146,7 +146,6 @@ const AllInfluencers = () => {
                     <td className="p-3">{data?.city}</td>
                     <td className="p-3">{data.ethnicBackground}</td>
 
-                    {/* ✅ FIXED: Center the eye icon correctly */}
                     <td className="p-3">
                       <div className="flex justify-center">
                         <TiEye

@@ -74,7 +74,7 @@ export default function AddToBucketListModal({ data }) {
       <button
         className={`${
           Array.isArray(data) && data.length > 0
-            ? "bg-gradient-to-r from-primary to-secondary text-white rounded-3xl text-xs px-3 py-3"
+            ? "bg-gradient-to-r from-primary to-secondary text-white rounded text-xs px-3 py-3"
             : "border border-secondary text-xs px-3 py-2 rounded text-color font-semibold"
         } `}
         icon="pi pi-external-link"
@@ -101,7 +101,6 @@ export default function AddToBucketListModal({ data }) {
               placeholder="Select a Bucket"
             />
             <footer className="flex items-center justify-between gap-4">
-              <BucketListDialog />
               <ButtonComponent
                 type="submit"
                 label={loading ? "Processing..." : "Add To Bucket"}
@@ -109,6 +108,7 @@ export default function AddToBucketListModal({ data }) {
               />
             </footer>
           </form>
+          <BucketListDialog />
         </DialogContent>
       </Dialog>
     </React.Fragment>

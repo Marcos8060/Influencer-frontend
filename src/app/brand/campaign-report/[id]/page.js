@@ -9,7 +9,7 @@ const CampaignReport = () => {
     <>
     <section className="bg-background text-link md:w-7/12 w-full mx-auto rounded my-2 p-4 flex gap-2 items-center">
     <HiOutlineArrowNarrowLeft />
-      <Link href="/brand/influencer-discovery" className="font-semibold">Back to Influencer Discovery</Link>
+      <Link href="/brand/influencer-discovery" className="font-bold text-sm">Back to Influencer Discovery</Link>
     </section>
       <section className=" p-4 text-color space-y-4 mb-8">
         <div className="md:w-7/12 w-full mx-auto space-y-4">
