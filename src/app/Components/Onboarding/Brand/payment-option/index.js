@@ -56,7 +56,7 @@ const PaymentOption = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(15));
+    dispatch(setCurrentStep(13));
   }, [dispatch]);
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">

@@ -22,7 +22,7 @@ const BrandDetails = () => {
   });
 
   useEffect(() => {
-    dispatch(setCurrentStep(1));
+    dispatch(setCurrentStep(0));
   }, [
     dispatch,
     formData.brandWebsite,
@@ -74,7 +74,6 @@ const BrandDetails = () => {
           </div>
           <ButtonComponent onClick={handleNext} label="Next" />
         </form>
-        <CustomizedBackButton onClick={() => dispatch(previousStep())} />
       </div>
     </section>
   );

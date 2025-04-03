@@ -62,7 +62,7 @@ const VideoType = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(18));
+    dispatch(setCurrentStep(16));
   }, [dispatch]);
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">

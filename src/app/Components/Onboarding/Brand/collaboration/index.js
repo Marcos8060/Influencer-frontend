@@ -53,7 +53,7 @@ const Collaboration = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(17));
+    dispatch(setCurrentStep(15));
   }, [dispatch]);
 
   return (

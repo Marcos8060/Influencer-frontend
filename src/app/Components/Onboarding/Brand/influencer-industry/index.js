@@ -36,7 +36,7 @@ const InfluencerIndustry = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(14));
+    dispatch(setCurrentStep(4));
   }, [dispatch]);
 
   return (

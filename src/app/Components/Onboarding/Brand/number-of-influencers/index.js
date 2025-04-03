@@ -20,7 +20,7 @@ const NumberOfInfluencers = () => {
   const options = ["1-10", "10-20", "20-30", "40-50","50+"];
 
   useEffect(() => {
-    dispatch(setCurrentStep(5));
+    dispatch(setCurrentStep(6));
     setSelectedOption(formData.monthlyNumberOfInfluencers || "")
   }, [dispatch, formData.monthlyNumberOfInfluencers]);
   

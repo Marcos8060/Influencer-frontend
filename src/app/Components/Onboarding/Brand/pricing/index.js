@@ -13,7 +13,7 @@ const Pricing = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setCurrentStep(19));
+    dispatch(setCurrentStep(17));
   }, [dispatch]);
   return (
     <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4 text-color">

@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
+  previousStep,
   updateFormData,
 } from "@/redux/features/stepper";
 import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import BackComponent from "@/app/Components/SharedComponents/BackComponent";
 import toast from "react-hot-toast";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const FindAboutUs = () => {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ const FindAboutUs = () => {
   const formData = useSelector((store) => store.stepper.formData);
 
   useEffect(() => {
-    dispatch(setCurrentStep(0));
+    dispatch(setCurrentStep(18));
     setSelectedOption(formData.platformIntroductionSource || "");
   }, [dispatch, formData.businessType]);
 
@@ -57,7 +58,7 @@ const FindAboutUs = () => {
             />
           ))}
           <ButtonComponent onClick={handleNext} label="Next" />
-          {/* <BackComponent href="/auth/register/otp" /> */}
+          <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>
     </section>

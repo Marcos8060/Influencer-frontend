@@ -35,7 +35,7 @@ const BusinessIndustry = () => {
   ];
 
   useEffect(() => {
-    dispatch(setCurrentStep(3));
+    dispatch(setCurrentStep(1));
     setSelectedOption(formData.businessIndustry || "")
   }, [dispatch, formData.businessIndustry]);
 

@@ -49,7 +49,7 @@ const Countries = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(13));
+    dispatch(setCurrentStep(5));
   }, [dispatch]);
 
   return (
