@@ -38,7 +38,7 @@ const PreferredBrandTypes = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(6));
+    dispatch(setCurrentStep(7));
   }, [dispatch]);
 
   return (

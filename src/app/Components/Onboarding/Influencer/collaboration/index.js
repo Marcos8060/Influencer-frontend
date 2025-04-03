@@ -53,7 +53,7 @@ const InfluencerCollaboration = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(9));
+    dispatch(setCurrentStep(8));
   }, [dispatch]);
 
   return (

@@ -22,7 +22,7 @@ const DateOfBirth = () => {
   );
 
   useEffect(() => {
-    dispatch(setCurrentStep(2));
+    dispatch(setCurrentStep(3));
   }, [dispatch]);
 
   const handleDateChange = (date) => {
