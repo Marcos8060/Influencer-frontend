@@ -26,22 +26,22 @@ export const menu = [
   },
   {
     label: "Opportunities",
-    path: "/onboarding/brand/dashboard",
+    path: "",
     icon: <FaCarAlt />,
   },
   {
     label: "Collaboration",
-    path: "/onboarding/brand/dashboard",
+    path: "",
     icon: <FaUsers />,
   },
   {
     label: "Inbox",
-    path: "/onboarding/brand/dashboard",
+    path: "",
     icon: <FaMessage />,
   },
   {
     label: "Settings",
-    path: "/onboarding/brand/dashboard",
+    path: "",
     icon: <IoMdSettings />,
   },
 ];
@@ -54,17 +54,17 @@ export const influencerMenu = [
   },
   {
     label: "Opportunities",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <FaCarAlt />,
   },
   {
     label: "Collaboration",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <FaUsers />,
   },
   {
     label: "Invitations",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <FaCarAlt />,
   },
   {
@@ -74,17 +74,17 @@ export const influencerMenu = [
   },
   {
     label: "Content",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <FaCarAlt />,
   },
   {
     label: "Inbox",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <FaMessage />,
   },
   {
     label: "Settings",
-    path: "/onboarding/influencer/dashboard",
+    path: "",
     icon: <IoMdSettings />,
   },
 ];
