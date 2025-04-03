@@ -89,9 +89,9 @@ const CampaignsTable = () => {
                     <td className="p-3 flex items-center gap-3">
                       <p className="font-semibold text-color">{data.title}</p>
                     </td>
-                    <td className="p-3">Live</td>
+                    <td className="p-3">{data.status}</td>
                     <td className="p-3">{data?.description}</td>
-                    <td className="p-3">50</td>
+                    <td className="p-3">{data?.numberOfInfluencers}</td>
                     <td className="p-3">{data.startDate}</td>
                     <td className="p-3">{data.endDate}</td>
 
