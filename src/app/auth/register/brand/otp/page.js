@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import { SendOtp } from "@/redux/services/auth";
+import { RequestOtp, SendOtp } from "@/redux/services/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ const OtpPage = () => {
   const [otp, setOtp] = useState(new Array(otpLength).fill(""));
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(30);
-  const [canResend,setCanResend] = useState(false);
+  const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef([]);
   const router = useRouter();
 
@@ -86,7 +86,7 @@ const OtpPage = () => {
     try {
       await SendOtp(payload);
       toast.success("OTP verified successfully!");
-      router.push('/auth/login/brand');
+      router.push("/auth/login/brand");
       setOtp(new Array(otpLength).fill(""));
     } catch (error) {
       console.log("OTP Verification Error:", error);
@@ -96,11 +96,19 @@ const OtpPage = () => {
   };
 
   const handleResendOtp = async () => {
-    // You can implement the resend OTP functionality here
     if (countdown === 0) {
       setCountdown(30); // Reset the countdown
-      // Call the SendOtp API or logic to resend OTP
-      toast.success("New OTP sent!");
+      const brand_email = localStorage.getItem("registration_email");
+      const payload = {
+        email: brand_email,
+        notificationType: "Registration otp",
+      };
+      const response = await RequestOtp(payload);
+      if (response.status === 200) {
+        toast.success("New OTP sent to your email!");
+      }else{
+        toast.error('Something went wrong')
+      }
     } else {
       toast.error("Please wait until the timer runs out.");
     }
@@ -129,16 +137,23 @@ const OtpPage = () => {
             ))}
           </div>
 
-          <ButtonComponent label={loading ? "Verifying..." : "Verify"} disabled={loading} />
+          <ButtonComponent
+            label={loading ? "Verifying..." : "Verify"}
+            disabled={loading}
+          />
         </form>
         <p className="text-xs mt-2 text-center">
           Didn't receive any code?{" "}
           <button
             onClick={handleResendOtp}
             disabled={countdown > 0}
-            className={`${countdown > 0 ? 'cursor-not-allowed opacity-50' : ''} text-link`}
+            className={`${
+              countdown > 0 ? "cursor-not-allowed opacity-50" : ""
+            } text-link`}
           >
-            {countdown > 0 ? `Request new code in ${countdown}s` : "Request a new code"}
+            {countdown > 0
+              ? `Request new code in ${countdown}s`
+              : "Request a new code"}
           </button>
         </p>
       </div>

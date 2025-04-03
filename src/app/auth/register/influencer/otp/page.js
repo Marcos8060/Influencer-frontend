@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import { SendOtp } from "@/redux/services/auth";
+import { RequestOtp, SendOtp } from "@/redux/services/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -96,11 +96,20 @@ const OtpPage = () => {
   };
 
   const handleResendOtp = async () => {
-    // You can implement the resend OTP functionality here
     if (countdown === 0) {
       setCountdown(30); // Reset the countdown
-      // Call the SendOtp API or logic to resend OTP
-      toast.success("New OTP sent!");
+      const influencer_email = localStorage.getItem("influencer_email");
+      const payload = {
+        email: influencer_email,
+        notificationType: "Registration otp",
+      };
+      const response = await RequestOtp(payload);
+      console.log(response);
+      if (response.status === 200) {
+        toast.success("New OTP sent to your email!");
+      }else{
+        toast.error(response.errorMessage[0]);
+      }
     } else {
       toast.error("Please wait until the timer runs out.");
     }
