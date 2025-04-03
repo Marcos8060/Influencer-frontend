@@ -84,8 +84,7 @@ const OtpPage = () => {
       notificationType: "Registration otp",
     };
     try {
-      const response = await SendOtp(payload);
-      console.log("RESPONSE:", response);
+      await SendOtp(payload);
       toast.success("OTP verified successfully!");
       router.push('/auth/login/brand');
       setOtp(new Array(otpLength).fill(""));

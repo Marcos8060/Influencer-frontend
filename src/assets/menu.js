@@ -26,22 +26,22 @@ export const menu = [
   },
   {
     label: "Opportunities",
-    path: "/dashboard/opportunities",
+    path: "/onboarding/brand/dashboard",
     icon: <FaCarAlt />,
   },
   {
     label: "Collaboration",
-    path: "/dashboard/collaboration",
+    path: "/onboarding/brand/dashboard",
     icon: <FaUsers />,
   },
   {
     label: "Inbox",
-    path: "/dashboard/inbox",
+    path: "/onboarding/brand/dashboard",
     icon: <FaMessage />,
   },
   {
     label: "Settings",
-    path: "/dashboard/settings",
+    path: "/onboarding/brand/dashboard",
     icon: <IoMdSettings />,
   },
 ];
@@ -54,17 +54,17 @@ export const influencerMenu = [
   },
   {
     label: "Opportunities",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <FaCarAlt />,
   },
   {
     label: "Collaboration",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <FaUsers />,
   },
   {
     label: "Invitations",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <FaCarAlt />,
   },
   {
@@ -74,17 +74,17 @@ export const influencerMenu = [
   },
   {
     label: "Content",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <FaCarAlt />,
   },
   {
     label: "Inbox",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <FaMessage />,
   },
   {
     label: "Settings",
-    path: "/onboarding/brand/dashboard",
+    path: "/onboarding/influencer/dashboard",
     icon: <IoMdSettings />,
   },
 ];
