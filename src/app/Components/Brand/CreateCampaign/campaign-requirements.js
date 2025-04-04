@@ -12,10 +12,11 @@ import { useDispatch, useSelector } from "react-redux";
 import TickBoxComponent from "../../SharedComponents/TickBoxComponent";
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
 import ProductServiceDrawer from "./ProductServiceDrawer";
+import { FaCheck } from "react-icons/fa6";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
-  const [selectedProducts,setSelectedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const dispatch = useDispatch();
 
   const [details, setDetails] = useState({
@@ -23,15 +24,19 @@ const CampaignRequirements = () => {
     services: campaignData.services || [],
     exampleVideoUrl: campaignData.exampleVideoUrl || "",
     campaignPreferences: {
-      videosPerCreator: campaignData.campaignPreferences?.videosPerCreator || "",
+      videosPerCreator:
+        campaignData.campaignPreferences?.videosPerCreator || "",
       videoDuration: campaignData.campaignPreferences?.videoDuration || "",
       showFace: campaignData.campaignPreferences?.showFace ?? true,
       videoFormat: campaignData.campaignPreferences?.videoFormat || "Vertical",
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
       socialChannels: campaignData.campaignPreferences?.socialChannels || [],
-      collaborationType: campaignData.campaignPreferences?.collaborationType || [],
-      campaignObjective: campaignData.campaignPreferences?.campaignObjective || "",
-      contentLanguages: campaignData.campaignPreferences?.contentLanguages || "en,es,fr",
+      collaborationType:
+        campaignData.campaignPreferences?.collaborationType || [],
+      campaignObjective:
+        campaignData.campaignPreferences?.campaignObjective || "",
+      contentLanguages:
+        campaignData.campaignPreferences?.contentLanguages || "en,es,fr",
     },
   });
 
@@ -41,26 +46,23 @@ const CampaignRequirements = () => {
 
   const handleNext = () => {
     // Combine existing and new product IDs, then remove duplicates using Set
-    const uniqueProductIds = [...new Set([
-        ...campaignData.products,
-        ...selectedProducts
-    ])];
+    const uniqueProductIds = [
+      ...new Set([...campaignData.products, ...selectedProducts]),
+    ];
 
-    const updatedData = { 
-        ...campaignData,  // Keep existing campaign data
-        ...details,       // Merge with details (if any)
-        products: uniqueProductIds,  // Ensures no duplicate IDs
-        campaignPreferences: { 
-            ...campaignData.campaignPreferences,  // Keep existing preferences
-            ...details.campaignPreferences        // Merge with new preferences
-        } 
+    const updatedData = {
+      ...campaignData, // Keep existing campaign data
+      ...details, // Merge with details (if any)
+      products: uniqueProductIds, // Ensures no duplicate IDs
+      campaignPreferences: {
+        ...campaignData.campaignPreferences, // Keep existing preferences
+        ...details.campaignPreferences, // Merge with new preferences
+      },
     };
 
     dispatch(updateFormData(updatedData));
     dispatch(nextStep());
-};
-  console.log("CAMPAIGN_DATA ",campaignData)
-  console.log("SELECTED ",selectedProducts)
+  };
 
   const durations = [15, 30, 60];
   const requirements = ["Yes Include their face", "No, face not needed"];
@@ -71,7 +73,8 @@ const CampaignRequirements = () => {
       ...prev,
       campaignPreferences: {
         ...prev.campaignPreferences,
-        videoDuration: prev.campaignPreferences.videoDuration === duration ? "" : duration,
+        videoDuration:
+          prev.campaignPreferences.videoDuration === duration ? "" : duration,
       },
     }));
   };
@@ -105,13 +108,49 @@ const CampaignRequirements = () => {
             <h2 className="font-bold">Product or Service</h2>
             <small>Select the product or service you are promoting</small>
           </div>
-          <div className="flex items-center gap-4 justify-between">
-            <div className="w-1/2">
-              <label className="text-xs font-semibold mb-4">Select product or service</label>
-              <ProductServiceDrawer selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />
+          <div className="md:flex items-center gap-4 justify-between md:space-y-0 space-y-4">
+            <div className="md:w-1/2 w-full">
+              {selectedProducts.length > 0 ? (
+                <section className="md:flex items-center justify-between">
+                  <div className="text-green flex items-center md:gap-1">
+                    <div>
+                      <p className="text-sm font-light ">
+                        <span className="font-bold">
+                          {selectedProducts?.length}
+                        </span>{" "}
+                        product(s) selected
+                      </p>
+                    </div>
+                    <div>
+                      <FaCheck />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold mb-4">
+                      Add another product
+                    </label>
+                    <ProductServiceDrawer
+                      selectedProducts={selectedProducts}
+                      setSelectedProducts={setSelectedProducts}
+                    />
+                  </div>
+                </section>
+              ) : (
+                <>
+                  <label className="text-xs font-semibold mb-4">
+                    Select product or service
+                  </label>
+                  <ProductServiceDrawer
+                    selectedProducts={selectedProducts}
+                    setSelectedProducts={setSelectedProducts}
+                  />
+                </>
+              )}
             </div>
-            <div className="w-1/2">
-              <label className="text-xs font-semibold mb-4">Videos per creator</label>
+            <div className="md:w-1/2 w-full">
+              <label className="text-xs font-semibold mb-4">
+                Videos per creator
+              </label>
               <InputComponent
                 type="number"
                 value={details.campaignPreferences.videosPerCreator}
@@ -160,8 +199,10 @@ const CampaignRequirements = () => {
                 key={requirement}
                 label={requirement}
                 checked={
-                  (requirement === "Yes Include their face" && details.campaignPreferences.showFace) ||
-                  (requirement === "No, face not needed" && !details.campaignPreferences.showFace)
+                  (requirement === "Yes Include their face" &&
+                    details.campaignPreferences.showFace) ||
+                  (requirement === "No, face not needed" &&
+                    !details.campaignPreferences.showFace)
                 }
                 onChange={() => toggleShowFace(requirement)}
               />
@@ -191,11 +232,16 @@ const CampaignRequirements = () => {
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
             <h2 className="font-bold">Example Content</h2>
-            <small>Add links to videos that you would like creators to use as inspiration</small>
+            <small>
+              Add links to videos that you would like creators to use as
+              inspiration
+            </small>
           </div>
           <InputComponent
             value={details.exampleVideoUrl}
-            onChange={(e) => setDetails({ ...details, exampleVideoUrl: e.target.value })}
+            onChange={(e) =>
+              setDetails({ ...details, exampleVideoUrl: e.target.value })
+            }
             placeholder="Video URL"
           />
         </section>
