@@ -10,7 +10,7 @@ const OtpPage = () => {
   const [otp, setOtp] = useState(new Array(otpLength).fill(""));
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(30);
-  const [canResend,setCanResend] = useState(false);
+  const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef([]);
   const router = useRouter();
 
@@ -84,10 +84,16 @@ const OtpPage = () => {
       notificationType: "Registration otp",
     };
     try {
-      await SendOtp(payload);
-      toast.success("OTP verified successfully!");
-      router.push('/auth/login/influencer');
-      setOtp(new Array(otpLength).fill(""));
+      const res = await SendOtp(payload);
+      console.log(res);
+      if (res.statusCode === 200) {
+        toast.success("OTP verified successfully!");
+        router.push("/auth/login/influencer");
+        setOtp(new Array(otpLength).fill(""));
+      } else {
+        toast.error("You are not authenticated!");
+        setOtp(new Array(otpLength).fill(""));
+      }
     } catch (error) {
       console.log("OTP Verification Error:", error);
     } finally {
@@ -107,7 +113,7 @@ const OtpPage = () => {
       console.log(response);
       if (response.status === 200) {
         toast.success("New OTP sent to your email!");
-      }else{
+      } else {
         toast.error(response.errorMessage[0]);
       }
     } else {
@@ -138,16 +144,23 @@ const OtpPage = () => {
             ))}
           </div>
 
-          <ButtonComponent label={loading ? "Verifying..." : "Verify"} disabled={loading} />
+          <ButtonComponent
+            label={loading ? "Verifying..." : "Verify"}
+            disabled={loading}
+          />
         </form>
         <p className="text-xs mt-2 text-center">
           Didn't receive any code?{" "}
           <button
             onClick={handleResendOtp}
             disabled={countdown > 0}
-            className={`${countdown > 0 ? 'cursor-not-allowed opacity-50' : ''} text-link`}
+            className={`${
+              countdown > 0 ? "cursor-not-allowed opacity-50" : ""
+            } text-link`}
           >
-            {countdown > 0 ? `Request new code in ${countdown}s` : "Request a new code"}
+            {countdown > 0
+              ? `Request new code in ${countdown}s`
+              : "Request a new code"}
           </button>
         </p>
       </div>
