@@ -104,7 +104,7 @@ const AllInfluencers = () => {
         <>
           <div className="w-full overflow-x-auto h-[65vh] my-2">
             <table className="w-full min-w-[1000px] border border-input table-fixed">
-              <thead className="bg-background uppercase text-xs text-color border-b border-input">
+              <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white border-b border-input">
                 <tr>
                   <th className="w-[150px] p-3">Full Name</th>
                   <th className="w-[150px] p-3">Country</th>
