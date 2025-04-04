@@ -107,7 +107,7 @@ const AllInfluencers = () => {
           {currentData.length > 0 ? (
             <div className="w-full overflow-x-auto h-[65vh] my-2">
               <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
+                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white font-semibold">
                   <tr>
                     <th className="w-[150px] p-3">Full Name</th>
                     <th className="w-[150px] p-3">Country</th>
