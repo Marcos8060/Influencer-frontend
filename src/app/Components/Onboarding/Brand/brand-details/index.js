@@ -16,15 +16,15 @@ const BrandDetails = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    brandWebsite: formData.brandWebsite || "",
-    legalCompanyName: formData.legalCompanyName || "",
-    country: formData.country || "",
-    state: formData.state || "",
-    city: formData.city || "",
-    address: formData.address || "",
-    zipCode: formData.zipCode || "",
-    brandName: formData.brandName || "",
-    brandDescription: formData.brandDescription || "",
+    brandWebsite: formData.brandWebsite || null,
+    legalCompanyName: formData.legalCompanyName || null,
+    country: formData.country || null,
+    state: formData.state || null,
+    city: formData.city || null,
+    address: formData.address || null,
+    zipCode: formData.zipCode || null,
+    brandName: formData.brandName || null,
+    brandDescription: formData.brandDescription || null,
   });
 
   useEffect(() => {
@@ -118,6 +118,15 @@ const BrandDetails = () => {
             <InputComponent
               value={details.address}
               onChange={(e) => setDetails({ ...details,address: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="zipCode">
+              Zip code
+            </label>
+            <InputComponent
+              value={details.zipCode}
+              onChange={(e) => setDetails({ ...details,zipCode: e.target.value })}
             />
           </div>
           <div>
