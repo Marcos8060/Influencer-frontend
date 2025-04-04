@@ -55,15 +55,15 @@ export default function AddToBucketListModal({ data }) {
 
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
-        console.log("ADD_TO_BUCKET_MODAL ",response)
+        console.log("ADD_TO_BUCKET_MODAL ", response);
         toast.success("Move to bucket successfully");
         dispatch(fetchAllBuckets(auth));
         setOpen(false);
-      }else{
-        toast.error('Something went wrong')
+      } else {
+        toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0])
+      toast.error(error.response.data.errorMessage[0]);
     } finally {
       setLoading(false);
     }
@@ -93,22 +93,28 @@ export default function AddToBucketListModal({ data }) {
         sx={{ zIndex: 1000 }}
       >
         <DialogContent>
-          <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-            <DropdownComponent
-              options={bucketList}
-              value={selectedBucket}
-              onChange={setSelectedBucket}
-              placeholder="Select a Bucket"
-            />
-            <footer className="flex items-center justify-between gap-4">
-              <ButtonComponent
-                type="submit"
-                label={loading ? "Processing..." : "Add To Bucket"}
-                disabled={loading}
+          <section>
+            <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+              <DropdownComponent
+                options={bucketList}
+                value={selectedBucket}
+                onChange={setSelectedBucket}
+                placeholder="Select a Bucket"
               />
-            </footer>
-          </form>
-          <BucketListDialog />
+              <footer className="mt-4">
+                <ButtonComponent
+                  type="submit"
+                  label={loading ? "Processing..." : "Add To Bucket"}
+                  disabled={loading}
+                />
+              </footer>
+            </form>
+
+            {/* Keep BucketListDialog outside the form but aligned */}
+            <div className="mt-4 flex justify-end">
+              <BucketListDialog />
+            </div>
+          </section>
         </DialogContent>
       </Dialog>
     </React.Fragment>

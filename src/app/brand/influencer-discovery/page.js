@@ -72,7 +72,7 @@ const CreateCampaign = () => {
 
   return (
     <>
-      <div className="md:px-12 px-4 py-4">
+      <div className="py-4">
         <section className="border-b border-b-input w-full pt-1 px-2 mx-auto flex items-center justify-between text-color text-sm">
           <div className="flex items-center gap-8">
             <div
@@ -109,40 +109,7 @@ const CreateCampaign = () => {
               <p>Campaigns</p>
             </div>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className=" text-sm">{user?.firstName}</span>
-              <BsChevronDown
-                onClick={handleClick}
-                className=" cursor-pointer"
-              />
-            </div>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
-            >
-              <MenuItem onClick={logoutInfluencer}>
-                <p className="text-sm">Logout</p>
-              </MenuItem>
-            </Menu>
-          </div>
         </section>
-        <h1 className="bg-background text-link text-xs p-2 rounded-md mt-8">
-          {tabHeadings[currentTab] || ""}
-        </h1>
         {currentTab === 0 && (
           <section className="grid md:grid-cols-5 grid-cols-1 gap-4 mb-8">
             {datum.map((data, index) => (
@@ -203,7 +170,6 @@ const CreateCampaign = () => {
         {currentTab === 2 && <BucketList />}
         {currentTab === 3 && <CampaignsTable />}
       </div>
-      <Footer />
     </>
   );
 };
