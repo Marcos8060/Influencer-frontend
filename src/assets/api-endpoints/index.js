@@ -1,40 +1,40 @@
 //------------------------ Backend APIs ----------------------//
 export const API_URL = {
   /***************** AUTH APIS **********************/
-  LOGIN: "http://147.78.141.95:8075/api/auth/login/",
-  LOGOUT: "http://147.78.141.95:8075/api/auth/logout/",
-  REGISTER_BRAND: "http://147.78.141.95:8075/api/auth/register/brand/",
-  SEND_OTP: "http://147.78.141.95:8075/api/auth/otp/verify/",
-  REQUEST_OTP: "http://147.78.141.95:8075/api/auth/otp/request/",
-  REGISTER_INFLUENCER: "http://147.78.141.95:8075/api/auth/register/influencer/",
-  ONBOARD_BRAND: "http://147.78.141.95:8075/api/brands/onboarding/post/",
+  LOGIN: "http://147.78.141.96:8075/api/auth/login/",
+  LOGOUT: "http://147.78.141.96:8075/api/auth/logout/",
+  REGISTER_BRAND: "http://147.78.141.96:8075/api/auth/register/brand/",
+  SEND_OTP: "http://147.78.141.96:8075/api/auth/otp/verify/",
+  REQUEST_OTP: "http://147.78.141.96:8075/api/auth/otp/request/",
+  REGISTER_INFLUENCER: "http://147.78.141.96:8075/api/auth/register/influencer/",
+  ONBOARD_BRAND: "http://147.78.141.96:8075/api/brands/onboarding/post/",
 
 
     /***************** INFLUENCER APIS **********************/
-  ONBOARD_INFLUENCER: "http://147.78.141.95:8075/api/influencers/onboarding/post/",
-  FILTER_INFLUENCER: "http://147.78.141.95:8075/api/search/influencers/",
-  MOVE_TO_BUCKET: "http://147.78.141.95:8075/api/brands/bucketList/influencers/move/",
-  FETCH_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/get/",
-  FETCH_INFLUENCER_PREFERENCES: "http://147.78.141.95:8075/api/influencers/preferences/get/",
-  FETCH_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/get/",
-  EDIT_INFLUENCER_DETAILS: "http://147.78.141.95:8075/api/auth/users/update/",
-  EDIT_INFLUENCER_PREFENCES: "http://147.78.141.95:8075/api/influencers/preferences/update/",
-  EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.95:8075/api/influencers/update/",
-  EDIT_PROFILE_PHOTO: "http://147.78.141.95:8075/api/medias/upload/",
-  FETCH_INFLUENCERS_IN_BUCKET: "http://147.78.141.95:8075/api/search/bucketList/list/influencers/",
+  ONBOARD_INFLUENCER: "http://147.78.141.96:8075/api/influencers/onboarding/post/",
+  FILTER_INFLUENCER: "http://147.78.141.96:8075/api/search/influencers/",
+  MOVE_TO_BUCKET: "http://147.78.141.96:8075/api/brands/bucketList/influencers/move/",
+  FETCH_INFLUENCER_DETAILS: "http://147.78.141.96:8075/api/auth/users/get/",
+  FETCH_INFLUENCER_PREFERENCES: "http://147.78.141.96:8075/api/influencers/preferences/get/",
+  FETCH_INFLUENCER_ONBOARDING: "http://147.78.141.96:8075/api/influencers/get/",
+  EDIT_INFLUENCER_DETAILS: "http://147.78.141.96:8075/api/auth/users/update/",
+  EDIT_INFLUENCER_PREFENCES: "http://147.78.141.96:8075/api/influencers/preferences/update/",
+  EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.96:8075/api/influencers/update/",
+  EDIT_PROFILE_PHOTO: "http://147.78.141.96:8075/api/medias/upload/",
+  FETCH_INFLUENCERS_IN_BUCKET: "http://147.78.141.96:8075/api/search/bucketList/list/influencers/",
 
     /***************** BUCKELT LIST APIS **********************/
-    ADD_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/create/",
-    FETCH_BUCKETLIST: "http://147.78.141.95:8075/api/search/bucketList/",
-    DELETE_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/delete/",
-    EDIT_BUCKETLIST: "http://147.78.141.95:8075/api/brands/bucketList/update/",
+    ADD_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/create/",
+    FETCH_BUCKETLIST: "http://147.78.141.96:8075/api/search/bucketList/",
+    DELETE_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/delete/",
+    EDIT_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/update/",
 
 
     /***************** CAMPAIGN APIS **********************/
-    CREATE_CAMPAIGN: "http://147.78.141.95:8075/api/campaigns/create/",
-    CREATE_PRODUCT: "http://147.78.141.95:8075/api/productService/user/product/create/",
-    FETCH_BRAND_CAMPAIGNS: "http://147.78.141.95:8075/api/campaigns/brand/list/",
-    FETCH_PRODUCTS: "http://147.78.141.95:8075/api/productService/user/products/",
+    CREATE_CAMPAIGN: "http://147.78.141.96:8075/api/campaigns/create/",
+    CREATE_PRODUCT: "http://147.78.141.96:8075/api/productService/user/product/create/",
+    FETCH_BRAND_CAMPAIGNS: "http://147.78.141.96:8075/api/campaigns/brand/list/",
+    FETCH_PRODUCTS: "http://147.78.141.96:8075/api/productService/user/products/",
 };
 
 
