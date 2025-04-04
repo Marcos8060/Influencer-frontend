@@ -49,14 +49,14 @@ const BrandDetails = () => {
   };
 
   return (
-    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">
+    <section className="flex items-center justify-center my-4 md:w-4/12 mx-auto px-4 text-color">
       <div>
         <h1 className="text-3xl font-bold text-center my-2">Brand Details</h1>
         <p className="text-center text-sm mb-3">
           To effectively engage creators, ensure your description is concise and
           captivating.
         </p>
-        <form className="space-y-4 mb-3">
+        <form className="space-y-2 mb-3">
           <div>
             <label className="text-xs" htmlFor="website">
               Website
