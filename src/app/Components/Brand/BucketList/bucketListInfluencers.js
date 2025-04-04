@@ -19,10 +19,10 @@ const BucketListInfluencers = ({ loading }) => {
       <section className="py-4 bg-background">
         <Link
           href="/brand/influencer-discovery"
-          className="text-color flex items-center gap-2"
+          className="flex items-center gap-2 mb-3 text-link"
         >
           <HiArrowNarrowLeft />
-          <p className="font-semibold">Back to Buckets</p>
+          <p className="font-semibold text-sm">Back To My Buckets</p>
         </Link>
         {loading ? (
           <Skeleton

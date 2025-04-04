@@ -15,7 +15,6 @@ import { TiEye } from "react-icons/ti";
 import { useRouter } from "next/navigation";
 import { FaBoxOpen } from "react-icons/fa";
 
-
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
     array.slice(index * size, index * size + size)
@@ -25,6 +24,7 @@ const AllInfluencers = () => {
   const { influencers, filterResults } = useSelector(
     (store) => store.filterResults
   );
+  const { bucketList } = useSelector((store) => store.bucket);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,6 +35,15 @@ const AllInfluencers = () => {
   const totalPages = Math.ceil(displayedInfluencers?.length / itemsPerPage);
   const dispatch = useDispatch();
   const auth = useAuth();
+
+  // influencers in buckets
+  const influencersInBuckets = new Set(
+    bucketList.flatMap((bucket) =>
+      Array.isArray(bucket.influencers)
+        ? bucket.influencers.map((inf) => inf.id)
+        : []
+    )
+  );
 
   //   get current page data
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -107,7 +116,7 @@ const AllInfluencers = () => {
           {currentData.length > 0 ? (
             <div className="w-full overflow-x-auto h-[65vh] my-2">
               <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white font-semibold">
+                <thead className="bg-gradient-to-r from-primary to-secondary text-xs text-white font-semibold">
                   <tr>
                     <th className="w-[150px] p-3">Full Name</th>
                     <th className="w-[150px] p-3">Country</th>
@@ -159,7 +168,13 @@ const AllInfluencers = () => {
                       </td>
 
                       <td className="p-3 flex justify-center">
-                        <AddToBucketListModal {...{ data }} />
+                        {influencersInBuckets.has(data.influencerId) ? (
+                          <p className="text-green font-bold">
+                            Added to Bucket
+                          </p>
+                        ) : (
+                          <AddToBucketListModal {...{ data }} />
+                        )}
                       </td>
                     </tr>
                   ))}
