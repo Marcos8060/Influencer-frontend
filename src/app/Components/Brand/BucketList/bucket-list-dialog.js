@@ -57,7 +57,7 @@ export default function BucketListDialog() {
         onClick={() => setVisible(true)}
       >
         <MdAdd className="text-md" />
-        Add Bucket
+        Create New Bucket
       </button>
       <Dialog
         header="Create Bucket List"
