@@ -3,17 +3,21 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
+  previousStep,
   nextStep,
   updateFormData,
 } from "@/redux/features/stepper/influencer-stepper";
 import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
+import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const FindAboutUs = () => {
   const dispatch = useDispatch();
   const [selectedOption, setSelectedOption] = useState("");
-  const influencerData = useSelector((store) => store.influencerStepper.influencerData);
+  const influencerData = useSelector(
+    (store) => store.influencerStepper.influencerData
+  );
 
   const handleNext = () => {
     if (!selectedOption) {
@@ -56,7 +60,7 @@ const FindAboutUs = () => {
             />
           ))}
           <ButtonComponent onClick={handleNext} label="Next" />
-          {/* <BackComponent href="/auth/register/otp" /> */}
+          <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>
       </div>
     </section>
