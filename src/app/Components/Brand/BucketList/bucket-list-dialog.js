@@ -17,8 +17,8 @@ export default function BucketListDialog() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+    name: null,
+    description: null,
   });
   const auth = useAuth();
 
