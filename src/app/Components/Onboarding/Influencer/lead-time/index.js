@@ -17,7 +17,7 @@ const LeadTime = () => {
   );
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    preferredLeadTimeForProjectDays: influencerData.preferredLeadTimeForProjectDays || "",
+    preferredLeadTimeForProjectDays: influencerData.preferredLeadTimeForProjectDays || null,
   });
 
   useEffect(() => {

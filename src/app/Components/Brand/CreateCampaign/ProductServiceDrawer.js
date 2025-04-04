@@ -202,13 +202,13 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
               </form>
             </div>
           )}
-          {currentTab === 2 && <ExistingProducts selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />}
+          {currentTab === 2 && <ExistingProducts setVisible={setVisible} selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />}
         </Sidebar>
         <button
           onClick={() => setVisible(true)}
-          className="bg-primary text-white rounded text-xs px-4 py-2"
+          className="bg-primary text-white rounded text-xs px-4 py-2 w-full"
         >
-          Select a product or service
+          {selectedProducts.length > 0 ? 'Select another product' : 'Select a product or service'}
         </button>
       </div>
     </>

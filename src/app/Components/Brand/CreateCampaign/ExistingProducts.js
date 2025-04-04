@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 
-const ExistingProducts = ({ setSelectedProducts, selectedProducts }) => {
+const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) => {
   const [loading, setLoading] = useState(false);
   const { products } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
@@ -27,6 +27,14 @@ const ExistingProducts = ({ setSelectedProducts, selectedProducts }) => {
       setLoading(false);
     }
   };
+
+  const toggleSelect = () => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.includes(data.id)
+        ? prevSelected.filter((id) => id !== data.id)
+        : [...prevSelected, data.id]
+    )
+  }
 
   useEffect(() => {
     if (auth) {
