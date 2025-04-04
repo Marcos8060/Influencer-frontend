@@ -5,6 +5,12 @@ const initialState = {
   formData: {
     platformIntroductionSource: "",
     brandWebsite: "",
+    legalCompanyName: "",
+    address: "",
+    city: "",
+    country: "",
+    state: "",
+    zipCode: "",
     brandName: "",
     brandDescription: "",
     brandUniqueness: null,
@@ -29,8 +35,8 @@ const initialState = {
     preferredContentFormats: [],
     preferredVideoType: [],
     agreedToTerms: false,
-    finishedOnboarding: false
-  }
+    finishedOnboarding: false,
+  },
 };
 
 const StepperSlice = createSlice({
@@ -41,26 +47,18 @@ const StepperSlice = createSlice({
       state.currentStep = action.payload;
     },
     nextStep: (state) => {
-        state.currentStep += 1;
+      state.currentStep += 1;
     },
     previousStep: (state) => {
-        state.currentStep = Math.max(0, state.currentStep - 1)
+      state.currentStep = Math.max(0, state.currentStep - 1);
     },
-    updateFormData: (state,action) => {
-      state.formData = {...state.formData,...action.payload };
-    }
+    updateFormData: (state, action) => {
+      state.formData = { ...state.formData, ...action.payload };
+    },
   },
 });
 
-export const {
-  setCurrentStep,
-  nextStep,
-  previousStep,
-  updateFormData
-} = StepperSlice.actions;
-
-
-
-
+export const { setCurrentStep, nextStep, previousStep, updateFormData } =
+  StepperSlice.actions;
 
 export default StepperSlice.reducer;
