@@ -11,6 +11,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/navigation";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
+import { FaBoxOpen } from "react-icons/fa";
+
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -37,9 +39,8 @@ const CampaignsTable = () => {
     try {
       setLoading(true);
       await dispatch(fetchAllBrandCampaigns(auth));
-      toast.success('Campaigns fetched successfully')
     } catch (error) {
-        toast.error('Something went wrong')
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -67,71 +68,87 @@ const CampaignsTable = () => {
         />
       ) : (
         <>
-          <div className="w-full overflow-x-auto h-[65vh] my-4">
-            <table className="w-full min-w-[1000px] border border-input table-fixed">
-              <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
-                <tr>
-                  <th className="w-[150px] p-3">Title</th>
-                  <th className="w-[150px] p-3">Status</th>
-                  <th className="w-[150px] p-3">Description</th>
-                  <th className="w-[150px] p-3">No. of Influencers</th>
-                  <th className="w-[150px] p-3 text-center">Start Date</th>
-                  <th className="w-[150px] p-3 text-center">End Date</th>
-                  <th className="w-[150px] p-3">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentData.map((data) => (
-                  <tr
-                    key={data.id}
-                    className="border-b border-input text-center text-xs"
-                  >
-                    <td className="p-3 flex items-center gap-3">
-                      <p className="font-semibold text-color">{data.title}</p>
-                    </td>
-                    <td className="p-3">{data.status}</td>
-                    <td className="p-3">{data?.description}</td>
-                    <td className="p-3">{data?.numberOfInfluencers}</td>
-                    <td className="p-3">{data.startDate}</td>
-                    <td className="p-3">{data.endDate}</td>
-
-                    {/* ✅ FIXED: Center the eye icon correctly */}
-                    <td className="p-3">
-                      <div className="flex justify-center">
-                        <button onClick={() => handleViewProfile(data)} className="border border-primary rounded px-4 py-2 text-xs">View Report</button>
-                      </div>
-                    </td>
+          {currentData.length > 0 ? (
+            <div className="w-full overflow-x-auto h-[65vh] my-4">
+              <table className="w-full min-w-[1000px] border border-input table-fixed">
+                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
+                  <tr>
+                    <th className="w-[150px] p-3">Title</th>
+                    <th className="w-[150px] p-3">Status</th>
+                    <th className="w-[150px] p-3">Description</th>
+                    <th className="w-[150px] p-3">No. of Influencers</th>
+                    <th className="w-[150px] p-3 text-center">Start Date</th>
+                    <th className="w-[150px] p-3 text-center">End Date</th>
+                    <th className="w-[150px] p-3">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* pagination */}
-            <section className="flex gap-4 items-center justify-around my-8">
-              <div className="flex items-center gap-2">
-                <HiArrowLongLeft />
-                <small className="text-xs">Prev {itemsPerPage}</small>
-              </div>
-              <div className="space-x-6 text-sm">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={` ${
-                      currentPage === index + 1
-                        ? "font-bold text-primary border-b-2"
-                        : "font-thin text-color"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <small className="text-xs">Next {itemsPerPage}</small>
-                <HiArrowLongRight />
+                </thead>
+                <tbody>
+                  {currentData.map((data) => (
+                    <tr
+                      key={data.id}
+                      className="border-b border-input text-center text-xs"
+                    >
+                      <td className="p-3 flex items-center gap-3">
+                        <p className="font-semibold text-color">{data.title}</p>
+                      </td>
+                      <td className="p-3">{data.status}</td>
+                      <td className="p-3">{data?.description}</td>
+                      <td className="p-3">{data?.numberOfInfluencers}</td>
+                      <td className="p-3">{data.startDate}</td>
+                      <td className="p-3">{data.endDate}</td>
+
+                      {/* ✅ FIXED: Center the eye icon correctly */}
+                      <td className="p-3">
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => handleViewProfile(data)}
+                            className="border border-primary rounded px-4 py-2 text-xs"
+                          >
+                            View Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {/* pagination */}
+              <section className="flex gap-4 items-center justify-around my-8">
+                <div className="flex items-center gap-2">
+                  <HiArrowLongLeft />
+                  <small className="text-xs">Prev {itemsPerPage}</small>
+                </div>
+                <div className="space-x-6 text-sm">
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentPage(index + 1)}
+                      className={` ${
+                        currentPage === index + 1
+                          ? "font-bold text-primary border-b-2"
+                          : "font-thin text-color"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <small className="text-xs">Next {itemsPerPage}</small>
+                  <HiArrowLongRight />
+                </div>
+              </section>
+            </div>
+          ) : (
+            <section className="h-[60vh] flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
+                <FaBoxOpen className="text-9xl text-gray" />
+                <p className="mr-4 text-sm font-light">
+                  No Campaigns available in your Repository
+                </p>
               </div>
             </section>
-          </div>
+          )}
         </>
       )}
     </>

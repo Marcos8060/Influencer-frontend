@@ -13,6 +13,8 @@ import Skeleton from "react-loading-skeleton";
 import FiltersDrawer from "./filters-drawer";
 import { TiEye } from "react-icons/ti";
 import { useRouter } from "next/navigation";
+import { FaBoxOpen } from "react-icons/fa";
+
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -102,93 +104,104 @@ const AllInfluencers = () => {
         />
       ) : (
         <>
-          <div className="w-full overflow-x-auto h-[65vh] my-2">
-            <table className="w-full min-w-[1000px] border border-input table-fixed">
-              <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
-                <tr>
-                  <th className="w-[150px] p-3">Full Name</th>
-                  <th className="w-[150px] p-3">Country</th>
-                  <th className="w-[150px] p-3">City</th>
-                  <th className="w-[150px] p-3">Race</th>
-                  <th className="w-[150px] p-3 text-center">View Profile</th>
-                  <th className="w-[150px] p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentData.map((data) => (
-                  <tr
-                    key={data.id}
-                    className="border-b border-input text-center text-xs"
-                  >
-                    <td className="p-3 flex items-center gap-3">
-                      <input
-                        className="cursor-pointer scale-150"
-                        type="checkbox"
-                        checked={selectedInfluencers.some(
-                          (item) => item.id === data.id
-                        )}
-                        onChange={() => handleCheckboxChange(data)}
-                      />
-                      {!data.profilePicture ? (
-                        <FaUserCircle className="w-12 h-12" />
-                      ) : (
-                        <img
-                          className="w-12 h-12 rounded-full object-cover"
-                          src={data.profilePicture}
-                          alt=""
-                        />
-                      )}
-                      <p className="font-semibold text-color">
-                        {data?.fullName}
-                      </p>
-                    </td>
-                    <td className="p-3">{data?.country}</td>
-                    <td className="p-3">{data?.city}</td>
-                    <td className="p-3">{data.ethnicBackground}</td>
-
-                    <td className="p-3">
-                      <div className="flex justify-center">
-                        <TiEye
-                          onClick={() => handleViewProfile(data)}
-                          className="text-xl text-color cursor-pointer"
-                        />
-                      </div>
-                    </td>
-
-                    <td className="p-3 flex justify-center">
-                      <AddToBucketListModal {...{ data }} />
-                    </td>
+          {currentData.length > 0 ? (
+            <div className="w-full overflow-x-auto h-[65vh] my-2">
+              <table className="w-full min-w-[1000px] border border-input table-fixed">
+                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
+                  <tr>
+                    <th className="w-[150px] p-3">Full Name</th>
+                    <th className="w-[150px] p-3">Country</th>
+                    <th className="w-[150px] p-3">City</th>
+                    <th className="w-[150px] p-3">Race</th>
+                    <th className="w-[150px] p-3 text-center">View Profile</th>
+                    <th className="w-[150px] p-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* pagination */}
-            <section className="flex gap-4 items-center justify-around my-8">
-              <div className="flex items-center gap-2">
-                <HiArrowLongLeft />
-                <small className="text-xs">Prev {itemsPerPage}</small>
-              </div>
-              <div className="space-x-6 text-sm">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={` ${
-                      currentPage === index + 1
-                        ? "font-bold text-primary border-b-2"
-                        : "font-thin text-color"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <small className="text-xs">Next {itemsPerPage}</small>
-                <HiArrowLongRight />
+                </thead>
+                <tbody>
+                  {currentData.map((data) => (
+                    <tr
+                      key={data.id}
+                      className="border-b border-input text-center text-xs"
+                    >
+                      <td className="p-3 flex items-center gap-3">
+                        <input
+                          className="cursor-pointer scale-150"
+                          type="checkbox"
+                          checked={selectedInfluencers.some(
+                            (item) => item.id === data.id
+                          )}
+                          onChange={() => handleCheckboxChange(data)}
+                        />
+                        {!data.profilePicture ? (
+                          <FaUserCircle className="w-12 h-12" />
+                        ) : (
+                          <img
+                            className="w-12 h-12 rounded-full object-cover"
+                            src={data.profilePicture}
+                            alt=""
+                          />
+                        )}
+                        <p className="font-semibold text-color">
+                          {data?.fullName}
+                        </p>
+                      </td>
+                      <td className="p-3">{data?.country}</td>
+                      <td className="p-3">{data?.city}</td>
+                      <td className="p-3">{data.ethnicBackground}</td>
+
+                      <td className="p-3">
+                        <div className="flex justify-center">
+                          <TiEye
+                            onClick={() => handleViewProfile(data)}
+                            className="text-xl text-color cursor-pointer"
+                          />
+                        </div>
+                      </td>
+
+                      <td className="p-3 flex justify-center">
+                        <AddToBucketListModal {...{ data }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {/* pagination */}
+              <section className="flex gap-4 items-center justify-around my-8">
+                <div className="flex items-center gap-2">
+                  <HiArrowLongLeft />
+                  <small className="text-xs">Prev {itemsPerPage}</small>
+                </div>
+                <div className="space-x-6 text-sm">
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentPage(index + 1)}
+                      className={` ${
+                        currentPage === index + 1
+                          ? "font-bold text-primary border-b-2"
+                          : "font-thin text-color"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <small className="text-xs">Next {itemsPerPage}</small>
+                  <HiArrowLongRight />
+                </div>
+              </section>
+            </div>
+          ) : (
+            <section className="h-[60vh] flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
+                <FaBoxOpen className="text-9xl text-gray" />
+                <p className="mr-4 text-sm font-light">
+                  No Influencers available in your Repository
+                </p>
               </div>
             </section>
-          </div>
+          )}
         </>
       )}
     </>
