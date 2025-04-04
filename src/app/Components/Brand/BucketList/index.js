@@ -13,7 +13,6 @@ import { TiEye } from "react-icons/ti";
 import Link from "next/link";
 import { FaBoxOpen } from "react-icons/fa";
 
-
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -55,79 +54,98 @@ const BucketList = () => {
           height={100}
         />
       ) : (
-        <div className="w-full overflow-x-auto h-[65vh]">
-          <table className="w-full min-w-[1000px] border border-input table-fixed">
-            <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white ">
-              <tr>
-                <th className="w-[150px] p-3">Bucket Name</th>
-                <th className="w-[200px] p-3">Description</th>
-                <th className="w-[150px] p-3">No. Of Influencers</th>
-                <th className="w-[150px] p-3">Created At</th>
-                <th className="w-[150px] p-3 text-center">View</th>
-                <th className="w-[200px] p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.map((data) => (
-                <tr key={data.id} className="border-b border-input text-center text-xs">
-                  <td className="p-3">{data?.name}</td>
-                  <td className="p-3 truncate">{data?.description}</td>
-                  <td className="p-3">{data.influencers.length}</td>
-                  <td className="p-3">
-                    {new Date(data.createdAt).toLocaleDateString()}
-                  </td>
+        <>
+          {currentData.length > 0 ? (
+            <div className="w-full overflow-x-auto h-[65vh]">
+              <table className="w-full min-w-[1000px] border border-input table-fixed">
+                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white ">
+                  <tr>
+                    <th className="w-[150px] p-3">Bucket Name</th>
+                    <th className="w-[200px] p-3">Description</th>
+                    <th className="w-[150px] p-3">No. Of Influencers</th>
+                    <th className="w-[150px] p-3">Created At</th>
+                    <th className="w-[150px] p-3 text-center">View</th>
+                    <th className="w-[200px] p-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentData.map((data) => (
+                    <tr
+                      key={data.id}
+                      className="border-b border-input text-center text-xs"
+                    >
+                      <td className="p-3">{data?.name}</td>
+                      <td className="p-3 truncate">{data?.description}</td>
+                      <td className="p-3">{data.influencers.length}</td>
+                      <td className="p-3">
+                        {new Date(data.createdAt).toLocaleDateString()}
+                      </td>
 
-                  {/* ✅ FIXED: Center the eye icon correctly */}
-                  <td className="p-3">
-                    <Link href={`/brand/influencer-discovery/influencerBuckets/${data.id}`} className="flex justify-center">
-                      <TiEye className="text-xl text-color cursor-pointer" />
-                    </Link>
-                  </td>
+                      {/* ✅ FIXED: Center the eye icon correctly */}
+                      <td className="p-3">
+                        <Link
+                          href={`/brand/influencer-discovery/influencerBuckets/${data.id}`}
+                          className="flex justify-center"
+                        >
+                          <TiEye className="text-xl text-color cursor-pointer" />
+                        </Link>
+                      </td>
 
-                  <td className="p-3 flex justify-center gap-2">
-                    <EditBucketListDialog {...{ data }} />
-                    <ConfirmDialog {...{ data }} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <td className="p-3 flex justify-center gap-2">
+                        <EditBucketListDialog {...{ data }} />
+                        <ConfirmDialog {...{ data }} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-          {/* Pagination */}
-          <section className="flex gap-4 items-center justify-around my-8">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className="flex items-center gap-2 text-xs"
-            >
-              <HiArrowLongLeft />
-              Prev {itemsPerPage}
-            </button>
-            <div className="space-x-6 text-sm">
-              {Array.from({ length: totalPages }, (_, index) => (
+              {/* Pagination */}
+              <section className="flex gap-4 items-center justify-around my-8">
                 <button
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={` ${
-                    currentPage === index + 1
-                      ? "font-bold text-primary border-b-2"
-                      : "font-thin text-color"
-                  }`}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  className="flex items-center gap-2 text-xs"
                 >
-                  {index + 1}
+                  <HiArrowLongLeft />
+                  Prev {itemsPerPage}
                 </button>
-              ))}
+                <div className="space-x-6 text-sm">
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentPage(index + 1)}
+                      className={` ${
+                        currentPage === index + 1
+                          ? "font-bold text-primary border-b-2"
+                          : "font-thin text-color"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  className="flex items-center gap-2 text-xs"
+                >
+                  Next {itemsPerPage}
+                  <HiArrowLongRight />
+                </button>
+              </section>
             </div>
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              className="flex items-center gap-2 text-xs"
-            >
-              Next {itemsPerPage}
-              <HiArrowLongRight />
-            </button>
-          </section>
-        </div>
+          ) : (
+            <section className="h-[60vh] flex items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
+                <FaBoxOpen className="text-9xl text-gray" />
+                <p className="mr-4 text-sm font-light">No Buckets available in your Repository</p>
+              </div>
+            </section>
+          )}
+        </>
       )}
     </>
   );
