@@ -11,6 +11,8 @@ import Skeleton from "react-loading-skeleton";
 import EditBucketListDialog from "./edit-bucket-list";
 import { TiEye } from "react-icons/ti";
 import Link from "next/link";
+import { FaBoxOpen } from "react-icons/fa";
+
 
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,7 +57,7 @@ const BucketList = () => {
       ) : (
         <div className="w-full overflow-x-auto h-[65vh]">
           <table className="w-full min-w-[1000px] border border-input table-fixed">
-            <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white border-b border-input">
+            <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white ">
               <tr>
                 <th className="w-[150px] p-3">Bucket Name</th>
                 <th className="w-[200px] p-3">Description</th>
