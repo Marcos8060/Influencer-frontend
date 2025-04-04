@@ -17,6 +17,12 @@ const BrandDetails = () => {
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
     brandWebsite: formData.brandWebsite || "",
+    legalCompanyName: formData.legalCompanyName || "",
+    country: formData.country || "",
+    state: formData.state || "",
+    city: formData.city || "",
+    address: formData.address || "",
+    zipCode: formData.zipCode || "",
     brandName: formData.brandName || "",
     brandDescription: formData.brandDescription || "",
   });
@@ -26,6 +32,12 @@ const BrandDetails = () => {
   }, [
     dispatch,
     formData.brandWebsite,
+    formData.legalCompanyName,
+    formData.country,
+    formData.state,
+    formData.city,
+    formData.address,
+    formData.zipCode,
     formData.brandName,
     formData.brandDescription,
   ]);
@@ -56,11 +68,56 @@ const BrandDetails = () => {
           </div>
           <div>
             <label className="text-xs" htmlFor="brandname">
+              Legal Company Name
+            </label>
+            <InputComponent
+              value={details.legalCompanyName}
+              onChange={(e) => setDetails({ ...details,legalCompanyName: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="brandname">
               Brand Name
             </label>
             <InputComponent
               value={details.brandName}
               onChange={(e) => setDetails({ ...details,brandName: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="country">
+              Country
+            </label>
+            <InputComponent
+              value={details.country}
+              onChange={(e) => setDetails({ ...details,country: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="state">
+              State
+            </label>
+            <InputComponent
+              value={details.state}
+              onChange={(e) => setDetails({ ...details,state: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="city">
+              City
+            </label>
+            <InputComponent
+              value={details.city}
+              onChange={(e) => setDetails({ ...details,city: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="text-xs" htmlFor="address">
+              Address
+            </label>
+            <InputComponent
+              value={details.address}
+              onChange={(e) => setDetails({ ...details,address: e.target.value })}
             />
           </div>
           <div>
