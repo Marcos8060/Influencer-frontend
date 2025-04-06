@@ -20,17 +20,20 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
       if (response.status === 200) {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("brand_token", response.data.access);
-          localStorage.setItem("refresh_token", response.data.refresh);
-        }
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         toast.success("Login successful");
-        if (decodedUser.finishedOnboarding) {
-          router.push("/onboarding/brand/dashboard");
-        } else {
-          router.push("/onboarding/brand");
+        if (decodedUser.roleName !== "Brand") {
+          toast.error("You are not authorized to access Brand account");
+          router.push("/auth/login/influencer");
+        } else if(decodedUser.finishedOnboarding && decodedUser.roleName === "Brand") {
+            localStorage.setItem("brand_token", response.data.access);
+            localStorage.setItem("refresh_token", response.data.refresh);
+            router.push("/onboarding/brand/dashboard");
+            toast.success("Login successful");
+        }else{
+          router.push('/onboarding/brand')
+          toast.success("Login successful");
         }
       }
     } catch (error) {
@@ -44,21 +47,28 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
       if (response.status === 200) {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("influencer_token", response.data.access);
-          localStorage.setItem("refresh_token", response.data.refresh);
-        }
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
-        toast.success("Login successful");
-        if (decodedUser.finishedOnboarding) {
+        if (decodedUser.roleName !== "Influencer") {
+          toast.error(
+            "You are not authorized to access Influencer account"
+          );
+          router.push("/auth/login/brand");
+        } else if (
+          decodedUser.finishedOnboarding &&
+          decodedUser.roleName === "Influencer"
+        ) {
+          localStorage.setItem("influencer_token", response.data.access);
+          localStorage.setItem("refresh_token", response.data.refresh);
           router.push("/onboarding/influencer/dashboard");
+          toast.success("Login successful");
         } else {
           router.push("/onboarding/influencer");
+          toast.success("Login successful");
         }
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0])
+      toast.error(error.response.data.errorMessage[0]);
     }
   };
 
@@ -85,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         toast.error("Logout failed. Please try again.");
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0])
+      toast.error(error.response.data.errorMessage[0]);
     }
   };
 
