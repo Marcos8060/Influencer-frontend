@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200) {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
-        toast.success("Login successful");
         if (decodedUser.roleName !== "Brand") {
           toast.error("You are not authorized to access Brand account");
           router.push("/auth/login/influencer");

@@ -1,5 +1,6 @@
 "use client";
 import "./globals.css";
+import React, { useEffect, useState } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
@@ -8,8 +9,16 @@ import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primeicons/primeicons.css";
 import { AuthProvider } from "@/assets/context/use-context";
+import SplashScreen from "./Components/SplashScreen";
 
 export default function RootLayout({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  }, []);
   return (
     <html lang="en">
       <head>
@@ -27,6 +36,7 @@ export default function RootLayout({ children }) {
           <Provider store={store}>
             <AuthProvider>
               <Toaster position="top-center" />
+              {isLoading ? <SplashScreen /> : null}
               {children}
             </AuthProvider>
           </Provider>
