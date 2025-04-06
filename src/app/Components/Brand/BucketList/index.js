@@ -58,7 +58,7 @@ const BucketList = () => {
           {currentData.length > 0 ? (
             <div className="w-full overflow-x-auto h-[65vh]">
               <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white ">
+                <thead className="bg-gradient-to-r from-primary to-secondary text-xs text-white ">
                   <tr>
                     <th className="w-[150px] p-3">Bucket Name</th>
                     <th className="w-[200px] p-3">Description</th>

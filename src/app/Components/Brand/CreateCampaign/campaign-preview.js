@@ -11,6 +11,7 @@ import {
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
 import { setCurrentStep } from "@/redux/features/stepper/campaign-stepper";
 import { IoMdCheckmark } from "react-icons/io";
+import Link from "next/link";
 
 const CampaignPreview = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -41,7 +42,7 @@ const CampaignPreview = () => {
   }, [dispatch]);
   return (
     <div className="bg-background py-8 px-4">
-      {success ? (
+      {!success ? (
         <div className="flex items-center justify-center h-[50vh]">
           <section className="bg-white rounded-lg shadow-sm p-4 md:w-5/12 w-full flex items-center justify-center">
             <div className="space-y-4">
@@ -50,7 +51,7 @@ const CampaignPreview = () => {
               </h2>
               <p className="font-light text-sm text-center leading-6">
                 Your campaign is now live and ready for influencers to engage.
-                You can track its performance in your dashboard.
+                You can track its performance in your <Link className="text-link font-semibold" href="/brand/influencer-discovery">here.</Link> 
               </p>
             </div>
           </section>
@@ -84,16 +85,7 @@ const CampaignPreview = () => {
                   </div>
                 </section>
 
-                <div className="flex gap-2">
-                  <p className="font-thin">Video URL:</p>
-                  <a
-                    className="font-semibold text-link"
-                    target="_blank"
-                    href={campaignData.exampleVideoUrl}
-                  >
-                    {campaignData.exampleVideoUrl}
-                  </a>
-                </div>
+                
                 <section className="flex items-center justify-between">
                   <div className="flex gap-2">
                     <p className="font-thin">Videos Per Creator:</p>
@@ -114,6 +106,16 @@ const CampaignPreview = () => {
                     </p>
                   </div>
                 </section>
+                <div className="flex gap-2">
+                  <p className="font-thin">Video URL:</p>
+                  <a
+                    className="font-light text-sm text-link"
+                    target="_blank"
+                    href={campaignData.exampleVideoUrl}
+                  >
+                    {campaignData.exampleVideoUrl}
+                  </a>
+                </div>
               </div>
             </section>
             <section className=" border-b border-input py-4">

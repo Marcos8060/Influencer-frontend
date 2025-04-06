@@ -71,11 +71,11 @@ const CampaignsTable = () => {
           {currentData.length > 0 ? (
             <div className="w-full overflow-x-auto h-[65vh] my-4">
               <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary uppercase text-xs text-white">
+                <thead className="bg-gradient-to-r from-primary to-secondary text-xs text-white">
                   <tr>
                     <th className="w-[150px] p-3">Title</th>
                     <th className="w-[150px] p-3">Status</th>
-                    <th className="w-[150px] p-3">Description</th>
+                    <th className="w-[200px] p-3">Description</th>
                     <th className="w-[150px] p-3">No. of Influencers</th>
                     <th className="w-[150px] p-3 text-center">Start Date</th>
                     <th className="w-[150px] p-3 text-center">End Date</th>
@@ -88,11 +88,11 @@ const CampaignsTable = () => {
                       key={data.id}
                       className="border-b border-input text-center text-xs"
                     >
-                      <td className="p-3 flex items-center gap-3">
+                      <td className="p-3">
                         <p className="font-semibold text-color">{data.title}</p>
                       </td>
                       <td className="p-3">{data.status}</td>
-                      <td className="p-3">{data?.description}</td>
+                      <td title={data.description} className="p-3">  {data?.description.split(' ').slice(0, 5).join(' ')}{data?.description.split(' ').length > 5 ? '...' : ''}</td>
                       <td className="p-3">{data?.numberOfInfluencers}</td>
                       <td className="p-3">{data.startDate}</td>
                       <td className="p-3">{data.endDate}</td>
