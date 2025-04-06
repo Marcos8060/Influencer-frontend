@@ -14,6 +14,19 @@ export const moveToBucket = async (auth,payload) => {
         return error.response?.data || error.message;
     }
 };
+export const removeFromBucket = async (auth,payload) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.REMOVE_FROM_BUCKET}`, payload,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response
+    } catch (error) {
+        console.error("Error removing from bucket:", error);
+        return error.response?.data || error.message;
+    }
+};
 
 export const fetchInfluencersInBucket = async (auth, id) => {
     try {

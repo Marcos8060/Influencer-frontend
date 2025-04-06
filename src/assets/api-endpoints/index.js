@@ -26,6 +26,7 @@ export const API_URL = {
 
     /***************** BUCKELT LIST APIS **********************/
     ADD_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/create/",
+    REMOVE_FROM_BUCKET: "http://147.78.141.96:8075/api/brands/bucketList/influencers/remove/",
     FETCH_BUCKETLIST: "http://147.78.141.96:8075/api/search/bucketList/",
     DELETE_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/delete/",
     EDIT_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/update/",
@@ -76,6 +77,7 @@ export const APP_API_URL = {
 
   /***************** BUCKET LIST APIs **********************/
   ADD_BUCKETLIST: "/api/bucketList/create-bucket-list",
+  REMOVE_FROM_BUCKET: "/api/bucketList/remove-from-bucket",
   FETCH_BUCKETLIST: "/api/bucketList/fetch-bucket-list",
   DELETE_BUCKETLIST: "/api/bucketList/delete-bucket-list",
   EDIT_BUCKETLIST: "/api/bucketList/edit-bucket-list",
