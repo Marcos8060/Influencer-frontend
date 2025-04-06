@@ -3,6 +3,7 @@ export const API_URL = {
   /***************** AUTH APIS **********************/
   LOGIN: "http://147.78.141.96:8075/api/auth/login/",
   LOGOUT: "http://147.78.141.96:8075/api/auth/logout/",
+  REFRESH_TOKEN: "http://147.78.141.96:8075/api/auth/token/refresh/",
   REGISTER_BRAND: "http://147.78.141.96:8075/api/auth/register/brand/",
   SEND_OTP: "http://147.78.141.96:8075/api/auth/otp/verify/",
   REQUEST_OTP: "http://147.78.141.96:8075/api/auth/otp/request/",
@@ -43,6 +44,7 @@ export const APP_API_URL = {
   /***************** AUTH APIs **********************/
   LOGIN: "/api/auth/login",
   LOGOUT: "/api/auth/logout",
+  REFRESH_TOKEN: "/api/auth/refresh-token",
   REGISTER_BRAND: "/api/auth/register-brand",
   SEND_OTP: "/api/auth/otp",
   REQUEST_OTP: "/api/auth/otp/request-otp",
