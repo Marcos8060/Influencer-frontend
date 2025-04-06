@@ -5,15 +5,41 @@ import { FaInstagram } from "react-icons/fa";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaRegEnvelope } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { HiArrowNarrowLeft } from "react-icons/hi";
 import Link from "next/link";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import { FaBoxOpen } from "react-icons/fa";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { removeFromBucket } from "@/redux/services/influencer/bucket";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/assets/hooks/use-auth";
+import { fetchAllInfluencersInBucket } from "@/redux/features/bucket-list";
+import toast from "react-hot-toast";
 
 const BucketListInfluencers = ({ loading }) => {
   const { influencersInBucket } = useSelector((store) => store.bucket);
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+  const bucketId = segments[segments.length - 1];
+  const dispatch = useDispatch();
+  const auth = useAuth();
+  
+  const handleSubmit = async(id) => {
+    const payload = {
+      brandBucketList: bucketId,
+      influencerIds:[String(id)]
+    }
+    try {
+      await removeFromBucket(auth,payload)
+      dispatch(fetchAllInfluencersInBucket(auth,bucketId))
+      toast.success('Influencer removed successfully')
+    } catch (error) {
+      toast.error(error.response.data.errorMessage[0])
+      console.log(error)
+    }
+  }
   return (
     <>
       <section className="py-4 bg-background">
@@ -86,8 +112,8 @@ const BucketListInfluencers = ({ loading }) => {
                           <FaHeart />
                         </div>
                         <div>
-                          <small className="text-[10px] bg-background rounded py-2 px-2">
-                            Send Message
+                          <small onClick={() => handleSubmit(data.influencerId)} className="text-[10px] cursor-pointer bg-secondary text-white rounded py-2 px-2">
+                            Remove From Bucket
                           </small>
                         </div>
                       </section>

@@ -6,31 +6,31 @@ import Link from "next/link";
 
 const CampaignReport = () => {
   return (
-    <>
-    <section className="bg-background text-link md:w-7/12 w-full mx-auto rounded my-2 p-4 flex gap-2 items-center">
+    <div className="bg-background">
+    <section className=" text-link md:w-7/12 w-full mx-auto rounded my-2 p-4 flex gap-2 items-center">
     <HiOutlineArrowNarrowLeft />
       <Link href="/brand/influencer-discovery" className="font-bold text-sm">Back to Influencer Discovery</Link>
     </section>
       <section className=" p-4 text-color space-y-4 mb-8">
         <div className="md:w-7/12 w-full mx-auto space-y-4">
           <section className="grid md:grid-cols-3 grid-cols-2 gap-3">
-            <div className="bg-white shadow rounded space-y-4 p-4 text-center">
+            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
               <p className="text-sm font-light">Active Influencers</p>
               <h2 className="font-bold text-primary text-2xl">42</h2>
             </div>
-            <div className="bg-white shadow rounded space-y-4 p-4  text-center">
+            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4  text-center">
               <p className="text-sm font-light">Influencer Posts</p>
               <h2 className="font-bold text-2xl">42</h2>
             </div>
-            <div className="bg-white shadow rounded space-y-4 p-4  text-center">
+            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4  text-center">
               <p className="text-sm font-light">Engagement Rate</p>
               <h2 className="font-bold text-2xl">42</h2>
             </div>
-            <div className="bg-white shadow rounded space-y-4 p-4 text-center">
+            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
               <p className="text-sm font-light">Total Reach</p>
               <h2 className="font-bold text-2xl">42</h2>
             </div>
-            <div className="bg-white shadow rounded space-y-4 p-4 text-center">
+            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
               <p className="text-sm font-light">Average Likes</p>
               <h2 className="font-bold text-2xl">42</h2>
             </div>
@@ -79,7 +79,7 @@ const CampaignReport = () => {
         </section>
       </section>
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -12,10 +12,87 @@ export const authContext = createContext();
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Create axios instance with interceptors
+  const authAxios = axios.create();
+
+  // Add request interceptor to attach token and handle refresh
+  authAxios.interceptors.request.use(
+    async (config) => {
+      let token;
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+      token = brandToken || influencerToken;
+
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const isExpired = decodedToken.exp * 1000 < Date.now();
+
+        if (isExpired) {
+          try {
+            const newToken = await refreshToken();
+            if (newToken) {
+              token = newToken;
+              config.headers.Authorization = `Bearer ${newToken}`;
+            }
+          } catch (error) {
+            // If refresh fails, logout the user
+            if (brandToken) await logoutBrand();
+            if (influencerToken) await logoutInfluencer();
+            throw new axios.Cancel('Token refresh failed');
+          }
+        } else {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  // Function to refresh token
+  const refreshToken = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      const response = await axios.post(APP_API_URL.REFRESH_TOKEN, {
+        refresh: refreshToken,
+      });
+
+      if (response.status === 200) {
+        const newAccessToken = response.data.access;
+        const decodedUser = jwtDecode(newAccessToken);
+        setUser(decodedUser);
+
+        // Store the new token based on user role
+        if (decodedUser.roleName === "Brand") {
+          localStorage.setItem("brand_token", newAccessToken);
+        } else if (decodedUser.roleName === "Influencer") {
+          localStorage.setItem("influencer_token", newAccessToken);
+        }
+
+        return newAccessToken;
+      }
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      throw error;
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const loginUser = async (email, password) => {
     try {
-      const response = await axios.post(APP_API_URL.LOGIN, {
+      const response = await authAxios.post(APP_API_URL.LOGIN, {
         email: email,
         password: password,
       });
@@ -36,12 +113,13 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0]);
+      toast.error(error.response?.data?.errorMessage?.[0] || "Login failed");
     }
   };
+
   const logInfluencer = async (email, password) => {
     try {
-      const response = await axios.post(APP_API_URL.LOGIN, {
+      const response = await authAxios.post(APP_API_URL.LOGIN, {
         email: email,
         password: password,
       });
@@ -67,7 +145,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0]);
+      toast.error(error.response?.data?.errorMessage?.[0] || "Login failed");
     }
   };
 
@@ -94,7 +172,7 @@ export const AuthProvider = ({ children }) => {
         toast.error("Logout failed. Please try again.");
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0]);
+      toast.error(error.response?.data?.errorMessage?.[0] || "Logout failed");
     }
   };
 
@@ -121,17 +199,53 @@ export const AuthProvider = ({ children }) => {
         toast.error("Logout failed. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred while logging out.");
+      toast.error(error.response?.data?.errorMessage?.[0] || "Logout failed");
     }
   };
 
-  let contextData = {
-    loginUser: loginUser,
-    logInfluencer: logInfluencer,
-    logoutBrand: logoutBrand,
-    logoutInfluencer: logoutInfluencer,
-    user: user,
-  };
+  // Check token expiration periodically
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      console.log('--- Running token expiration check ---', new Date().toISOString());
+      
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+      const token = brandToken || influencerToken;
+  
+      console.log('Token found:', token ? 'Yes' : 'No');
+      
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const expiresIn = decodedToken.exp * 1000 - Date.now();
+        const expiresInMinutes = Math.floor(expiresIn / 60000);
+        
+        console.log(`Token expires in: ${expiresInMinutes} minutes (${expiresIn}ms)`);
+        
+        // If token expires in less than 5 minutes, refresh it
+        if (expiresIn < 300000 && expiresIn > 0) {
+          console.log('Token expires soon, refreshing...');
+          refreshToken()
+            .then(() => console.log('Token refreshed successfully'))
+            .catch(err => console.error('Token refresh failed:', err));
+        } else if (expiresIn <= 0) {
+          console.log('Token has already expired');
+        } else {
+          console.log('Token still valid, no refresh needed');
+        }
+      }
+    };
+  
+    // Initial check when component mounts
+    checkTokenExpiration();
+    
+    // Then check every minute
+    const interval = setInterval(checkTokenExpiration, 60000);
+    
+    return () => {
+      console.log('Cleaning up token expiration check');
+      clearInterval(interval);
+    };
+  }, []);
 
   // decode the token and set the user when a component mounts
   useEffect(() => {
@@ -150,6 +264,15 @@ export const AuthProvider = ({ children }) => {
 
     setUser(decodedUser);
   }, []);
+
+  let contextData = {
+    loginUser: loginUser,
+    logInfluencer: logInfluencer,
+    logoutBrand: logoutBrand,
+    logoutInfluencer: logoutInfluencer,
+    user: user,
+    authAxios: authAxios, // Export the authenticated axios instance
+  };
 
   return (
     <authContext.Provider value={contextData}>{children}</authContext.Provider>
