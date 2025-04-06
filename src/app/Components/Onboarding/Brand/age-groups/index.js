@@ -52,7 +52,7 @@ const AgeGroups = () => {
         <p className="text-center text-sm mb-3">
           What influencer age group(s) are you targeting?
         </p>
-        <div className="flex items-center justify-center gap-4 w-full mb-4 text-center">
+        <div className="md:flex md:space-y-0 space-y-2 items-center justify-center gap-4 w-full mb-4 text-center">
           {options.map((option) => (
             <TickBoxComponent
               key={option}
