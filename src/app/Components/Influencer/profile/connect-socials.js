@@ -25,13 +25,13 @@ export default function ConnectToSocialsMenu() {
   const auth = useAuth();
   const handleTiktok = async () => {
     try {
-      await dispatch(getTiktokResponse(auth));
-      const authUrl = tiktokResponse.message;
+      const response = await dispatch(getTiktokResponse(auth));
+      const authUrl = response.message;
 
-      // Redirect user to TikTok's authorization page
-      window.location.href = authUrl;
+        // Redirect user to TikTok's authorization page
+        window.location.href = authUrl;
     } catch (error) {
-      console.error('TikTok auth failed:', error);
+      console.error("TikTok auth failed:", error);
     }
   };
 

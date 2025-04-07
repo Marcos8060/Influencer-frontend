@@ -24,6 +24,7 @@ export const getTiktokResponse = (auth) => async (dispatch) => {
   try {
     const data = await tiktokLogin(auth);
     dispatch(setTiktok(data));
+    return data;
   } catch (error) {
     console.log(error);
   }
