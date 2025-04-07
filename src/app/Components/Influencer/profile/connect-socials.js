@@ -7,6 +7,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getTiktokResponse } from "@/redux/features/socials";
 import { useDispatch, useSelector } from "react-redux";
+import { setAuthCookie } from "@/assets/utils/cookies";
 
 export default function ConnectToSocialsMenu() {
   const dispatch = useDispatch();
@@ -22,11 +23,13 @@ export default function ConnectToSocialsMenu() {
   const auth = useAuth();
   const handleTiktok = async () => {
     try {
+      setAuthCookie(auth);
       const response = await dispatch(getTiktokResponse(auth));
       const authUrl = response.message;
 
         // Redirect user to TikTok's authorization page
         window.location.href = authUrl;
+        sessionStorage.setItem('tmp_tiktok_auth', auth);
     } catch (error) {
       console.error("TikTok auth failed:", error);
     }

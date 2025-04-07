@@ -1,11 +1,19 @@
 import { redirect } from 'next/navigation';
 import { API_URL } from '@/assets/api-endpoints';
+import { cookies } from 'next/headers';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const error = searchParams.get('error');
-  
+  const token = cookies().get('tmp_tiktok_auth')?.value;
+
+  console.log("TOKEN_AUTH ",token)
+
+  if (!token) {
+    return redirect('/dashboard?error=missing_auth_token');
+  }
+
   if (error) {
     return redirect(`/dashboard?error=tiktok_auth_failed&message=${encodeURIComponent(error)}`);
   }
@@ -24,6 +32,7 @@ export async function GET(request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(payload), // ✅ send full payload
     });
