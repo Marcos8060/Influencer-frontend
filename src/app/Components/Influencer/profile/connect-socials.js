@@ -7,12 +7,9 @@ import { FaXTwitter } from "react-icons/fa6";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getTiktokResponse } from "@/redux/features/socials";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
 
 export default function ConnectToSocialsMenu() {
-  const { tiktokResponse } = useSelector((store) => store.socials);
   const dispatch = useDispatch();
-  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
