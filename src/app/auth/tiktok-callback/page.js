@@ -1,15 +1,19 @@
-// app/auth/tiktok-callback/page.js
 'use client';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/assets/hooks/use-auth';
 import { API_URL } from '@/assets/api-endpoints';
 
 export default function TikTokCallback() {
-  const searchParams = useSearchParams();
+  const [code, setCode] = useState(null);
   const router = useRouter();
   const auth = useAuth();
-  const code = searchParams.get('code');
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const authCode = queryParams.get('code');
+    if (authCode) setCode(authCode);
+  }, []);
 
   useEffect(() => {
     if (!code || !auth) return;
@@ -18,14 +22,14 @@ export default function TikTokCallback() {
       try {
         const payload = {
           authorizationCode: code,
-          deviceType: "web"
+          deviceType: "web",
         };
 
         const response = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${auth}`
+            'Authorization': `Bearer ${auth}`,
           },
           body: JSON.stringify(payload),
         });
