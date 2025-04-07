@@ -4,8 +4,15 @@ import MenuItem from "@mui/material/MenuItem";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { useAuth } from "@/assets/hooks/use-auth";
+import { getTiktokResponse } from "@/redux/features/socials";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function ConnectToSocialsMenu() {
+  const { tiktokResponse } = useSelector((store) => store.socials);
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -13,6 +20,19 @@ export default function ConnectToSocialsMenu() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const auth = useAuth();
+  const handleTiktok = async () => {
+    try {
+      await dispatch(getTiktokResponse(auth));
+      const authUrl = tiktokResponse.message;
+
+      // Redirect user to TikTok's authorization page
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('TikTok auth failed:', error);
+    }
   };
 
   return (
@@ -37,7 +57,7 @@ export default function ConnectToSocialsMenu() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleTiktok}>
           <div className="flex items-center gap-2">
             <IoLogoTiktok className="text-sm" />
             Tiktok

@@ -37,6 +37,12 @@ export const API_URL = {
     CREATE_PRODUCT: "http://147.78.141.96:8075/api/productService/user/product/create/",
     FETCH_BRAND_CAMPAIGNS: "http://147.78.141.96:8075/api/campaigns/brand/list/",
     FETCH_PRODUCTS: "http://147.78.141.96:8075/api/productService/user/products/",
+
+
+    /***************** SOCIALS APIS **********************/
+    TIKTOK_LOGIN: "http://147.78.141.96:8075/api/auth/tiktok/loginUrl/",
+    TIKTOK_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/tiktok/accessToken/",
+
 };
 
 
@@ -81,6 +87,9 @@ export const APP_API_URL = {
   FETCH_BUCKETLIST: "/api/bucketList/fetch-bucket-list",
   DELETE_BUCKETLIST: "/api/bucketList/delete-bucket-list",
   EDIT_BUCKETLIST: "/api/bucketList/edit-bucket-list",
+
+  /***************** SOCIALS APIS **********************/
+  TIKTOK_LOGIN: "/api/socials/tiktok/login",
 
 };
 
