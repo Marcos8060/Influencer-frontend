@@ -228,6 +228,11 @@ export const AuthProvider = ({ children }) => {
             .then(() => console.log('Token refreshed successfully'))
             .catch(err => console.error('Token refresh failed:', err));
         } else if (expiresIn <= 0) {
+          if(brandToken){
+            logoutBrand()
+          }else if(influencerToken){
+            logoutInfluencer();
+          }
           console.log('Token has already expired');
         } else {
           console.log('Token still valid, no refresh needed');
