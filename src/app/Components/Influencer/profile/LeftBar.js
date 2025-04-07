@@ -12,6 +12,7 @@ import EditDetailsModal from "./edit-details";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import EditProfilePhotoModal from "./edit-profile-photo";
+import ConnectToSocialsMenu from "./connect-socials";
 
 const LeftBar = () => {
   const { influencerDetails } = useSelector((store) => store.influencerProfile);
@@ -85,6 +86,9 @@ const LeftBar = () => {
                     ? influencerDetails.gender
                     : "Gender not set"}
                 </small>
+              </div>
+              <div className="flex items-center justify-center">
+                <ConnectToSocialsMenu />
               </div>
             </div>
           </section>
