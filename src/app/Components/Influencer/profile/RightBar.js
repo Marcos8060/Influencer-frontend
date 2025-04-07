@@ -11,6 +11,7 @@ import EditPreferencesModal from "./edit-preferences";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import EditOnboardingModal from "./edit-onboarding";
+import ConnectToSocialsMenu from "./connect-socials";
 
 const RightBar = () => {
   const { influencerPreferences, influencerOnboarding } = useSelector(
@@ -49,14 +50,15 @@ const RightBar = () => {
   }, [auth, influencerOnboarding]);
   return (
     <section className="space-y-4">
+      <div className="flex">
+        <ConnectToSocialsMenu />
+      </div>
       <div className="bg-white shadow-sm rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-secondary">Your Bio</h2>
           <EditBioModal {...{ influencerOnboarding }} />
         </div>
-        <p className="text-xs text-color">
-          {influencerOnboarding.bio}
-        </p>
+        <p className="text-xs text-color">{influencerOnboarding.bio}</p>
       </div>
       {loading ? (
         <Skeleton

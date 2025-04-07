@@ -1,6 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
-import { authContext } from "@/assets/context/use-context";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { fetchAllInfluencerDetails } from "@/redux/features/influencer/profile";
@@ -87,9 +86,7 @@ const LeftBar = () => {
                     : "Gender not set"}
                 </small>
               </div>
-              <div className="flex items-center justify-center">
-                <ConnectToSocialsMenu />
-              </div>
+              
             </div>
           </section>
         </section>

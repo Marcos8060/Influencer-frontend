@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 import { API_URL } from '@/assets/api-endpoints';
 
@@ -16,13 +15,17 @@ export async function GET(request) {
   }
 
   try {
-    // Send the code to your backend to exchange for access token
+    const payload = {
+      authorizationCode: code, 
+      deviceType: "web"        
+    };
+
     const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify(payload), // ✅ send full payload
     });
 
     const result = await tokenResponse.json();
