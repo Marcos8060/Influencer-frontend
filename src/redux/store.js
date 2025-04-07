@@ -5,6 +5,7 @@ import influencerReducer from "./features/stepper/influencer-stepper";
 import filterReducer from "./features/influencer/filter";
 import influencerProfileReducer from "./features/influencer/profile";
 import campaignReducer from "./features/stepper/campaign-stepper";
+import socialsReducer from "./features/socials";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     campaign: campaignReducer,
     filterResults: filterReducer,
     influencerProfile: influencerProfileReducer,
+    socials: socialsReducer,
   },
 });
