@@ -42,6 +42,7 @@ export const API_URL = {
     /***************** SOCIALS APIS **********************/
     TIKTOK_LOGIN: "http://147.78.141.96:8075/api/auth/tiktok/loginUrl/",
     TIKTOK_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/tiktok/accessToken/",
+    TIKTOK_PROFILE_DETAILS: "http://147.78.141.96:8075/api/socialAccounts/tiktok/profile/get/",
 
 };
 
@@ -91,6 +92,7 @@ export const APP_API_URL = {
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: "/api/socials/tiktok/login",
   TIKTOK_ACCESS_TOKEN: "/api/socials/tiktok/auth",
+  TIKTOK_PROFILE_DETAILS: "/api/socials/tiktok/profile-details",
 
 };
 

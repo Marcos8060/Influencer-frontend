@@ -6,7 +6,6 @@ import { toast } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { Logout } from "@/redux/services/auth";
-import { setCookie, deleteCookie, getCookie } from 'cookies-next';
 
 export const authContext = createContext();
 
@@ -15,52 +14,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Helper functions for cookie operations
-  const getAuthToken = () => {
-    return getCookie('auth_token') || null;
-  };
-
-  const getRefreshToken = () => {
-    return getCookie('refresh_token') || null;
-  };
-
-  const setAuthToken = (token, roleName) => {
-    setCookie('auth_token', token, {
-      path: '/',
-      maxAge: 60 * 60 * 24, // 1 day
-      sameSite: 'lax',
-      // secure: process.env.NODE_ENV === 'production',
-    });
-    setCookie('user_role', roleName, {
-      path: '/',
-      maxAge: 60 * 60 * 24,
-      sameSite: 'lax',
-      // secure: process.env.NODE_ENV === 'production',
-    });
-  };
-
-  const setRefreshToken = (token) => {
-    setCookie('refresh_token', token, {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      sameSite: 'lax',
-      // secure: process.env.NODE_ENV === 'production',
-    });
-  };
-
-  const clearAuthTokens = () => {
-    deleteCookie('auth_token');
-    deleteCookie('refresh_token');
-    deleteCookie('user_role');
-  };
-
   // Create axios instance with interceptors
   const authAxios = axios.create();
 
   // Add request interceptor to attach token and handle refresh
   authAxios.interceptors.request.use(
     async (config) => {
-      const token = getAuthToken();
+      let token;
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+      token = brandToken || influencerToken;
 
       if (token) {
         const decodedToken = jwtDecode(token);
@@ -70,10 +33,13 @@ export const AuthProvider = ({ children }) => {
           try {
             const newToken = await refreshToken();
             if (newToken) {
+              token = newToken;
               config.headers.Authorization = `Bearer ${newToken}`;
             }
           } catch (error) {
-            await logoutUser();
+            // If refresh fails, logout the user
+            if (brandToken) await logoutBrand();
+            if (influencerToken) await logoutInfluencer();
             throw new axios.Cancel('Token refresh failed');
           }
         } else {
@@ -93,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     setIsRefreshing(true);
 
     try {
-      const refreshToken = getRefreshToken();
+      const refreshToken = localStorage.getItem("refresh_token");
       if (!refreshToken) {
         throw new Error("No refresh token available");
       }
@@ -107,8 +73,13 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(newAccessToken);
         setUser(decodedUser);
 
-        // Store the new token
-        setAuthToken(newAccessToken, decodedUser.roleName);
+        // Store the new token based on user role
+        if (decodedUser.roleName === "Brand") {
+          localStorage.setItem("brand_token", newAccessToken);
+        } else if (decodedUser.roleName === "Influencer") {
+          localStorage.setItem("influencer_token", newAccessToken);
+        }
+
         return newAccessToken;
       }
     } catch (error) {
@@ -128,16 +99,15 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200) {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
-        
         if (decodedUser.roleName !== "Brand") {
           toast.error("You are not authorized to access Brand account");
           router.push("/auth/login/influencer");
         } else if(decodedUser.finishedOnboarding && decodedUser.roleName === "Brand") {
-            setAuthToken(response.data.access, decodedUser.roleName);
-            setRefreshToken(response.data.refresh);
+            localStorage.setItem("brand_token", response.data.access);
+            localStorage.setItem("refresh_token", response.data.refresh);
             router.push("/onboarding/brand/dashboard");
             toast.success("Login successful");
-        } else {
+        }else{
           router.push('/onboarding/brand')
           toast.success("Login successful");
         }
@@ -157,11 +127,16 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         if (decodedUser.roleName !== "Influencer") {
-          toast.error("You are not authorized to access Influencer account");
+          toast.error(
+            "You are not authorized to access Influencer account"
+          );
           router.push("/auth/login/brand");
-        } else if (decodedUser.finishedOnboarding && decodedUser.roleName === "Influencer") {
-          setAuthToken(response.data.access, decodedUser.roleName);
-          setRefreshToken(response.data.refresh);
+        } else if (
+          decodedUser.finishedOnboarding &&
+          decodedUser.roleName === "Influencer"
+        ) {
+          localStorage.setItem("influencer_token", response.data.access);
+          localStorage.setItem("refresh_token", response.data.refresh);
           router.push("/onboarding/influencer/dashboard");
           toast.success("Login successful");
         } else {
@@ -174,10 +149,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logoutUser = async () => {
+  const logoutBrand = async () => {
     try {
-      const refreshToken = getRefreshToken();
-      const accessToken = getAuthToken();
+      const refreshToken = localStorage.getItem("refresh_token");
+      const accessToken = localStorage.getItem("brand_token");
 
       if (!refreshToken) {
         console.error("No refresh token found");
@@ -186,13 +161,40 @@ export const AuthProvider = ({ children }) => {
       }
 
       const response = await Logout(accessToken, refreshToken);
+
       if (response?.message === "Successfully logged out" || !response.error) {
         setUser(null);
-        const role = getCookie('user_role');
-        console.log(role);
-        router.push(`/auth/login/${role?.toLowerCase() || 'brand'}`);
-        clearAuthTokens();
-        toast.success(response.message || "Logged out successfully");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("brand_token");
+        router.push("/auth/login/brand");
+        toast.success(response.message);
+      } else {
+        toast.error("Logout failed. Please try again.");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.errorMessage?.[0] || "Logout failed");
+    }
+  };
+
+  const logoutInfluencer = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      const accessToken = localStorage.getItem("influencer_token");
+
+      if (!refreshToken) {
+        console.error("No refresh token found");
+        toast.error("No refresh token found");
+        return;
+      }
+
+      const response = await Logout(accessToken, refreshToken);
+
+      if (response?.message === "Successfully logged out" || !response.error) {
+        setUser(null);
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("influencer_token");
+        router.push("/auth/login/influencer");
+        toast.success(response.message);
       } else {
         toast.error("Logout failed. Please try again.");
       }
@@ -204,15 +206,36 @@ export const AuthProvider = ({ children }) => {
   // Check token expiration periodically
   useEffect(() => {
     const checkTokenExpiration = () => {
-      const token = getAuthToken();
+      console.log('--- Running token expiration check ---', new Date().toISOString());
+      
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+      const token = brandToken || influencerToken;
+  
+      console.log('Token found:', token ? 'Yes' : 'No');
       
       if (token) {
         const decodedToken = jwtDecode(token);
         const expiresIn = decodedToken.exp * 1000 - Date.now();
+        const expiresInMinutes = Math.floor(expiresIn / 60000);
+        
+        console.log(`Token expires in: ${expiresInMinutes} minutes (${expiresIn}ms)`);
+        
         // If token expires in less than 5 minutes, refresh it
         if (expiresIn < 300000 && expiresIn > 0) {
+          console.log('Token expires soon, refreshing...');
           refreshToken()
+            .then(() => console.log('Token refreshed successfully'))
             .catch(err => console.error('Token refresh failed:', err));
+        } else if (expiresIn <= 0) {
+          if(brandToken){
+            logoutBrand()
+          }else if(influencerToken){
+            logoutInfluencer();
+          }
+          console.log('Token has already expired');
+        } else {
+          console.log('Token still valid, no refresh needed');
         }
       }
     };
@@ -223,25 +246,37 @@ export const AuthProvider = ({ children }) => {
     // Then check every minute
     const interval = setInterval(checkTokenExpiration, 60000);
     
-    return () => clearInterval(interval);
+    return () => {
+      console.log('Cleaning up token expiration check');
+      clearInterval(interval);
+    };
   }, []);
 
-  // Set the user when component mounts
+  // decode the token and set the user when a component mounts
   useEffect(() => {
-    const token = getAuthToken();
-    if (token) {
-      const decodedUser = jwtDecode(token);
-      setUser(decodedUser);
+    let decodedUser;
+
+    if (typeof window !== "undefined") {
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+
+      if (brandToken) {
+        decodedUser = jwtDecode(brandToken);
+      } else if (influencerToken) {
+        decodedUser = jwtDecode(influencerToken);
+      }
     }
+
+    setUser(decodedUser);
   }, []);
 
-  const contextData = {
+  let contextData = {
     loginUser: loginUser,
     logInfluencer: logInfluencer,
-    logoutBrand: logoutUser, // Consolidated to single logout
-    logoutInfluencer: logoutUser, // Consolidated to single logout
+    logoutBrand: logoutBrand,
+    logoutInfluencer: logoutInfluencer,
     user: user,
-    authAxios: authAxios,
+    authAxios: authAxios, // Export the authenticated axios instance
   };
 
   return (
