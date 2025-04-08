@@ -1,15 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getCookie } from "cookies-next";
 
 export const useAuth = () => {
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
-    const token = getCookie("auth_token");
-    if (token) {
-      setAuth(token);
+    if (typeof window !== "undefined") {
+      const brandToken = localStorage.getItem("brand_token");
+      const influencerToken = localStorage.getItem("influencer_token");
+
+      if (brandToken) {
+        setAuth(brandToken);
+      }else if(influencerToken){
+        setAuth(influencerToken);
+      }
     }
+    
   }, []);
 
   return auth;

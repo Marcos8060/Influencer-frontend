@@ -3,18 +3,18 @@
 
 import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { getCookie } from 'cookies-next'
 import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is imported
+import { useAuth } from '@/assets/hooks/use-auth'
 
 function TikTokCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const code = searchParams.get('code')
   const error = searchParams.get('error')
+  const token = useAuth();
 
   useEffect(() => {
     const handleCallback = async () => {
-      const token = getCookie('auth_token')
 
       if (!token) {
         router.push('/dashboard?error=missing_auth_token')
@@ -37,9 +37,6 @@ function TikTokCallbackInner() {
           deviceType: 'web',
         }
 
-        console.log('TIKTOK_PAYLOAD ', payload)
-
-
         const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
@@ -55,7 +52,7 @@ function TikTokCallbackInner() {
           throw new Error(result.message || 'Failed to get access token')
         }
 
-        router.push('/dashboard?success=tiktok_connected')
+        router.push('/onboarding/influencer/profile')
       } catch (err) {
         console.error('Token exchange error:', err)
         router.push(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`)
@@ -63,7 +60,7 @@ function TikTokCallbackInner() {
     }
 
     handleCallback()
-  }, [code, error, router])
+  }, [code, error, router, token])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
