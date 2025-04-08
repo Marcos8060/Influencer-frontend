@@ -1,10 +1,12 @@
 // app/tiktok-callback/page.js
 'use client'
-import { useEffect } from 'react'
+
+import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { getCookie } from 'cookies-next'
+import { API_URL } from '@/assets/api-endpoints' // make sure this is imported
 
-export default function TikTokCallbackPage() {
+function TikTokCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const code = searchParams.get('code')
@@ -12,10 +14,8 @@ export default function TikTokCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      // Get token from cookies (client-side compatible)
       const token = getCookie('auth_token')
-      
-      // Error handling
+
       if (!token) {
         router.push('/dashboard?error=missing_auth_token')
         return
@@ -34,18 +34,18 @@ export default function TikTokCallbackPage() {
       try {
         const payload = {
           authorizationCode: code,
-          deviceType: "web"
+          deviceType: 'web',
         }
 
-        console.log("TIKTOK_PAYLOAD ", payload)
-        
+        console.log('TIKTOK_PAYLOAD ', payload)
+
         const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         })
 
         const result = await tokenResponse.json()
@@ -55,7 +55,6 @@ export default function TikTokCallbackPage() {
         }
 
         router.push('/dashboard?success=tiktok_connected')
-        
       } catch (err) {
         console.error('Token exchange error:', err)
         router.push(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`)
@@ -70,5 +69,13 @@ export default function TikTokCallbackPage() {
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
       <p className="text-gray-600">Connecting your TikTok account...</p>
     </div>
+  )
+}
+
+export default function TikTokCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading TikTok callback...</div>}>
+      <TikTokCallbackInner />
+    </Suspense>
   )
 }
