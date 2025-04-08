@@ -1,58 +1,81 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/assets/hooks/use-auth';
-import { API_URL } from '@/assets/api-endpoints';
+// app/tiktok-callback/page.js
+'use client'
 
-export default function TikTokCallback() {
-  const [code, setCode] = useState(null);
-  const router = useRouter();
-  const auth = useAuth();
+import { useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { getCookie } from 'cookies-next'
+import { API_URL } from '@/assets/api-endpoints' // make sure this is imported
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const authCode = queryParams.get('code');
-    if (authCode) setCode(authCode);
-  }, []);
+function TikTokCallbackInner() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const code = searchParams.get('code')
+  const error = searchParams.get('error')
 
   useEffect(() => {
-    if (!code || !auth) return;
+    const handleCallback = async () => {
+      const token = getCookie('auth_token')
 
-    const exchangeToken = async () => {
+      if (!token) {
+        router.push('/dashboard?error=missing_auth_token')
+        return
+      }
+
+      if (error) {
+        router.push(`/dashboard?error=tiktok_auth_failed&message=${encodeURIComponent(error)}`)
+        return
+      }
+
+      if (!code) {
+        router.push('/dashboard?error=no_auth_code')
+        return
+      }
+
       try {
         const payload = {
           authorizationCode: code,
-          deviceType: "web",
-        };
+          deviceType: 'web',
+        }
 
-        const response = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
+        console.log('TIKTOK_PAYLOAD ', payload)
+
+        const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${auth}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
-        });
+        })
 
-        const result = await response.json();
+        const result = await tokenResponse.json()
 
-        if (!response.ok) {
-          throw new Error(result.message || 'Token exchange failed');
+        if (!tokenResponse.ok) {
+          throw new Error(result.message || 'Failed to get access token')
         }
 
-        router.push('/dashboard?success=tiktok_connected');
-      } catch (error) {
-        console.error('Token exchange error:', error);
-        router.push(`/dashboard?error=${encodeURIComponent(error.message)}`);
+        router.push('/dashboard?success=tiktok_connected')
+      } catch (err) {
+        console.error('Token exchange error:', err)
+        router.push(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`)
       }
-    };
+    }
 
-    exchangeToken();
-  }, [code, auth, router]);
+    handleCallback()
+  }, [code, error, router])
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <p>Connecting TikTok account...</p>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+      <p className="text-gray-600">Connecting your TikTok account...</p>
     </div>
-  );
+  )
+}
+
+export default function TikTokCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading TikTok callback...</div>}>
+      <TikTokCallbackInner />
+    </Suspense>
+  )
 }
