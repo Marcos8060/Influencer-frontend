@@ -39,7 +39,9 @@ function TikTokCallbackInner() {
 
         console.log('TIKTOK_PAYLOAD ', payload)
 
-        const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
+        const TIKTOK_ACCESS_TOKEN = 'http://147.78.141.96:8075/api/auth/tiktok/accessToken/'
+
+        const tokenResponse = await fetch(TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
