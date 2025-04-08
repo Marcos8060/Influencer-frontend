@@ -90,7 +90,7 @@ export const APP_API_URL = {
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: "/api/socials/tiktok/login",
-  TIKTOK_ACCESS_TOKEN: "/api/socials/tiktok/login",
+  TIKTOK_ACCESS_TOKEN: "/api/socials/tiktok/auth",
 
 };
 
