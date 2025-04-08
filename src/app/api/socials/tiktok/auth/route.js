@@ -6,9 +6,8 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const error = searchParams.get('error');
-  const token = cookies().get('tmp_tiktok_auth')?.value;
+  const token = cookies().get('auth_token')?.value;
 
-  console.log("TOKEN_AUTH ",token)
 
   if (!token) {
     return redirect('/dashboard?error=missing_auth_token');

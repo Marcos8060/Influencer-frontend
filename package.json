@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "^2.5.0",
     "@rollup/plugin-inject": "^5.0.5",
     "axios": "^1.7.9",
+    "cookies-next": "^5.1.0",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "next": "15.1.4",
