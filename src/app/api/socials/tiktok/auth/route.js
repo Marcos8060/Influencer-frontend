@@ -1,50 +1,31 @@
-import { redirect } from 'next/navigation';
-import { API_URL } from '@/assets/api-endpoints';
-import { cookies } from 'next/headers';
+import { backendAxiosInstance } from "@/assets/hooks/backend-axios-instance";
+import { API_URL } from "@/assets/api-endpoints";
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get('code');
-  const error = searchParams.get('error');
-  const token = cookies().get('auth_token')?.value;
-
-
-  if (!token) {
-    return redirect('/dashboard?error=missing_auth_token');
-  }
-
-  if (error) {
-    return redirect(`/dashboard?error=tiktok_auth_failed&message=${encodeURIComponent(error)}`);
-  }
-
-  if (!code) {
-    return redirect('/dashboard?error=no_auth_code');
-  }
-
+// For handling POST requests in Next.js 13+ using the app folder structure
+export async function POST(req) {
   try {
+    const body = await req.json();
+
     const payload = {
-      authorizationCode: code, 
-      deviceType: "web"        
+      ...body,
     };
-    console.log("TIKTOK_PAYLOAD ",payload)
-    const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
-      method: 'POST',
+
+    const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        Authorization: req.headers.get("authorization"),
       },
-      body: JSON.stringify(payload), // ✅ send full payload
+    };
+
+    const response = await backendAxiosInstance.post(`${API_URL.TIKTOK_ACCESS_TOKEN}`, payload, config);
+
+    return new Response(JSON.stringify(response.data), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
     });
-
-    const result = await tokenResponse.json();
-
-    if (!tokenResponse.ok) {
-      throw new Error(result.message || 'Failed to get access token');
-    }
-
-    return redirect('/dashboard?success=tiktok_connected');
-    
-  } catch (err) {
-    return redirect(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`);
+  } catch (e) {
+    return new Response(
+      JSON.stringify(e.response?.data || { error: "Unknown server error" }),
+      { status: e.response?.status || 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
