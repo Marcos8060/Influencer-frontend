@@ -4,7 +4,7 @@
 import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { getCookie } from 'cookies-next'
-import { API_URL } from '@/assets/api-endpoints' // make sure this is imported
+import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is imported
 
 function TikTokCallbackInner() {
   const router = useRouter()
@@ -39,13 +39,12 @@ function TikTokCallbackInner() {
 
         console.log('TIKTOK_PAYLOAD ', payload)
 
-        const TIKTOK_ACCESS_TOKEN = 'http://147.78.141.96:8075/api/auth/tiktok/accessToken/'
 
-        const tokenResponse = await fetch(TIKTOK_ACCESS_TOKEN, {
+        const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         })
