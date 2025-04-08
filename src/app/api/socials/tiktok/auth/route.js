@@ -26,7 +26,7 @@ export async function GET(request) {
       authorizationCode: code, 
       deviceType: "web"        
     };
-
+    console.log("TIKTOK_PAYLOAD ",payload)
     const tokenResponse = await fetch(API_URL.TIKTOK_ACCESS_TOKEN, {
       method: 'POST',
       headers: {

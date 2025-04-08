@@ -28,14 +28,14 @@ export const AuthProvider = ({ children }) => {
     setCookie('auth_token', token, {
       path: '/',
       maxAge: 60 * 60 * 24, // 1 day
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      // secure: process.env.NODE_ENV === 'production',
     });
     setCookie('user_role', roleName, {
       path: '/',
       maxAge: 60 * 60 * 24,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      // secure: process.env.NODE_ENV === 'production',
     });
   };
 
@@ -43,8 +43,8 @@ export const AuthProvider = ({ children }) => {
     setCookie('refresh_token', token, {
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      // secure: process.env.NODE_ENV === 'production',
     });
   };
 
