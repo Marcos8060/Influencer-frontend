@@ -9,18 +9,19 @@ import Skeleton from "react-loading-skeleton";
 
 const InstagramProfile = () => {
   const [loading, setLoading] = useState(false);
-  const { tiktokProfile } = useSelector((store) => store.socials);
+  const { instagramProfile } = useSelector((store) => store.socials);
   const [isTiktokConnected,setIsTiktokConnected] = useState(false)
   const dispatch = useDispatch();
   const auth = useAuth();
-
+  console.log(instagramProfile)
 
   const handleInstagramLogin = async () => {
     try {
       const response = await dispatch(getInstagramResponse(auth));
+      console.log("INSTAGRAM_RES ",response)
       const authUrl = response.message;
       // Redirect user to TikTok's authorization page
-      window.location.href = authUrl;
+      window.location.href =  'https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1630927701133160&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights';
     } catch (error) {
       console.error("Instagram auth failed:", error);
     }
