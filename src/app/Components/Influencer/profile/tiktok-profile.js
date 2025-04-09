@@ -13,8 +13,6 @@ const TiktokProfile = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
 
-  console.log("auth ", auth);
-
   const fetchProfile = async () => {
     try {
       setLoading(true);

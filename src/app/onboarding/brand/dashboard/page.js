@@ -3,9 +3,20 @@ import React from "react";
 import { MdCampaign } from "react-icons/md";
 import { AiOutlineShopping } from "react-icons/ai";
 import { FaUsersBetweenLines } from "react-icons/fa6";
+import { useProtectedRoute } from "@/assets/hooks/authGuard";
+import SplashScreen from "@/app/Components/SplashScreen";
 
 
 const Dashboard = () => {
+  const isAuthorized = useProtectedRoute();
+
+  if (isAuthorized === null) {
+    return <SplashScreen />;
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
   return (
     <div>
       <section className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
