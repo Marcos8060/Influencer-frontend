@@ -97,7 +97,7 @@ export const APP_API_URL = {
   TIKTOK_ACCESS_TOKEN: "/api/socials/tiktok/auth",
   TIKTOK_PROFILE_DETAILS: "/api/socials/tiktok/profile-details",
   INSTAGRAM_LOGIN: "/api/socials/instagram/login",
-  INSTAGRAM_ACCESS_TOKEN: "/api/socials/tiktok/auth",
+  INSTAGRAM_ACCESS_TOKEN: "/api/socials/instagram/auth",
   INSTAGRAM_PROFILE_DETAILS: "/api/socials/tiktok/profile-details",
 
 };
