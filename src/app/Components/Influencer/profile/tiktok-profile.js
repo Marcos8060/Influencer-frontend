@@ -11,12 +11,10 @@ import { authContext } from "@/assets/context/use-context";
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
   const { tiktokProfile } = useSelector((store) => store.socials);
-  const { user } = useContext(authContext)
   const [isTiktokConnected,setIsTiktokConnected] = useState(false)
   const dispatch = useDispatch();
   const auth = useAuth();
 
-  console.log("USER ",user);
 
   const handleTiktok = async () => {
     try {
