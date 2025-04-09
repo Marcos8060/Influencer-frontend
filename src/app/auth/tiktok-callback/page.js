@@ -5,6 +5,7 @@ import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is imported
 import { useAuth } from '@/assets/hooks/use-auth'
+import toast from 'react-hot-toast'
 
 function TikTokCallbackInner() {
   const router = useRouter()
@@ -47,7 +48,7 @@ function TikTokCallbackInner() {
         })
 
         const result = await tokenResponse.json()
-
+        toast.success('Tiktok Connected Successfully')
         if (!tokenResponse.ok) {
           throw new Error(result.message || 'Failed to get access token')
         }

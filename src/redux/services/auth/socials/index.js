@@ -15,3 +15,17 @@ export const tiktokLogin = async (auth) => {
         return error.response?.data || error.message;
     }
 };
+
+export const instagramLogin = async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.INSTAGRAM_LOGIN}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error logging into tiktok:", error);
+        return error.response?.data || error.message;
+    }
+};
