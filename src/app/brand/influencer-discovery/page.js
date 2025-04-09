@@ -21,48 +21,21 @@ import { authContext } from "@/assets/context/use-context";
 import { BsChevronDown } from "react-icons/bs";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useProtectedRoute } from "@/assets/hooks/authGuard";
+import SplashScreen from "@/app/Components/SplashScreen";
 
 const CreateCampaign = () => {
-  const { bucketList } = useSelector((store) => store.bucket);
-  const { influencers } = useSelector((store) => store.filterResults);
-  const { brandCampaigns } = useSelector((store) => store.campaign);
-  const { logoutInfluencer, user } = useContext(authContext);
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const isAuthorized = useProtectedRoute();
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  if (!isAuthorized) {
+    return null;
+  }
+  
 
-  const tabHeadings = {
-    1: (
-      <>
-        We found{" "}
-        <span className="font-black text-sm">{influencers.length}</span> Total
-        Influencers
-      </>
-    ),
-    2: (
-      <>
-        We found <span className="font-black text-sm">{bucketList.length}</span>{" "}
-        Bucket(s) in your Repository.
-      </>
-    ),
-    3: (
-      <>
-        We found{" "}
-        <span className="font-black text-sm">{brandCampaigns.length}</span>{" "}
-        Campaigns in your Repository.
-      </>
-    ),
-  };
 
   useEffect(() => {
     if (auth) {

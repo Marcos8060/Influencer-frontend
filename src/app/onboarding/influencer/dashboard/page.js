@@ -5,9 +5,17 @@ import { AiOutlineShopping } from "react-icons/ai";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { FaUsersViewfinder } from "react-icons/fa6";
 import { MdWorkHistory } from "react-icons/md";
+import { useProtectedRoute } from "@/assets/hooks/authGuard";
+import SplashScreen from "@/app/Components/SplashScreen";
 
 
 const InfluencerDashboard = () => {
+  const isAuthorized = useProtectedRoute();
+
+  if (!isAuthorized) {
+    return null;
+  }
+
   return (
     <div>
       <section className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
