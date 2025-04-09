@@ -93,7 +93,7 @@ const RightBar = () => {
           <FaInstagram className="" />
           <p>Instagram</p>
         </div>
-        <div
+        {/* <div
           className={`${
             currentTab === 4
               ? "text-primary p-2 font-semibold text-sm border-b-2 border-primary"
@@ -103,7 +103,7 @@ const RightBar = () => {
         >
           <FaXTwitter className="" />
           <p>Platform</p>
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="flex">
