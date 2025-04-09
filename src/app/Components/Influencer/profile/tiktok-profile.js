@@ -1,23 +1,27 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getTiktokProfile, getTiktokResponse } from "@/redux/features/socials";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
+import { authContext } from "@/assets/context/use-context";
 
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
   const { tiktokProfile } = useSelector((store) => store.socials);
+  const { user } = useContext(authContext)
+  const [isTiktokConnected,setIsTiktokConnected] = useState(false)
   const dispatch = useDispatch();
   const auth = useAuth();
+
+  console.log("USER ",user);
 
   const handleTiktok = async () => {
     try {
       const response = await dispatch(getTiktokResponse(auth));
       const authUrl = response.message;
-
       // Redirect user to TikTok's authorization page
       window.location.href = authUrl;
     } catch (error) {
@@ -28,7 +32,12 @@ const TiktokProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      await dispatch(getTiktokProfile(auth));
+      const response = await dispatch(getTiktokProfile(auth));
+      if(response.statusCode === 404){
+        setIsTiktokConnected(false);
+      }else{
+        setIsTiktokConnected(true);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -52,8 +61,8 @@ const TiktokProfile = () => {
         />
       ) : (
         <>
-          {tiktokProfile ? (
-            <section className="flex items-center justify-center h-[50vh] text-color">
+          {isTiktokConnected ? (
+            <section className="flex flex-col items-center justify-center h-[50vh] text-color">
               <div className="bg-white rounded-xl p-4">
                 <section className="md:flex gap-6 justify-between">
                   <a href={tiktokProfile?.profileDeepLink} target="_blank">
@@ -103,6 +112,14 @@ const TiktokProfile = () => {
                   </div>
                 </section>
               </div>
+              <section className="flex justify-center mt-2 text-color">
+              <button
+                onClick={handleTiktok}
+                className="border border-rounded-xl text-xs text-color px-4 py-2 rounded"
+              >
+                Reconnect Account
+              </button>
+            </section>
             </section>
           ) : (
             <section className="flex items-center justify-center h-[50vh] text-color border border-dashed  border-primary rounded-xl">
