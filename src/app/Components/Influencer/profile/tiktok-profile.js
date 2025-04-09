@@ -1,12 +1,11 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getTiktokProfile, getTiktokResponse } from "@/redux/features/socials";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
-import { authContext } from "@/assets/context/use-context";
 
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
