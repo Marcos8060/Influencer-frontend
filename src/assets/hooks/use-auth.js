@@ -2,7 +2,17 @@
 import { useState, useEffect } from "react";
 
 export const useAuth = () => {
-  const [auth, setAuth] = useState(null);
+  // Initialize auth immediately from localStorage if available.
+  const [auth, setAuth] = useState(() => {
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.getItem("brand_token") ||
+        localStorage.getItem("influencer_token") ||
+        null
+      );
+    }
+    return null;
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -11,11 +21,10 @@ export const useAuth = () => {
 
       if (brandToken) {
         setAuth(brandToken);
-      }else if(influencerToken){
+      } else if (influencerToken) {
         setAuth(influencerToken);
       }
     }
-    
   }, []);
 
   return auth;
