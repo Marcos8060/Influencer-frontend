@@ -43,6 +43,9 @@ export const API_URL = {
     TIKTOK_LOGIN: "http://147.78.141.96:8075/api/auth/tiktok/loginUrl/",
     TIKTOK_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/tiktok/accessToken/",
     TIKTOK_PROFILE_DETAILS: "http://147.78.141.96:8075/api/socialAccounts/tiktok/profile/get/",
+    INSTAGRAM_LOGIN: "http://147.78.141.96:8075/api/auth/instagram/loginUrl/",
+    INSTAGRAM_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/instagram/accessToken/",
+    INSTAGRAM_PROFILE_DETAILS: "http://147.78.141.96:8075/api/socialAccounts/tiktok/profile/get/",
 
 };
 
@@ -93,6 +96,9 @@ export const APP_API_URL = {
   TIKTOK_LOGIN: "/api/socials/tiktok/login",
   TIKTOK_ACCESS_TOKEN: "/api/socials/tiktok/auth",
   TIKTOK_PROFILE_DETAILS: "/api/socials/tiktok/profile-details",
+  INSTAGRAM_LOGIN: "/api/socials/instagram/login",
+  INSTAGRAM_ACCESS_TOKEN: "/api/socials/tiktok/auth",
+  INSTAGRAM_PROFILE_DETAILS: "/api/socials/tiktok/profile-details",
 
 };
 

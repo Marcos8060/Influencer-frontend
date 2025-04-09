@@ -5,6 +5,7 @@ import { useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is imported
 import { useAuth } from '@/assets/hooks/use-auth'
+import toast from 'react-hot-toast'
 
 function TikTokCallbackInner() {
   const router = useRouter()
@@ -22,7 +23,7 @@ function TikTokCallbackInner() {
       }
 
       if (error) {
-        router.push(`/dashboard?error=tiktok_auth_failed&message=${encodeURIComponent(error)}`)
+        router.push(`/dashboard?error=instagram_auth_failed&message=${encodeURIComponent(error)}`)
         return
       }
 
@@ -34,10 +35,9 @@ function TikTokCallbackInner() {
       try {
         const payload = {
           authorizationCode: code,
-          deviceType: 'web',
         }
 
-        const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {
+        const tokenResponse = await fetch(APP_API_URL.INSTAGRAM_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function TikTokCallbackInner() {
         })
 
         const result = await tokenResponse.json()
-
+        toast.success('Instagram connected successfully')
         if (!tokenResponse.ok) {
           throw new Error(result.message || 'Failed to get access token')
         }
@@ -55,7 +55,7 @@ function TikTokCallbackInner() {
         router.push('/onboarding/influencer/profile')
       } catch (err) {
         console.error('Token exchange error:', err)
-        router.push(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`)
+        router.push(`/dashboard?error=instagram_token_exchange&message=${encodeURIComponent(err.message)}`)
       }
     }
 
@@ -65,7 +65,7 @@ function TikTokCallbackInner() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-      <p className="text-gray-600">Connecting your TikTok account...</p>
+      <p className="text-gray-600">Connecting your Instagram account...</p>
     </div>
   )
 }
