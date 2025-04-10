@@ -13,7 +13,6 @@ const InstagramProfile = () => {
   const [isInstagramConnected,setisInstagramConnected] = useState(false)
   const dispatch = useDispatch();
   const auth = useAuth();
-  console.log(instagramProfile)
 
   const handleInstagramLogin = async () => {
     try {
@@ -66,14 +65,14 @@ const InstagramProfile = () => {
                   <a href={instagramProfile?.profileDeepLink} target="_blank">
                     <img
                       className="h-36 w-36 mx-auto object-cover rounded-full"
-                      src={instagramProfile?.avatarUrl}
+                      src={instagramProfile?.profilePictureUrl}
                       alt=""
                     />
                   </a>
                   <div className="space-y-3">
                     <section className="flex items-center gap-2">
                       <p className="font-bold text-xl">
-                        {instagramProfile?.displayName}
+                        {instagramProfile?.name}
                       </p>
                       {instagramProfile?.isVerified && (
                         <MdVerifiedUser className="text-link" />
@@ -85,26 +84,26 @@ const InstagramProfile = () => {
                     <section className="flex items-center gap-6">
                       <p className="font-light">
                         <span className="font-bold">
-                          {instagramProfile?.followingCount}
+                          {instagramProfile?.followsCount}
                         </span>{" "}
                         Following
                       </p>
                       <p className="font-light">
                         <span className="font-bold">
-                          {instagramProfile?.followerCount}
+                          {instagramProfile?.followersCount}
                         </span>{" "}
                         Followers
                       </p>
                       <p className="font-light">
                         <span className="font-bold">
-                          {instagramProfile?.likesCount}
+                          {instagramProfile?.mediaCount}
                         </span>{" "}
-                        Likes
+                        Posts
                       </p>
                     </section>
                     <section>
                       <p className="italic font-light text-sm">
-                        {instagramProfile?.bioDescription}
+                        {instagramProfile?.biography}
                       </p>
                     </section>
                   </div>
