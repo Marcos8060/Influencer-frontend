@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { getInstagramResponse, getTiktokProfile } from "@/redux/features/socials";
+import { getInstagramProfile, getInstagramResponse, getTiktokProfile } from "@/redux/features/socials";
 import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import Skeleton from "react-loading-skeleton";
 const InstagramProfile = () => {
   const [loading, setLoading] = useState(false);
   const { instagramProfile } = useSelector((store) => store.socials);
-  const [isTiktokConnected,setIsTiktokConnected] = useState(false)
+  const [isInstagramConnected,setisInstagramConnected] = useState(false)
   const dispatch = useDispatch();
   const auth = useAuth();
   console.log(instagramProfile)
@@ -18,10 +18,10 @@ const InstagramProfile = () => {
   const handleInstagramLogin = async () => {
     try {
       const response = await dispatch(getInstagramResponse(auth));
-      console.log("INSTAGRAM_RES ",response)
       const authUrl = response.message;
       // Redirect user to TikTok's authorization page
-      window.location.href =  'https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1630927701133160&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights';
+      const url = 'https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1630927701133160&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights';
+      window.location.href =  authUrl
     } catch (error) {
       console.error("Instagram auth failed:", error);
     }
@@ -30,11 +30,11 @@ const InstagramProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await dispatch(getTiktokProfile(auth));
+      const response = await dispatch(getInstagramProfile(auth));
       if(response.statusCode === 404){
-        setIsTiktokConnected(false);
+        setisInstagramConnected(false);
       }else{
-        setIsTiktokConnected(true);
+        setisInstagramConnected(true);
       }
     } catch (error) {
       console.log(error);
@@ -43,11 +43,11 @@ const InstagramProfile = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (auth) {
-  //     fetchProfile();
-  //   }
-  // }, [auth]);
+  useEffect(() => {
+    if (auth) {
+      fetchProfile();
+    }
+  }, []);
   return (
     <>
       {loading ? (
@@ -59,52 +59,52 @@ const InstagramProfile = () => {
         />
       ) : (
         <>
-          {isTiktokConnected ? (
+          {isInstagramConnected ? (
             <section className="flex flex-col items-center justify-center h-[50vh] text-color">
               <div className="bg-white rounded-xl p-4">
                 <section className="md:flex gap-6 justify-between">
-                  <a href={tiktokProfile?.profileDeepLink} target="_blank">
+                  <a href={instagramProfile?.profileDeepLink} target="_blank">
                     <img
                       className="h-36 w-36 mx-auto object-cover rounded-full"
-                      src={tiktokProfile?.avatarUrl}
+                      src={instagramProfile?.avatarUrl}
                       alt=""
                     />
                   </a>
                   <div className="space-y-3">
                     <section className="flex items-center gap-2">
                       <p className="font-bold text-xl">
-                        {tiktokProfile?.displayName}
+                        {instagramProfile?.displayName}
                       </p>
-                      {tiktokProfile?.isVerified && (
+                      {instagramProfile?.isVerified && (
                         <MdVerifiedUser className="text-link" />
                       )}
                     </section>
                     <section>
-                      <p>{tiktokProfile?.username}</p>
+                      <p>{instagramProfile?.username}</p>
                     </section>
                     <section className="flex items-center gap-6">
                       <p className="font-light">
                         <span className="font-bold">
-                          {tiktokProfile?.followingCount}
+                          {instagramProfile?.followingCount}
                         </span>{" "}
                         Following
                       </p>
                       <p className="font-light">
                         <span className="font-bold">
-                          {tiktokProfile?.followerCount}
+                          {instagramProfile?.followerCount}
                         </span>{" "}
                         Followers
                       </p>
                       <p className="font-light">
                         <span className="font-bold">
-                          {tiktokProfile?.likesCount}
+                          {instagramProfile?.likesCount}
                         </span>{" "}
                         Likes
                       </p>
                     </section>
                     <section>
                       <p className="italic font-light text-sm">
-                        {tiktokProfile?.bioDescription}
+                        {instagramProfile?.bioDescription}
                       </p>
                     </section>
                   </div>

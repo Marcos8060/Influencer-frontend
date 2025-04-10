@@ -1,5 +1,5 @@
 import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
-import { fetchTiktokProfile } from "@/redux/services/socials";
+import { fetchInstagramProfile, fetchTiktokProfile } from "@/redux/services/socials";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -60,6 +60,16 @@ export const getTiktokProfile = (auth) => async (dispatch) => {
   try {
     const data = await fetchTiktokProfile(auth);
     dispatch(setTiktokProfile(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getInstagramProfile = (auth) => async (dispatch) => {
+  try {
+    const data = await fetchInstagramProfile(auth);
+    dispatch(setInstagramProfile(data));
     return data;
   } catch (error) {
     console.log(error);
