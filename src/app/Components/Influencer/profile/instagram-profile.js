@@ -21,7 +21,8 @@ const InstagramProfile = () => {
       console.log("INSTAGRAM_RES ",response)
       const authUrl = response.message;
       // Redirect user to TikTok's authorization page
-      window.location.href =  'https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1630927701133160&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights';
+      const url = 'https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1630927701133160&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights';
+      window.location.href =  authUrl
     } catch (error) {
       console.error("Instagram auth failed:", error);
     }
