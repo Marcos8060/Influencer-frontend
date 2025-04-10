@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { getInstagramResponse, getTiktokProfile } from "@/redux/features/socials";
+import { getInstagramProfile, getInstagramResponse, getTiktokProfile } from "@/redux/features/socials";
 import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,11 +30,11 @@ const InstagramProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await dispatch(getTiktokProfile(auth));
+      const response = await dispatch(getInstagramProfile(auth));
       if(response.statusCode === 404){
         setisInstagramConnected(false);
       }else{
-        setIsTiktokConnected(true);
+        setisInstagramConnected(true);
       }
     } catch (error) {
       console.log(error);
@@ -43,11 +43,11 @@ const InstagramProfile = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (auth) {
-  //     fetchProfile();
-  //   }
-  // }, [auth]);
+  useEffect(() => {
+    if (auth) {
+      fetchProfile();
+    }
+  }, []);
   return (
     <>
       {loading ? (

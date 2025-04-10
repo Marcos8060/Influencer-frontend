@@ -46,7 +46,7 @@ const TiktokProfile = () => {
     if (auth) {
       fetchProfile();
     }
-  }, [auth]);
+  }, []);
   return (
     <>
       {loading ? (
