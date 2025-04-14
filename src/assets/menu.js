@@ -53,9 +53,9 @@ export const influencerMenu = [
     icon: <BiSolidDashboard />,
   },
   {
-    label: "Opportunities",
-    path: "",
-    icon: <FaCarAlt />,
+    label: "Campaigns",
+    path: "/onboarding/influencer/dashboard/campaigns",
+    icon: <MdCampaign />,
   },
   {
     label: "Collaboration",
