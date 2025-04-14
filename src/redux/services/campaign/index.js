@@ -57,3 +57,42 @@ export const fetchProducts = async (auth) => {
         return error.response?.data || error.message;
     }
 };
+
+
+export const fetchMedia = async (auth, userId) => {
+    try {
+        const url = `${APP_API_URL.FETCH_POSTS}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { user_id: userId },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
+
+
+export const fetchPostInsights = async (auth, payload) => {
+    try {
+        // Convert filter object to query string
+        const queryString = new URLSearchParams(payload).toString();
+        const url = `${APP_API_URL.VIEW_INSIGHTS}?${queryString}`; // Append query params
+
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+        });
+
+        return response.data; // Ensure data is returned
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
