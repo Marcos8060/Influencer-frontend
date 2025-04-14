@@ -14,8 +14,8 @@ import {
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { FiGrid, FiPlay, FiLayers } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
+import { FiGrid, FiPlay, FiLayers, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+
 
 const CampaignReport = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,8 @@ const CampaignReport = () => {
   const { posts } = useSelector((store) => store.campaign);
   const auth = useAuth();
   const [activeTab, setActiveTab] = useState("FEED");
-  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   // Group posts by type
   const categorizedPosts = {
@@ -54,16 +55,27 @@ const CampaignReport = () => {
       });
   }, [auth]);
 
-  const handleNext = () => {
-    setCurrentCarouselIndex((prev) =>
-      prev < categorizedPosts[activeTab].length - 1 ? prev + 1 : 0
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev < selectedPost.mediaUrls.length - 1 ? prev + 1 : 0
     );
   };
 
-  const handlePrev = () => {
-    setCurrentCarouselIndex((prev) =>
-      prev > 0 ? prev - 1 : categorizedPosts[activeTab].length - 1
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev > 0 ? prev - 1 : selectedPost.mediaUrls.length - 1
     );
+  };
+
+  const openPost = (post) => {
+    setSelectedPost(post);
+    setCurrentImageIndex(0);
+    document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+  };
+
+  const closePost = () => {
+    setSelectedPost(null);
+    document.body.style.overflow = "auto"; // Re-enable scrolling
   };
 
   return (
@@ -139,185 +151,241 @@ const CampaignReport = () => {
             />
           ) : (
             <section>
-              <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-                <div className="flex items-center space-x-4 mb-4 md:mb-0">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-8 px-4">
+                <div className="flex items-center space-x-6 mb-6 md:mb-0">
                   <img
-                    className="w-20 h-20 rounded-full object-cover"
-                    src={profileInfo?.profilePictureUrl}
-                    alt={profileInfo?.ownerName}
+                    className="w-24 h-24 rounded-full object-cover border border-gray-200"
+                    src={profileInfo.profilePictureUrl}
+                    alt={profileInfo.ownerName}
                   />
                   <div>
-                    <h2 className="font-bold text-lg">
-                      {profileInfo?.ownerName}
-                    </h2>
-                    <p className="text-sm text-gray-500">Nairobi, Kenya</p>
+                    <h1 className="text-xl font-bold">
+                      {profileInfo.ownerName}
+                    </h1>
+                    <p className="text-gray-600">Nairobi, Kenya</p>
                   </div>
                 </div>
 
                 {/* Media Type Tabs */}
-                <div className="flex space-x-4">
+                <div className="flex space-x-4 border-b border-input w-full md:w-auto">
                   <button
                     onClick={() => setActiveTab("FEED")}
-                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                    className={`px-4 py-2 ${
                       activeTab === "FEED"
-                        ? "bg-blue-100 text-blue-600"
-                        : "text-gray-600"
+                        ? "border-b-2 border-black font-medium"
+                        : "text-gray-500"
                     }`}
                   >
-                    <FiGrid />
-                    <span>Posts</span>
+                    <FiGrid className="inline mr-1" /> Posts
                   </button>
                   <button
                     onClick={() => setActiveTab("REELS")}
-                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                    className={`px-4 py-2 ${
                       activeTab === "REELS"
-                        ? "bg-blue-100 text-blue-600"
-                        : "text-gray-600"
+                        ? "border-b-2 border-black font-medium"
+                        : "text-gray-500"
                     }`}
                   >
-                    <FiPlay />
-                    <span>Reels</span>
+                    <FiPlay className="inline mr-1" /> Reels
                   </button>
                   <button
                     onClick={() => setActiveTab("CAROUSEL")}
-                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                    className={`px-4 py-2 ${
                       activeTab === "CAROUSEL"
-                        ? "bg-blue-100 text-blue-600"
-                        : "text-gray-600"
+                        ? "border-b-2 border-black font-medium"
+                        : "text-gray-500"
                     }`}
                   >
-                    <FiLayers />
-                    <span>Albums</span>
+                    <FiLayers className="inline mr-1" /> Albums
                   </button>
                 </div>
               </div>
-              <div className="relative">
-                {categorizedPosts[activeTab].length > 0 ? (
-                  <>
-                    {/* Carousel Navigation */}
-                    {categorizedPosts[activeTab].length > 1 && (
-                      <>
-                        <button
-                          onClick={handlePrev}
-                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10"
+
+              {/* Posts Grid */}
+              <div className="grid grid-cols-3 gap-1 md:gap-4 px-4">
+                {categorizedPosts[activeTab]?.map((post, index) => (
+                  <div
+                    key={post.id}
+                    className="relative aspect-square cursor-pointer group"
+                    onClick={() => openPost(post)}
+                  >
+                    {/* Show first image as thumbnail */}
+                    <img
+                      className="w-full h-full object-cover rounded-lg"
+                      src={post.mediaUrls[0]}
+                      alt={`Post ${index + 1}`}
+                    />
+
+                    {/* Show overlay for multi-image posts */}
+                    {post.mediaUrls.length > 1 && (
+                      <div className="absolute top-2 right-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          &lt;
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10"
-                        >
-                          &gt;
-                        </button>
-                      </>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                          />
+                        </svg>
+                      </div>
                     )}
 
-                    {/* Current Media Item */}
-                    <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-                      <div className="p-4 border-b">
-                        <p className="font-semibold">
-                          {categorizedPosts[activeTab][currentCarouselIndex]
-                            .caption || "No caption"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(
-                            categorizedPosts[activeTab][
-                              currentCarouselIndex
-                            ].timestamp
-                          ).toLocaleDateString()}
-                        </p>
+                    {/* Show play icon for videos */}
+                    {post.mediaType === "VIDEO" && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <FiPlay className="h-8 w-8 text-white" />
                       </div>
+                    )}
 
-                      {/* Media Content */}
-                      <div className="relative">
-                        {categorizedPosts[activeTab][currentCarouselIndex]
-                          .mediaType === "VIDEO" ? (
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                      <div className="text-white opacity-0 group-hover:opacity-100 flex space-x-4">
+                        <span className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 mr-1"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                          {post.likeCount}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Post Modal */}
+              {selectedPost && (
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+                  <button
+                    onClick={closePost}
+                    className="absolute top-4 right-4 text-white text-2xl"
+                  >
+                    <FiX className="h-8 w-8" />
+                  </button>
+
+                  <div className="relative max-w-4xl w-full max-h-screen">
+                    {/* Carousel */}
+                    <div className="flex items-center">
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
+                      >
+                        <FiChevronLeft className="h-6 w-6" />
+                      </button>
+
+                      <div className="w-full">
+                        {selectedPost.mediaType === "VIDEO" ? (
                           <video
                             controls
-                            className="w-full h-auto max-h-96 object-contain bg-black"
-                            src={
-                              categorizedPosts[activeTab][currentCarouselIndex]
-                                .mediaUrls[0]
-                            }
+                            autoPlay
+                            className="w-full max-h-[50vh] object-contain"
+                            src={selectedPost.mediaUrls[currentImageIndex]}
                           />
                         ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2">
-                            {categorizedPosts[activeTab][
-                              currentCarouselIndex
-                            ].mediaUrls.map((media, idx) => (
-                              <div key={idx} className="relative aspect-square">
-                                <img
-                                  className="w-full h-full object-cover rounded"
-                                  src={media}
-                                  alt={`Media ${idx + 1}`}
-                                />
-                                {categorizedPosts[activeTab][
-                                  currentCarouselIndex
-                                ].mediaUrls.length > 1 && (
-                                  <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
-                                    {idx + 1}/
-                                    {
-                                      categorizedPosts[activeTab][
-                                        currentCarouselIndex
-                                      ].mediaUrls.length
-                                    }
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                          <img
+                            className="w-full max-h-[50vh] object-contain"
+                            src={selectedPost.mediaUrls[currentImageIndex]}
+                            alt={`Post content ${currentImageIndex + 1}`}
+                          />
                         )}
                       </div>
 
-                      {/* Media Info */}
-                      <div className="p-4 flex justify-between items-center">
-                        <div className="flex items-center space-x-4">
-                          <span className="flex items-center space-x-1">
-                            <FaHeart className="text-gray-600" />
-                            <span>
-                              {
-                                categorizedPosts[activeTab][
-                                  currentCarouselIndex
-                                ].likeCount
-                              }
-                            </span>
-                          </span>
-                          <a
-                            href={
-                              categorizedPosts[activeTab][currentCarouselIndex]
-                                .permalink
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 text-sm"
-                          >
-                            View on Instagram
-                          </a>
-                        </div>
-                      </div>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
+                      >
+                        <FiChevronRight className="h-6 w-6" />
+                      </button>
                     </div>
 
-                    {/* Carousel Indicators */}
-                    <div className="flex justify-center mt-4 space-x-2">
-                      {categorizedPosts[activeTab].map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setCurrentCarouselIndex(idx)}
-                          className={`w-2 h-2 rounded-full ${
-                            idx === currentCarouselIndex
-                              ? "bg-blue-500"
-                              : "bg-gray-300"
-                          }`}
-                        />
-                      ))}
+                    {/* Image indicators */}
+                    {selectedPost.mediaUrls.length > 1 && (
+                      <div className="flex justify-center mt-4 space-x-2">
+                        {selectedPost.mediaUrls.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentImageIndex(idx)}
+                            className={`w-2 h-2 rounded-full ${
+                              idx === currentImageIndex
+                                ? "bg-white"
+                                : "bg-gray-500"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Post info */}
+                    <div className="bg-white p-4 mt-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <img
+                            className="w-10 h-10 rounded-full object-cover"
+                            src={profileInfo.profilePictureUrl}
+                            alt={profileInfo.ownerName}
+                          />
+                          <span className="font-semibold">
+                            {profileInfo.ownerName}
+                          </span>
+                        </div>
+                        <span className="text-gray-500 text-sm">
+                          {new Date(
+                            selectedPost.timestamp
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      <p className="mt-2">
+                        {selectedPost.caption || "No caption"}
+                      </p>
+
+                      <div className="flex items-center mt-4 space-x-4">
+                        <span className="flex items-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 mr-1 text-red-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                          {selectedPost.likeCount}
+                        </span>
+                        <a
+                          href={selectedPost.permalink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          View on Instagram
+                        </a>
+                      </div>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    No {activeTab.toLowerCase()} found
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </section>
           )}
         </div>
