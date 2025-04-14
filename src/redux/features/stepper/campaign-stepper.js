@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchBrandCampaigns, fetchProducts } from "@/redux/services/campaign";
+import { fetchBrandCampaigns, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
   brandCampaigns: [],
   products: [],
+  postInsights: [],
+  posts: [],
   campaignData: {
     title: null,
     description: null,
@@ -60,6 +62,12 @@ const CampaignSlice = createSlice({
     },
     resetCampaignData: (state) => {
       state.campaignData = initialState.campaignData;
+    },
+    setPostInsights: (state,action) => {
+      state.postInsights = action.payload;
+    },
+    setPosts: (state,action) => {
+      state.posts = action.payload;
     }
   },
 });
@@ -72,6 +80,8 @@ export const {
   setCampaigns,
   setProducts,
   resetCampaignData,
+  setPostInsights,
+  setPosts
 } = CampaignSlice.actions;
 
 export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
@@ -88,6 +98,26 @@ export const getAllProducts = (auth) => async (dispatch) => {
   try {
     const data = await fetchProducts(auth);
     dispatch(setProducts(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllPosts = (auth,userId) => async (dispatch) => {
+  try {
+    const data = await fetchMedia(auth,userId);
+    dispatch(setPosts(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllPostInsights = (auth) => async (dispatch) => {
+  try {
+    const data = await fetchPostInsights(auth);
+    dispatch(setPostInsights(data));
     return data;
   } catch (error) {
     console.log(error);

@@ -37,6 +37,8 @@ export const API_URL = {
     CREATE_PRODUCT: "http://147.78.141.96:8075/api/productService/user/product/create/",
     FETCH_BRAND_CAMPAIGNS: "http://147.78.141.96:8075/api/campaigns/brand/list/",
     FETCH_PRODUCTS: "http://147.78.141.96:8075/api/productService/user/products/",
+    VIEW_INSIGHTS: "http://147.78.141.96:8075/api/socialAccounts/instagram/media/insights/post/",
+    FETCH_POSTS: "http://147.78.141.96:8075/api/socialAccounts/instagram/media/list/",
 
 
     /***************** SOCIALS APIS **********************/
@@ -83,6 +85,8 @@ export const APP_API_URL = {
   CREATE_PRODUCT: '/api/campaign/create-product',
   FETCH_BRAND_CAMPAIGNS: '/api/campaign/fetch-brand-campaigns',
   FETCH_PRODUCTS: '/api/campaign/fetch-products',
+  VIEW_INSIGHTS: '/api/campaign/view-insights',
+  FETCH_POSTS: '/api/campaign/fetch-posts',
 
 
   /***************** BUCKET LIST APIs **********************/
