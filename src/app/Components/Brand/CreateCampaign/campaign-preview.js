@@ -72,7 +72,7 @@ const CampaignPreview = () => {
                 {campaignData.description}
               </p>
             </div>
-            <section className=" border-b border-input py-4">
+            <section className="border-b border-input py-4">
               <div className="space-y-4">
                 <section className="flex items-center justify-between">
                   <div className="flex gap-2">
