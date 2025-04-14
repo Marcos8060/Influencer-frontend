@@ -14,8 +14,15 @@ import {
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { FiGrid, FiPlay, FiLayers, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
+import {
+  FiGrid,
+  FiPlay,
+  FiLayers,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+} from "react-icons/fi";
+import InsightsDrawer from "../insight-drawer";
 
 const CampaignReport = () => {
   const dispatch = useDispatch();
@@ -35,14 +42,20 @@ const CampaignReport = () => {
 
   const profileInfo = posts[0];
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (id) => {
     try {
-      const response = await dispatch(getAllPostInsights());
+      const payload = {
+        metrics: 'comments, follows, likes, profile_activity, profile_visits, reach, saved, shares, total_interactions, views',
+        post_id: id,
+        user_id: '40678282-c173-4788-89c9-14ea5596651e'
+      }
+      const response = await dispatch(getAllPostInsights(auth,payload));
       console.log(response);
     } catch (error) {
       console.log(error);
     }
   };
+
   const userId = "40678282-c173-4788-89c9-14ea5596651e";
 
   useEffect(() => {
@@ -150,19 +163,16 @@ const CampaignReport = () => {
               height={100}
             />
           ) : (
-            <section>
-              <div className="flex flex-col md:flex-row items-center justify-between mb-8 px-4">
-                <div className="flex items-center space-x-6 mb-6 md:mb-0">
+            <section className="">
+              <div className="flex flex-col md:flex-row items-center justify-between mt-8 mb-4 px-4">
+                <div className="flex items-center space-x-2 mb-6 md:mb-0">
                   <img
-                    className="w-24 h-24 rounded-full object-cover border border-gray-200"
+                    className="w-16 h-16 rounded-full object-cover border border-input"
                     src={profileInfo.profilePictureUrl}
                     alt={profileInfo.ownerName}
                   />
                   <div>
-                    <h1 className="text-xl font-bold">
-                      {profileInfo.ownerName}
-                    </h1>
-                    <p className="text-gray-600">Nairobi, Kenya</p>
+                    <h1 className="font-semibold">{profileInfo.ownerName}</h1>
                   </div>
                 </div>
 
@@ -172,7 +182,7 @@ const CampaignReport = () => {
                     onClick={() => setActiveTab("FEED")}
                     className={`px-4 py-2 ${
                       activeTab === "FEED"
-                        ? "border-b-2 border-black font-medium"
+                        ? "border-b-2 border-primary font-medium"
                         : "text-gray-500"
                     }`}
                   >
@@ -182,7 +192,7 @@ const CampaignReport = () => {
                     onClick={() => setActiveTab("REELS")}
                     className={`px-4 py-2 ${
                       activeTab === "REELS"
-                        ? "border-b-2 border-black font-medium"
+                        ? "border-b-2 border-primary font-medium"
                         : "text-gray-500"
                     }`}
                   >
@@ -192,7 +202,7 @@ const CampaignReport = () => {
                     onClick={() => setActiveTab("CAROUSEL")}
                     className={`px-4 py-2 ${
                       activeTab === "CAROUSEL"
-                        ? "border-b-2 border-black font-medium"
+                        ? "border-b-2 border-primary font-medium"
                         : "text-gray-500"
                     }`}
                   >
@@ -271,7 +281,7 @@ const CampaignReport = () => {
 
               {/* Post Modal */}
               {selectedPost && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-85 z-50 flex items-center justify-center p-4">
                   <button
                     onClick={closePost}
                     className="absolute top-4 right-4 text-white text-2xl"
@@ -299,7 +309,7 @@ const CampaignReport = () => {
                           />
                         ) : (
                           <img
-                            className="w-full max-h-[50vh] object-contain"
+                            className="w-full max-h-[50vh] object-contain rounded"
                             src={selectedPost.mediaUrls[currentImageIndex]}
                             alt={`Post content ${currentImageIndex + 1}`}
                           />
@@ -332,7 +342,7 @@ const CampaignReport = () => {
                     )}
 
                     {/* Post info */}
-                    <div className="bg-white p-4 mt-4 rounded-lg">
+                    <div className="bg-white p-4 mt-4 rounded">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <img
@@ -351,37 +361,42 @@ const CampaignReport = () => {
                         </span>
                       </div>
 
-                      <p className="mt-2">
+                      <p className="mt-2 text-sm">
                         {selectedPost.caption || "No caption"}
                       </p>
 
-                      <div className="flex items-center mt-4 space-x-4">
-                        <span className="flex items-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 mr-1 text-red-500"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                      <section className="flex items-center justify-between mt-4">
+                        <div className="flex items-center space-x-4">
+                          <span className="flex items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 mr-1 text-red-500"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                              />
+                            </svg>
+                            {selectedPost.likeCount}
+                          </span>
+                          <a
+                            href={selectedPost.permalink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-link text-sm hover:underline"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                            />
-                          </svg>
-                          {selectedPost.likeCount}
-                        </span>
-                        <a
-                          href={selectedPost.permalink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
-                        >
-                          View on Instagram
-                        </a>
-                      </div>
+                            View on Instagram
+                          </a>
+                        </div>
+                        <div>
+                          <InsightsDrawer handleSubmit={handleSubmit} selectedPost={selectedPost} />
+                        </div>
+                      </section>
                     </div>
                   </div>
                 </div>

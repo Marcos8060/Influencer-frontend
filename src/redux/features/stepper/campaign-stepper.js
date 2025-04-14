@@ -114,9 +114,9 @@ export const getAllPosts = (auth,userId) => async (dispatch) => {
   }
 };
 
-export const getAllPostInsights = (auth) => async (dispatch) => {
+export const getAllPostInsights = (auth,payload) => async (dispatch) => {
   try {
-    const data = await fetchPostInsights(auth);
+    const data = await fetchPostInsights(auth,payload);
     dispatch(setPostInsights(data));
     return data;
   } catch (error) {

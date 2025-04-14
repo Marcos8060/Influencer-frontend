@@ -80,17 +80,16 @@ export const fetchMedia = async (auth, userId) => {
 
 export const fetchPostInsights = async (auth, payload) => {
     try {
-        // Convert filter object to query string
-        const queryString = new URLSearchParams(payload).toString();
-        const url = `${APP_API_URL.VIEW_INSIGHTS}?${queryString}`; // Append query params
-
+        const url = `${APP_API_URL.VIEW_INSIGHTS}`;
+        
         const response = await axios.get(url, {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
+            params: {...payload},
         });
 
-        return response.data; // Ensure data is returned
+        return response.data;
     } catch (error) {
         console.error("Error fetching influencers:", error);
         return error.response?.data || error.message;
