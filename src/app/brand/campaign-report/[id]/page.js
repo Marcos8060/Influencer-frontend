@@ -14,12 +14,25 @@ import {
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "@/assets/hooks/use-auth";
+import { FiGrid, FiPlay, FiLayers } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 
 const CampaignReport = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const { posts } = useSelector((store) => store.campaign);
   const auth = useAuth();
+  const [activeTab, setActiveTab] = useState("FEED");
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
+
+  // Group posts by type
+  const categorizedPosts = {
+    FEED: posts.filter((post) => post.mediaProductType === "FEED"),
+    REELS: posts.filter((post) => post.mediaProductType === "REELS"),
+    CAROUSEL: posts.filter((post) => post.mediaType === "CAROUSEL_ALBUM"),
+  };
+
+  const profileInfo = posts[0];
 
   const handleSubmit = async () => {
     try {
@@ -40,6 +53,18 @@ const CampaignReport = () => {
         setLoading(false);
       });
   }, [auth]);
+
+  const handleNext = () => {
+    setCurrentCarouselIndex((prev) =>
+      prev < categorizedPosts[activeTab].length - 1 ? prev + 1 : 0
+    );
+  };
+
+  const handlePrev = () => {
+    setCurrentCarouselIndex((prev) =>
+      prev > 0 ? prev - 1 : categorizedPosts[activeTab].length - 1
+    );
+  };
 
   return (
     <div className="bg-background">
@@ -104,66 +129,198 @@ const CampaignReport = () => {
               </div>
             </div>
           </section>
-          {/* <section className="grid md:grid-cols-4 grid-cols-2 gap-3">
-            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
-              <p className="text-sm font-light">Active Influencers</p>
-              <h2 className="font-bold text-primary text-2xl">42</h2>
-            </div>
-            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4  text-center">
-              <p className="text-sm font-light">Influencer Posts</p>
-              <h2 className="font-bold text-2xl">42</h2>
-            </div>
-            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
-              <p className="text-sm font-light">Total Reach</p>
-              <h2 className="font-bold text-2xl">42</h2>
-            </div>
-            <div className="bg-white shadow-md rounded-2xl space-y-4 p-4 text-center">
-              <p className="text-sm font-light">Average Likes</p>
-              <h2 className="font-bold text-2xl">42</h2>
-            </div>
-          </section> */}
-        </div>
-        {loading ? (
-          <Skeleton
-            baseColor="#c0c0c0"
-            highlightColor="#f0f0f0"
-            count={3}
-            height={100}
-          />
-        ) : (
-          <>
-              <section
-                className="border border-input rounded text-color w-full mx-auto p-4 "
-              >
-                <div className="space-y-2 md:flex items-center justify-between">
-                  <div className="md:w-2/12">
-                    <img
-                      className="w-24 object-cover mx-auto h-24 rounded-full"
-                      src={posts[0].profilePictureUrl}
-                      alt=""
-                    />
-                    <p className="font-bold text-center mt-4">
-                      {posts[0].ownerName}
-                    </p>
-                    <p className="font-light text-sm text-center">
-                      Nairobi, Kenya
-                    </p>
-                  </div>
-                  <div className="w-10/12 grid grid-cols-4 gap-3">
-                    {posts[0].mediaUrls.map((media,index) => (
-                      <div key={index}>
-                        <img
-                          className="w-40"
-                          src={media}
-                          alt=""
-                        />
-                      </div>
-                    ))}
+
+          {loading ? (
+            <Skeleton
+              baseColor="#c0c0c0"
+              highlightColor="#f0f0f0"
+              count={3}
+              height={100}
+            />
+          ) : (
+            <section>
+              <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+                <div className="flex items-center space-x-4 mb-4 md:mb-0">
+                  <img
+                    className="w-20 h-20 rounded-full object-cover"
+                    src={profileInfo?.profilePictureUrl}
+                    alt={profileInfo?.ownerName}
+                  />
+                  <div>
+                    <h2 className="font-bold text-lg">
+                      {profileInfo?.ownerName}
+                    </h2>
+                    <p className="text-sm text-gray-500">Nairobi, Kenya</p>
                   </div>
                 </div>
-              </section>
-          </>
-        )}
+
+                {/* Media Type Tabs */}
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setActiveTab("FEED")}
+                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                      activeTab === "FEED"
+                        ? "bg-blue-100 text-blue-600"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    <FiGrid />
+                    <span>Posts</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("REELS")}
+                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                      activeTab === "REELS"
+                        ? "bg-blue-100 text-blue-600"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    <FiPlay />
+                    <span>Reels</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("CAROUSEL")}
+                    className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
+                      activeTab === "CAROUSEL"
+                        ? "bg-blue-100 text-blue-600"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    <FiLayers />
+                    <span>Albums</span>
+                  </button>
+                </div>
+              </div>
+              <div className="relative">
+                {categorizedPosts[activeTab].length > 0 ? (
+                  <>
+                    {/* Carousel Navigation */}
+                    {categorizedPosts[activeTab].length > 1 && (
+                      <>
+                        <button
+                          onClick={handlePrev}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                        >
+                          &lt;
+                        </button>
+                        <button
+                          onClick={handleNext}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10"
+                        >
+                          &gt;
+                        </button>
+                      </>
+                    )}
+
+                    {/* Current Media Item */}
+                    <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+                      <div className="p-4 border-b">
+                        <p className="font-semibold">
+                          {categorizedPosts[activeTab][currentCarouselIndex]
+                            .caption || "No caption"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(
+                            categorizedPosts[activeTab][
+                              currentCarouselIndex
+                            ].timestamp
+                          ).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                      {/* Media Content */}
+                      <div className="relative">
+                        {categorizedPosts[activeTab][currentCarouselIndex]
+                          .mediaType === "VIDEO" ? (
+                          <video
+                            controls
+                            className="w-full h-auto max-h-96 object-contain bg-black"
+                            src={
+                              categorizedPosts[activeTab][currentCarouselIndex]
+                                .mediaUrls[0]
+                            }
+                          />
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2">
+                            {categorizedPosts[activeTab][
+                              currentCarouselIndex
+                            ].mediaUrls.map((media, idx) => (
+                              <div key={idx} className="relative aspect-square">
+                                <img
+                                  className="w-full h-full object-cover rounded"
+                                  src={media}
+                                  alt={`Media ${idx + 1}`}
+                                />
+                                {categorizedPosts[activeTab][
+                                  currentCarouselIndex
+                                ].mediaUrls.length > 1 && (
+                                  <span className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full">
+                                    {idx + 1}/
+                                    {
+                                      categorizedPosts[activeTab][
+                                        currentCarouselIndex
+                                      ].mediaUrls.length
+                                    }
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Media Info */}
+                      <div className="p-4 flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                          <span className="flex items-center space-x-1">
+                            <FaHeart className="text-gray-600" />
+                            <span>
+                              {
+                                categorizedPosts[activeTab][
+                                  currentCarouselIndex
+                                ].likeCount
+                              }
+                            </span>
+                          </span>
+                          <a
+                            href={
+                              categorizedPosts[activeTab][currentCarouselIndex]
+                                .permalink
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 text-sm"
+                          >
+                            View on Instagram
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Carousel Indicators */}
+                    <div className="flex justify-center mt-4 space-x-2">
+                      {categorizedPosts[activeTab].map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentCarouselIndex(idx)}
+                          className={`w-2 h-2 rounded-full ${
+                            idx === currentCarouselIndex
+                              ? "bg-blue-500"
+                              : "bg-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    No {activeTab.toLowerCase()} found
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
 
         <section className="w-full mx-auto overflow-hidden">
           <h1 className="text-xl font-semibold my-2">Best Perfoming Media</h1>
