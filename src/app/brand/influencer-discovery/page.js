@@ -31,17 +31,17 @@ const CreateCampaign = () => {
 
   const isAuthorized = useProtectedRoute();
 
-  if (!isAuthorized) {
-    return null;
-  }
-  
-
 
   useEffect(() => {
     if (auth) {
       dispatch(fetchAllBuckets(auth));
     }
   }, [auth]);
+  
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <>
