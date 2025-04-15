@@ -40,7 +40,7 @@ const CampaignReport = () => {
     CAROUSEL: posts.filter((post) => post.mediaType === "CAROUSEL_ALBUM"),
   };
 
-  const profileInfo = posts[0];
+  const profileInfo = posts[1];
 
   const handleSubmit = async (id) => {
     try {
@@ -50,8 +50,7 @@ const CampaignReport = () => {
         post_id: id,
         user_id: "40678282-c173-4788-89c9-14ea5596651e",
       };
-      const response = await dispatch(getAllPostInsights(auth, payload));
-      console.log(response);
+      await dispatch(getAllPostInsights(auth, payload));
     } catch (error) {
       console.log(error);
     }

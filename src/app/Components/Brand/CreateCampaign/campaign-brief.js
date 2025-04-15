@@ -19,8 +19,8 @@ const CampaignBrief = () => {
 
   // State to manage form inputs
   const [details, setDetails] = useState({
-    briefTitle: campaignData.briefTitle || "",
-    briefDescription: campaignData.briefDescription || "",
+    briefTitle: campaignData.briefTitle || null,
+    briefDescription: campaignData.briefDescription || null,
     campaignPreferences: {
       socialChannels: campaignData.campaignPreferences?.socialChannels || [],
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
