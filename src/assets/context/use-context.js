@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
             // If refresh fails, logout the user
             if (brandToken) await logoutBrand();
             if (influencerToken) await logoutInfluencer();
-            throw new axios.Cancel('Token refresh failed');
+            throw new axios.Cancel("Token refresh failed");
           }
         } else {
           config.headers.Authorization = `Bearer ${token}`;
@@ -100,15 +100,18 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         if (decodedUser.roleName !== "Brand") {
-          toast.error("You are not authorized to access Brand account");
+          toast.error("This account is registered as an Influencer. Please login via Influencer portal.");
           router.push("/auth/login/influencer");
-        } else if(decodedUser.finishedOnboarding && decodedUser.roleName === "Brand") {
-            localStorage.setItem("brand_token", response.data.access);
-            localStorage.setItem("refresh_token", response.data.refresh);
+        } else {
+          // Store tokens regardless of onboarding status
+          localStorage.setItem("brand_token", response.data.access);
+          localStorage.setItem("refresh_token", response.data.refresh);
+
+          if (decodedUser.finishedOnboarding) {
             router.push("/onboarding/brand/dashboard");
-            toast.success("Login successful");
-        }else{
-          router.push('/onboarding/brand')
+          } else {
+            router.push("/onboarding/brand");
+          }
           toast.success("Login successful");
         }
       }
@@ -126,21 +129,20 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200) {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
+
         if (decodedUser.roleName !== "Influencer") {
-          toast.error(
-            "You are not authorized to access Influencer account"
-          );
+          toast.error("This account is registered as a Brand. Please login via Brand portal");
           router.push("/auth/login/brand");
-        } else if (
-          decodedUser.finishedOnboarding &&
-          decodedUser.roleName === "Influencer"
-        ) {
+        } else {
+          // Store tokens regardless of onboarding status
           localStorage.setItem("influencer_token", response.data.access);
           localStorage.setItem("refresh_token", response.data.refresh);
-          router.push("/onboarding/influencer/dashboard");
-          toast.success("Login successful");
-        } else {
-          router.push("/onboarding/influencer");
+
+          if (decodedUser.finishedOnboarding) {
+            router.push("/onboarding/influencer/dashboard");
+          } else {
+            router.push("/onboarding/influencer");
+          }
           toast.success("Login successful");
         }
       }
@@ -206,48 +208,53 @@ export const AuthProvider = ({ children }) => {
   // Check token expiration periodically
   useEffect(() => {
     const checkTokenExpiration = () => {
-      console.log('--- Running token expiration check ---', new Date().toISOString());
-      
+      console.log(
+        "--- Running token expiration check ---",
+        new Date().toISOString()
+      );
+
       const brandToken = localStorage.getItem("brand_token");
       const influencerToken = localStorage.getItem("influencer_token");
       const token = brandToken || influencerToken;
-  
-      console.log('Token found:', token ? 'Yes' : 'No');
-      
+
+      console.log("Token found:", token ? "Yes" : "No");
+
       if (token) {
         const decodedToken = jwtDecode(token);
         const expiresIn = decodedToken.exp * 1000 - Date.now();
         const expiresInMinutes = Math.floor(expiresIn / 60000);
-        
-        console.log(`Token expires in: ${expiresInMinutes} minutes (${expiresIn}ms)`);
-        
+
+        console.log(
+          `Token expires in: ${expiresInMinutes} minutes (${expiresIn}ms)`
+        );
+
         // If token expires in less than 5 minutes, refresh it
         if (expiresIn < 300000 && expiresIn > 0) {
-          console.log('Token expires soon, refreshing...');
+          console.log("Token expires soon, refreshing...");
           refreshToken()
-            .then(() => console.log('Token refreshed successfully'))
-            .catch(err => console.error('Token refresh failed:', err));
+            .then(() => console.log("Token refreshed successfully"))
+            .catch((err) => console.error("Token refresh failed:", err));
         } else if (expiresIn <= 0) {
-          if(brandToken){
-            logoutBrand()
-          }else if(influencerToken){
+          if (brandToken) {
+            logoutBrand();
+          } else if (influencerToken) {
             logoutInfluencer();
           }
-          console.log('Token has already expired');
+          console.log("Token has already expired");
         } else {
-          console.log('Token still valid, no refresh needed');
+          console.log("Token still valid, no refresh needed");
         }
       }
     };
-  
+
     // Initial check when component mounts
     checkTokenExpiration();
-    
+
     // Then check every minute
     const interval = setInterval(checkTokenExpiration, 60000);
-    
+
     return () => {
-      console.log('Cleaning up token expiration check');
+      console.log("Cleaning up token expiration check");
       clearInterval(interval);
     };
   }, []);
