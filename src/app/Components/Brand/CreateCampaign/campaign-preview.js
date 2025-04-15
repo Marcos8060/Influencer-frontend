@@ -42,7 +42,7 @@ const CampaignPreview = () => {
   }, [dispatch]);
   return (
     <div className="bg-background py-8 px-4">
-      {!success ? (
+      {success ? (
         <div className="flex items-center justify-center h-[50vh]">
           <section className="bg-white rounded-lg shadow-sm p-4 md:w-5/12 w-full flex items-center justify-center">
             <div className="space-y-4">
