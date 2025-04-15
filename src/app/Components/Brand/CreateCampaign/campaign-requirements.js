@@ -22,11 +22,11 @@ const CampaignRequirements = () => {
   const [details, setDetails] = useState({
     products: campaignData.products || [],
     services: campaignData.services || [],
-    exampleVideoUrl: campaignData.exampleVideoUrl || "",
+    exampleVideoUrl: campaignData.exampleVideoUrl || null,
     campaignPreferences: {
       videosPerCreator:
-        campaignData.campaignPreferences?.videosPerCreator || "",
-      videoDuration: campaignData.campaignPreferences?.videoDuration || "",
+        campaignData.campaignPreferences?.videosPerCreator || null,
+      videoDuration: campaignData.campaignPreferences?.videoDuration || null,
       showFace: campaignData.campaignPreferences?.showFace ?? true,
       videoFormat: campaignData.campaignPreferences?.videoFormat || "Vertical",
       videoStyle: campaignData.campaignPreferences?.videoStyle || [],
@@ -34,7 +34,7 @@ const CampaignRequirements = () => {
       collaborationType:
         campaignData.campaignPreferences?.collaborationType || [],
       campaignObjective:
-        campaignData.campaignPreferences?.campaignObjective || "",
+        campaignData.campaignPreferences?.campaignObjective || null,
       contentLanguages:
         campaignData.campaignPreferences?.contentLanguages || "en,es,fr",
     },
