@@ -54,6 +54,7 @@ const CampaignRequirements = () => {
       ...campaignData, // Keep existing campaign data
       ...details, // Merge with details (if any)
       products: uniqueProductIds, // Ensures no duplicate IDs
+      exampleVideoUrl: campaignData.exampleVideoUrl?.trim() || null,
       campaignPreferences: {
         ...campaignData.campaignPreferences, // Keep existing preferences
         ...details.campaignPreferences, // Merge with new preferences
