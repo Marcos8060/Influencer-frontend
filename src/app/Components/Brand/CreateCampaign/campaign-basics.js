@@ -43,6 +43,8 @@ const CampaignBasics = () => {
     dispatch(
       updateFormData({
         ...details,
+        title: details.title?.trim() || null,
+        description: details.description?.trim() || null,
         startDate: details.startDate ? formatDate(details.startDate) : null,
         endDate: details.endDate ? formatDate(details.endDate) : null,
       })

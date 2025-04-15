@@ -31,10 +31,10 @@ const initialState = {
       contentLanguages: "en,es,fr",
     },
     campaignCollaborators: [
-      {
-        influencerId: "4d757a99-183e-4fe1-a1b1-d3f23edb2791",
-        status: "pending",
-      },
+      // {
+      //   influencerId: "4d757a99-183e-4fe1-a1b1-d3f23edb2791",
+      //   status: "pending",
+      // },
     ],
   },
 };
