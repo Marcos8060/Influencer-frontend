@@ -84,16 +84,10 @@ const OtpPage = () => {
       notificationType: "Registration otp",
     };
     try {
-      const res = await SendOtp(payload);
-      console.log(res);
-      if (res.statusCode === 200) {
+      await SendOtp(payload);
         toast.success("OTP verified successfully!");
         router.push("/auth/login/influencer");
         setOtp(new Array(otpLength).fill(""));
-      } else {
-        toast.error("You are not authenticated!");
-        setOtp(new Array(otpLength).fill(""));
-      }
     } catch (error) {
       console.log("OTP Verification Error:", error);
     } finally {
