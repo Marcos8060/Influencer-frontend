@@ -33,8 +33,9 @@ const InfluencerRegister = () => {
       return;
     }
     setLoading(true);
+    const { confirmPassword, ...registrationData } = formData;
     try {
-      const response = await RegisterInfluencer(formData);
+      const response = await RegisterInfluencer(registrationData);
 
       // Check if response is a valid Axios response object
       if (response?.status === 200) {

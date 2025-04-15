@@ -1,9 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchBrandCampaigns, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
+import { fetchAllCampaigns, fetchBrandCampaigns, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
   brandCampaigns: [],
+  allCampaigns: [],
   products: [],
   postInsights: [],
   posts: [],
@@ -48,6 +49,9 @@ const CampaignSlice = createSlice({
     setCampaigns: (state, action) => {
       state.brandCampaigns = action.payload;
     },
+    setAllCampaigns: (state, action) => {
+      state.allCampaigns = action.payload;
+    },
     setProducts: (state, action) => {
       state.products = action.payload;
     },
@@ -78,6 +82,7 @@ export const {
   previousStep,
   updateFormData,
   setCampaigns,
+  setAllCampaigns,
   setProducts,
   resetCampaignData,
   setPostInsights,
@@ -88,6 +93,16 @@ export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
   try {
     const data = await fetchBrandCampaigns(auth);
     dispatch(setCampaigns(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllCampaigns = (auth) => async (dispatch) => {
+  try {
+    const data = await fetchAllCampaigns(auth);
+    dispatch(setAllCampaigns(data));
     return data;
   } catch (error) {
     console.log(error);
