@@ -45,11 +45,12 @@ const CampaignReport = () => {
   const handleSubmit = async (id) => {
     try {
       const payload = {
-        metrics: 'comments, follows, likes, profile_activity, profile_visits, reach, saved, shares, total_interactions, views',
+        metrics:
+          "comments, follows, likes, profile_activity, profile_visits, reach, saved, shares, total_interactions, views",
         post_id: id,
-        user_id: '40678282-c173-4788-89c9-14ea5596651e'
-      }
-      const response = await dispatch(getAllPostInsights(auth,payload));
+        user_id: "40678282-c173-4788-89c9-14ea5596651e",
+      };
+      const response = await dispatch(getAllPostInsights(auth, payload));
       console.log(response);
     } catch (error) {
       console.log(error);
@@ -156,12 +157,16 @@ const CampaignReport = () => {
           </section>
 
           {loading ? (
-            <Skeleton
-              baseColor="#c0c0c0"
-              highlightColor="#f0f0f0"
-              count={3}
-              height={100}
-            />
+            <section className="grid grid-cols-4 gap-4 mt-4">
+              {Array.from({ length: 16 }).map((_, idx) => (
+                <Skeleton
+                  key={idx}
+                  baseColor="#D1D5DB"
+                  highlightColor="#f0f0f0"
+                  height={100}
+                />
+              ))}
+            </section>
           ) : (
             <section className="">
               <div className="flex flex-col md:flex-row items-center justify-between mt-8 mb-4 px-4">
@@ -394,7 +399,11 @@ const CampaignReport = () => {
                           </a>
                         </div>
                         <div>
-                          <InsightsDrawer handleSubmit={handleSubmit} selectedPost={selectedPost} />
+                          <InsightsDrawer
+                            handleSubmit={handleSubmit}
+                            selectedPost={selectedPost}
+                            loading={loading}
+                          />
                         </div>
                       </section>
                     </div>

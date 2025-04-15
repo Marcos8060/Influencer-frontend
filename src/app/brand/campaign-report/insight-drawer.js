@@ -1,10 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
-import { LuFilter } from "react-icons/lu";
 import { useSelector } from "react-redux";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
-export default function InsightsDrawer({ handleSubmit, selectedPost }) {
+export default function InsightsDrawer({
+  handleSubmit,
+  selectedPost,
+  loading,
+}) {
   const [visible, setVisible] = useState(false);
   const { postInsights } = useSelector((store) => store.campaign);
 
@@ -13,15 +18,30 @@ export default function InsightsDrawer({ handleSubmit, selectedPost }) {
       <Sidebar
         visible={visible}
         onHide={() => setVisible(false)}
-        className="md:w-5/12 w-full bg-background"
+        className="md:w-3/12 w-full bg-background"
       >
         <section className="p-4">
-          {Array.isArray(postInsights) && postInsights.map((post, index) => (
-            <div className="flex items-center justify-between border-b border-input py-4 text-sm">
-              <p>{post.metricName}</p>
-              <p>{post.metricValue}</p>
-            </div>
-          ))}
+          {loading ? (
+            <Skeleton
+              baseColor="#c0c0c0"
+              highlightColor="#f0f0f0"
+              count={3}
+              height={100}
+            />
+          ) : (
+            <>
+              {Array.isArray(postInsights) &&
+                postInsights.map((post, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between border-b border-input py-4 text-sm"
+                  >
+                    <p>{post.metricName}</p>
+                    <p>{post.metricValue}</p>
+                  </div>
+                ))}
+            </>
+          )}
         </section>
       </Sidebar>
 

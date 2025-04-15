@@ -1,55 +1,57 @@
 //------------------------ Backend APIs ----------------------//
+//------------------------ Backend APIs ----------------------//
+const baseUrl = 'http://147.78.141.96:8075/api';
+
 export const API_URL = {
   /***************** AUTH APIS **********************/
-  LOGIN: "http://147.78.141.96:8075/api/auth/login/",
-  LOGOUT: "http://147.78.141.96:8075/api/auth/logout/",
-  REFRESH_TOKEN: "http://147.78.141.96:8075/api/auth/token/refresh/",
-  REGISTER_BRAND: "http://147.78.141.96:8075/api/auth/register/brand/",
-  SEND_OTP: "http://147.78.141.96:8075/api/auth/otp/verify/",
-  REQUEST_OTP: "http://147.78.141.96:8075/api/auth/otp/request/",
-  REGISTER_INFLUENCER: "http://147.78.141.96:8075/api/auth/register/influencer/",
-  ONBOARD_BRAND: "http://147.78.141.96:8075/api/brands/onboarding/post/",
+  LOGIN: `${baseUrl}/auth/login/`,
+  LOGOUT: `${baseUrl}/auth/logout/`,
+  REFRESH_TOKEN: `${baseUrl}/auth/token/refresh/`,
+  REGISTER_BRAND: `${baseUrl}/auth/register/brand/`,
+  SEND_OTP: `${baseUrl}/auth/otp/verify/`,
+  REQUEST_OTP: `${baseUrl}/auth/otp/request/`,
+  REGISTER_INFLUENCER: `${baseUrl}/auth/register/influencer/`,
+  ONBOARD_BRAND: `${baseUrl}/brands/onboarding/post/`,
 
+  /***************** INFLUENCER APIS **********************/
+  ONBOARD_INFLUENCER: `${baseUrl}/influencers/onboarding/post/`,
+  FILTER_INFLUENCER: `${baseUrl}/search/influencers/`,
+  MOVE_TO_BUCKET: `${baseUrl}/brands/bucketList/influencers/move/`,
+  FETCH_INFLUENCER_DETAILS: `${baseUrl}/auth/users/get/`,
+  FETCH_INFLUENCER_PREFERENCES: `${baseUrl}/influencers/preferences/get/`,
+  FETCH_INFLUENCER_ONBOARDING: `${baseUrl}/influencers/get/`,
+  EDIT_INFLUENCER_DETAILS: `${baseUrl}/auth/users/update/`,
+  EDIT_INFLUENCER_PREFENCES: `${baseUrl}/influencers/preferences/update/`,
+  EDIT_INFLUENCER_ONBOARDING: `${baseUrl}/influencers/update/`,
+  EDIT_PROFILE_PHOTO: `${baseUrl}/medias/upload/`,
+  FETCH_INFLUENCERS_IN_BUCKET: `${baseUrl}/search/bucketList/list/influencers/`,
 
-    /***************** INFLUENCER APIS **********************/
-  ONBOARD_INFLUENCER: "http://147.78.141.96:8075/api/influencers/onboarding/post/",
-  FILTER_INFLUENCER: "http://147.78.141.96:8075/api/search/influencers/",
-  MOVE_TO_BUCKET: "http://147.78.141.96:8075/api/brands/bucketList/influencers/move/",
-  FETCH_INFLUENCER_DETAILS: "http://147.78.141.96:8075/api/auth/users/get/",
-  FETCH_INFLUENCER_PREFERENCES: "http://147.78.141.96:8075/api/influencers/preferences/get/",
-  FETCH_INFLUENCER_ONBOARDING: "http://147.78.141.96:8075/api/influencers/get/",
-  EDIT_INFLUENCER_DETAILS: "http://147.78.141.96:8075/api/auth/users/update/",
-  EDIT_INFLUENCER_PREFENCES: "http://147.78.141.96:8075/api/influencers/preferences/update/",
-  EDIT_INFLUENCER_ONBOARDING: "http://147.78.141.96:8075/api/influencers/update/",
-  EDIT_PROFILE_PHOTO: "http://147.78.141.96:8075/api/medias/upload/",
-  FETCH_INFLUENCERS_IN_BUCKET: "http://147.78.141.96:8075/api/search/bucketList/list/influencers/",
+  /***************** BUCKET LIST APIS **********************/
+  ADD_BUCKETLIST: `${baseUrl}/brands/bucketList/create/`,
+  REMOVE_FROM_BUCKET: `${baseUrl}/brands/bucketList/influencers/remove/`,
+  FETCH_BUCKETLIST: `${baseUrl}/search/bucketList/`,
+  DELETE_BUCKETLIST: `${baseUrl}/brands/bucketList/delete/`,
+  EDIT_BUCKETLIST: `${baseUrl}/brands/bucketList/update/`,
 
-    /***************** BUCKELT LIST APIS **********************/
-    ADD_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/create/",
-    REMOVE_FROM_BUCKET: "http://147.78.141.96:8075/api/brands/bucketList/influencers/remove/",
-    FETCH_BUCKETLIST: "http://147.78.141.96:8075/api/search/bucketList/",
-    DELETE_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/delete/",
-    EDIT_BUCKETLIST: "http://147.78.141.96:8075/api/brands/bucketList/update/",
+  /***************** CAMPAIGN APIS **********************/
+  CREATE_CAMPAIGN: `${baseUrl}/campaigns/create/`,
+  CREATE_PRODUCT: `${baseUrl}/productService/user/product/create/`,
+  FETCH_BRAND_CAMPAIGNS: `${baseUrl}/campaigns/brand/list/`,
+  FETCH_ALL_CAMPAIGNS: `${baseUrl}/campaigns/list/`,
+  FETCH_PRODUCTS: `${baseUrl}/productService/user/products/`,
+  VIEW_INSIGHTS: `${baseUrl}/socialAccounts/instagram/media/insights/post/`,
+  FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
+  APPLY_CAMPAIGN: `${baseUrl}/campaigns/apply/`,
 
-
-    /***************** CAMPAIGN APIS **********************/
-    CREATE_CAMPAIGN: "http://147.78.141.96:8075/api/campaigns/create/",
-    CREATE_PRODUCT: "http://147.78.141.96:8075/api/productService/user/product/create/",
-    FETCH_BRAND_CAMPAIGNS: "http://147.78.141.96:8075/api/campaigns/brand/list/",
-    FETCH_PRODUCTS: "http://147.78.141.96:8075/api/productService/user/products/",
-    VIEW_INSIGHTS: "http://147.78.141.96:8075/api/socialAccounts/instagram/media/insights/post/",
-    FETCH_POSTS: "http://147.78.141.96:8075/api/socialAccounts/instagram/media/list/",
-
-
-    /***************** SOCIALS APIS **********************/
-    TIKTOK_LOGIN: "http://147.78.141.96:8075/api/auth/tiktok/loginUrl/",
-    TIKTOK_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/tiktok/accessToken/",
-    TIKTOK_PROFILE_DETAILS: "http://147.78.141.96:8075/api/socialAccounts/tiktok/profile/get/",
-    INSTAGRAM_LOGIN: "http://147.78.141.96:8075/api/auth/instagram/loginUrl/",
-    INSTAGRAM_ACCESS_TOKEN: "http://147.78.141.96:8075/api/auth/instagram/accessToken/",
-    INSTAGRAM_PROFILE_DETAILS: "http://147.78.141.96:8075/api/socialAccounts/instagram/profile/get/",
-
+  /***************** SOCIALS APIS **********************/
+  TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
+  TIKTOK_ACCESS_TOKEN: `${baseUrl}/auth/tiktok/accessToken/`,
+  TIKTOK_PROFILE_DETAILS: `${baseUrl}/socialAccounts/tiktok/profile/get/`,
+  INSTAGRAM_LOGIN: `${baseUrl}/auth/instagram/loginUrl/`,
+  INSTAGRAM_ACCESS_TOKEN: `${baseUrl}/auth/instagram/accessToken/`,
+  INSTAGRAM_PROFILE_DETAILS: `${baseUrl}/socialAccounts/instagram/profile/get/`,
 };
+
 
 
 //------------------------ Application APIs ----------------------//
@@ -84,9 +86,11 @@ export const APP_API_URL = {
   CREATE_CAMPAIGN: '/api/campaign/create-campaign',
   CREATE_PRODUCT: '/api/campaign/create-product',
   FETCH_BRAND_CAMPAIGNS: '/api/campaign/fetch-brand-campaigns',
+  FETCH_ALL_CAMPAIGNS: '/api/campaign/fetch-all-campaigns',
   FETCH_PRODUCTS: '/api/campaign/fetch-products',
   VIEW_INSIGHTS: '/api/campaign/view-insights',
   FETCH_POSTS: '/api/campaign/fetch-posts',
+  APPLY_CAMPAIGN: '/api/campaign/apply-campaign',
 
 
   /***************** BUCKET LIST APIs **********************/

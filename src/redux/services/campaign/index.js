@@ -29,10 +29,39 @@ export const createProduct = async (auth,payload) => {
     }
 };
 
+export const applyCampaign = async (auth,id) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.APPLY_CAMPAIGN}`, {campaign_id: id},{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            
+        });
+        return response
+    } catch (error) {
+        console.error("Error creating campaign:", error);
+        return error || error.message;
+    }
+};
+
 
 export const fetchBrandCampaigns = async (auth) => {
     try {
         const response = await axios.get(`${APP_API_URL.FETCH_BRAND_CAMPAIGNS}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching campaigns:", error);
+        return error.response?.data || error.message;
+    }
+};
+
+export const fetchAllCampaigns = async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.FETCH_ALL_CAMPAIGNS}`,{
             headers:{
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             }
