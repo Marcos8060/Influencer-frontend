@@ -20,22 +20,26 @@ const CampaignPreview = () => {
   const [success, setSuccess] = useState(false);
   const auth = useAuth();
   const addCampaign = async () => {
+    let response;
     try {
       setLoading(true);
-      const response = await createCampaign(auth, campaignData);
+      response = await createCampaign(auth, campaignData);
       if (response.status === 200) {
         toast.success("Campaign created successfully!");
         dispatch(resetCampaignData());
         setSuccess(true);
       } else {
-        toast.error("Something went wrong");
+        toast.error(response.response?.data.errorMessage?.[0] || "Failed to create campaign.");
       }
-    } catch (error) {
-      toast.error(error.response.data.errorMessage[0]);
+    } catch (error) {  
+      const errorMessage =
+        error?.response?.data?.errorMessage?.[0] || "Something went wrong while creating the campaign.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     dispatch(setCurrentStep(3));
