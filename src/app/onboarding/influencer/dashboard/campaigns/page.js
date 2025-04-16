@@ -27,8 +27,8 @@ const Campaigns = () => {
       const response = await applyCampaign(auth, id);
       if (response.status === 400) {
         toast.error(response.response.data.errorMessage[0]);
-      }else{
-        toast.success('Application sent successfully')
+      } else {
+        toast.success("Application sent successfully");
       }
     } catch (error) {
       console.log(error);
@@ -113,7 +113,9 @@ const Campaigns = () => {
                 </h1>
                 <img
                   className="rounded h-[30vh] w-full object-cover"
-                  src="/images/workout.jpg"
+                  src={selectedCampaign !== null
+                    ? selectedCampaign?.coverImageUrl
+                    : allCampaigns[0]?.coverImageUrl}
                   alt=""
                 />
               </div>
@@ -220,33 +222,30 @@ const Campaigns = () => {
                     <div className="flex gap-2">
                       <p className="font-thin w-2/12">Social Channels:</p>
                       <p className="">
-                        {selectedCampaign !== null
-                          ? selectedCampaign?.preferences.socialChannels.map(
-                              (item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <IoMdCheckmark />
-                                  <li className="list-none font-semibold">
-                                    {item}
-                                  </li>
-                                </div>
-                              )
-                            )
-                          : allCampaigns[0].preferences.socialChannels.map(
-                              (item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <IoMdCheckmark />
-                                  <li className="list-none font-semibold">
-                                    {item}
-                                  </li>
-                                </div>
-                              )
-                            )}
+                        {(() => {
+                          // Safely get the channels with null checks
+                          const channels =
+                            selectedCampaign !== null
+                              ? selectedCampaign?.preferences?.socialChannels
+                              : allCampaigns[0]?.preferences?.socialChannels;
+
+                          // Ensure we always work with an array
+                          const safeChannels = []
+                            .concat(channels || [])
+                            .filter(Boolean);
+
+                          return safeChannels.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2"
+                            >
+                              <IoMdCheckmark />
+                              <li className="list-none font-semibold">
+                                {item}
+                              </li>
+                            </div>
+                          ));
+                        })()}
                       </p>
                     </div>
                   </div>
@@ -256,33 +255,32 @@ const Campaigns = () => {
                     <div className="flex gap-4">
                       <p className="font-thin w-2/12">Video Style:</p>
                       <p className="font-light">
-                        {selectedCampaign !== null
-                          ? selectedCampaign?.preferences.videoStyle.map(
-                              (item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <IoMdCheckmark />
-                                  <li className="list-none font-semibold">
-                                    {item}
-                                  </li>
-                                </div>
-                              )
-                            )
-                          : allCampaigns[0]?.preferences.videoStyle.map(
-                              (item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <IoMdCheckmark />
-                                  <li className="list-none font-semibold">
-                                    {item}
-                                  </li>
-                                </div>
-                              )
-                            )}
+                        {(() => {
+                          // Safely get video styles with null checks
+                          const videoStyles =
+                            selectedCampaign !== null
+                              ? selectedCampaign?.preferences?.videoStyle
+                              : allCampaigns[0]?.preferences?.videoStyle;
+
+                          // Ensure we always work with an array (handles undefined, single items, or arrays)
+                          const safeVideoStyles = Array.isArray(videoStyles)
+                            ? videoStyles.filter(Boolean)
+                            : videoStyles
+                            ? [videoStyles].filter(Boolean)
+                            : [];
+
+                          return safeVideoStyles.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2"
+                            >
+                              <IoMdCheckmark />
+                              <li className="list-none font-semibold">
+                                {item}
+                              </li>
+                            </div>
+                          ));
+                        })()}
                       </p>
                     </div>
                   </div>
