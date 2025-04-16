@@ -39,7 +39,7 @@ const Terms = () => {
   }
 
   useEffect(() => {
-    dispatch(setCurrentStep(19));
+    dispatch(setCurrentStep(5));
   }, [dispatch]);
   return (
     <section className="flex items-center justify-center h-screen md:w-5/12 mx-auto px-4 text-color">

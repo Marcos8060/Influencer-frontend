@@ -42,7 +42,7 @@ const BusinessType = () => {
 
   useEffect(() => {
     dispatch(setCurrentStep(2));
-    setSelectedOption(formData.businessType || "");
+    setSelectedOption(formData.businessType || "")
 
   }, [dispatch]);
 

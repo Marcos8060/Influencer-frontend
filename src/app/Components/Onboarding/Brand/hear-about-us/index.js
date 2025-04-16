@@ -18,7 +18,7 @@ const FindAboutUs = () => {
   const formData = useSelector((store) => store.stepper.formData);
 
   useEffect(() => {
-    dispatch(setCurrentStep(18));
+    dispatch(setCurrentStep(4));
     setSelectedOption(formData.platformIntroductionSource || "");
   }, [dispatch, formData.businessType]);
 
