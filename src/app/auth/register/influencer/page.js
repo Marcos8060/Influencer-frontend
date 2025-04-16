@@ -39,6 +39,9 @@ const InfluencerRegister = () => {
 
       // Check if response is a valid Axios response object
       if (response?.status === 200) {
+        localStorage.removeItem("brand_token");
+        localStorage.removeItem("influencer_token");
+        
         setFormData({
           firstName: "",
           lastName: "",

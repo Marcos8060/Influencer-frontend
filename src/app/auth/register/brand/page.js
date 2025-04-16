@@ -40,6 +40,9 @@ const BrandRegister = () => {
       const response = await RegisterBrand(registrationData);
 
       if (response?.status === 200) {
+        localStorage.removeItem("brand_token");
+        localStorage.removeItem("influencer_token");
+        
         setFormData({
           firstName: "",
           lastName: "",
@@ -58,11 +61,12 @@ const BrandRegister = () => {
         toast.success("Please check your email for the OTP!");
         router.push("/auth/register/brand/otp");
       } else {
-        const errorMessage = response?.errorMessage?.[0] || "Something went wrong. Please try again.";
+        const errorMessage =
+          response?.errorMessage?.[0] ||
+          "Something went wrong. Please try again.";
         toast.error(errorMessage);
       }
     } catch (error) {
-
       let errorMessage = "Something went wrong. Please try again.";
 
       if (error.response && error.response.data) {
@@ -86,7 +90,9 @@ const BrandRegister = () => {
   return (
     <section className="flex items-center justify-center h-screen md:w-4/12 w-11/12 mx-auto">
       <div>
-        <h1 className="text-3xl font-bold text-center my-2">Register as a Brand</h1>
+        <h1 className="text-3xl font-bold text-center my-2">
+          Register as a Brand
+        </h1>
         <p className="text-center text-sm mb-3">
           Start on Influencer Platform as a Brand, if you are an influencer, you
           can sign up{" "}
@@ -181,7 +187,11 @@ const BrandRegister = () => {
                 onClick={toggleConfirmPasswordVisibility}
                 className="absolute top-3 right-3"
               >
-                {confirmPasswordVisible ? <IoEyeOffOutline /> : <IoEyeOutline />}
+                {confirmPasswordVisible ? (
+                  <IoEyeOffOutline />
+                ) : (
+                  <IoEyeOutline />
+                )}
               </button>
             </div>
           </div>
