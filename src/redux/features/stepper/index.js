@@ -10,6 +10,7 @@ const initialState = {
     city: null,
     country: null,
     state: null,
+    phoneNumber: null,
     zipCode: null,
     brandName: null,
     brandDescription: null,
