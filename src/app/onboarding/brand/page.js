@@ -26,6 +26,31 @@ import { useSelector } from "react-redux";
 const BrandOnboarding = () => {
   const { currentStep } = useSelector((store) => store.stepper);
 
+  // case 6:
+  //       return <NumberOfInfluencers />;
+  //     case 7:
+  //     case 8:
+  //       return <DecidingFactor />;
+  //     case 9:
+  //       return <MinimumFollowers />;
+  //     case 10:
+  //       return <Gender />;
+  //     case 11:
+  //       return <Ethnicities />;
+  //     case 12:
+  //       return <AgeGroups />;
+  //     case 13:
+  //       return <PaymentOption />;
+  //     case 14:
+  //       return <CampaignGoal />;
+  //     case 15:
+  //       return <Collaboration />;
+  //     case 16:
+  //       return <VideoType />;
+  //     case 17:
+  //       return <Pricing />;
+  //     case 18:
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 0:
@@ -33,41 +58,11 @@ const BrandOnboarding = () => {
       case 1:
         return <BusinessIndustry />;
       case 2:
-        return <BusinessType />;
-      case 3:
-        return <CompanyDetails />;
-        case 4:
-        return <InfluencerIndustry />;
-      case 5:
         return <Countries />;
-      case 6:
-        return <NumberOfInfluencers />;
-      case 7:
+      case 3:
         return <Platforms />;
-      case 8:
-        return <DecidingFactor />;
-      case 9:
-        return <MinimumFollowers />;
-      case 10:
-        return <Gender />;
-      case 11:
-        return <Ethnicities />;
-      case 12:
-        return <AgeGroups />;
-      case 13:
-        return <PaymentOption />;
-      case 14:
-        return <CampaignGoal />;
-      case 15:
-        return <Collaboration />;
-      case 16:
-        return <VideoType />;
-      case 17:
-        return <Pricing />;
-      case 18:
+      case 4:
         return <FindAboutUs />;
-      // case 19:
-      //   return <GeographicalScope />;
       default:
         return <Terms />;
     }

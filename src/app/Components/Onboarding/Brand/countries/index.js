@@ -12,6 +12,9 @@ import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBa
 import { updateFormData } from "@/redux/features/stepper";
 import toast from "react-hot-toast";
 
+// Import SVG flags or use a flag library
+import { ReactCountryFlag } from "react-country-flag";
+
 const Countries = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const [selectedCountries, setSelectedCountries] = useState(
@@ -19,22 +22,15 @@ const Countries = () => {
   );
   const dispatch = useDispatch();
 
-  const getFlagEmoji = (countryCode) => {
-    return countryCode
-      .toUpperCase()
-      .split("")
-      .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
-      .join("");
-  };
   const countries = [
-    { name: "Kenya", code: "KE", flag: getFlagEmoji("KE") },
-    { name: "United States", code: "US", flag: getFlagEmoji("US") },
-    { name: "India", code: "IN", flag: getFlagEmoji("IN") },
-    { name: "France", code: "FR", flag: getFlagEmoji("FR") },
-    { name: "Australia", code: "AU", flag: getFlagEmoji("AU") },
-    { name: "Brazil", code: "BR", flag: getFlagEmoji("BR") },
-    { name: "China", code: "CN", flag: getFlagEmoji("CN") },
-    { name: "Egypt", code: "EG", flag: getFlagEmoji("EG") },
+    { name: "Kenya", code: "KE" },
+    { name: "United States", code: "US" },
+    { name: "India", code: "IN" },
+    { name: "France", code: "FR" },
+    { name: "Australia", code: "AU" },
+    { name: "Brazil", code: "BR" },
+    { name: "China", code: "CN" },
+    { name: "Egypt", code: "EG" },
   ];
 
   const handleNext = () => {
@@ -49,7 +45,7 @@ const Countries = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(5));
+    dispatch(setCurrentStep(2));
   }, [dispatch]);
 
   return (
@@ -64,7 +60,20 @@ const Countries = () => {
             value={selectedCountries}
             onChange={(e) => setSelectedCountries(e.value)}
             options={countries}
-            optionLabel={(option) => `${option.flag} ${option.name}`}
+            optionLabel={(option) => (
+              <div className="flex items-center gap-2">
+                <ReactCountryFlag
+                  countryCode={option.code}
+                  svg
+                  style={{
+                    width: '1.5em',
+                    height: '1.5em',
+                  }}
+                  title={option.code}
+                />
+                <span>{option.name}</span>
+              </div>
+            )}
             placeholder="Select Countries"
           />
         </div>

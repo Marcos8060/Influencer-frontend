@@ -18,7 +18,7 @@ const Platforms = () => {
   );
 
   useEffect(() => {
-    dispatch(setCurrentStep(7));
+    dispatch(setCurrentStep(3));
   }, [dispatch]);
 
   const platforms = ["Instagram", "TikTok", "Facebook", "YouTube", "Twitter"];
