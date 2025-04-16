@@ -16,14 +16,14 @@ const HeroSection = () => {
           </p>
           <section className="flex items-center gap-2">
             <Link
-              href="/auth/register/brand"
+              href="/auth/login/brand"
               className="bg-primary hover:scale-105 border transition duration-700 shadow-xl text-white rounded px-4 py-3 text-sm flex gap-2 items-center justify-center"
             >
               For Brands
               <IoIosArrowForward className="text-white" />
             </Link>
             <Link
-              href="/auth/register/influencer"
+              href="/auth/login/influencer"
               className="hover:scale-105 border transition duration-700 border-primary rounded px-4 py-3 text-sm flex gap-2 items-center justify-center"
             >
               For Influencers
