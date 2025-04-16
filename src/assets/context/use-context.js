@@ -100,9 +100,14 @@ export const AuthProvider = ({ children }) => {
         const decodedUser = jwtDecode(response.data.access);
         setUser(decodedUser);
         if (decodedUser.roleName !== "Brand") {
-          toast.error("This account is registered as an Influencer. Please login via Influencer portal.");
+          toast.error(
+            "This account is registered as an Influencer. Please login via Influencer portal."
+          );
           router.push("/auth/login/influencer");
         } else {
+          localStorage.removeItem("brand_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("influencer_token");
           // Store tokens regardless of onboarding status
           localStorage.setItem("brand_token", response.data.access);
           localStorage.setItem("refresh_token", response.data.refresh);
@@ -131,9 +136,14 @@ export const AuthProvider = ({ children }) => {
         setUser(decodedUser);
 
         if (decodedUser.roleName !== "Influencer") {
-          toast.error("This account is registered as a Brand. Please login via Brand portal");
+          toast.error(
+            "This account is registered as a Brand. Please login via Brand portal"
+          );
           router.push("/auth/login/brand");
         } else {
+          localStorage.removeItem("brand_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("influencer_token");
           // Store tokens regardless of onboarding status
           localStorage.setItem("influencer_token", response.data.access);
           localStorage.setItem("refresh_token", response.data.refresh);
