@@ -134,7 +134,7 @@ const BusinessIndustry = () => {
             />
           ))}
         </section>
-        <div className="mt-2 space-y-2">
+        <div className="mt-4 space-y-2">
           <ButtonComponent onClick={handleNext} label="Next" />
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
         </div>

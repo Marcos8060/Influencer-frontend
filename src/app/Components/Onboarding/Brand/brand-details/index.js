@@ -89,6 +89,7 @@ const BrandDetails = () => {
               </label>
               <InputComponent
                 value={details.brandWebsite}
+                required
                 onChange={(e) =>
                   setDetails({ ...details, brandWebsite: e.target.value })
                 }
