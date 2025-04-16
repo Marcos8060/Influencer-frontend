@@ -98,7 +98,7 @@ const BusinessIndustry = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-screen md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
+    <section className="flex flex-col items-center justify-center md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
       <div >
         <h1 className="text-2xl font-bold my-2">
           Business Classification
