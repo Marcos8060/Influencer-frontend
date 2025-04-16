@@ -7,6 +7,7 @@ import CampaignProfileImageModal from "./campaignCoverImage";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { nextStep, updateFormData } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 // Function to convert stored date strings to Date objects
 const parseDate = (dateString) => (dateString ? new Date(dateString) : null);
@@ -40,6 +41,11 @@ const CampaignBasics = () => {
 
   // Handle form submission and persist data in Redux
   const handleNext = () => {
+
+    if(!details.startDate || !details.title || !details.description || !details.endDate){
+      toast.error('Please fill out the required fields')
+      return
+    }
     dispatch(
       updateFormData({
         ...details,
@@ -59,7 +65,7 @@ const CampaignBasics = () => {
           <h2 className="mb-4 font-bold">Campaign Basics</h2>
           <section className="space-y-2">
             <div>
-              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Title</label>
+              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Title</label> <span className="text-red">*</span>
               <InputComponent
                 value={details.title}
                 onChange={(e) =>
@@ -69,7 +75,7 @@ const CampaignBasics = () => {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Description</label>
+              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Description</label> <span className="text-red">*</span>
               <TextAreaComponent
                 value={details.description}
                 onChange={(e) =>
