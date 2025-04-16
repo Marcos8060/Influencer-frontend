@@ -98,7 +98,7 @@ const BusinessIndustry = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center h-[110vh] md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
+    <section className="flex flex-col items-center justify-center h-screen md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
       <div >
         <h1 className="text-2xl font-bold my-2">
           Business Classification
@@ -119,6 +119,9 @@ const BusinessIndustry = () => {
         </section>
       </div>
       <div className="">
+      <h1 className="text-xl font-bold my-2">
+          Business Type
+        </h1>
         <p className="text-sm mb-3">
           What type of business do you run? Do you sell products, services or
           software? Is it online or in person?
