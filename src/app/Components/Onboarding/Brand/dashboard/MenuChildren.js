@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+"use client";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { IoChevronForward } from "react-icons/io5";
 import { influencerMenu, menu } from "@/assets/menu";
+import { authContext } from "@/assets/context/use-context";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 const BrandMenuChildren = ({ collapse }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -14,9 +18,24 @@ const BrandMenuChildren = ({ collapse }) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const auth = useAuth();
+
+  let user = null;
+  if (auth && typeof auth === "string") {
+    try {
+      user = jwtDecode(auth);
+    } catch (err) {
+      console.error("Failed to decode auth token:", err);
+    }
+  }
+
+  const filteredMenus = menu.filter((item) =>
+    item.role.includes(user?.roleName)
+  );
+
   return (
     <>
-      {menu.map((item, index) => {
+      {filteredMenus.map((item, index) => {
         const isOpen = openIndex === index;
         const icon = isOpen ? <IoChevronDownOutline /> : <IoChevronForward />;
 
@@ -26,16 +45,16 @@ const BrandMenuChildren = ({ collapse }) => {
               <section>
                 <Link
                   href={`${item.path}`}
-                  className={`flex items-center ${collapse ? 'justify-center' : ''} gap-4 ${
+                  className={`flex items-center ${
+                    collapse ? "justify-center" : ""
+                  } gap-4 ${
                     currentPath === item.path
                       ? "bg-gradient-to-r from-primary to-secondary rounded-3xl px-3 py-3 text-background"
                       : "text-color"
                   }`}
                 >
-                  <div className={`${collapse ? '' : ''}`}>
-                    <p className={`${collapse ? "" : ""}`}>
-                      {item.icon}
-                    </p>
+                  <div className={`${collapse ? "" : ""}`}>
+                    <p className={`${collapse ? "" : ""}`}>{item.icon}</p>
                   </div>
                   {!collapse && <p className="">{item.label}</p>}
                 </Link>

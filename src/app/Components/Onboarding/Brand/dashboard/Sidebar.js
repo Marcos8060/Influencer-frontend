@@ -1,7 +1,7 @@
 "use client";
-import BrandMenuChildren from "./BrandMenuChildren";
+import MenuChildren from "./MenuChildren";
 
-const BrandSidebar = ({ collapse, setCollapse, icon }) => {
+const Sidebar = ({ collapse, setCollapse, icon }) => {
 
   const toggleSidebar = () => {
     setCollapse(!collapse);
@@ -15,10 +15,10 @@ const BrandSidebar = ({ collapse, setCollapse, icon }) => {
         </div>
       </div>
       <div className="space-y-8 text-sm text-background my-4 pl-4 py-8">
-        <BrandMenuChildren {...{ collapse }} />
+        <MenuChildren {...{ collapse }} />
       </div>
     </section>
   );
 };
 
-export default BrandSidebar;
+export default Sidebar;

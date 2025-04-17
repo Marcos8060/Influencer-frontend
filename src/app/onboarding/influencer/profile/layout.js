@@ -1,9 +1,9 @@
 'use client'
 import React,{ useState } from 'react'
-import Sidebar from "@/app/Components/Onboarding/Brand/dashboard/InfluencerSidebar";
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleFill } from "react-icons/ri";
 import InfluencerCustomizedHeader from '@/app/Components/Onboarding/Brand/dashboard/influencer/CustomizedHeader';
+import Sidebar from '@/app/Components/Onboarding/Brand/dashboard/Sidebar';
 
 export default function DashboardLayout({ children }) {
     const [collapse, setCollapse] = useState(false);
