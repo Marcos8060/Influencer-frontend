@@ -2,7 +2,7 @@
 import React,{ useState } from 'react'
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleFill } from "react-icons/ri";
-import BrandSidebar from '@/app/Components/Onboarding/Brand/dashboard/BrandSidebar';
+import BrandSidebar from '@/app/Components/Onboarding/Brand/dashboard/Sidebar';
 import BrandCustomizedHeader from '@/app/Components/Onboarding/Brand/dashboard/brand/CustomizedHeader';
 
 export default function DashboardLayout({ children }) {

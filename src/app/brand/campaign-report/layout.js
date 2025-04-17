@@ -3,7 +3,7 @@ import React,{ useState } from 'react'
 import { RiArrowLeftDoubleFill } from "react-icons/ri";
 import { RiArrowRightDoubleFill } from "react-icons/ri";
 import BrandCustomizedHeader from '@/app/Components/Onboarding/Brand/dashboard/brand/CustomizedHeader';
-import BrandSidebar from '@/app/Components/Onboarding/Brand/dashboard/BrandSidebar';
+import BrandSidebar from '@/app/Components/Onboarding/Brand/dashboard/Sidebar';
 
 export default function DashboardLayout({ children }) {
     const [collapse, setCollapse] = useState(false);

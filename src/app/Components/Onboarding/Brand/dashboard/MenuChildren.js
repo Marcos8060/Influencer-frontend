@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoChevronDownOutline } from "react-icons/io5";
 import { IoChevronForward } from "react-icons/io5";
 import { influencerMenu, menu } from "@/assets/menu";
+import { authContext } from "@/assets/context/use-context";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 const BrandMenuChildren = ({ collapse }) => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -14,9 +17,15 @@ const BrandMenuChildren = ({ collapse }) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const auth = useAuth();
+
+  const user = jwtDecode(auth);
+
+  const filteredMenus = menu.filter((item) => item.role.includes(user?.roleName));
+
   return (
     <>
-      {menu.map((item, index) => {
+      {filteredMenus.map((item, index) => {
         const isOpen = openIndex === index;
         const icon = isOpen ? <IoChevronDownOutline /> : <IoChevronForward />;
 
