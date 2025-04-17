@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
@@ -43,6 +43,37 @@ const BrandDetails = () => {
   useEffect(() => {
     dispatch(setCurrentStep(0));
   }, [dispatch]);
+
+
+  const countryDropdownRef = useRef(null);
+  const phoneCodeDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target) &&
+        // Also check if the click wasn't on the country select input itself
+        !event.target.closest('.country-select-container')
+      ) {
+        setIsCountryOpen(false);
+      }
+      
+      if (
+        phoneCodeDropdownRef.current &&
+        !phoneCodeDropdownRef.current.contains(event.target) &&
+        // Also check if the click wasn't on the phone code select itself
+        !event.target.closest('.phone-code-select-container')
+      ) {
+        setIsPhoneCodeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -220,7 +251,7 @@ const BrandDetails = () => {
                   )}
                 </div>
                 {isCountryOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
+                  <div ref={countryDropdownRef} className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
                     <div className="p-2 sticky top-0 bg-white">
                       <input
                         type="text"
@@ -306,7 +337,7 @@ const BrandDetails = () => {
                       )}
                     </div>
                     {isPhoneCodeOpen && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
+                      <div ref={phoneCodeDropdownRef} className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
                         <div className="p-2 sticky top-0 bg-white">
                           <input
                             type="text"
