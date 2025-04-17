@@ -12,6 +12,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import TickBoxComponent from "../../SharedComponents/TickBoxComponent";
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
+import toast from "react-hot-toast";
 
 const CampaignBrief = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -28,6 +29,17 @@ const CampaignBrief = () => {
   });
 
   const handleNext = () => {
+
+    if (
+      !details.briefTitle ||
+      !details.briefDescription ||
+      details.campaignPreferences.socialChannels.length === 0 ||
+      details.campaignPreferences.videoStyle.length === 0
+    ) {
+      toast.error("Please fill out all required fields");
+      return;
+    }
+
     const updatedData = {
       ...campaignData,
       briefTitle: details.briefTitle,
@@ -90,7 +102,7 @@ const CampaignBrief = () => {
           <h2 className="mb-4 font-bold">Campaign Brief</h2>
           <section className="space-y-2">
             <div>
-              <label className="text-xs font-semibold mb-4">Give your Brief a title</label>
+              <label className="text-xs font-semibold mb-4">Give your Brief a title</label><span className="text-red">*</span>
               <InputComponent
                 value={details.briefTitle}
                 onChange={(e) =>
@@ -100,7 +112,7 @@ const CampaignBrief = () => {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold mb-4">Brief Description</label>
+              <label className="text-xs font-semibold mb-4">Brief Description</label><span className="text-red">*</span>
               <TextAreaComponent
                 value={details.briefDescription}
                 onChange={(e) =>
