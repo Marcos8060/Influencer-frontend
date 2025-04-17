@@ -4,13 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
-  previousStep,
   updateFormData,
 } from "@/redux/features/stepper";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import TextAreaComponent from "@/app/Components/SharedComponents/TextAreaComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 import { ReactCountryFlag } from "react-country-flag";
 import countries from "country-list";
