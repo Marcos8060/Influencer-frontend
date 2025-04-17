@@ -94,6 +94,7 @@ const CampaignBasics = () => {
           </div>
           <section className="flex items-center gap-4 justify-between w-full">
             <div className="w-1/2">
+            <label className="text-xs font-semibold mb-4" htmlFor="">Start Date</label> <span className="text-red">*</span>
               <DateFieldComponent
                 value={details.startDate}
                 onChange={(date) => handleDateChange("startDate", date)}
@@ -101,6 +102,7 @@ const CampaignBasics = () => {
               />
             </div>
             <div className="w-1/2">
+            <label className="text-xs font-semibold mb-4" htmlFor="">End Date</label> <span className="text-red">*</span>
               <DateFieldComponent
                 value={details.endDate}
                 onChange={(date) => handleDateChange("endDate", date)}

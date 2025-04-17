@@ -116,30 +116,39 @@ const BrandDetails = () => {
         const location = data[0];
         setDetails((prev) => ({
           ...prev,
-          city: location.address.city || 
-               location.address.town || 
-               location.address.village || 
-               location.address.county ||
-               prev.city,
-          state: location.address.state || 
-                 location.address.region || 
-                 prev.state,
+          city:
+            location.address.city ||
+            location.address.town ||
+            location.address.village ||
+            location.address.county ||
+            prev.city,
+          state:
+            location.address.state || location.address.region || prev.state,
           address: location.address.road
             ? `${location.address.road}${
-                location.address.house_number ? ' ' + location.address.house_number : ''
+                location.address.house_number
+                  ? " " + location.address.house_number
+                  : ""
               }`
             : prev.address,
           zipCode: location.address.postcode || prev.zipCode,
         }));
-        
+
         // Show success message only if we actually got data
-        if (location.address.city || location.address.town || location.address.state) {
+        if (
+          location.address.city ||
+          location.address.town ||
+          location.address.state
+        ) {
           toast.success("Location details auto-filled");
         }
       } else {
-        toast("Couldn't auto-fill all location details. Please enter manually.", {
-          icon: "ℹ️",
-        });
+        toast(
+          "Couldn't auto-fill all location details. Please enter manually.",
+          {
+            icon: "ℹ️",
+          }
+        );
       }
     } catch (error) {
       console.error("Error fetching location data:", error);
@@ -150,12 +159,14 @@ const BrandDetails = () => {
   };
 
   const handleCountrySelect = async (country) => {
-    const phoneData = countryPhoneData.find(item => item.code === country.code);
-    
+    const phoneData = countryPhoneData.find(
+      (item) => item.code === country.code
+    );
+
     // Show loading immediately
     setIsLoadingLocation(true);
     toast.loading("Detecting location details...", { id: "location-loading" });
-    
+
     setDetails({
       ...details,
       country: {
@@ -168,7 +179,7 @@ const BrandDetails = () => {
       },
     });
     setIsCountryOpen(false);
-    
+
     try {
       await fetchLocationData(country.code);
     } finally {
@@ -464,15 +475,16 @@ const BrandDetails = () => {
                   <div className="w-2/3">
                     <InputComponent
                       value={details.phoneNumber.number}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15); // removes all non-digit characters
                         setDetails({
                           ...details,
                           phoneNumber: {
                             ...details.phoneNumber,
-                            number: e.target.value,
+                            number: digitsOnly,
                           },
-                        })
-                      }
+                        });
+                      }}
                       placeholder="Phone number"
                     />
                   </div>

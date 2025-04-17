@@ -17,7 +17,7 @@ const CustomizedTickBoxComponent = ({
       <section className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold">{label}</p>
-          <p className="text-gray-500 text-xs">{description}</p>
+          <p className="text-gray-500 text-sm">{description}</p>
         </div>
         <div>{checked && <FaCheck />}</div>
       </section>
