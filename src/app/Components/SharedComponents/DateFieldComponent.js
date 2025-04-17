@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Calendar } from "primereact/calendar";
 
-export default function DateFieldComponent({ value, onChange,placeholder }) {
+export default function DateFieldComponent({ value, onChange,placeholder, ...rest }) {
     const [date, setDate] = useState(value || null);
 
     const handleChange = (e) => {
@@ -16,6 +16,7 @@ export default function DateFieldComponent({ value, onChange,placeholder }) {
                 value={date}
                 onChange={handleChange}
                 placeholder={placeholder}
+                {...rest}
             />
         </div>
     );

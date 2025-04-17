@@ -1,20 +1,20 @@
 import React from "react";
-import { FaCheck } from "react-icons/fa6";
+import { GiCheckMark } from "react-icons/gi";
 
 const TickBoxComponent = ({ label, checked, onChange }) => {
   return (
     <div
-      className={`cursor-pointer border border-input rounded px-4 py-2 text-sm w-full 
+      className={`cursor-pointer border border-input rounded px-4 py-2 w-full 
         ${
           checked
-            ? "bg-primary text-white font-semibold rounded"
+            ? "border-2 border-primary bg-background font-semibold rounded"
             : "bg-white"
         }`}
       onClick={onChange}
     >
       <section className="flex items-center justify-between">
         <div>{label}</div>
-        <div>{checked && <FaCheck />}</div>
+        <div>{checked && <GiCheckMark className="text-xl" />}</div>
       </section>
     </div>
   );

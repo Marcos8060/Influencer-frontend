@@ -11,7 +11,7 @@ import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBa
 import { updateFormData } from "@/redux/features/stepper";
 import toast from "react-hot-toast";
 import MultiSelectDropdown from "@/app/Components/SharedComponents/MultiSelectDropdown";
-import CustomizedTickBoxComponent from "@/app/Components/SharedComponents/CustomizedTickBoxComponent";
+import TickBoxComponent from "@/app/Components/SharedComponents/TickBoxComponent";
 
 const BusinessIndustry = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -50,13 +50,12 @@ const BusinessIndustry = () => {
     },
     {
       label: "In Person Services",
-      description: `Your business offers services or products that necessitate an in-person presence, such as
-            hotels, Airbnbs, gyms, beauty salons, or large furniture items.`,
+      description: `Your business offers services or products that necessitate an in-person presence`,
     },
     {
       label: "Digital Services",
       description:
-        "Your business provides services that don't require in-person attendance, such as online yoga classes and virtual training courses",
+        "Your business provides services that don't require in-person attendance",
     },
     {
       label: "Software",
@@ -98,8 +97,8 @@ const BusinessIndustry = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
-      <div >
+    <section className="flex flex-col items-center justify-center h-screen md:w-4/12 w-full space-y-8 mx-auto px-4 text-color">
+      <div className="w-full">
         <h1 className="text-2xl font-bold my-2">
           Business Classification
         </h1>
@@ -107,14 +106,33 @@ const BusinessIndustry = () => {
           Which products does your business primarily offer for sale? Please
           choose the industries that best match your business.
         </p>
-        <section className="mb-2 ">
+        <section className="mb-2 w-full">
           <MultiSelectDropdown
             options={options}
             value={selectedOptions}
             onChange={setSelectedOptions}
             optionLabel="name"
             placeholder="Select Industries"
-            className="w-full"
+            className="w-full max-w-full"
+            style={{
+              container: (provided) => ({
+                ...provided,
+                width: '100%',
+                maxWidth: '100%'
+              }),
+              multiValue: (provided) => ({
+                ...provided,
+                maxWidth: '100%',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }),
+              control: (provided) => ({
+                ...provided,
+                minHeight: '40px',
+                maxWidth: '100%'
+              })
+            }}
           />
         </section>
       </div>
@@ -128,10 +146,10 @@ const BusinessIndustry = () => {
         </p>
         <section className="mb-2 space-y-2">
         {types.map((option) => (
-            <CustomizedTickBoxComponent
+            <TickBoxComponent
               key={option.label}
               label={option.label}
-              description={option.description}
+              // description={option.description}
               checked={selectedOption === option.label}
               onChange={() => setSelectedOption(option.label)}
             />

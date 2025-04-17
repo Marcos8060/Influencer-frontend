@@ -18,6 +18,9 @@ const formatDate = (date) => {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
 
+const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
 const CampaignBasics = () => {
   const { campaignData } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
@@ -94,15 +97,19 @@ const CampaignBasics = () => {
           </div>
           <section className="flex items-center gap-4 justify-between w-full">
             <div className="w-1/2">
+            <label className="text-xs font-semibold mb-4" htmlFor="">Start Date</label> <span className="text-red">*</span>
               <DateFieldComponent
                 value={details.startDate}
+                minDate={today}
                 onChange={(date) => handleDateChange("startDate", date)}
                 placeholder="Start Date"
               />
             </div>
             <div className="w-1/2">
+            <label className="text-xs font-semibold mb-4" htmlFor="">End Date</label> <span className="text-red">*</span>
               <DateFieldComponent
                 value={details.endDate}
+                minDate={details.startDate}
                 onChange={(date) => handleDateChange("endDate", date)}
                 placeholder="End Date"
               />

@@ -1,16 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCurrentStep,
   nextStep,
-  previousStep,
   updateFormData,
 } from "@/redux/features/stepper";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import TextAreaComponent from "@/app/Components/SharedComponents/TextAreaComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 import { ReactCountryFlag } from "react-country-flag";
 import countries from "country-list";
@@ -38,11 +36,44 @@ const BrandDetails = () => {
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
   const [filteredCountries, setFilteredCountries] = useState(countryData);
-  const [filteredPhoneCodes, setFilteredPhoneCodes] = useState(countryPhoneData);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [filteredPhoneCodes, setFilteredPhoneCodes] =
+    useState(countryPhoneData);
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
   }, [dispatch]);
+
+  const countryDropdownRef = useRef(null);
+  const phoneCodeDropdownRef = useRef(null);
+
+  // ------close country and phone number dropdowns when you click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target) &&
+        // Also check if the click wasn't on the country select input itself
+        !event.target.closest(".country-select-container")
+      ) {
+        setIsCountryOpen(false);
+      }
+
+      if (
+        phoneCodeDropdownRef.current &&
+        !phoneCodeDropdownRef.current.contains(event.target) &&
+        // Also check if the click wasn't on the phone code select itself
+        !event.target.closest(".phone-code-select-container")
+      ) {
+        setIsPhoneCodeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -63,9 +94,79 @@ const BrandDetails = () => {
     setFilteredPhoneCodes(filtered);
   };
 
-  const handleCountrySelect = (country) => {
-    const phoneData = countryPhoneData.find(item => item.code === country.code);
-    
+  // Function to fetch location data based on country
+  const fetchLocationData = async (countryCode) => {
+    setIsLoadingLocation(true);
+    try {
+      // First try with more specific query
+      let response = await fetch(
+        `https://nominatim.openstreetmap.org/search?country=${countryCode}&format=json&addressdetails=1&limit=1&accept-language=en`
+      );
+      let data = await response.json();
+
+      // If no results, try a more general query
+      if (!data || data.length === 0) {
+        response = await fetch(
+          `https://nominatim.openstreetmap.org/search?country=${countryCode}&format=json&featuretype=settlement&limit=1&accept-language=en`
+        );
+        data = await response.json();
+      }
+
+      if (data && data.length > 0) {
+        const location = data[0];
+        setDetails((prev) => ({
+          ...prev,
+          city:
+            location.address.city ||
+            location.address.town ||
+            location.address.village ||
+            location.address.county ||
+            prev.city,
+          state:
+            location.address.state || location.address.region || prev.state,
+          address: location.address.road
+            ? `${location.address.road}${
+                location.address.house_number
+                  ? " " + location.address.house_number
+                  : ""
+              }`
+            : prev.address,
+          zipCode: location.address.postcode || prev.zipCode,
+        }));
+
+        // Show success message only if we actually got data
+        if (
+          location.address.city ||
+          location.address.town ||
+          location.address.state
+        ) {
+          toast.success("Location details auto-filled");
+        }
+      } else {
+        toast(
+          "Couldn't auto-fill all location details. Please enter manually.",
+          {
+            icon: "ℹ️",
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching location data:", error);
+      toast.error("Could not auto-fill location details");
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleCountrySelect = async (country) => {
+    const phoneData = countryPhoneData.find(
+      (item) => item.code === country.code
+    );
+
+    // Show loading immediately
+    setIsLoadingLocation(true);
+    toast.loading("Detecting location details...", { id: "location-loading" });
+
     setDetails({
       ...details,
       country: {
@@ -78,6 +179,12 @@ const BrandDetails = () => {
       },
     });
     setIsCountryOpen(false);
+
+    try {
+      await fetchLocationData(country.code);
+    } finally {
+      toast.dismiss("location-loading");
+    }
   };
 
   const handleNext = (e) => {
@@ -107,7 +214,9 @@ const BrandDetails = () => {
           return !value || !value.name || !value.code;
         }
         if (field === "phoneNumber") {
-          return !value || !value.code || !value.number || value.number.trim() === "";
+          return (
+            !value || !value.code || !value.number || value.number.trim() === ""
+          );
         }
         return !value;
       }
@@ -220,7 +329,10 @@ const BrandDetails = () => {
                   )}
                 </div>
                 {isCountryOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
+                  <div
+                    ref={countryDropdownRef}
+                    className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto"
+                  >
                     <div className="p-2 sticky top-0 bg-white">
                       <input
                         type="text"
@@ -234,10 +346,12 @@ const BrandDetails = () => {
                       <div
                         key={country.code}
                         className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleCountrySelect({
-                          name: country.name,
-                          code: country.code
-                        })}
+                        onClick={() =>
+                          handleCountrySelect({
+                            name: country.name,
+                            code: country.code,
+                          })
+                        }
                       >
                         <ReactCountryFlag
                           countryCode={country.code}
@@ -257,6 +371,11 @@ const BrandDetails = () => {
               <div className="w-full">
                 <label className="text-xs" htmlFor="state">
                   State <span className="text-red">*</span>
+                  {isLoadingLocation && (
+                    <span className="ml-2 text-xs text-gray-400">
+                      (Auto-detecting...)
+                    </span>
+                  )}
                 </label>
                 <InputComponent
                   value={details.state}
@@ -306,7 +425,10 @@ const BrandDetails = () => {
                       )}
                     </div>
                     {isPhoneCodeOpen && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto">
+                      <div
+                        ref={phoneCodeDropdownRef}
+                        className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto"
+                      >
                         <div className="p-2 sticky top-0 bg-white">
                           <input
                             type="text"
@@ -353,15 +475,16 @@ const BrandDetails = () => {
                   <div className="w-2/3">
                     <InputComponent
                       value={details.phoneNumber.number}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15); // removes all non-digit characters
                         setDetails({
                           ...details,
                           phoneNumber: {
                             ...details.phoneNumber,
-                            number: e.target.value,
+                            number: digitsOnly,
                           },
-                        })
-                      }
+                        });
+                      }}
                       placeholder="Phone number"
                     />
                   </div>
