@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,9 +20,18 @@ const BrandMenuChildren = ({ collapse }) => {
 
   const auth = useAuth();
 
-  const user = jwtDecode(auth);
+  let user = null;
+  if (auth && typeof auth === "string") {
+    try {
+      user = jwtDecode(auth);
+    } catch (err) {
+      console.error("Failed to decode auth token:", err);
+    }
+  }
 
-  const filteredMenus = menu.filter((item) => item.role.includes(user?.roleName));
+  const filteredMenus = menu.filter((item) =>
+    item.role.includes(user?.roleName)
+  );
 
   return (
     <>
@@ -35,16 +45,16 @@ const BrandMenuChildren = ({ collapse }) => {
               <section>
                 <Link
                   href={`${item.path}`}
-                  className={`flex items-center ${collapse ? 'justify-center' : ''} gap-4 ${
+                  className={`flex items-center ${
+                    collapse ? "justify-center" : ""
+                  } gap-4 ${
                     currentPath === item.path
                       ? "bg-gradient-to-r from-primary to-secondary rounded-3xl px-3 py-3 text-background"
                       : "text-color"
                   }`}
                 >
-                  <div className={`${collapse ? '' : ''}`}>
-                    <p className={`${collapse ? "" : ""}`}>
-                      {item.icon}
-                    </p>
+                  <div className={`${collapse ? "" : ""}`}>
+                    <p className={`${collapse ? "" : ""}`}>{item.icon}</p>
                   </div>
                   {!collapse && <p className="">{item.label}</p>}
                 </Link>
