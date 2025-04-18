@@ -8,7 +8,11 @@ import toast from "react-hot-toast";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 
-const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) => {
+const ExistingProducts = ({
+  setSelectedProducts,
+  selectedProducts,
+  setVisible,
+}) => {
   const [loading, setLoading] = useState(false);
   const { products } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
@@ -33,8 +37,8 @@ const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) 
       prevSelected.includes(data.id)
         ? prevSelected.filter((id) => id !== data.id)
         : [...prevSelected, data.id]
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     if (auth) {
@@ -58,7 +62,11 @@ const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) 
             return (
               <div
                 key={data.id}
-                className={` ${isSelected ? 'border border-primary rounded p-1 flex gap-4 py-2' : 'flex gap-4 py-2'} `}
+                className={` ${
+                  isSelected
+                    ? "border border-primary rounded p-1 flex gap-4 py-2"
+                    : "flex gap-4 py-2"
+                } `}
               >
                 <div className="w-4/12">
                   {data.productImages.map((img) => (
@@ -81,9 +89,11 @@ const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) 
                           : [...prevSelected, data.id]
                       )
                     }
-                    className={`border border-primary ${isSelected ? 'text-red' : 'text-color'} rounded text-xs px-3 py-2`}
+                    className={`border border-primary ${
+                      isSelected ? "text-red" : "text-color"
+                    } rounded text-xs px-3 py-2`}
                   >
-                    {isSelected ? 'Remove Product' : 'Select Product'}
+                    {isSelected ? "Remove Product" : "Select Product"}
                   </button>
                 </div>
               </div>
@@ -91,6 +101,13 @@ const ExistingProducts = ({ setSelectedProducts, selectedProducts,setVisible }) 
           })}
         </section>
       )}
+      <div className="flex justify-end my-2">
+        {selectedProducts && (
+          <button onClick={() => setVisible(false)} className="bg-gradient-to-r from-primary to-secondary text-white text-sm font-light rounded px-4 py-2">
+            Proceed
+          </button>
+        )}
+      </div>
     </div>
   );
 };

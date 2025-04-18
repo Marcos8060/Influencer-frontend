@@ -35,7 +35,14 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
 
       if (response.status === 200 || response.status === 201) {
         toast.success("Product saved successfully");
-        setVisible(false);
+        setDetails({
+          name: "",
+          description: "",
+          productManualUrl: "",
+          productManualText: "",
+          price: "",
+          productImages: [],
+        });
       } else {
         toast.error(response.response.data.errorMessage[0]);
       }
@@ -161,13 +168,23 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                       placeholder="website"
                       required
                       name="productManualUrl"
-                      value={details.productManualUrl}
-                      onChange={(e) =>
-                        setDetails((prevDetails) => ({
-                          ...prevDetails,
-                          [e.target.name]: e.target.value,
-                        }))
-                      }
+                      value={details.productManualUrl || "https://"}
+                      onChange={(e) => {
+                        let url = e.target.value;
+                        if (!url.startsWith("https://")) {
+                          if (url === "https:/") {
+                            url = "https://";
+                          } else if (!url.startsWith("http://")) {
+                            url = `https://${url.replace(/^https?:\/\//, "")}`;
+                          }
+                        }
+                        setDetails({ ...details, productManualUrl: url });
+                      }}
+                      onFocus={(e) => {
+                        if (e.target.value === "https://") {
+                          e.target.setSelectionRange(8, 8);
+                        }
+                      }}
                     />
                   </section>
                   {/* ACCESS INSTRUCTIONS */}
@@ -202,13 +219,21 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
               </form>
             </div>
           )}
-          {currentTab === 2 && <ExistingProducts setVisible={setVisible} selectedProducts={selectedProducts} setSelectedProducts={setSelectedProducts} />}
+          {currentTab === 2 && (
+            <ExistingProducts
+              setVisible={setVisible}
+              selectedProducts={selectedProducts}
+              setSelectedProducts={setSelectedProducts}
+            />
+          )}
         </Sidebar>
         <button
           onClick={() => setVisible(true)}
           className="bg-primary text-white rounded text-xs px-4 py-2 w-full"
         >
-          {selectedProducts.length > 0 ? 'Select another product' : 'Select a product or service'}
+          {selectedProducts.length > 0
+            ? "Select another product"
+            : "Select a product or service"}
         </button>
       </div>
     </>
