@@ -13,6 +13,7 @@ import TickBoxComponent from "../../SharedComponents/TickBoxComponent";
 import CustomizedBackButton from "../../SharedComponents/CustomizedBackComponent";
 import ProductServiceDrawer from "./ProductServiceDrawer";
 import { FaCheck } from "react-icons/fa6";
+import toast from "react-hot-toast";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -45,6 +46,11 @@ const CampaignRequirements = () => {
   }, [dispatch]);
 
   const handleNext = () => {
+
+    if(!details.campaignPreferences.videosPerCreator || !details.campaignPreferences.videoDuration || details.campaignPreferences.socialChannels.length === 0 ||  !details.exampleVideoUrl){
+      toast.error('Please provide all required fields')
+      return 
+    }
     // Combine existing and new product IDs, then remove duplicates using Set
     const uniqueProductIds = [
       ...new Set([...campaignData.products, ...selectedProducts]),
@@ -54,7 +60,7 @@ const CampaignRequirements = () => {
       ...campaignData, // Keep existing campaign data
       ...details, // Merge with details (if any)
       products: uniqueProductIds, // Ensures no duplicate IDs
-      exampleVideoUrl: campaignData.exampleVideoUrl?.trim() || null,
+      exampleVideoUrl: details.exampleVideoUrl?.trim() || null,
       campaignPreferences: {
         ...campaignData.campaignPreferences, // Keep existing preferences
         ...details.campaignPreferences, // Merge with new preferences
@@ -151,7 +157,7 @@ const CampaignRequirements = () => {
             <div className="md:w-1/2 w-full">
               <label className="text-xs font-semibold mb-4">
                 Videos per creator
-              </label>
+              </label> <span className="text-red">*</span>
               <InputComponent
                 type="number"
                 value={details.campaignPreferences.videosPerCreator}
@@ -174,7 +180,7 @@ const CampaignRequirements = () => {
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
             <h2 className="font-bold">Video Duration</h2>
-            <small>Select the duration of the video</small>
+            <small>Select the duration of the video</small><span className="text-red">*</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {durations.map((duration) => (
@@ -192,7 +198,7 @@ const CampaignRequirements = () => {
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
             <h2 className="font-bold">Creator Requirements</h2>
-            <small>Do you want the creator to include their face?</small>
+            <small>Do you want the creator to include their face?</small><span className="text-red">*</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {requirements.map((requirement) => (
@@ -215,7 +221,7 @@ const CampaignRequirements = () => {
         <section className="bg-white rounded shadow p-4">
           <div className="mb-4">
             <h2 className="font-bold">Video Format</h2>
-            <small>Select the format you want the videos to be filmed in</small>
+            <small>Select the format you want the videos to be filmed in</small><span className="text-red">*</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {formats.map((format) => (
@@ -236,7 +242,7 @@ const CampaignRequirements = () => {
             <small>
               Add links to videos that you would like creators to use as
               inspiration
-            </small>
+            </small><span className="text-red">*</span>
           </div>
           <InputComponent
             value={details.exampleVideoUrl}
