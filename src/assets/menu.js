@@ -7,6 +7,7 @@ import { IoMdSettings } from "react-icons/io";
 import { FaUsersGear } from "react-icons/fa6";
 import { FaUserEdit } from "react-icons/fa";
 import { MdCampaign } from "react-icons/md";
+import { GoDotFill } from "react-icons/go";
 
 export const menu = [
   {
@@ -28,10 +29,24 @@ export const menu = [
     role: ["Brand"],
   },
   {
-    label: "Create Campaign",
+    label: "Campaigns",
     path: "/brand/create-campaign",
     icon: <MdCampaign className="text-xl" />,
     role: ["Brand"],
+    children: [
+      {
+        label: "Create Campaigns",
+        path: "/brand/create-campaign",
+        icon: <GoDotFill className="text-xs" />,
+        role: ["Brand"],
+      },
+      {
+        label: "View Campaigns",
+        path: "/brand/view-campaigns",
+        icon: <GoDotFill className="text-xs" />,
+        role: ["Brand"],
+      },
+    ],
   },
   {
     label: "Campaigns",
@@ -45,12 +60,12 @@ export const menu = [
     icon: <FaUserEdit />,
     role: ["Influencer"],
   },
-  {
-    label: "Opportunities",
-    path: "",
-    icon: <FaCarAlt />,
-    role: ["Influencer", "Brand"],
-  },
+  // {
+  //   label: "Opportunities",
+  //   path: "",
+  //   icon: <FaCarAlt />,
+  //   role: ["Influencer", "Brand"],
+  // },
   {
     label: "Collaboration",
     path: "",
