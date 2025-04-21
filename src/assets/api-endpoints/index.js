@@ -42,6 +42,7 @@ export const API_URL = {
   VIEW_INSIGHTS: `${baseUrl}/socialAccounts/instagram/media/insights/post/`,
   FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
   APPLY_CAMPAIGN: `${baseUrl}/campaigns/apply/`,
+  ADD_POST_TO_CAMPAIGN: `${baseUrl}/campaigns/posts/add/`,
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
@@ -91,6 +92,7 @@ export const APP_API_URL = {
   VIEW_INSIGHTS: '/api/campaign/view-insights',
   FETCH_POSTS: '/api/campaign/fetch-posts',
   APPLY_CAMPAIGN: '/api/campaign/apply-campaign',
+  ADD_POST_TO_CAMPAIGN: '/api/campaign/add-post-to-campaign',
 
 
   /***************** BUCKET LIST APIs **********************/
