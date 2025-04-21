@@ -24,17 +24,14 @@ const Campaigns = () => {
   const handleApply = async (id) => {
     try {
       const response = await applyCampaign(auth, id);
-      console.log("APPLY RESPONSE ",response.status)
-      if (response.status === 400) {
-        toast.error(response.response.data.errorMessage[0]);
-      } else {
-        setApplied(true);
+      if (response.status === 200) {
         toast.success("Application sent successfully");
+        setApplied(true);
+      } else {
+        toast.error(response.response.data.errorMessage[0]);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setApplied(false);
     }
   };
 
