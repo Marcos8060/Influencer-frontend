@@ -29,6 +29,20 @@ export const createProduct = async (auth,payload) => {
     }
 };
 
+export const addPostToCampaign = async (auth,payload) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.ADD_POST_TO_CAMPAIGN}`, payload,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response
+    } catch (error) {
+        console.error("Error creating campaign:", error);
+        return error || error.message;
+    }
+};
+
 export const applyCampaign = async (auth,id) => {
     try {
         const response = await axios.post(`${APP_API_URL.APPLY_CAMPAIGN}`, {campaign_id: id},{

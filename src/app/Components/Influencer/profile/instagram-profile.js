@@ -20,12 +20,16 @@ import {
 } from "react-icons/fi";
 import InsightsDrawer from "@/app/brand/campaign-report/insight-drawer";
 import {
+  getAllCampaigns,
   getAllPostInsights,
   getAllPosts,
 } from "@/redux/features/stepper/campaign-stepper";
+import PostToCampaignDialog from "./postToCampaignModal";
+import { IoIosRefresh } from "react-icons/io";
 
 const InstagramProfile = () => {
   const [loading, setLoading] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
   const { instagramProfile } = useSelector((store) => store.socials);
   const [isInstagramConnected, setisInstagramConnected] = useState(false);
   const { posts } = useSelector((store) => store.campaign);
@@ -53,8 +57,47 @@ const InstagramProfile = () => {
 
   const userId = "40678282-c173-4788-89c9-14ea5596651e";
 
+  const handleRefresh = async () => {
+    try {
+      setLoadingPosts(true);
+      await dispatch(getAllPosts(auth, userId));
+    } catch (error) {
+      toast.error("Failed to refresh posts");
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
   useEffect(() => {
-    dispatch(getAllPosts(auth, userId))
+    const fetchData = async () => {
+      try {
+        await dispatch(getAllPosts(auth, userId));
+      } catch (error) {
+        // Optional: handle error here
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    fetchData();
+  }, [auth, userId, dispatch]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await dispatch(getAllCampaigns(auth));
+      } catch (error) {
+        // Optional: handle error here
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [auth, dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllCampaigns(auth))
       .then(() => {
         setLoading(false);
       })
@@ -211,7 +254,7 @@ const InstagramProfile = () => {
         </>
       )}
 
-      {loading ? (
+      {loadingPosts ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 16 }).map((_, idx) => (
             <Skeleton
@@ -224,9 +267,9 @@ const InstagramProfile = () => {
         </section>
       ) : (
         <section className="">
-          <div className="flex flex-col md:flex-row items-center justify-center mt-8 mb-4 px-4">
-            {/* Media Type Tabs */}
-            <div className="flex space-x-4 border-b border-input w-full md:w-auto">
+          <div className="relative flex flex-col md:flex-row items-center mt-8 mb-4 px-4 w-full">
+            {/* Centered Tabs */}
+            <div className="flex space-x-4 border-b border-input mx-auto">
               <button
                 onClick={() => setActiveTab("FEED")}
                 className={`px-4 py-2 ${
@@ -247,6 +290,11 @@ const InstagramProfile = () => {
               >
                 <FiPlay className="inline mr-1" /> Reels
               </button>
+            </div>
+
+            {/* Refresh Icon at Far Right */}
+            <div className="absolute right-8 cursor-pointer">
+              <IoIosRefresh onClick={handleRefresh} className="text-xl" />
             </div>
           </div>
 
@@ -313,6 +361,12 @@ const InstagramProfile = () => {
                       {post?.likeCount}
                     </span>
                   </div>
+                </div>
+                <div
+                  className="absolute bottom-2 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <PostToCampaignDialog post={post} />
                 </div>
               </div>
             ))}
