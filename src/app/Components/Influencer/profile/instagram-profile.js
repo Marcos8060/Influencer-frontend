@@ -144,7 +144,7 @@ const InstagramProfile = () => {
                 <section className="md:flex gap-6 justify-between">
                   <a href={instagramProfile?.profileDeepLink} target="_blank">
                     <img
-                      className="h-36 w-36 mx-auto object-cover rounded-full"
+                      className="h-26 w-26 mx-auto object-cover rounded-full"
                       src={instagramProfile?.profilePictureUrl}
                       alt=""
                     />
@@ -187,16 +187,16 @@ const InstagramProfile = () => {
                       </p>
                     </section>
                   </div>
+                  <div className=" text-color">
+                    <button
+                      onClick={handleInstagramLogin}
+                      className="bg-gradient-to-r from-primary to-secondary border-rounded-xl text-xs text-white px-4 py-2 rounded"
+                    >
+                      Reconnect
+                    </button>
+                  </div>
                 </section>
               </div>
-              <section className="flex justify-center mt-2 text-color">
-                <button
-                  onClick={handleInstagramLogin}
-                  className="border border-rounded-xl text-xs text-color px-4 py-2 rounded"
-                >
-                  Reconnect Account
-                </button>
-              </section>
             </section>
           ) : (
             <section className="flex items-center justify-center h-[50vh] text-color border border-dashed  border-primary rounded-xl">
@@ -224,18 +224,7 @@ const InstagramProfile = () => {
         </section>
       ) : (
         <section className="">
-          <div className="flex flex-col md:flex-row items-center justify-between mt-8 mb-4 px-4">
-            <div className="flex items-center space-x-2 mb-6 md:mb-0">
-              <img
-                className="w-16 h-16 rounded-full object-cover border border-input"
-                src={profileInfo?.profilePictureUrl}
-                alt={profileInfo?.ownerName}
-              />
-              <div>
-                <h1 className="font-semibold">{profileInfo?.ownerName}</h1>
-              </div>
-            </div>
-
+          <div className="flex flex-col md:flex-row items-center justify-center mt-8 mb-4 px-4">
             {/* Media Type Tabs */}
             <div className="flex space-x-4 border-b border-input w-full md:w-auto">
               <button
@@ -258,25 +247,15 @@ const InstagramProfile = () => {
               >
                 <FiPlay className="inline mr-1" /> Reels
               </button>
-              <button
-                onClick={() => setActiveTab("CAROUSEL")}
-                className={`px-4 py-2 ${
-                  activeTab === "CAROUSEL"
-                    ? "border-b-2 border-primary font-medium"
-                    : "text-gray-500"
-                }`}
-              >
-                <FiLayers className="inline mr-1" /> Albums
-              </button>
             </div>
           </div>
 
           {/* Posts Grid */}
-          <div className="grid grid-cols-3 gap-1 md:gap-4 px-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-4 px-4 justify-center">
             {categorizedPosts[activeTab]?.map((post, index) => (
               <div
                 key={post.id}
-                className="relative aspect-square cursor-pointer group"
+                className="relative w-[100px] h-[100px] md:w-[160px] md:h-[160px] cursor-pointer group rounded-lg overflow-hidden"
                 onClick={() => openPost(post)}
               >
                 {/* Show first image as thumbnail */}
