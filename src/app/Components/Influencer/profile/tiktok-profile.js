@@ -10,10 +10,9 @@ import Skeleton from "react-loading-skeleton";
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
   const { tiktokProfile } = useSelector((store) => store.socials);
-  const [isTiktokConnected,setIsTiktokConnected] = useState(false)
+  const [isTiktokConnected, setIsTiktokConnected] = useState(false);
   const dispatch = useDispatch();
   const auth = useAuth();
-
 
   const handleTiktok = async () => {
     try {
@@ -30,9 +29,9 @@ const TiktokProfile = () => {
     try {
       setLoading(true);
       const response = await dispatch(getTiktokProfile(auth));
-      if(response.statusCode === 404){
+      if (response.statusCode === 404) {
         setIsTiktokConnected(false);
-      }else{
+      } else {
         setIsTiktokConnected(true);
       }
     } catch (error) {
@@ -59,64 +58,66 @@ const TiktokProfile = () => {
       ) : (
         <>
           {isTiktokConnected ? (
-            <section className="flex flex-col items-center justify-center h-[50vh] text-color">
-              <div className="bg-white rounded-xl p-4">
-                <section className="md:flex gap-6 justify-between">
-                  <a href={tiktokProfile?.profileDeepLink} target="_blank">
-                    <img
-                      className="h-36 w-36 mx-auto object-cover rounded-full"
-                      src={tiktokProfile?.avatarUrl}
-                      alt=""
-                    />
-                  </a>
-                  <div className="space-y-3">
-                    <section className="flex items-center gap-2">
-                      <p className="font-bold text-xl">
-                        {tiktokProfile?.displayName}
-                      </p>
-                      {tiktokProfile?.isVerified && (
-                        <MdVerifiedUser className="text-link" />
-                      )}
-                    </section>
-                    <section>
-                      <p>{tiktokProfile?.username}</p>
-                    </section>
-                    <section className="flex items-center gap-6">
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {tiktokProfile?.followingCount}
-                        </span>{" "}
-                        Following
-                      </p>
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {tiktokProfile?.followerCount}
-                        </span>{" "}
-                        Followers
-                      </p>
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {tiktokProfile?.likesCount}
-                        </span>{" "}
-                        Likes
-                      </p>
-                    </section>
-                    <section>
-                      <p className="italic font-light text-sm">
-                        {tiktokProfile?.bioDescription}
-                      </p>
-                    </section>
+            <section className="flex flex-col text-color">
+              <div className="bg-white shadow-sm rounded-xl p-4">
+                <section className="md:flex justify-between">
+                  <div className="flex gap-4">
+                    <a href={tiktokProfile?.profileDeepLink} target="_blank">
+                      <img
+                        className="h-20 w-20 mx-auto object-cover rounded-full"
+                        src={tiktokProfile?.avatarUrl}
+                        alt=""
+                      />
+                    </a>
+                    <div className="space-y-3">
+                      <section className="flex items-center gap-2">
+                        <p className="font-bold text-xl">
+                          {tiktokProfile?.displayName}
+                        </p>
+                        {tiktokProfile?.isVerified && (
+                          <MdVerifiedUser className="text-link" />
+                        )}
+                      </section>
+                      <section>
+                        <p>{tiktokProfile?.username}</p>
+                      </section>
+                      <section className="flex items-center gap-6">
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {tiktokProfile?.followingCount}
+                          </span>{" "}
+                          Following
+                        </p>
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {tiktokProfile?.followerCount}
+                          </span>{" "}
+                          Followers
+                        </p>
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {tiktokProfile?.likesCount}
+                          </span>{" "}
+                          Likes
+                        </p>
+                      </section>
+                      <section>
+                        <p className="italic font-light text-sm">
+                          {tiktokProfile?.bioDescription}
+                        </p>
+                      </section>
+                    </div>
+                  </div>
+                  <div>
+                    <button
+                      onClick={handleTiktok}
+                      className="bg-gradient-to-r from-primary to-secondary text-xs text-white px-4 py-2 rounded"
+                    >
+                      Reconnect Account
+                    </button>
                   </div>
                 </section>
               </div>
-              <section className="flex justify-center mt-2 text-color">
-              <button
-                onClick={handleTiktok}
-                className="border border-rounded-xl text-xs text-color px-4 py-2 rounded"
-              >
-                Reconnect Account
-              </button>
-            </section>
             </section>
           ) : (
             <section className="flex items-center justify-center h-[50vh] text-color border border-dashed  border-primary rounded-xl">

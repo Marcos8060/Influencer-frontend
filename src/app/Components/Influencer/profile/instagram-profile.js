@@ -20,7 +20,6 @@ import {
 } from "react-icons/fi";
 import InsightsDrawer from "@/app/brand/campaign-report/insight-drawer";
 import {
-  getAllCampaigns,
   getAllPostInsights,
   getAllPosts,
   getApprovedCampaigns,
@@ -72,7 +71,7 @@ const InstagramProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-      setLoadingPosts(true);
+        setLoadingPosts(true);
         await dispatch(getAllPosts(auth, userId));
       } catch (error) {
         // Optional: handle error here
@@ -97,16 +96,6 @@ const InstagramProfile = () => {
 
     fetchData();
   }, [auth, dispatch]);
-
-  // useEffect(() => {
-  //   dispatch(getAllCampaigns(auth))
-  //     .then(() => {
-  //       setLoading(false);
-  //     })
-  //     .catch(() => {
-  //       setLoading(false);
-  //     });
-  // }, [auth]);
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
@@ -184,60 +173,62 @@ const InstagramProfile = () => {
       ) : (
         <>
           {isInstagramConnected ? (
-            <section className="flex flex-col items-center justify-center text-color">
+            <section className="flex flex-col text-color">
               <div className="bg-white shadow-sm rounded-xl p-4">
-                <section className="md:flex gap-6 justify-between">
-                  <a href={instagramProfile?.profileDeepLink} target="_blank">
-                    <img
-                      className="h-26 w-26 mx-auto object-cover rounded-full"
-                      src={instagramProfile?.profilePictureUrl}
-                      alt=""
-                    />
-                  </a>
-                  <div className="space-y-3">
-                    <section className="flex items-center gap-2">
-                      <p className="font-bold text-xl">
-                        {instagramProfile?.name}
-                      </p>
-                      {instagramProfile?.isVerified && (
-                        <MdVerifiedUser className="text-link" />
-                      )}
-                    </section>
-                    <section>
-                      <p>{instagramProfile?.username}</p>
-                    </section>
-                    <section className="flex items-center gap-6">
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {instagramProfile?.followsCount}
-                        </span>{" "}
-                        Following
-                      </p>
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {instagramProfile?.followersCount}
-                        </span>{" "}
-                        Followers
-                      </p>
-                      <p className="font-light">
-                        <span className="font-bold">
-                          {instagramProfile?.mediaCount}
-                        </span>{" "}
-                        Posts
-                      </p>
-                    </section>
-                    <section>
-                      <p className="italic font-light text-sm">
-                        {instagramProfile?.biography}
-                      </p>
-                    </section>
+                <section className="md:flex justify-between">
+                  <div className="flex gap-4">
+                    <a href={instagramProfile?.profileDeepLink} target="_blank">
+                      <img
+                        className="h-20 w-20 mx-auto object-cover rounded-full"
+                        src={instagramProfile?.profilePictureUrl}
+                        alt=""
+                      />
+                    </a>
+                    <div className="space-y-3">
+                      <section className="flex items-center gap-2">
+                        <p className="font-bold text-xl">
+                          {instagramProfile?.name}
+                        </p>
+                        {instagramProfile?.isVerified && (
+                          <MdVerifiedUser className="text-link" />
+                        )}
+                      </section>
+                      <section>
+                        <p>{instagramProfile?.username}</p>
+                      </section>
+                      <section className="flex items-center gap-6">
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {instagramProfile?.followsCount}
+                          </span>{" "}
+                          Following
+                        </p>
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {instagramProfile?.followersCount}
+                          </span>{" "}
+                          Followers
+                        </p>
+                        <p className="font-light">
+                          <span className="font-bold">
+                            {instagramProfile?.mediaCount}
+                          </span>{" "}
+                          Posts
+                        </p>
+                      </section>
+                      <section>
+                        <p className="italic font-light text-sm">
+                          {instagramProfile?.biography}
+                        </p>
+                      </section>
+                    </div>
                   </div>
                   <div className=" text-color">
                     <button
                       onClick={handleInstagramLogin}
                       className="bg-gradient-to-r from-primary to-secondary border-rounded-xl text-xs text-white px-4 py-2 rounded"
                     >
-                      Reconnect
+                      Reconnect Account
                     </button>
                   </div>
                 </section>
