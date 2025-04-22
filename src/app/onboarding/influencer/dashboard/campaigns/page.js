@@ -43,7 +43,7 @@ const Campaigns = () => {
   };
 
   useEffect(() => {
-    if (!selectedCampaign && allCampaigns.length > 0) {
+    if (!selectedCampaign) {
       setSelectedCampaign(allCampaigns[0]);
     }
   }, [allCampaigns, selectedCampaign]);

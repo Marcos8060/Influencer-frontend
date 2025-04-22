@@ -23,6 +23,7 @@ import {
   getAllCampaigns,
   getAllPostInsights,
   getAllPosts,
+  getApprovedCampaigns,
 } from "@/redux/features/stepper/campaign-stepper";
 import PostToCampaignDialog from "./postToCampaignModal";
 import { IoIosRefresh } from "react-icons/io";
@@ -71,6 +72,7 @@ const InstagramProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+      setLoadingPosts(true);
         await dispatch(getAllPosts(auth, userId));
       } catch (error) {
         // Optional: handle error here
@@ -85,7 +87,7 @@ const InstagramProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await dispatch(getAllCampaigns(auth));
+        await dispatch(getApprovedCampaigns(auth));
       } catch (error) {
         // Optional: handle error here
       } finally {
@@ -96,15 +98,15 @@ const InstagramProfile = () => {
     fetchData();
   }, [auth, dispatch]);
 
-  useEffect(() => {
-    dispatch(getAllCampaigns(auth))
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [auth]);
+  // useEffect(() => {
+  //   dispatch(getAllCampaigns(auth))
+  //     .then(() => {
+  //       setLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setLoading(false);
+  //     });
+  // }, [auth]);
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
