@@ -92,6 +92,8 @@ export const APP_API_URL = {
   VIEW_INSIGHTS: '/api/campaign/view-insights',
   FETCH_POSTS: '/api/campaign/fetch-posts',
   APPLY_CAMPAIGN: '/api/campaign/apply-campaign',
+  APPLIED_CAMPAIGNS: '/api/campaign/applied-campaigns',
+  APPROVED_CAMPAIGNS: '/api/campaign/approved-campaigns',
   ADD_POST_TO_CAMPAIGN: '/api/campaign/add-post-to-campaign',
 
 
