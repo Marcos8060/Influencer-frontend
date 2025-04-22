@@ -13,6 +13,7 @@ import { AiOutlineShopping } from "react-icons/ai";
 import { MdCampaign } from "react-icons/md";
 import AppliedCampaignsTable from "@/app/Components/Influencer/Applied-Campaigns";
 import ApprovedCampaignsTable from "@/app/Components/Influencer/Approved-Campaigns";
+import { useProtectedRoute } from "@/assets/hooks/authGuard";
 
 const Campaigns = () => {
   const { allCampaigns } = useSelector((store) => store.campaign);
@@ -56,6 +57,12 @@ const Campaigns = () => {
         setLoading(false);
       });
   }, [auth]);
+
+  const isAuthorized = useProtectedRoute();
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="bg-background mb-4">
