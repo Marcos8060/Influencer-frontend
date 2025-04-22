@@ -87,6 +87,35 @@ export const fetchAllCampaigns = async (auth) => {
     }
 };
 
+export const fetchAppliedCampaigns= async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.APPLIED_CAMPAIGNS}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { is_applied_to: true },
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching campaigns:", error);
+        return error.response?.data || error.message;
+    }
+};
+export const fetchApprovedCampaigns= async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.APPROVED_CAMPAIGNS}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { is_applied_to: true, is_approved: true },
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching campaigns:", error);
+        return error.response?.data || error.message;
+    }
+};
+
 export const fetchProducts = async (auth) => {
     try {
         const response = await axios.get(`${APP_API_URL.FETCH_PRODUCTS}`,{
