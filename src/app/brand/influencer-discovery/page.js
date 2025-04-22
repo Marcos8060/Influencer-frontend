@@ -70,17 +70,7 @@ const CreateCampaign = () => {
               <AiOutlineShopping className="text-xl" />
               <p>Bucket List</p>
             </div>
-            <div
-              className={`${
-                currentTab === 3
-                  ? "text-link p-2 font-semibold border-b-2 border-link"
-                  : ""
-              } cursor-pointer flex items-center gap-2`}
-              onClick={() => setCurrentTab(3)}
-            >
-              <MdCampaign className="text-xl" />
-              <p>Campaigns</p>
-            </div>
+            
           </div>
         </section>
         {currentTab === 0 && (
@@ -141,7 +131,6 @@ const CreateCampaign = () => {
         )}
         {currentTab === 1 && <AllInfluencers />}
         {currentTab === 2 && <BucketList />}
-        {currentTab === 3 && <CampaignsTable />}
       </div>
     </>
   );
