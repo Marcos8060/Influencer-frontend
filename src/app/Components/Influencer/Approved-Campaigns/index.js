@@ -45,7 +45,7 @@ const ApprovedCampaignsTable = () => {
   };
 
   useEffect(() => {
-    if (auth && approvedCampaigns.length === 0) {
+    if (auth) {
       getCampaigns();
     }
   }, [auth]);

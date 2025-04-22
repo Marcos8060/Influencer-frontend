@@ -45,15 +45,10 @@ const AppliedCampaignsTable = () => {
   };
 
   useEffect(() => {
-    if (auth && appliedCampaigns.length === 0) {
+    if (auth) {
       getCampaigns();
     }
   }, [auth]);
-
-  const handleViewProfile = (data) => {
-    localStorage.setItem("influencerData", JSON.stringify(data));
-    router.push(`/brand/campaign-report/${data.brandId}`);
-  };
 
   return (
     <>
