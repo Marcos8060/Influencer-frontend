@@ -1,28 +1,19 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { datum } from "@/app/influencer/influencer-results/influencersData";
 import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaRegEnvelope } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
-import Footer from "@/app/Components/Footer";
 import AllInfluencers from "@/app/Components/Influencer/All-Influencers";
 import BucketList from "@/app/Components/Brand/BucketList";
-import LogoutComponent from "@/app/Components/LogoutComponent";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { AiOutlineShopping } from "react-icons/ai";
-import { MdCampaign } from "react-icons/md";
-import CampaignsTable from "@/app/Components/Brand/CampaignsTable";
-import { authContext } from "@/assets/context/use-context";
-import { BsChevronDown } from "react-icons/bs";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
-import SplashScreen from "@/app/Components/SplashScreen";
 
 const CreateCampaign = () => {
   const dispatch = useDispatch();
