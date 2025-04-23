@@ -167,7 +167,7 @@ const InstagramProfile = () => {
         <Skeleton
           baseColor="#E6E7EB"
           highlightColor="#f0f0f0"
-          count={4}
+          count={3}
           height={100}
         />
       ) : (
