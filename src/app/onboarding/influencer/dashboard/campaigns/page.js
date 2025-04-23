@@ -22,8 +22,8 @@ const Campaigns = () => {
   const [loading, setLoading] = useState(true);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applied, setApplied] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState(allCampaigns[0])
-  const [currentTab, setCurrentTab] = useState(1)
+  const [selectedCampaign, setSelectedCampaign] = useState(allCampaigns[0]);
+  const [currentTab, setCurrentTab] = useState(1);
   const auth = useAuth();
 
   const handleSelect = (job) => {
@@ -31,14 +31,25 @@ const Campaigns = () => {
     setApplied(false);
   };
 
+  const fetchAllCampaigns = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getAllCampaigns(auth));
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleApply = async (id) => {
     try {
       setApplyLoading(true);
       const response = await applyCampaign(auth, id);
-      console.log("APPLY_RESPONSE ", response.status);
       if (response.status === 200) {
         toast.success("Application sent successfully");
         setApplied(true);
+        fetchAllCampaigns();
       } else {
         toast.error(response.response.data.errorMessage[0]);
       }
@@ -50,20 +61,16 @@ const Campaigns = () => {
   };
 
   useEffect(() => {
+    if (auth) {
+      fetchAllCampaigns();
+    }
+  }, [auth]);
+
+  useEffect(() => {
     if (!selectedCampaign) {
       setSelectedCampaign(allCampaigns[0]);
     }
   }, [allCampaigns, selectedCampaign]);
-
-  useEffect(() => {
-    dispatch(getAllCampaigns(auth))
-      .then(() => {
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [auth]);
 
   const isAuthorized = useProtectedRoute();
 
