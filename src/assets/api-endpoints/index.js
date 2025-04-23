@@ -40,7 +40,6 @@ export const API_URL = {
   FETCH_ALL_CAMPAIGNS: `${baseUrl}/campaigns/list/`,
   FETCH_PRODUCTS: `${baseUrl}/productService/user/products/`,
   VIEW_INSIGHTS: `${baseUrl}/socialAccounts/instagram/media/insights/post/`,
-  FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
   APPLY_CAMPAIGN: `${baseUrl}/campaigns/apply/`,
   ADD_POST_TO_CAMPAIGN: `${baseUrl}/campaigns/posts/add/`,
 
@@ -51,6 +50,8 @@ export const API_URL = {
   INSTAGRAM_LOGIN: `${baseUrl}/auth/instagram/loginUrl/`,
   INSTAGRAM_ACCESS_TOKEN: `${baseUrl}/auth/instagram/accessToken/`,
   INSTAGRAM_PROFILE_DETAILS: `${baseUrl}/socialAccounts/instagram/profile/get/`,
+  FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
+  FETCH_TIKTOK_POSTS: `${baseUrl}/socialAccounts/tiktok/media/list/`,
 };
 
 
@@ -90,7 +91,6 @@ export const APP_API_URL = {
   FETCH_ALL_CAMPAIGNS: '/api/campaign/fetch-all-campaigns',
   FETCH_PRODUCTS: '/api/campaign/fetch-products',
   VIEW_INSIGHTS: '/api/campaign/view-insights',
-  FETCH_POSTS: '/api/campaign/fetch-posts',
   APPLY_CAMPAIGN: '/api/campaign/apply-campaign',
   APPLIED_CAMPAIGNS: '/api/campaign/applied-campaigns',
   APPROVED_CAMPAIGNS: '/api/campaign/approved-campaigns',
@@ -111,6 +111,8 @@ export const APP_API_URL = {
   INSTAGRAM_LOGIN: "/api/socials/instagram/login",
   INSTAGRAM_ACCESS_TOKEN: "/api/socials/instagram/auth",
   INSTAGRAM_PROFILE_DETAILS: "/api/socials/instagram/instagram-profile",
+  FETCH_POSTS: '/api/socials/instagram/fetch-instagram-posts',
+  FETCH_TIKTOK_POSTS: '/api/socials/tiktok/fetch-tiktok-posts',
 
 };
 

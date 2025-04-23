@@ -1,9 +1,8 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
 import {
-  getInstagramProfile,
-  getInstagramResponse,
   getTiktokProfile,
+  getTiktokResponse,
 } from "@/redux/features/socials";
 import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
@@ -27,14 +26,14 @@ import {
 import PostToCampaignDialog from "./postToCampaignModal";
 import { IoIosRefresh } from "react-icons/io";
 
-const InstagramProfile = () => {
+const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(false);
-  const { instagramProfile } = useSelector((store) => store.socials);
-  const [isInstagramConnected, setisInstagramConnected] = useState(false);
+  const { tiktokProfile } = useSelector((store) => store.socials);
+  const [isTiktokConnected, setIsTiktokConnected] = useState(false);
   const { posts } = useSelector((store) => store.campaign);
-  const [activeTab, setActiveTab] = useState("FEED");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("VIDEOS");
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [selectedPost, setSelectedPost] = useState(null);
   const dispatch = useDispatch();
   const auth = useAuth();
@@ -44,8 +43,7 @@ const InstagramProfile = () => {
   const handleSubmit = async (id) => {
     try {
       const payload = {
-        metrics:
-          "comments, follows, likes, profile_activity, profile_visits, reach, saved, shares, total_interactions, views",
+        metrics: "likes,comments,shares,views,engagement",
         post_id: id,
         user_id: "40678282-c173-4788-89c9-14ea5596651e",
       };
@@ -97,57 +95,55 @@ const InstagramProfile = () => {
     fetchData();
   }, [auth, dispatch]);
 
-  const handleNextImage = () => {
-    setCurrentImageIndex((prev) =>
+  const handleNextVideo = () => {
+    setCurrentVideoIndex((prev) =>
       prev < selectedPost.mediaUrls.length - 1 ? prev + 1 : 0
     );
   };
 
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prev) =>
+  const handlePrevVideo = () => {
+    setCurrentVideoIndex((prev) =>
       prev > 0 ? prev - 1 : selectedPost.mediaUrls.length - 1
     );
   };
 
   const openPost = (post) => {
     setSelectedPost(post);
-    setCurrentImageIndex(0);
-    document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+    setCurrentVideoIndex(0);
+    document.body.style.overflow = "hidden";
   };
 
   const closePost = () => {
     setSelectedPost(null);
-    document.body.style.overflow = "auto"; // Re-enable scrolling
+    document.body.style.overflow = "auto";
   };
 
   // Group posts by type
   const categorizedPosts = {
-    FEED: posts.filter((post) => post.mediaProductType === "FEED"),
-    REELS: posts.filter((post) => post.mediaProductType === "REELS"),
-    CAROUSEL: posts.filter((post) => post.mediaType === "CAROUSEL_ALBUM"),
+    VIDEOS: posts.filter((post) => post.mediaType === "VIDEO"),
+    PHOTOS: posts.filter((post) => post.mediaType === "IMAGE"),
   };
 
-  const handleInstagramLogin = async () => {
+  const handleTiktokLogin = async () => {
     try {
-      const response = await dispatch(getInstagramResponse(auth));
+      const response = await dispatch(getTiktokResponse(auth));
       const authUrl = response.message;
       // Redirect user to TikTok's authorization page
-      const url =
-        "https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1252453379876445&redirect_uri=https://influencer-frontend-nu.vercel.app/auth/instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights";
+      const url = `https://www.tiktok.com/auth/authorize?client_key=YOUR_CLIENT_KEY&response_type=code&scope=user.info.basic,video.list&redirect_uri=${encodeURIComponent("https://yourdomain.com/auth/tiktok-callback")}&state=YOUR_STATE`;
       window.location.href = url;
     } catch (error) {
-      console.error("Instagram auth failed:", error);
+      console.error("TikTok auth failed:", error);
     }
   };
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await dispatch(getInstagramProfile(auth));
+      const response = await dispatch(getTiktokProfile(auth));
       if (response.statusCode === 404) {
-        setisInstagramConnected(false);
+        setIsTiktokConnected(false);
       } else {
-        setisInstagramConnected(true);
+        setIsTiktokConnected(true);
       }
     } catch (error) {
       console.log(error);
@@ -160,7 +156,8 @@ const InstagramProfile = () => {
     if (auth) {
       fetchProfile();
     }
-  }, []);
+  }, [auth]);
+
   return (
     <>
       {loading ? (
@@ -172,60 +169,60 @@ const InstagramProfile = () => {
         />
       ) : (
         <>
-          {isInstagramConnected ? (
+          {isTiktokConnected ? (
             <section className="flex flex-col text-color">
               <div className="bg-white shadow-sm rounded-xl p-4">
                 <section className="md:flex justify-between">
                   <div className="flex gap-4">
-                    <a href={instagramProfile?.profileDeepLink} target="_blank">
+                    <a href={`https://tiktok.com/@${tiktokProfile?.username}`} target="_blank">
                       <img
                         className="h-20 w-20 mx-auto object-cover rounded-full"
-                        src={instagramProfile?.profilePictureUrl}
+                        src={tiktokProfile?.profilePictureUrl}
                         alt=""
                       />
                     </a>
                     <div className="space-y-3">
                       <section className="flex items-center gap-2">
                         <p className="font-bold text-xl">
-                          {instagramProfile?.name}
+                          {tiktokProfile?.displayName}
                         </p>
-                        {instagramProfile?.isVerified && (
+                        {tiktokProfile?.isVerified && (
                           <MdVerifiedUser className="text-link" />
                         )}
                       </section>
                       <section>
-                        <p>{instagramProfile?.username}</p>
+                        <p>@{tiktokProfile?.username}</p>
                       </section>
                       <section className="flex items-center gap-6">
                         <p className="font-light">
                           <span className="font-bold">
-                            {instagramProfile?.followsCount}
+                            {tiktokProfile?.followingCount}
                           </span>{" "}
                           Following
                         </p>
                         <p className="font-light">
                           <span className="font-bold">
-                            {instagramProfile?.followersCount}
+                            {tiktokProfile?.followerCount}
                           </span>{" "}
                           Followers
                         </p>
                         <p className="font-light">
                           <span className="font-bold">
-                            {instagramProfile?.mediaCount}
+                            {tiktokProfile?.videoCount}
                           </span>{" "}
-                          Posts
+                          Videos
                         </p>
                       </section>
                       <section>
                         <p className="italic font-light text-sm">
-                          {instagramProfile?.biography}
+                          {tiktokProfile?.bio}
                         </p>
                       </section>
                     </div>
                   </div>
                   <div className=" text-color">
                     <button
-                      onClick={handleInstagramLogin}
+                      onClick={handleTiktokLogin}
                       className="bg-gradient-to-r from-primary to-secondary border-rounded-xl text-xs text-white px-4 py-2 rounded"
                     >
                       Reconnect Account
@@ -237,7 +234,7 @@ const InstagramProfile = () => {
           ) : (
             <section className="flex items-center justify-center h-[50vh] text-color border border-dashed  border-primary rounded-xl">
               <button
-                onClick={handleInstagramLogin}
+                onClick={handleTiktokLogin}
                 className="bg-gradient-to-r from-primary to-secondary text-xs text-white px-4 py-2 rounded"
               >
                 Connect My Account
@@ -264,24 +261,24 @@ const InstagramProfile = () => {
             {/* Centered Tabs */}
             <div className="flex space-x-4 border-b border-input mx-auto">
               <button
-                onClick={() => setActiveTab("FEED")}
+                onClick={() => setActiveTab("VIDEOS")}
                 className={`px-4 py-2 ${
-                  activeTab === "FEED"
+                  activeTab === "VIDEOS"
                     ? "border-b-2 border-primary font-medium"
                     : "text-gray-500"
                 }`}
               >
-                <FiGrid className="inline mr-1" /> Posts
+                <FiPlay className="inline mr-1" /> Videos
               </button>
               <button
-                onClick={() => setActiveTab("REELS")}
+                onClick={() => setActiveTab("PHOTOS")}
                 className={`px-4 py-2 ${
-                  activeTab === "REELS"
+                  activeTab === "PHOTOS"
                     ? "border-b-2 border-primary font-medium"
                     : "text-gray-500"
                 }`}
               >
-                <FiPlay className="inline mr-1" /> Reels
+                <FiGrid className="inline mr-1" /> Photos
               </button>
             </div>
 
@@ -299,32 +296,12 @@ const InstagramProfile = () => {
                 className="relative w-[100px] h-[100px] md:w-[160px] md:h-[160px] cursor-pointer group rounded-lg overflow-hidden"
                 onClick={() => openPost(post)}
               >
-                {/* Show first image as thumbnail */}
+                {/* Show thumbnail */}
                 <img
                   className="w-full h-full object-cover rounded-lg"
-                  src={post?.mediaUrls[0]}
+                  src={post?.thumbnailUrl || post?.mediaUrls[0]}
                   alt={`Post ${index + 1}`}
                 />
-
-                {/* Show overlay for multi-image posts */}
-                {post?.mediaUrls?.length > 1 && (
-                  <div className="absolute top-2 right-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                      />
-                    </svg>
-                  </div>
-                )}
 
                 {/* Show play icon for videos */}
                 {post?.mediaType === "VIDEO" && (
@@ -376,14 +353,16 @@ const InstagramProfile = () => {
               </button>
 
               <div className="relative max-w-4xl w-full max-h-screen">
-                {/* Carousel */}
+                {/* Video Player */}
                 <div className="flex items-center">
-                  <button
-                    onClick={handlePrevImage}
-                    className="absolute left-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
-                  >
-                    <FiChevronLeft className="h-6 w-6" />
-                  </button>
+                  {selectedPost.mediaUrls.length > 1 && (
+                    <button
+                      onClick={handlePrevVideo}
+                      className="absolute left-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
+                    >
+                      <FiChevronLeft className="h-6 w-6" />
+                    </button>
+                  )}
 
                   <div className="w-full">
                     {selectedPost?.mediaType === "VIDEO" ? (
@@ -391,34 +370,36 @@ const InstagramProfile = () => {
                         controls
                         autoPlay
                         className="w-full max-h-[50vh] object-contain"
-                        src={selectedPost?.mediaUrls[currentImageIndex]}
+                        src={selectedPost?.mediaUrls[currentVideoIndex]}
                       />
                     ) : (
                       <img
                         className="w-full max-h-[50vh] object-contain rounded"
-                        src={selectedPost?.mediaUrls[currentImageIndex]}
-                        alt={`Post content ${currentImageIndex + 1}`}
+                        src={selectedPost?.mediaUrls[currentVideoIndex]}
+                        alt={`Post content ${currentVideoIndex + 1}`}
                       />
                     )}
                   </div>
 
-                  <button
-                    onClick={handleNextImage}
-                    className="absolute right-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
-                  >
-                    <FiChevronRight className="h-6 w-6" />
-                  </button>
+                  {selectedPost.mediaUrls.length > 1 && (
+                    <button
+                      onClick={handleNextVideo}
+                      className="absolute right-4 z-10 bg-white bg-opacity-30 rounded-full p-2 text-white hover:bg-opacity-50"
+                    >
+                      <FiChevronRight className="h-6 w-6" />
+                    </button>
+                  )}
                 </div>
 
-                {/* Image indicators */}
+                {/* Video indicators */}
                 {selectedPost.mediaUrls.length > 1 && (
                   <div className="flex justify-center mt-4 space-x-2">
                     {selectedPost?.mediaUrls.map((_, idx) => (
                       <button
                         key={idx}
-                        onClick={() => setCurrentImageIndex(idx)}
+                        onClick={() => setCurrentVideoIndex(idx)}
                         className={`w-2 h-2 rounded-full ${
-                          idx === currentImageIndex ? "bg-white" : "bg-gray-500"
+                          idx === currentVideoIndex ? "bg-white" : "bg-gray-500"
                         }`}
                       />
                     ))}
@@ -472,7 +453,7 @@ const InstagramProfile = () => {
                         rel="noopener noreferrer"
                         className="text-link text-sm hover:underline"
                       >
-                        View on Instagram
+                        View on TikTok
                       </a>
                     </div>
                     <div>
@@ -493,4 +474,4 @@ const InstagramProfile = () => {
   );
 };
 
-export default InstagramProfile;
+export default TiktokProfile;

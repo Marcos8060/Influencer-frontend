@@ -28,3 +28,17 @@ export const fetchInstagramProfile = async (auth) => {
         return error.response?.data || error.message;
     }
 };
+
+export const fetchTiktokPosts = async (auth) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.FETCH_TIKTOK_POSTS}`,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching tiktok posts:", error);
+        return error.response?.data || error.message;
+    }
+};

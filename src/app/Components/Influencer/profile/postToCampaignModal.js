@@ -22,7 +22,7 @@ export default function PostToCampaignDialog({ post }) {
 
   // 👇 format campaign data for dropdown
   const campaignOptions =
-    allCampaigns?.map((campaign) => ({
+    Array.isArray(allCampaigns) && allCampaigns?.map((campaign) => ({
       name: campaign.title,
       value: campaign.id,
     })) || [];
