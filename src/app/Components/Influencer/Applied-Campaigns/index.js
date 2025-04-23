@@ -10,6 +10,8 @@ import Skeleton from "react-loading-skeleton";
 import { useRouter } from "next/navigation";
 import { getAppliedCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import { FaBoxOpen } from "react-icons/fa";
+import { TiEye } from "react-icons/ti";
+import Link from "next/link";
 
 const chunkArray = (array, size) => {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
@@ -33,7 +35,6 @@ const AppliedCampaignsTable = () => {
     appliedCampaigns.slice(startIndex, startIndex + itemsPerPage);
 
   const getCampaigns = async () => {
-    
     try {
       setLoading(true);
       await dispatch(getAppliedCampaigns(auth));
@@ -69,9 +70,10 @@ const AppliedCampaignsTable = () => {
                     <th className="w-[150px] p-3">Title</th>
                     <th className="w-[150px] p-3">Status</th>
                     <th className="w-[200px] p-3">Description</th>
-                    <th className="w-[150px] p-3">No. of Influencers</th>
+                    {/* <th className="w-[150px] p-3">No. of Influencers</th> */}
                     <th className="w-[150px] p-3 text-center">Start Date</th>
                     <th className="w-[150px] p-3 text-center">End Date</th>
+                    <th className="w-[150px] p-3 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -89,9 +91,14 @@ const AppliedCampaignsTable = () => {
                         {data?.description.split(" ").slice(0, 5).join(" ")}
                         {data?.description.split(" ").length > 5 ? "..." : ""}
                       </td>
-                      <td className="p-3">{data?.numberOfInfluencers}</td>
+                      {/* <td className="p-3">{data?.numberOfInfluencers}</td> */}
                       <td className="p-3">{data.startDate}</td>
                       <td className="p-3">{data.endDate}</td>
+                      <td className="p-3 flex items-center justify-center">
+                        <Link href={`/onboarding/influencer/dashboard/campaigns/${data.id}`}>
+                          <TiEye className="text-lg text-green" />
+                        </Link>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
