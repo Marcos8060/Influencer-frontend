@@ -13,7 +13,6 @@ import PostToCampaignDialog from "./postToCampaignModal";
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
   const { tiktokProfile, tiktokPosts } = useSelector((store) => store.socials);
-  console.log("TIKTOK_POSTS ",tiktokPosts)
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isTiktokConnected, setIsTiktokConnected] = useState(false);
@@ -111,7 +110,7 @@ const TiktokProfile = () => {
   return (
     <>
       {loading ? (
-        <Skeleton baseColor="#E6E7EB" highlightColor="#f0f0f0" count={4} height={100} />
+        <Skeleton baseColor="#E6E7EB" highlightColor="#f0f0f0" count={3} height={100} />
       ) : (
         <>
           {isTiktokConnected ? (
@@ -276,7 +275,7 @@ const TiktokProfile = () => {
                     </span>
                   </div>
 
-                  <p className="mt-2 text-sm">{selectedPost.caption || "No caption"}</p>
+                  <p className="mt-2 text-sm">{selectedPost.caption}</p>
 
                   <section className="flex items-center justify-between mt-4">
                     <div className="flex items-center space-x-4">
