@@ -275,7 +275,7 @@ const TiktokProfile = () => {
                     </span>
                   </div>
 
-                  <p className="mt-2 text-sm">{selectedPost.caption || "No caption"}</p>
+                  <p className="mt-2 text-sm">{selectedPost.caption}</p>
 
                   <section className="flex items-center justify-between mt-4">
                     <div className="flex items-center space-x-4">
