@@ -43,7 +43,7 @@ const InfluencerDashboard = () => {
       <section className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
         <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
           <div className="flex gap-2 items-center justify-between">
-            <p className="font-light">Pending Collabs</p>
+            <p className="font-light">Pending Applications</p>
             <FaUsersViewfinder className="text-xl" />
           </div>
           <div className="flex gap-4 items-center">
