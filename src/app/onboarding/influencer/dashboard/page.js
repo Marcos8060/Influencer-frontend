@@ -1,16 +1,38 @@
 "use client";
-import React from "react";
-import { MdCampaign } from "react-icons/md";
+import React,{ useEffect } from "react";
 import { AiOutlineShopping } from "react-icons/ai";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { FaUsersViewfinder } from "react-icons/fa6";
 import { MdWorkHistory } from "react-icons/md";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
-import SplashScreen from "@/app/Components/SplashScreen";
+import { useDispatch, useSelector } from "react-redux";
+import { getAppliedCampaigns } from "@/redux/features/stepper/campaign-stepper";
+import toast from "react-hot-toast";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 
 const InfluencerDashboard = () => {
+  const { appliedCampaigns } = useSelector((store) => store.campaign);
   const isAuthorized = useProtectedRoute();
+  const dispatch = useDispatch();
+  const auth = useAuth();
+
+
+  const getCampaigns = async () => {
+    
+    try {
+      await dispatch(getAppliedCampaigns(auth));
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    if (auth) {
+      getCampaigns();
+    }
+  }, [auth]);
 
   if (!isAuthorized) {
     return null;
@@ -25,7 +47,7 @@ const InfluencerDashboard = () => {
             <FaUsersViewfinder className="text-xl" />
           </div>
           <div className="flex gap-4 items-center">
-            <p className="font-semibold text-2xl">23</p>
+            <p className="font-semibold text-2xl">{appliedCampaigns.length}</p>
             <small className="text-secondary text-xs font-semibold">Awaiting Approval</small>
           </div>
         </div>
