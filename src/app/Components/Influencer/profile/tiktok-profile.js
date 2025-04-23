@@ -1,14 +1,25 @@
 "use client";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { getAllTiktokPosts, getTiktokProfile, getTiktokResponse } from "@/redux/features/socials";
+import {
+  getAllTiktokPosts,
+  getTiktokProfile,
+  getTiktokResponse,
+} from "@/redux/features/socials";
 import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
-import { FiGrid, FiPlay, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import {
+  FiGrid,
+  FiPlay,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+} from "react-icons/fi";
 import { IoIosRefresh } from "react-icons/io";
 import PostToCampaignDialog from "./postToCampaignModal";
+import toast from "react-hot-toast";
 
 const TiktokProfile = () => {
   const [loading, setLoading] = useState(false);
@@ -23,22 +34,26 @@ const TiktokProfile = () => {
 
   // Map TikTok API response to component format
   const mapTikTokPosts = (posts) => {
-    return posts?.map(post => ({
-      id: post.id,
-      mediaType: "VIDEO",
-      mediaUrls: [post.embedLink || post.shareUrl],
-      thumbnailUrl: post.coverImageUrl,
-      permalink: post.shareUrl,
-      caption: post.videoDescription || post.title || "",
-      likeCount: post.likeCount,
-      commentCount: post.commentCount,
-      shareCount: post.shareCount,
-      viewCount: post.viewCount,
-      timestamp: post.createTime,
-      // Add owner info from profile
-      ownerName: tiktokProfile?.displayName,
-      profilePictureUrl: tiktokProfile?.avatarUrl
-    })) || [];
+    return (
+      (Array.isArray(posts) &&
+        posts?.map((post) => ({
+          id: post.id,
+          mediaType: "VIDEO",
+          mediaUrls: [post.embedLink || post.shareUrl],
+          thumbnailUrl: post.coverImageUrl,
+          permalink: post.shareUrl,
+          caption: post.videoDescription || post.title || "",
+          likeCount: post.likeCount,
+          commentCount: post.commentCount,
+          shareCount: post.shareCount,
+          viewCount: post.viewCount,
+          timestamp: post.createTime,
+          // Add owner info from profile
+          ownerName: tiktokProfile?.displayName,
+          profilePictureUrl: tiktokProfile?.avatarUrl,
+        }))) ||
+      []
+    );
   };
 
   const handleTiktokLogin = async () => {
@@ -83,24 +98,25 @@ const TiktokProfile = () => {
     document.body.style.overflow = "auto";
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoadingPosts(true);
-        await dispatch(getAllTiktokPosts(auth));
-      } catch (error) {
-        console.error("Error fetching TikTok posts:", error);
-      } finally {
-        setLoadingPosts(false);
+  const fetchData = async () => {
+    try {
+      setLoadingPosts(true);
+      const response = await dispatch(getAllTiktokPosts(auth));
+      if (response.statusCode === 400) {
+        toast.error(response.errorMessage[0]);
       }
-    };
+    } catch (error) {
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
 
+  useEffect(() => {
     if (auth) {
       fetchProfile();
       fetchData();
     }
-  }, [auth, dispatch]);
-
+  }, []);
 
   const categorizedPosts = {
     VIDEOS: mapTikTokPosts(tiktokPosts),
@@ -110,7 +126,12 @@ const TiktokProfile = () => {
   return (
     <>
       {loading ? (
-        <Skeleton baseColor="#E6E7EB" highlightColor="#f0f0f0" count={3} height={100} />
+        <Skeleton
+          baseColor="#E6E7EB"
+          highlightColor="#f0f0f0"
+          count={3}
+          height={100}
+        />
       ) : (
         <>
           {isTiktokConnected ? (
@@ -118,7 +139,11 @@ const TiktokProfile = () => {
               <div className="bg-white shadow-sm rounded-xl p-4">
                 <section className="md:flex justify-between">
                   <div className="flex gap-4">
-                    <a href={`https://tiktok.com/@${tiktokProfile?.username}`} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={`https://tiktok.com/@${tiktokProfile?.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <img
                         className="h-20 w-20 mx-auto object-cover rounded-full"
                         src={tiktokProfile?.avatarUrl}
@@ -127,25 +152,40 @@ const TiktokProfile = () => {
                     </a>
                     <div className="space-y-3">
                       <section className="flex items-center gap-2">
-                        <p className="font-bold text-xl">{tiktokProfile?.displayName}</p>
-                        {tiktokProfile?.isVerified && <MdVerifiedUser className="text-link" />}
+                        <p className="font-bold text-xl">
+                          {tiktokProfile?.displayName}
+                        </p>
+                        {tiktokProfile?.isVerified && (
+                          <MdVerifiedUser className="text-link" />
+                        )}
                       </section>
                       <section>
                         <p>@{tiktokProfile?.username}</p>
                       </section>
                       <section className="flex items-center gap-6">
                         <p className="font-light">
-                          <span className="font-bold">{tiktokProfile?.followingCount}</span> Following
+                          <span className="font-bold">
+                            {tiktokProfile?.followingCount}
+                          </span>{" "}
+                          Following
                         </p>
                         <p className="font-light">
-                          <span className="font-bold">{tiktokProfile?.followerCount}</span> Followers
+                          <span className="font-bold">
+                            {tiktokProfile?.followerCount}
+                          </span>{" "}
+                          Followers
                         </p>
                         <p className="font-light">
-                          <span className="font-bold">{tiktokProfile?.likesCount}</span> Likes
+                          <span className="font-bold">
+                            {tiktokProfile?.likesCount}
+                          </span>{" "}
+                          Likes
                         </p>
                       </section>
                       <section>
-                        <p className="italic font-light text-sm">{tiktokProfile?.bioDescription}</p>
+                        <p className="italic font-light text-sm">
+                          {tiktokProfile?.bioDescription}
+                        </p>
                       </section>
                     </div>
                   </div>
@@ -176,7 +216,12 @@ const TiktokProfile = () => {
       {loadingPosts ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 16 }).map((_, idx) => (
-            <Skeleton key={idx} baseColor="#D1D5DB" highlightColor="#f0f0f0" height={100} />
+            <Skeleton
+              key={idx}
+              baseColor="#D1D5DB"
+              highlightColor="#f0f0f0"
+              height={100}
+            />
           ))}
         </section>
       ) : (
@@ -186,7 +231,9 @@ const TiktokProfile = () => {
               <button
                 onClick={() => setActiveTab("VIDEOS")}
                 className={`px-4 py-2 ${
-                  activeTab === "VIDEOS" ? "border-b-2 border-primary font-medium" : "text-gray-500"
+                  activeTab === "VIDEOS"
+                    ? "border-b-2 border-primary font-medium"
+                    : "text-gray-500"
                 }`}
               >
                 <FiPlay className="inline mr-1" /> Videos
@@ -245,7 +292,10 @@ const TiktokProfile = () => {
 
           {selectedPost && (
             <div className="fixed inset-0 bg-black bg-opacity-85 z-50 flex items-center justify-center p-4">
-              <button onClick={closePost} className="absolute top-4 right-4 text-white text-2xl">
+              <button
+                onClick={closePost}
+                className="absolute top-4 right-4 text-white text-2xl"
+              >
                 <FiX className="h-8 w-8" />
               </button>
 
@@ -268,7 +318,9 @@ const TiktokProfile = () => {
                         src={selectedPost.profilePictureUrl}
                         alt={selectedPost.ownerName}
                       />
-                      <span className="font-semibold">{selectedPost.ownerName}</span>
+                      <span className="font-semibold">
+                        {selectedPost.ownerName}
+                      </span>
                     </div>
                     <span className="text-gray-500 text-sm">
                       {new Date(selectedPost.timestamp).toLocaleDateString()}
