@@ -128,7 +128,7 @@ const AppliedCampaignsTable = () => {
               <div className="flex flex-col items-center justify-center">
                 <FaBoxOpen className="text-9xl text-gray" />
                 <p className="mr-4 text-sm font-light">
-                  No Campaigns available in your Repository
+                  No Applied Campaigns at the Moment
                 </p>
               </div>
             </section>
