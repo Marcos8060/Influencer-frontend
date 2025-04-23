@@ -22,8 +22,8 @@ const Campaigns = () => {
   const [loading, setLoading] = useState(true);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applied, setApplied] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState(allCampaigns[0]);
-  const [currentTab, setCurrentTab] = useState(1);
+  const [selectedCampaign, setSelectedCampaign] = useState(allCampaigns[0])
+  const [currentTab, setCurrentTab] = useState(1)
   const auth = useAuth();
 
   const handleSelect = (job) => {
