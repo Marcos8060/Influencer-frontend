@@ -394,7 +394,7 @@ const CampaignReport = () => {
                                 onClick={() =>
                                   handleApprove(collab.influencerId)
                                 }
-                                className="text-green-600 hover:text-green-900 font-medium text-sm"
+                                className="text-green hover:text-green-900 font-medium text-sm"
                               >
                                 Approve
                               </button>
@@ -402,7 +402,7 @@ const CampaignReport = () => {
                                 onClick={() =>
                                   handleReject(collab.influencerId)
                                 }
-                                className="text-red-600 hover:text-red-900 font-medium text-sm"
+                                className="text-red hover:text-red-900 font-medium text-sm"
                               >
                                 Reject
                               </button>
