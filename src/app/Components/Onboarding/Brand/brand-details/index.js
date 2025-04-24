@@ -13,88 +13,69 @@ import toast from "react-hot-toast";
 import { ReactCountryFlag } from "react-country-flag";
 import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Get all countries with their codes and names
 const countryData = countries.getData();
 
 const BrandDetails = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    brandWebsite: formData.brandWebsite || null,
-    legalCompanyName: formData.legalCompanyName || null,
+    brandWebsite: formData.brandWebsite || "https://",
+    legalCompanyName: formData.legalCompanyName || "",
     country: formData.country || { name: "", code: "" },
     phoneNumber: formData.phoneNumber || { code: "+1", number: "" },
-    state: formData.state || null,
-    city: formData.city || null,
-    address: formData.address || null,
-    zipCode: formData.zipCode || null,
-    brandName: formData.brandName || null,
-    brandDescription: formData.brandDescription || null,
+    state: formData.state || "",
+    city: formData.city || "",
+    address: formData.address || "",
+    zipCode: formData.zipCode || "",
+    brandName: formData.brandName || "",
+    brandDescription: formData.brandDescription || "",
   });
 
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
   const [filteredCountries, setFilteredCountries] = useState(countryData);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [filteredPhoneCodes, setFilteredPhoneCodes] =
-    useState(countryPhoneData);
+  const [filteredPhoneCodes, setFilteredPhoneCodes] = useState(countryPhoneData);
+
+  const countryDropdownRef = useRef(null);
+  const phoneCodeDropdownRef = useRef(null);
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
   }, [dispatch]);
 
-  const countryDropdownRef = useRef(null);
-  const phoneCodeDropdownRef = useRef(null);
-
-  // ------close country and phone number dropdowns when you click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        countryDropdownRef.current &&
-        !countryDropdownRef.current.contains(event.target) &&
-        // Also check if the click wasn't on the country select input itself
-        !event.target.closest(".country-select-container")
-      ) {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
         setIsCountryOpen(false);
       }
-
-      if (
-        phoneCodeDropdownRef.current &&
-        !phoneCodeDropdownRef.current.contains(event.target) &&
-        // Also check if the click wasn't on the phone code select itself
-        !event.target.closest(".phone-code-select-container")
-      ) {
+      if (phoneCodeDropdownRef.current && !phoneCodeDropdownRef.current.contains(event.target)) {
         setIsPhoneCodeOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    const filtered = countryData.filter((country) =>
+    setFilteredCountries(countryData.filter(country => 
       country.name.toLowerCase().includes(searchTerm)
-    );
-    setFilteredCountries(filtered);
+    ));
   };
 
   const handlePhoneCodeSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    const filtered = countryPhoneData.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.code.toLowerCase().includes(searchTerm) ||
-        item.dial_code.toLowerCase().includes(searchTerm)
-    );
-    setFilteredPhoneCodes(filtered);
+    setFilteredPhoneCodes(countryPhoneData.filter(item =>
+      item.name.toLowerCase().includes(searchTerm) ||
+      item.code.toLowerCase().includes(searchTerm) ||
+      item.dial_code.toLowerCase().includes(searchTerm)
+    ));
   };
 
-  // Function to fetch location data based on country
   const fetchLocationData = async (countryCode) => {
     setIsLoadingLocation(true);
     try {
@@ -159,24 +140,15 @@ const BrandDetails = () => {
   };
 
   const handleCountrySelect = async (country) => {
-    const phoneData = countryPhoneData.find(
-      (item) => item.code === country.code
-    );
-
-    // Show loading immediately
+    const phoneData = countryPhoneData.find(item => item.code === country.code);
+    
     setIsLoadingLocation(true);
     toast.loading("Detecting location details...", { id: "location-loading" });
 
     setDetails({
       ...details,
-      country: {
-        name: country.name,
-        code: country.code,
-      },
-      phoneNumber: {
-        ...details.phoneNumber,
-        code: phoneData?.dial_code || "+1",
-      },
+      country: { name: country.name, code: country.code },
+      phoneNumber: { ...details.phoneNumber, code: phoneData?.dial_code || "+1" }
     });
     setIsCountryOpen(false);
 
@@ -189,43 +161,21 @@ const BrandDetails = () => {
 
   const handleNext = (e) => {
     e.preventDefault();
-
+    
     const requiredFields = [
-      "brandWebsite",
-      "legalCompanyName",
-      "brandName",
-      "country",
-      "state",
-      "city",
-      "address",
-      "zipCode",
-      "brandDescription",
+      !details.brandWebsite || details.brandWebsite === "https://",
+      !details.legalCompanyName,
+      !details.brandName,
+      !details.country.name,
+      !details.state,
+      !details.city,
+      !details.address,
+      !details.zipCode,
+      !details.brandDescription
     ];
 
-    const emptyFields = requiredFields.filter((field) => {
-      const value = details[field];
-
-      if (typeof value === "string") {
-        return value.trim() === "";
-      }
-
-      if (typeof value === "object") {
-        if (field === "country") {
-          return !value || !value.name || !value.code;
-        }
-        if (field === "phoneNumber") {
-          return (
-            !value || !value.code || !value.number || value.number.trim() === ""
-          );
-        }
-        return !value;
-      }
-
-      return !value;
-    });
-
-    if (emptyFields.length > 0) {
-      toast.error("Please fill out all required fields.");
+    if (requiredFields.some(Boolean)) {
+      toast.error("Please fill out all required fields");
       return;
     }
 
@@ -236,79 +186,95 @@ const BrandDetails = () => {
   const descriptionLength = details.brandDescription?.length || 0;
 
   return (
-    <section className="flex items-center justify-center h-screen md:w-4/12 mx-auto px-4 text-color">
-      <div className="w-full">
-        <section className="mb-2">
-          <h1 className="text-2xl font-bold text-center my-2">
-            Lets Get to Know Your Brand
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-color">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-white rounded-xl shadow-xl border border-input p-6 sm:p-8"
+      >
+        {/* Form Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Tell Us About Your Brand
           </h1>
-          <p className="text-center text-sm mb-3">
-            Help us create the perfect influencer matches for you.
+          <p className="text-gray-500">
+            Help us create the perfect influencer matches for you
           </p>
-        </section>
-        <form className="space-y-6 mb-2 mt-4">
-          <section>
-            <h3 className="font-bold text-xl mb-2">Brand Information</h3>
-            <div>
-              <label className="text-xs" htmlFor="website">
-                Website <span className="text-red">*</span>
-              </label>
-              <InputComponent
-                value={details.brandWebsite || "https://"}
-                required
-                onChange={(e) => {
-                  let url = e.target.value;
-                  if (!url.startsWith("https://")) {
-                    if (url === "https:/") {
-                      url = "https://";
-                    } else if (!url.startsWith("http://")) {
+        </div>
+
+        <form className="space-y-6">
+          {/* Brand Information Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-input">
+              Brand Information
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website <span className="text-red-500">*</span>
+                </label>
+                <InputComponent
+                  value={details.brandWebsite}
+                  onChange={(e) => {
+                    let url = e.target.value;
+                    if (!url.startsWith("https://")) {
                       url = `https://${url.replace(/^https?:\/\//, "")}`;
                     }
-                  }
-                  setDetails({ ...details, brandWebsite: url });
-                }}
-                onFocus={(e) => {
-                  if (e.target.value === "https://") {
-                    e.target.setSelectionRange(8, 8);
-                  }
-                }}
-                placeholder="https://example.com"
-              />
-            </div>
-            <section className="flex gap-4 justify-between mt-2">
-              <div className="w-full">
-                <label className="text-xs" htmlFor="brandname">
-                  Legal Company Name <span className="text-red">*</span>
+                    setDetails({ ...details, brandWebsite: url });
+                  }}
+                  onFocus={(e) => {
+                    if (e.target.value === "https://") {
+                      e.target.setSelectionRange(8, 8);
+                    }
+                  }}
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Legal Company Name <span className="text-red-500">*</span>
                 </label>
                 <InputComponent
                   value={details.legalCompanyName}
                   onChange={(e) =>
                     setDetails({ ...details, legalCompanyName: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              <div className="w-full">
-                <label className="text-xs" htmlFor="brandname">
-                  Brand Name <span className="text-red">*</span>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Brand Name <span className="text-red-500">*</span>
                 </label>
                 <InputComponent
                   value={details.brandName}
                   onChange={(e) =>
                     setDetails({ ...details, brandName: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-            </section>
-          </section>
-          <section>
-            <h3 className="font-bold text-xl mb-2">Company Details</h3>
-            <section className="flex gap-4 justify-between">
-              <div className="w-full relative">
-                <label className="text-xs" htmlFor="country">
-                  Country <span className="text-red">*</span>
+            </div>
+          </div>
+
+          {/* Company Details Section */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-input">
+              Company Details
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Country Select */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Country <span className="text-red-500">*</span>
                 </label>
                 <div
-                  className="flex items-center border border-input text-sm rounded-md p-2 h-10 cursor-pointer"
+                  className="flex items-center border border-input text-sm rounded-md px-3 py-2 h-10 cursor-pointer hover:border-primary transition-colors"
                   onClick={() => setIsCountryOpen(!isCountryOpen)}
                 >
                   {details.country.name ? (
@@ -316,65 +282,61 @@ const BrandDetails = () => {
                       <ReactCountryFlag
                         countryCode={details.country.code}
                         svg
-                        style={{
-                          width: "1.5em",
-                          height: "1.5em",
-                          marginRight: "8px",
-                        }}
+                        className="w-5 h-5 mr-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                       />
                       <span>{details.country.name}</span>
                     </>
                   ) : (
-                    <span className="text-gray-400">Select a country</span>
+                    <span className="text-gray-400">Select country</span>
                   )}
                 </div>
-                {isCountryOpen && (
-                  <div
-                    ref={countryDropdownRef}
-                    className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto"
-                  >
-                    <div className="p-2 sticky top-0 bg-white">
-                      <input
-                        type="text"
-                        placeholder="Search countries..."
-                        className="w-full p-2 border border-input rounded text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                        onChange={handleCountrySearch}
-                        autoFocus
-                      />
-                    </div>
-                    {filteredCountries.map((country) => (
-                      <div
-                        key={country.code}
-                        className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() =>
-                          handleCountrySelect({
-                            name: country.name,
-                            code: country.code,
-                          })
-                        }
-                      >
-                        <ReactCountryFlag
-                          countryCode={country.code}
-                          svg
-                          style={{
-                            width: "1.5em",
-                            height: "1.5em",
-                            marginRight: "8px",
-                          }}
+                
+                <AnimatePresence>
+                  {isCountryOpen && (
+                    <motion.div
+                      ref={countryDropdownRef}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
+                    >
+                      <div className="p-2 sticky top-0 bg-white border-b border-input">
+                        <input
+                          type="text"
+                          placeholder="Search countries..."
+                          className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          onChange={handleCountrySearch}
+                          autoFocus
                         />
-                        <span>{country.name}</span>
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <div className="max-h-60 overflow-y-auto">
+                        {filteredCountries.map((country) => (
+                          <div
+                            key={country.code}
+                            className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
+                            onClick={() => handleCountrySelect(country)}
+                          >
+                            <ReactCountryFlag
+                              countryCode={country.code}
+                              svg
+                              className="w-5 h-5 mr-2"
+                            />
+                            <span>{country.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="w-full">
-                <label className="text-xs" htmlFor="state">
-                  State <span className="text-red">*</span>
+              
+              {/* State */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State <span className="text-red-500">*</span>
                   {isLoadingLocation && (
-                    <span className="ml-2 text-xs text-gray-400">
-                      (Auto-detecting...)
-                    </span>
+                    <span className="ml-2 text-xs text-gray-500">(Auto-detecting...)</span>
                   )}
                 </label>
                 <InputComponent
@@ -382,41 +344,41 @@ const BrandDetails = () => {
                   onChange={(e) =>
                     setDetails({ ...details, state: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-            </section>
-            <section className="flex gap-4 justify-between my-2">
-              <div className="w-full">
-                <label className="text-xs" htmlFor="city">
-                  City <span className="text-red">*</span>
+              
+              {/* City */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City <span className="text-red-500">*</span>
                 </label>
                 <InputComponent
                   value={details.city}
                   onChange={(e) =>
                     setDetails({ ...details, city: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              <div className="w-full">
-                <label className="text-xs" htmlFor="phone">
-                  Phone <span className="text-red">*</span>
+              
+              {/* Phone Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone <span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-1">
-                  <div className="relative w-1/3">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
                     <div
-                      className="flex items-center border border-input text-sm rounded-md pl-1 h-10 cursor-pointer"
+                      className="flex items-center border border-input rounded-md px-2 h-10 cursor-pointer hover:border-primary transition-colors"
                       onClick={() => setIsPhoneCodeOpen(!isPhoneCodeOpen)}
                     >
-                      {details.phoneNumber.code ? (
+                      {details.country.code ? (
                         <>
                           <ReactCountryFlag
                             countryCode={details.country.code}
                             svg
-                            style={{
-                              width: "1.5em",
-                              height: "1.5em",
-                              marginRight: "4px",
-                            }}
+                            className="w-5 h-5 mr-1 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           />
                           <span>{details.phoneNumber.code}</span>
                         </>
@@ -424,143 +386,143 @@ const BrandDetails = () => {
                         <span className="text-gray-400">Code</span>
                       )}
                     </div>
-                    {isPhoneCodeOpen && (
-                      <div
-                        ref={phoneCodeDropdownRef}
-                        className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg max-h-60 overflow-auto"
-                      >
-                        <div className="p-2 sticky top-0 bg-white">
-                          <input
-                            type="text"
-                            placeholder="Search country codes..."
-                            className="w-full p-2 border border-input rounded text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                            onChange={handlePhoneCodeSearch}
-                            autoFocus
-                          />
-                        </div>
-                        {filteredPhoneCodes.map((item) => (
-                          <div
-                            key={item.code}
-                            className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => {
-                              setDetails({
-                                ...details,
-                                phoneNumber: {
-                                  ...details.phoneNumber,
-                                  code: item.dial_code,
-                                },
-                                country: {
-                                  name: item.name,
-                                  code: item.code,
-                                },
-                              });
-                              setIsPhoneCodeOpen(false);
-                            }}
-                          >
-                            <ReactCountryFlag
-                              countryCode={item.code}
-                              svg
-                              style={{
-                                width: "1.2em",
-                                height: "1.2em",
-                                marginRight: "4px",
-                              }}
+                    
+                    <AnimatePresence>
+                      {isPhoneCodeOpen && (
+                        <motion.div
+                          ref={phoneCodeDropdownRef}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
+                        >
+                          <div className="p-2 sticky top-0 bg-white border-b border-input">
+                            <input
+                              type="text"
+                              placeholder="Search country codes..."
+                              className="w-full p-2 border border-input rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                              onChange={handlePhoneCodeSearch}
+                              autoFocus
                             />
-                            <span className="mr-2">{item.dial_code}</span>
                           </div>
-                        ))}
-                      </div>
-                    )}
+                          <div className="max-h-60 overflow-y-auto">
+                            {filteredPhoneCodes.map((item) => (
+                              <div
+                                key={item.code}
+                                className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
+                                onClick={() => {
+                                  setDetails({
+                                    ...details,
+                                    phoneNumber: { ...details.phoneNumber, code: item.dial_code },
+                                    country: { name: item.name, code: item.code }
+                                  });
+                                  setIsPhoneCodeOpen(false);
+                                }}
+                              >
+                                <ReactCountryFlag
+                                  countryCode={item.code}
+                                  svg
+                                  className="w-5 h-5 mr-2"
+                                />
+                                <span className="mr-2">{item.dial_code}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <div className="w-2/3">
+                  <div className="flex-2">
                     <InputComponent
                       value={details.phoneNumber.number}
                       onChange={(e) => {
-                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15); // removes all non-digit characters
+                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
                         setDetails({
                           ...details,
-                          phoneNumber: {
-                            ...details.phoneNumber,
-                            number: digitsOnly,
-                          },
+                          phoneNumber: { ...details.phoneNumber, number: digitsOnly }
                         });
                       }}
                       placeholder="Phone number"
+                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
               </div>
-            </section>
-            <section className="flex gap-4 justify-between my-2">
-              <div className="w-full">
-                <label className="text-xs" htmlFor="address">
-                  Address <span className="text-red">*</span>
+              
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address <span className="text-red-500">*</span>
                 </label>
                 <InputComponent
                   value={details.address}
                   onChange={(e) =>
                     setDetails({ ...details, address: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              <div className="w-full">
-                <label className="text-xs" htmlFor="zipCode">
-                  Zip code <span className="text-red">*</span>
+              
+              {/* Zip Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Zip Code <span className="text-red-500">*</span>
                 </label>
                 <InputComponent
                   value={details.zipCode}
                   onChange={(e) =>
                     setDetails({ ...details, zipCode: e.target.value })
                   }
+                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-            </section>
-
-            <div className="my-2">
-              <label className="text-xs" htmlFor="brand">
-                What does your brand offer please keep it brief.{" "}
-                <span className="text-red">*</span>
-              </label>
-              <TextAreaComponent
-                value={details.brandDescription}
-                onChange={(e) =>
-                  setDetails({ ...details, brandDescription: e.target.value })
-                }
-              />
-              {details.brandDescription && (
-                <div className="">
-                  <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-300 ease-in-out ${
-                        descriptionLength < 30
-                          ? "bg-red"
-                          : descriptionLength < 60
-                          ? "bg-yellow"
-                          : "bg-green"
-                      }`}
-                      style={{
-                        width: `${Math.min(
-                          (descriptionLength / 100) * 100,
-                          100
-                        )}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray">
-                    {descriptionLength < 30
-                      ? "Too little information"
-                      : descriptionLength < 60
-                      ? "Almost there..."
-                      : "Perfect! 💯"}
-                  </p>
-                </div>
-              )}
             </div>
-            <ButtonComponent onClick={handleNext} label="Next" />
-          </section>
+          </div>
+
+          {/* Brand Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              What does your brand offer? (Please keep it brief) <span className="text-red-500">*</span>
+            </label>
+            <TextAreaComponent
+              value={details.brandDescription}
+              onChange={(e) =>
+                setDetails({ ...details, brandDescription: e.target.value })
+              }
+              className="w-full min-h-[120px] focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            />
+            
+            {details.brandDescription && (
+              <div className="mt-2">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      descriptionLength < 30 ? "bg-red" :
+                      descriptionLength < 60 ? "bg-yellow" : "bg-green"
+                    }`}
+                    style={{ width: `${Math.min(descriptionLength, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {descriptionLength < 30 ? "Too brief" :
+                   descriptionLength < 60 ? "Good start" : "Excellent description"}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-4">
+            <ButtonComponent
+              onClick={handleNext}
+              label="Continue"
+              className="w-full py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark text-white font-medium rounded-lg shadow-sm"
+            />
+          </div>
         </form>
-      </div>
-    </section>
+      </motion.div>
+    </div>
   );
 };
 
