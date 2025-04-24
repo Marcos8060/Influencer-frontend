@@ -107,12 +107,12 @@ const CampaignsTable = () => {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton height={50} className="rounded-lg" />
-        {[...Array(8)].map((_, i) => (
-          <Skeleton key={i} height={60} className="rounded-lg" />
-        ))}
-      </div>
+      <Skeleton
+        baseColor="#E6E7EB"
+        highlightColor="#f0f0f0"
+        count={4}
+        height={100}
+      />
     );
   }
 
@@ -199,7 +199,7 @@ const CampaignsTable = () => {
                   onClick={() => requestSort("numberOfInfluencers")}
                 >
                   <div className="flex items-center gap-1">
-                    Influencers
+                    Applications
                     {sortConfig.key === "numberOfInfluencers" && (
                       <span className="text-gray-400">
                         {sortConfig.direction === "asc" ? "↑" : "↓"}
@@ -255,9 +255,9 @@ const CampaignsTable = () => {
                     {getStatusBadge(campaign.status)}
                   </td>
                   <td className="px-6 py-4 max-w-xs">
-                      <p className="text-sm text-gray-500 line-clamp-2">
-                        {campaign.description}
-                      </p>
+                    <p className="text-sm text-gray-500 line-clamp-2">
+                      {campaign.description}
+                    </p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
