@@ -52,9 +52,9 @@ const CampaignsTable = () => {
     }
   }, [auth]);
 
-  const handleViewProfile = (data) => {
+  const handleViewReport = (data) => {
     localStorage.setItem("influencerData", JSON.stringify(data));
-    router.push(`/brand/campaign-report/${data.brandId}`);
+    router.push(`/brand/campaign-report/${data.id}`);
   };
 
   return (
@@ -103,7 +103,7 @@ const CampaignsTable = () => {
                       <td className="p-3">
                         <div className="flex justify-center">
                           <button
-                            onClick={() => handleViewProfile(data)}
+                            onClick={() => handleViewReport(data)}
                             className="border border-primary rounded px-4 py-2 text-xs"
                           >
                             View Report

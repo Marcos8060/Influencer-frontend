@@ -55,7 +55,7 @@ const CampaignPreview = () => {
               </h2>
               <p className="font-light text-sm text-center leading-6">
                 Your campaign is now live and ready for influencers to engage.
-                You can track its performance in your <Link className="text-link font-semibold" href="/brand/influencer-discovery">here.</Link> 
+                You can track its performance <Link className="text-link font-semibold" href="/brand/view-campaigns">here.</Link> 
               </p>
             </div>
           </section>
