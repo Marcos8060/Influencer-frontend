@@ -10,17 +10,20 @@ import { useDispatch, useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { getAllCampaignDetails } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
 import { GrInstagram } from "react-icons/gr";
 import { IoLogoTiktok } from "react-icons/io5";
+import { FiEye } from "react-icons/fi";
+
 
 const CampaignReport = () => {
   const { campaignDetails } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   const auth = useAuth();
 
   const segments = pathname.split("/");
@@ -335,6 +338,12 @@ const CampaignReport = () => {
                         </th>
                         <th
                           scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          Profile
+                        </th>
+                        <th
+                          scope="col"
                           className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
                           Actions
@@ -370,19 +379,19 @@ const CampaignReport = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex gap-2">
                               {collab.isInstagramAccountConnected && (
-                                <span className="text-xs">
-                                  <GrInstagram />
-                                </span>
+                                  <span className="text-xs">
+                                    <GrInstagram className="text-pink-600" />
+                                  </span>
                               )}
                               {collab.isTiktokAccountConnected && (
-                                <span className="text-xs">
-                                  <IoLogoTiktok />
-                                </span>
+                                  <span className="text-xs">
+                                    <IoLogoTiktok className="text-black" />
+                                  </span>
                               )}
                               {collab.isTwitterAccountConnected && (
-                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
-                                  X
-                                </span>
+                                  <span className="text-xs">
+                                    <FaXTwitter className="text-black" />
+                                  </span>
                               )}
                             </div>
                           </td>
@@ -400,6 +409,19 @@ const CampaignReport = () => {
                                 collab.status.slice(1)}
                             </span>
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() =>
+                                router.push(
+                                  `/brand/campaign-report/${id}/influencer-profile/${collab.influencerId}`
+                                )
+                              }
+                              className="text-primary hover:text-primary-dark flex items-center gap-1 text-sm"
+                            >
+                              <FiEye className="w-4 h-4" />
+                              View Profile
+                            </button>
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             {collab.status === "pending" ? (
                               <div className="flex justify-end gap-3">
@@ -407,7 +429,7 @@ const CampaignReport = () => {
                                   onClick={() =>
                                     handleApprove(collab.influencerId)
                                   }
-                                  className="text-green hover:text-green-900 font-medium text-sm"
+                                  className="text-green-600 hover:text-green-800 font-medium text-sm"
                                 >
                                   Approve
                                 </button>
@@ -415,7 +437,7 @@ const CampaignReport = () => {
                                   onClick={() =>
                                     handleReject(collab.influencerId)
                                   }
-                                  className="text-red hover:text-red-900 font-medium text-sm"
+                                  className="text-red-600 hover:text-red-800 font-medium text-sm"
                                 >
                                   Reject
                                 </button>
