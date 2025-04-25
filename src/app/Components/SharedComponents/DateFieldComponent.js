@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Calendar } from "primereact/calendar";
 
-export default function DateFieldComponent({ value, onChange,placeholder, ...rest }) {
+export default function DateFieldComponent({ className = "",value, onChange,placeholder, ...rest }) {
     const [date, setDate] = useState(value || null);
 
     const handleChange = (e) => {
@@ -12,7 +12,7 @@ export default function DateFieldComponent({ value, onChange,placeholder, ...res
     return (
         <div>
             <Calendar
-                className="w-full p-2 border border-input font-light text-sm rounded focus:outline-none focus:ring-2  [&>*]:outline-none"
+                className={`w-full border border-input font-light text-sm rounded px-4 py-2 focus:outline-none ${className}`}
                 value={date}
                 onChange={handleChange}
                 placeholder={placeholder}

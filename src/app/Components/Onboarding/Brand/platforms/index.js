@@ -83,7 +83,7 @@ const Platforms = () => {
                 onClick={() => togglePlatform(platform.name)}
               >
                 <div className="flex items-center">
-                  <div className="text-2xl mr-3">
+                  <div className="text-xl mr-3">
                     {platform.icon}
                   </div>
                   <div className="flex-grow">

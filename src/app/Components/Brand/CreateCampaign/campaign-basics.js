@@ -8,6 +8,7 @@ import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import { nextStep, updateFormData } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { FiCalendar, FiInfo, FiImage } from "react-icons/fi";
 
 // Function to convert stored date strings to Date objects
 const parseDate = (dateString) => (dateString ? new Date(dateString) : null);
@@ -19,7 +20,7 @@ const formatDate = (date) => {
 };
 
 const today = new Date();
-  today.setHours(0, 0, 0, 0);
+today.setHours(0, 0, 0, 0);
 
 const CampaignBasics = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -27,8 +28,8 @@ const CampaignBasics = () => {
 
   // Initialize state with parsed date objects
   const [details, setDetails] = useState({
-    title: campaignData.title || null,
-    description: campaignData.description || null,
+    title: campaignData.title || "",
+    description: campaignData.description || "",
     startDate: parseDate(campaignData.startDate),
     endDate: parseDate(campaignData.endDate),
     coverImage: campaignData.coverImage || null,
@@ -44,16 +45,21 @@ const CampaignBasics = () => {
 
   // Handle form submission and persist data in Redux
   const handleNext = () => {
-
-    if(!details.startDate || !details.title || !details.description || !details.endDate){
-      toast.error('Please fill out the required fields')
-      return
+    if (!details.startDate || !details.title || !details.description || !details.endDate) {
+      toast.error('Please fill out all required fields');
+      return;
     }
+    
+    if (details.startDate > details.endDate) {
+      toast.error('End date must be after start date');
+      return;
+    }
+    
     dispatch(
       updateFormData({
         ...details,
-        title: details.title?.trim() || null,
-        description: details.description?.trim() || null,
+        title: details.title?.trim() || "",
+        description: details.description?.trim() || "",
         startDate: details.startDate ? formatDate(details.startDate) : null,
         endDate: details.endDate ? formatDate(details.endDate) : null,
       })
@@ -62,73 +68,130 @@ const CampaignBasics = () => {
   };
 
   return (
-    <div className="bg-background px-4 py-8 flex items-center justify-center text-color">
-      <div className="md:w-8/12 w-full mx-auto space-y-4">
-        <section className="bg-white rounded shadow p-4">
-          <h2 className="mb-4 font-bold">Campaign Basics</h2>
-          <section className="space-y-2">
+    <div className="bg-background text-color min-h-screen px-4 py-8 flex items-center justify-center text-gray-800">
+      <div className="max-w-3xl w-full mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Create New Campaign</h1>
+        </div>
+
+        {/* Campaign Basics Section */}
+        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+          <div className="flex items-center mb-6">
+            <div className="bg-blue-100 p-2 rounded-full mr-4">
+              <FiInfo className="text-blue-600 text-lg" />
+            </div>
             <div>
-              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Title</label> <span className="text-red">*</span>
+              <h2 className="text-md font-semibold text-gray-900">Campaign Basics</h2>
+              <p className="text-gray-500 text-sm">Tell us about your campaign</p>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="title">
+                Campaign Title <span className="text-red-500">*</span>
+              </label>
               <InputComponent
                 value={details.title}
-                onChange={(e) =>
-                  setDetails({ ...details, title: e.target.value })
-                }
-                placeholder="E.g New Product Launch..."
+                onChange={(e) => setDetails({ ...details, title: e.target.value })}
+                placeholder="E.g. New Product Launch Campaign"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                id="title"
               />
+              <p className="mt-1 text-xs text-gray-500">Keep it concise but descriptive</p>
             </div>
+            
             <div>
-              <label className="text-xs font-semibold mb-4" htmlFor="">Campaign Description</label> <span className="text-red">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="description">
+                Campaign Description <span className="text-red-500">*</span>
+              </label>
               <TextAreaComponent
                 value={details.description}
-                onChange={(e) =>
-                  setDetails({ ...details, description: e.target.value })
-                }
-                placeholder="Type here..."
+                onChange={(e) => setDetails({ ...details, description: e.target.value })}
+                placeholder="Describe the purpose and goals of your campaign..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[120px]"
+                id="description"
               />
+              <p className="mt-1 text-xs text-gray-500">What makes this campaign special?</p>
             </div>
-          </section>
+          </div>
         </section>
 
-        <section className="bg-white rounded shadow p-4">
-          <div className="mb-4">
-            <h2 className="font-bold">Campaign Timeframe</h2>
-            <small>When is the campaign expected to be up and running? You do not need to set an end date</small>
+        {/* Timeframe Section */}
+        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+          <div className="flex items-center mb-6">
+            <div className="bg-purple-100 p-2 rounded-full mr-4">
+              <FiCalendar className="text-purple-600 text-lg" />
+            </div>
+            <div>
+              <h2 className="text-md font-semibold text-gray-900">Campaign Timeframe</h2>
+              <p className="text-gray-500 text-sm">When will your campaign run?</p>
+            </div>
           </div>
-          <section className="flex items-center gap-4 justify-between w-full">
-            <div className="w-1/2">
-            <label className="text-xs font-semibold mb-4" htmlFor="">Start Date</label> <span className="text-red">*</span>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="startDate">
+                Start Date <span className="text-red-500">*</span>
+              </label>
               <DateFieldComponent
                 value={details.startDate}
                 minDate={today}
                 onChange={(date) => handleDateChange("startDate", date)}
-                placeholder="Start Date"
+                placeholder="Select start date"
+                className="w-full px-4 py-2 border border-input rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                id="startDate"
               />
             </div>
-            <div className="w-1/2">
-            <label className="text-xs font-semibold mb-4" htmlFor="">End Date</label> <span className="text-red">*</span>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="endDate">
+                End Date <span className="text-red-500">*</span>
+              </label>
               <DateFieldComponent
                 value={details.endDate}
-                minDate={details.startDate}
+                minDate={details.startDate || today}
                 onChange={(date) => handleDateChange("endDate", date)}
-                placeholder="End Date"
+                placeholder="Select end date"
+                className="w-full px-4 py-2 border border-input text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                id="endDate"
               />
             </div>
-          </section>
-        </section>
-
-        <section className="bg-white rounded shadow p-4">
-          <div className="mb-4">
-            <h2 className="font-semibold text-sm text-center">Campaign Cover Image</h2>
           </div>
-          <CampaignProfileImageModal setDetails={setDetails} />
+          <p className="mt-3 text-sm text-gray-500">
+            {details.startDate && details.endDate ? (
+              `Campaign will run for ${Math.ceil((details.endDate - details.startDate) / (1000 * 60 * 60 * 24))} days`
+            ) : "Select both dates to see duration"}
+          </p>
         </section>
 
-        <footer className="flex items-center gap-4 justify-end">
+        {/* Cover Image Section */}
+        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-amber-100 p-2 rounded-full mr-4">
+              <FiImage className="text-amber-600 text-lg" />
+            </div>
+            <div>
+              <h2 className="text-md font-semibold text-gray-900">Campaign Cover Image</h2>
+              <p className="text-gray-500 text-sm">Add a visual identity to your campaign</p>
+            </div>
+          </div>
           
-          <div className="w-1/2">
-            <ButtonComponent onClick={handleNext} label="Next" />
+          <div className="text-center">
+            <CampaignProfileImageModal setDetails={setDetails} />
+            <p className="mt-3 text-sm text-gray-500">Recommended size: 1200x600px (JPG or PNG)</p>
           </div>
+        </section>
+
+        {/* Footer with Next Button */}
+        <footer className="flex justify-end">
+          <ButtonComponent 
+            onClick={handleNext} 
+            label="Continue" 
+            className="px-8 py-3 bg-gradient-to-r from-primary to-secondary hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
+            disabled={!details.title || !details.description || !details.startDate || !details.endDate}
+          />
         </footer>
       </div>
     </div>
