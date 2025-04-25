@@ -117,7 +117,7 @@ const CampaignsTable = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-input overflow-hidden text-color">
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden text-color">
       {/* Table Header with Search and Actions */}
       <div className="px-6 py-4 border-b border-input flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -259,8 +259,8 @@ const CampaignsTable = () => {
                       {campaign.description}
                     </p>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                  <td onClick={() => handleViewReport(campaign)} className="px-6 py-4 whitespace-nowrap cursor-pointer">
+                    <div className="text-sm text-link font-bold">
                       {campaign.numberOfInfluencers || 0}
                     </div>
                   </td>

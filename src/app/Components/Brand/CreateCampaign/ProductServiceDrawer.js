@@ -229,7 +229,7 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
         </Sidebar>
         <button
           onClick={() => setVisible(true)}
-          className="bg-primary text-white rounded text-xs px-4 py-2 w-full"
+          className="bg-gradient-to-r from-primary to-secondary text-white rounded text-xs px-4 py-2 w-full"
         >
           {selectedProducts.length > 0
             ? "Select another product"
