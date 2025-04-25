@@ -68,8 +68,8 @@ const CampaignBasics = () => {
   };
 
   return (
-    <div className="bg-background text-color min-h-screen px-4 py-8 flex items-center justify-center text-gray-800">
-      <div className="max-w-3xl w-full mx-auto space-y-6">
+    <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
+      <div className="max-w-3xl w-full mx-auto space-y-4">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Create New Campaign</h1>

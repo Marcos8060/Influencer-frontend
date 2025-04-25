@@ -350,13 +350,13 @@ const CampaignReport = () => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-input">
                       {campaignDetails.collaborators.map((collab, index) => (
                         <tr key={index} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                                {collab.influencerName.charAt(0)}
+                                <img className="w-10 h-10 rounded-full object-cover" src={collab.profilePhoto} alt="" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
