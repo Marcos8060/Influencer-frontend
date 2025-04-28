@@ -1,25 +1,38 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
-import { HiArrowLongLeft } from "react-icons/hi2";
-import { HiArrowLongRight } from "react-icons/hi2";
-import { FaUserCircle } from "react-icons/fa";
-import AddToBucketListModal from "./add-to-bucket-modal";
+import React, { useState, useEffect } from "react";
+import { 
+  Table, 
+  Button, 
+  Avatar, 
+  Tag, 
+  Space, 
+  Typography, 
+  Card, 
+  Empty, 
+  Skeleton, 
+  Checkbox,
+  Pagination,
+  Tooltip,
+  Badge
+} from "antd";
+import { 
+  EyeOutlined, 
+  ArrowLeftOutlined, 
+  ArrowRightOutlined, 
+  UserOutlined,
+  PlusOutlined,
+  CheckOutlined
+} from "@ant-design/icons";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getAllInfluencers } from "@/redux/features/influencer/filter";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import "react-loading-skeleton/dist/skeleton.css";
-import Skeleton from "react-loading-skeleton";
-import FiltersDrawer from "./filters-drawer";
-import { TiEye } from "react-icons/ti";
 import { useRouter } from "next/navigation";
-import { FaBoxOpen } from "react-icons/fa";
+import AddToBucketListModal from "./add-to-bucket-modal";
+import FiltersDrawer from "./filters-drawer";
 
-const chunkArray = (array, size) => {
-  return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
-    array.slice(index * size, index * size + size)
-  );
-};
+const { Text, Title } = Typography;
+
 const AllInfluencers = () => {
   const { influencers, filterResults } = useSelector(
     (store) => store.filterResults
@@ -30,11 +43,11 @@ const AllInfluencers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const itemsPerPage = 8;
-  const displayedInfluencers =
-    filterResults.length > 0 ? filterResults : influencers;
-  const totalPages = Math.ceil(displayedInfluencers?.length / itemsPerPage);
   const dispatch = useDispatch();
   const auth = useAuth();
+
+  const displayedInfluencers = filterResults.length > 0 ? filterResults : influencers;
+  const totalItems = displayedInfluencers?.length || 0;
 
   // influencers in buckets
   const influencersInBuckets = new Set(
@@ -45,20 +58,17 @@ const AllInfluencers = () => {
     )
   );
 
-  //   get current page data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData =
-    Array.isArray(displayedInfluencers) &&
-    displayedInfluencers.slice(startIndex, startIndex + itemsPerPage);
-  const rows = chunkArray(currentData, 1);
+  const handleCheckboxChange = (influencer, checked) => {
+    setSelectedInfluencers(prev => 
+      checked 
+        ? [...prev, influencer] 
+        : prev.filter(item => item.id !== influencer.id)
+    );
+  };
 
-  const handleCheckboxChange = (influencer) => {
-    setSelectedInfluencers((prevSelected) => {
-      const isSelected = prevSelected.some((item) => item.id === influencer.id);
-      return isSelected
-        ? prevSelected.filter((item) => item.id !== influencer.id)
-        : [...prevSelected, influencer];
-    });
+  const handleViewProfile = (data) => {
+    localStorage.setItem("influencerData", JSON.stringify(data));
+    router.push(`/brand/influencer-discovery/influencerProfile/${data.userId}`);
   };
 
   useEffect(() => {
@@ -83,143 +93,139 @@ const AllInfluencers = () => {
     setCurrentPage(1);
   }, [filterResults]);
 
-  const handleViewProfile = (data) => {
-    localStorage.setItem("influencerData", JSON.stringify(data));
-    router.push(`/brand/influencer-discovery/influencerProfile/${data.userId}`);
+  const columns = [
+    {
+      title: 'Influencer',
+      dataIndex: 'fullName',
+      key: 'name',
+      render: (text, record) => (
+        <Space>
+          <Checkbox
+            checked={selectedInfluencers.some(item => item.id === record.id)}
+            onChange={(e) => handleCheckboxChange(record, e.target.checked)}
+          />
+          <Avatar 
+            size="large" 
+            src={record.profilePicture} 
+            icon={<UserOutlined />}
+          />
+          <Text strong>{text}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Location',
+      key: 'location',
+      render: (_, record) => (
+        <Space direction="vertical" size={0}>
+          <Text>{record.country}</Text>
+          <Text type="secondary">{record.city}</Text>
+        </Space>
+      ),
+    },
+    {
+      title: 'Ethnicity',
+      dataIndex: 'ethnicBackground',
+      key: 'ethnicity',
+      render: (text) => <Tag color="geekblue">{text}</Tag>,
+    },
+    {
+      title: 'Profile',
+      key: 'profile',
+      align: 'center',
+      render: (_, record) => (
+        <Tooltip title="View profile">
+          <Button 
+            type="text" 
+            icon={<EyeOutlined />} 
+            onClick={() => handleViewProfile(record)}
+          />
+        </Tooltip>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      align: 'center',
+      render: (_, record) => (
+        influencersInBuckets.has(record.influencerId) ? (
+          <Tag color="green" icon={<CheckOutlined />}>
+            In Bucket
+          </Tag>
+        ) : (
+          <AddToBucketListModal data={record} />
+        )
+      ),
+    },
+  ];
+
+  const rowSelection = {
+    selectedRowKeys: selectedInfluencers.map(item => item.id),
+    onChange: (selectedRowKeys, selectedRows) => {
+      setSelectedInfluencers(selectedRows);
+    },
   };
 
   return (
-    <>
-      <section className="flex items-center justify-between mt-4">
-        <div>
-          {Array.isArray(selectedInfluencers) &&
-            selectedInfluencers.length > 0 && (
-              <div className="">
-                <AddToBucketListModal data={selectedInfluencers} />
-              </div>
+    <Card 
+      title={<Title level={4} style={{ margin: 0 }}>Influencer Discovery</Title>}
+      extra={<FiltersDrawer />}
+      styles={{ body: { padding: 0 } }} // Updated to use styles.body instead of bodyStyle
+    >
+      <div style={{ padding: 24 }}>
+        {selectedInfluencers.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <AddToBucketListModal data={selectedInfluencers} />
+          </div>
+        )}
+
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 6 }} />
+        ) : (
+          <>
+            {totalItems > 0 ? (
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={displayedInfluencers}
+                  rowKey="id"
+                  pagination={false}
+                  scroll={{ x: 'max-content' }} // This enables horizontal scroll
+                  rowSelection={{
+                    type: 'checkbox',
+                    ...rowSelection,
+                  }}
+                />
+                <div style={{ marginTop: 24, textAlign: 'right' }}>
+                  <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={totalItems}
+                    onChange={setCurrentPage}
+                    showSizeChanger={false}
+                    showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} influencers`}
+                  />
+                </div>
+              </>
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <Space direction="vertical">
+                    <Text>No influencers available</Text>
+                    <Text type="secondary">Try adjusting your filters</Text>
+                  </Space>
+                }
+              >
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Explore Influencers
+                </Button>
+              </Empty>
             )}
-        </div>
-        <Suspense fallback={<div>Loading filters...</div>}>
-          <FiltersDrawer />
-        </Suspense>
-      </section>
-
-      {loading ? (
-        <Skeleton
-          baseColor="#E6E7EB"
-          highlightColor="#f0f0f0"
-          count={4}
-          height={100}
-        />
-      ) : (
-        <>
-          {currentData.length > 0 ? (
-            <div className="w-full overflow-x-auto h-[65vh] my-2">
-              <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary text-xs text-white font-semibold">
-                  <tr>
-                    <th className="w-[150px] p-3">Full Name</th>
-                    <th className="w-[150px] p-3">Country</th>
-                    <th className="w-[150px] p-3">City</th>
-                    <th className="w-[150px] p-3">Race</th>
-                    <th className="w-[150px] p-3 text-center">View Profile</th>
-                    <th className="w-[150px] p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentData.map((data) => (
-                    <tr
-                      key={data.id}
-                      className="border-b border-input text-center text-xs"
-                    >
-                      <td className="p-3 flex items-center gap-3">
-                        <input
-                          className="cursor-pointer scale-150"
-                          type="checkbox"
-                          checked={selectedInfluencers.some(
-                            (item) => item.id === data.id
-                          )}
-                          onChange={() => handleCheckboxChange(data)}
-                        />
-                        {!data.profilePicture ? (
-                          <FaUserCircle className="w-12 h-12" />
-                        ) : (
-                          <img
-                            className="w-12 h-12 rounded-full object-cover"
-                            src={data.profilePicture}
-                            alt=""
-                          />
-                        )}
-                        <p className="font-semibold text-color">
-                          {data?.fullName}
-                        </p>
-                      </td>
-                      <td className="p-3">{data?.country}</td>
-                      <td className="p-3">{data?.city}</td>
-                      <td className="p-3">{data.ethnicBackground}</td>
-
-                      <td className="p-3">
-                        <div className="flex justify-center">
-                          <TiEye
-                            onClick={() => handleViewProfile(data)}
-                            className="text-xl text-color cursor-pointer"
-                          />
-                        </div>
-                      </td>
-
-                      <td className="p-3 flex justify-center">
-                        {influencersInBuckets.has(data.influencerId) ? (
-                          <p className="text-green font-bold">
-                            Added to Bucket
-                          </p>
-                        ) : (
-                          <AddToBucketListModal {...{ data }} />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {/* pagination */}
-              <section className="flex gap-4 items-center justify-around my-8">
-                <div className="flex items-center gap-2">
-                  <HiArrowLongLeft />
-                  <small className="text-xs">Prev {itemsPerPage}</small>
-                </div>
-                <div className="space-x-6 text-sm">
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(index + 1)}
-                      className={` ${
-                        currentPage === index + 1
-                          ? "font-bold text-primary border-b-2"
-                          : "font-thin text-color"
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <small className="text-xs">Next {itemsPerPage}</small>
-                  <HiArrowLongRight />
-                </div>
-              </section>
-            </div>
-          ) : (
-            <section className="h-[60vh] flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center">
-                <FaBoxOpen className="text-9xl text-gray" />
-                <p className="mr-4 text-sm font-light">
-                  No Influencers available in your Repository
-                </p>
-              </div>
-            </section>
-          )}
-        </>
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </Card>
   );
 };
 

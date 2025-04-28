@@ -1,17 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { HiArrowLongLeft, HiArrowLongRight } from "react-icons/hi2";
+import { Table, Empty, Button, Pagination, Tag, Space, Card } from "antd";
+import { 
+  HiArrowLongLeft, 
+  HiArrowLongRight, 
+  HiPlus 
+} from "react-icons/hi2";
+import { TiEye } from "react-icons/ti";
+import { FaBoxOpen } from "react-icons/fa";
 import BucketListDialog from "./bucket-list-dialog";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useSelector, useDispatch } from "react-redux";
 import ConfirmDialog from "./confirmDialog";
-import "react-loading-skeleton/dist/skeleton.css";
-import Skeleton from "react-loading-skeleton";
 import EditBucketListDialog from "./edit-bucket-list";
-import { TiEye } from "react-icons/ti";
 import Link from "next/link";
-import { FaBoxOpen } from "react-icons/fa";
+import dayjs from "dayjs";
 
 const BucketList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,9 +28,7 @@ const BucketList = () => {
   const auth = useAuth();
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData =
-    Array.isArray(bucketList) &&
-    bucketList.slice(startIndex, startIndex + itemsPerPage);
+  const currentData = Array.isArray(bucketList) && bucketList.slice(startIndex, startIndex + itemsPerPage);
 
   useEffect(() => {
     if (auth && bucketList.length === 0) {
@@ -35,119 +37,130 @@ const BucketList = () => {
     }
   }, [auth, bucketList.length]);
 
-  return (
-    <>
-      <section className="flex items-center justify-end my-4">
-        <div className="flex items-center gap-4">
-          <button className="border border-primary text-primary rounded text-xs px-4 py-3">
-            Add to Campaign
-          </button>
-          <BucketListDialog />
-        </div>
-      </section>
+  const columns = [
+    {
+      title: 'Bucket Name',
+      dataIndex: 'name',
+      key: 'name',
+      width: 150,
+      render: (text) => <span className="font-medium">{text}</span>,
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      width: 200,
+      ellipsis: true,
+    },
+    {
+      title: 'No. Of Influencers',
+      dataIndex: 'influencers',
+      key: 'influencers',
+      width: 150,
+      render: (influencers) => (
+        <Tag color="blue" className="text-xs">
+          {influencers.length}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 150,
+      render: (date) => dayjs(date).format('MMM D, YYYY'),
+    },
+    {
+      title: 'View',
+      key: 'view',
+      width: 150,
+      align: 'left',
+      render: (_, record) => (
+        <Link href={`/brand/influencer-discovery/influencerBuckets/${record.id}`}>
+          <Button 
+            type="text" 
+            icon={<TiEye className="text-lg" />} 
+            className="flex items-center justify-center"
+          />
+        </Link>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: 200,
+      render: (_, record) => (
+        <Space size="small">
+          <EditBucketListDialog data={record} />
+          <ConfirmDialog data={record} />
+        </Space>
+      ),
+    },
+  ];
 
+  return (
+    <Card
+      title="Bucket List"
+      extra={
+        <Space>
+          <Button className="flex items-center">
+            Add to Campaign
+          </Button>
+          <BucketListDialog />
+        </Space>
+      }
+      className="shadow-sm"
+    >
       {loading ? (
-        <Skeleton
-          baseColor="#E6E7EB"
-          highlightColor="#f0f0f0"
-          count={4}
-          height={100}
+        <Table
+          columns={columns}
+          dataSource={[]}
+          loading={loading}
+          pagination={false}
         />
       ) : (
         <>
           {currentData.length > 0 ? (
-            <div className="w-full overflow-x-auto h-[65vh]">
-              <table className="w-full min-w-[1000px] border border-input table-fixed">
-                <thead className="bg-gradient-to-r from-primary to-secondary text-xs text-white ">
-                  <tr>
-                    <th className="w-[150px] p-3">Bucket Name</th>
-                    <th className="w-[200px] p-3">Description</th>
-                    <th className="w-[150px] p-3">No. Of Influencers</th>
-                    <th className="w-[150px] p-3">Created At</th>
-                    <th className="w-[150px] p-3 text-center">View</th>
-                    <th className="w-[200px] p-3">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentData.map((data) => (
-                    <tr
-                      key={data.id}
-                      className="border-b border-input text-center text-xs"
-                    >
-                      <td className="p-3">{data?.name}</td>
-                      <td className="p-3 truncate">{data?.description}</td>
-                      <td className="p-3">{data.influencers.length}</td>
-                      <td className="p-3">
-                        {new Date(data.createdAt).toLocaleDateString()}
-                      </td>
-
-                      {/* ✅ FIXED: Center the eye icon correctly */}
-                      <td className="p-3">
-                        <Link
-                          href={`/brand/influencer-discovery/influencerBuckets/${data.id}`}
-                          className="flex justify-center"
-                        >
-                          <TiEye className="text-xl text-color cursor-pointer" />
-                        </Link>
-                      </td>
-
-                      <td className="p-3 flex justify-center gap-2">
-                        <EditBucketListDialog {...{ data }} />
-                        <ConfirmDialog {...{ data }} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Pagination */}
-              <section className="flex gap-4 items-center justify-around my-8">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  className="flex items-center gap-2 text-xs"
-                >
-                  <HiArrowLongLeft />
-                  Prev {itemsPerPage}
-                </button>
-                <div className="space-x-6 text-sm">
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(index + 1)}
-                      className={` ${
-                        currentPage === index + 1
-                          ? "font-bold text-primary border-b-2"
-                          : "font-thin text-color"
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  className="flex items-center gap-2 text-xs"
-                >
-                  Next {itemsPerPage}
-                  <HiArrowLongRight />
-                </button>
-              </section>
+            <div className="w-full">
+              <Table
+                columns={columns}
+                dataSource={currentData}
+                pagination={false}
+                scroll={{ x: 'max-content', y: '55vh' }}
+                className="custom-table"
+                rowKey="id"
+              />
+              
+              <div className="flex justify-center mt-6">
+                <Pagination
+                  current={currentPage}
+                  total={bucketList.length}
+                  pageSize={itemsPerPage}
+                  onChange={setCurrentPage}
+                  showSizeChanger={false}
+                  prevIcon={<HiArrowLongLeft />}
+                  nextIcon={<HiArrowLongRight />}
+                  className="ant-pagination-custom"
+                />
+              </div>
             </div>
           ) : (
-            <section className="h-[60vh] flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center">
-                <FaBoxOpen className="text-9xl text-gray" />
-                <p className="mr-4 text-sm font-light">No Buckets available in your Repository</p>
-              </div>
-            </section>
+            <Empty
+              image={<FaBoxOpen className="text-6xl text-gray-400" />}
+              imageStyle={{ height: 80, fontSize: '4rem' }}
+              description={
+                <span className="text-gray-500">
+                  No Buckets available in your Repository
+                </span>
+              }
+              className="flex flex-col items-center justify-center h-[60vh]"
+            >
+              <BucketListDialog />
+            </Empty>
           )}
         </>
       )}
-    </>
+    </Card>
   );
 };
 
