@@ -1,27 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { 
-  Table, 
-  Button, 
-  Avatar, 
-  Tag, 
-  Space, 
-  Typography, 
-  Card, 
-  Empty, 
-  Skeleton, 
+import {
+  Table,
+  Button,
+  Avatar,
+  Tag,
+  Space,
+  Typography,
+  Card,
+  Empty,
+  Skeleton,
   Checkbox,
   Pagination,
   Tooltip,
-  Badge
+  Badge,
 } from "antd";
-import { 
-  EyeOutlined, 
-  ArrowLeftOutlined, 
-  ArrowRightOutlined, 
+import {
+  EyeOutlined,
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
   UserOutlined,
   PlusOutlined,
-  CheckOutlined
+  CheckOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { getAllInfluencers } from "@/redux/features/influencer/filter";
@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import AddToBucketListModal from "./add-to-bucket-modal";
 import FiltersDrawer from "./filters-drawer";
+import AddToCampaignModal from "./add-to-campaign-modal";
 
 const { Text, Title } = Typography;
 
@@ -46,7 +47,8 @@ const AllInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
 
-  const displayedInfluencers = filterResults.length > 0 ? filterResults : influencers;
+  const displayedInfluencers =
+    filterResults.length > 0 ? filterResults : influencers;
   const totalItems = displayedInfluencers?.length || 0;
 
   // influencers in buckets
@@ -59,10 +61,10 @@ const AllInfluencers = () => {
   );
 
   const handleCheckboxChange = (influencer, checked) => {
-    setSelectedInfluencers(prev => 
-      checked 
-        ? [...prev, influencer] 
-        : prev.filter(item => item.id !== influencer.id)
+    setSelectedInfluencers((prev) =>
+      checked
+        ? [...prev, influencer]
+        : prev.filter((item) => item.id !== influencer.id)
     );
   };
 
@@ -95,18 +97,18 @@ const AllInfluencers = () => {
 
   const columns = [
     {
-      title: 'Influencer',
-      dataIndex: 'fullName',
-      key: 'name',
+      title: "Influencer",
+      dataIndex: "fullName",
+      key: "name",
       render: (text, record) => (
         <Space>
           <Checkbox
-            checked={selectedInfluencers.some(item => item.id === record.id)}
+            checked={selectedInfluencers.some((item) => item.id === record.id)}
             onChange={(e) => handleCheckboxChange(record, e.target.checked)}
           />
-          <Avatar 
-            size="large" 
-            src={record.profilePicture} 
+          <Avatar
+            size="large"
+            src={record.profilePicture}
             icon={<UserOutlined />}
           />
           <Text strong>{text}</Text>
@@ -114,8 +116,8 @@ const AllInfluencers = () => {
       ),
     },
     {
-      title: 'Location',
-      key: 'location',
+      title: "Location",
+      key: "location",
       render: (_, record) => (
         <Space direction="vertical" size={0}>
           <Text>{record.country}</Text>
@@ -124,60 +126,74 @@ const AllInfluencers = () => {
       ),
     },
     {
-      title: 'Ethnicity',
-      dataIndex: 'ethnicBackground',
-      key: 'ethnicity',
+      title: "Ethnicity",
+      dataIndex: "ethnicBackground",
+      key: "ethnicity",
       render: (text) => <Tag color="geekblue">{text}</Tag>,
     },
     {
-      title: 'Profile',
-      key: 'profile',
-      align: 'center',
+      title: "Profile",
+      key: "profile",
+      align: "center",
       render: (_, record) => (
         <Tooltip title="View profile">
-          <Button 
-            type="text" 
-            icon={<EyeOutlined />} 
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
             onClick={() => handleViewProfile(record)}
           />
         </Tooltip>
       ),
     },
     {
-      title: 'Actions',
-      key: 'actions',
-      align: 'center',
-      render: (_, record) => (
+      title: "Actions",
+      key: "actions",
+      align: "center",
+      render: (_, record) =>
         influencersInBuckets.has(record.influencerId) ? (
           <Tag color="green" icon={<CheckOutlined />}>
             In Bucket
           </Tag>
         ) : (
           <AddToBucketListModal data={record} />
-        )
-      ),
+        ),
     },
   ];
 
   const rowSelection = {
-    selectedRowKeys: selectedInfluencers.map(item => item.id),
+    selectedRowKeys: selectedInfluencers.map((item) => item.id),
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedInfluencers(selectedRows);
     },
   };
 
   return (
-    <Card 
-      title={<Title level={4} style={{ margin: 0 }}>Influencer Discovery</Title>}
+    <Card
+      title={
+        <Title level={4} style={{ margin: 0 }}>
+          Influencer Discovery
+        </Title>
+      }
       extra={<FiltersDrawer />}
       styles={{ body: { padding: 0 } }} // Updated to use styles.body instead of bodyStyle
     >
       <div style={{ padding: 24 }}>
-        {selectedInfluencers.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            <AddToBucketListModal data={selectedInfluencers} />
+        <section className="flex items-center gap-2">
+          <div>
+            {selectedInfluencers.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <AddToBucketListModal data={selectedInfluencers} />
+              </div>
+            )}
           </div>
-        )}
+          <div>
+            {selectedInfluencers.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <AddToCampaignModal data={selectedInfluencers} />
+              </div>
+            )}
+          </div>
+        </section>
 
         {loading ? (
           <Skeleton active paragraph={{ rows: 6 }} />
@@ -190,20 +206,22 @@ const AllInfluencers = () => {
                   dataSource={displayedInfluencers}
                   rowKey="id"
                   pagination={false}
-                  scroll={{ x: 'max-content' }} // This enables horizontal scroll
+                  scroll={{ x: "max-content" }} // This enables horizontal scroll
                   rowSelection={{
-                    type: 'checkbox',
+                    type: "checkbox",
                     ...rowSelection,
                   }}
                 />
-                <div style={{ marginTop: 24, textAlign: 'right' }}>
+                <div style={{ marginTop: 24, textAlign: "right" }}>
                   <Pagination
                     current={currentPage}
                     pageSize={itemsPerPage}
                     total={totalItems}
                     onChange={setCurrentPage}
                     showSizeChanger={false}
-                    showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} influencers`}
+                    showTotal={(total, range) =>
+                      `${range[0]}-${range[1]} of ${total} influencers`
+                    }
                   />
                 </div>
               </>

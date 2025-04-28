@@ -5,13 +5,10 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { moveToBucket } from "@/redux/services/influencer/bucket";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
-import BucketListDialog from "../../Brand/BucketList/bucket-list-dialog";
-import { PlusOutlined } from "@ant-design/icons";
-import toast from "react-hot-toast";
 
 const { useToken } = theme;
 
-export default function AddToBucketListModal({ data }) {
+export default function AddToCampaignModal({ data }) {
   const { token } = useToken();
   const [form] = Form.useForm();
   const { bucketList } = useSelector((store) => store.bucket);
@@ -37,14 +34,13 @@ export default function AddToBucketListModal({ data }) {
       };
 
       const response = await moveToBucket(auth, payload);
-      console.log("BUCKET_RESPONSE ", response);
       if (response.status === 200) {
-        toast.success("Added to bucket successfully");
+        message.success("Added to bucket successfully");
         dispatch(fetchAllBuckets(auth));
         setOpen(false);
         form.resetFields();
       } else {
-        toast.error(response.errorMessage[0] || "Something went wrong");
+        message.error(response.data?.message || "Something went wrong");
       }
     } catch (error) {
       message.error(
@@ -69,11 +65,11 @@ export default function AddToBucketListModal({ data }) {
         className="bg-primary text-white font-light px-4 py-2 text-sm rounded-sm"
         onClick={handleOpen}
       >
-        Add To Bucket
+        Add To Campaign
       </button>
 
       <Modal
-        title="Add to Bucket"
+        title="Add to Campaign"
         open={open}
         onCancel={() => {
           form.resetFields();
@@ -92,12 +88,12 @@ export default function AddToBucketListModal({ data }) {
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="selectedBucket"
-            label="Select Bucket"
-            rules={[{ required: true, message: "Please select a bucket" }]}
+            label="Select Campaign"
+            rules={[{ required: true, message: "Please select a campaign" }]}
           >
             <Select
               ref={selectRef}
-              placeholder="Select a bucket"
+              placeholder="Select a campaign"
               showSearch
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -117,8 +113,6 @@ export default function AddToBucketListModal({ data }) {
           </Form.Item>
 
           <div className="flex justify-between items-center mt-6">
-            <BucketListDialog />
-
             <Space>
               <button
                 className="bg-primary text-white font-light px-4 py-3 text-xs rounded-sm"
@@ -126,7 +120,7 @@ export default function AddToBucketListModal({ data }) {
                 loading={loading}
                 disabled={loading}
               >
-                {loading ? "Adding..." : "Add to Bucket"}
+                {loading ? "Adding..." : "Add to Campaign"}
               </button>
             </Space>
           </div>
