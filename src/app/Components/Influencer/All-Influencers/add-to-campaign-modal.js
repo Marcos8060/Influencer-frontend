@@ -62,7 +62,7 @@ export default function AddToCampaignModal({ data }) {
   return (
     <>
       <button
-        className="bg-primary text-white font-light px-4 py-2 text-sm rounded-sm"
+        className="bg-primary text-white font-light px-4 py-2 text-xs rounded-sm"
         onClick={handleOpen}
       >
         Add To Campaign

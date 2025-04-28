@@ -74,9 +74,15 @@ export const menu = [
   },
   {
     label: "Inbox",
-    path: "",
+    path: "/onboarding/brand/chat-box",
     icon: <FaMessage />,
-    role: ["Influencer", "Brand"],
+    role: ["Brand"],
+  },
+  {
+    label: "Inbox",
+    path: "/onboarding/influencer/chat-box",
+    icon: <FaMessage />,
+    role: ["Influencer","Brand"],
   },
   {
     label: "Settings",
