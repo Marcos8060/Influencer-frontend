@@ -30,19 +30,31 @@ import { getInfluencerProfileByBrand } from "@/redux/features/socials";
 import { usePathname } from "next/navigation";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
+import { approveCampaignApplication } from "@/redux/services/campaign";
+import { motion } from "framer-motion";
+import { set } from "date-fns";
+import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
+import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
+import toast from "react-hot-toast";
+import ChristmasAnimation from "@/app/Components/SharedComponents/ChristmasAnimation";
 
 const InfluencerProfile = () => {
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [loading, setLoading] = useState(false);
   const { posts } = useSelector((store) => store.campaign);
   const { brandInfluencerProfile } = useSelector((store) => store.socials);
+  const [loadApproval, setLoadApproval] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [approved, setApproved] = useState(false);
   const pathname = usePathname();
   const segments = pathname.split("/");
+  const campaignIdsegment = pathname?.split("/").filter(Boolean);
+  const campaignId = campaignIdsegment?.[2];
   const influencerId = segments[segments.length - 1];
 
   const dispatch = useDispatch();
   const auth = useAuth();
-
   const userId = "40678282-c173-4788-89c9-14ea5596651e";
 
   const fetchData = async () => {
@@ -67,6 +79,29 @@ const InfluencerProfile = () => {
     }
   };
 
+  const approveApplication = async () => {
+    const payload = {
+      campaignId: campaignId,
+      influencerId: influencerId,
+      status: "approved",
+    };
+    try {
+      setLoadApproval(true);
+      const res = await approveCampaignApplication(auth, payload);
+      if (res.status === 404) {
+        toast.error(res.response.data.errorMessage[0]);
+      } else {
+        toast.success("Approval Successful");
+        setApproved(true);
+        setShowAnimation(true);
+        setTimeout(() => setShowAnimation(false), 6000);
+      }
+    } catch (error) {
+    } finally {
+      setLoadApproval(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchInfluencerProfile();
@@ -74,6 +109,7 @@ const InfluencerProfile = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 text-color">
+      {showAnimation && <ChristmasAnimation />}
       {/* Profile Header */}
       {loading ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
@@ -185,17 +221,53 @@ const InfluencerProfile = () => {
 
               {/* Add this approve/reject section */}
               <div className="flex gap-3">
-                <button className="bg-green px-4 py-2 text-sm text-white rounded-3xl hover:bg-green font-light flex gap-1">
-                  <CheckCircleFilled />
-                  Approve
-                </button>
-                <Button
-                  className="rounded-3xl font-light"
-                  danger
-                  icon={<CloseCircleFilled />}
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                 >
+                  <SuccessButtonComponent
+                    onClick={approveApplication}
+                    type="submit"
+                    label={
+                      loadApproval ? (
+                        <span className="flex items-center justify-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Approving...
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          {approved ? "Approved" : "Approve"}{" "}
+                          <CheckCircleFilled className="ml-2" />
+                        </span>
+                      )
+                    }
+                    disabled={loadApproval || approved}
+                    className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
+                  />
+                </motion.div>
+                <button className="bg-red/80 px-6 py-2 text-sm text-white hover:bg-green font-light flex gap-1">
+                  <CloseCircleFilled />
                   Reject
-                </Button>
+                </button>
               </div>
             </div>
           </div>
