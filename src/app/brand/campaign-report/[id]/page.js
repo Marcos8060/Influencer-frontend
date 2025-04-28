@@ -77,7 +77,6 @@ const CampaignReport = () => {
         toast.error(res.response.data.errorMessage[0]);
       } else {
         toast.success("Approval Successful");
-        await getCampaignDetails();
         setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
       }
