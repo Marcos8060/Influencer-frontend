@@ -37,7 +37,7 @@ const CreateCampaign = () => {
   return (
     <>
       <div className="py-4">
-        <section className="border-b border-b-input w-full pt-1 px-2 mx-auto flex items-center justify-between text-color text-sm">
+        <section className="border-b border-b-input w-full pt-1 px-2 mx-auto flex items-center justify-between text-color text-sm mb-4">
           <div className="flex items-center gap-8">
             <div
               className={`${
