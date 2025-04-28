@@ -188,7 +188,7 @@ const WhatsAppChat = () => {
                   title={
                     <div className="chat-title">
                       <span>{chat.name}</span>
-                      <span className="chat-time">{chat.time}</span>
+                      <span className="chat-time text-color">{chat.time}</span>
                     </div>
                   }
                   description={
