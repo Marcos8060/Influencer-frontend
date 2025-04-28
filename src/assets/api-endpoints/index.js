@@ -43,6 +43,7 @@ export const API_URL = {
   APPLY_CAMPAIGN: `${baseUrl}/campaigns/apply/`,
   ADD_POST_TO_CAMPAIGN: `${baseUrl}/campaigns/posts/add/`,
   FETCH_CAMPAIGN_DETAILS: `${baseUrl}/campaigns/get/`,
+  APPROVE_CAMPAIGN_APPLICATION: `${baseUrl}/campaigns/approve/`,
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
@@ -98,6 +99,7 @@ export const APP_API_URL = {
   APPROVED_CAMPAIGNS: '/api/campaign/approved-campaigns',
   ADD_POST_TO_CAMPAIGN: '/api/campaign/add-post-to-campaign',
   FETCH_CAMPAIGN_DETAILS: '/api/campaign/fetch-campaign-details',
+  APPROVE_CAMPAIGN_APPLICATION: '/api/campaign/approve-application',
 
 
   /***************** BUCKET LIST APIs **********************/

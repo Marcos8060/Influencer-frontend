@@ -58,6 +58,21 @@ export const applyCampaign = async (auth,id) => {
     }
 };
 
+export const approveCampaignApplication = async (auth,payload) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.APPROVE_CAMPAIGN_APPLICATION}`, payload,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            
+        });
+        return response
+    } catch (error) {
+        console.error("Error approving campaign campaign:", error);
+        return error || error.message;
+    }
+};
+
 
 export const fetchBrandCampaigns = async (auth) => {
     try {

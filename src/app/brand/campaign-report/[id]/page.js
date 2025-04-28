@@ -1,25 +1,50 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { HiOutlineArrowNarrowLeft } from "react-icons/hi";
+import {
+  ArrowLeftOutlined,
+  ShoppingOutlined,
+  TeamOutlined,
+  HistoryOutlined,
+  EyeOutlined,
+  PlusOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  CheckCircleFilled,
+  CloseCircleFilled,
+} from "@ant-design/icons";
+import {
+  Card,
+  Statistic,
+  Row,
+  Col,
+  Button,
+  Table,
+  Tag,
+  Avatar,
+  Space,
+  Divider,
+  Typography,
+  Skeleton,
+  Empty,
+  Image,
+  List,
+  Descriptions,
+  Badge,
+} from "antd";
 import Link from "next/link";
-import { AiOutlineShopping } from "react-icons/ai";
-import { FaUsersBetweenLines } from "react-icons/fa6";
-import { FaUsersViewfinder } from "react-icons/fa6";
-import { MdWorkHistory } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import { useAuth } from "@/assets/hooks/use-auth";
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getAllCampaignDetails } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
-import { GrInstagram } from "react-icons/gr";
-import { IoLogoTiktok } from "react-icons/io5";
-import { FiEye } from "react-icons/fi";
+import { approveCampaignApplication } from "@/redux/services/campaign";
+import ChristmasAnimation from "@/app/Components/SharedComponents/ChristmasAnimation";
 
+const { Title, Text, Paragraph } = Typography;
 
 const CampaignReport = () => {
   const { campaignDetails } = useSelector((store) => store.campaign);
+  const [showAnimation, setShowAnimation] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
@@ -27,7 +52,7 @@ const CampaignReport = () => {
   const auth = useAuth();
 
   const segments = pathname.split("/");
-  const id = segments[segments.length - 1]; // Get last part of the URL
+  const id = segments[segments.length - 1];
 
   const getCampaignDetails = async () => {
     try {
@@ -40,465 +65,432 @@ const CampaignReport = () => {
     }
   };
 
+  const approveApplication = async (influencerId) => {
+    const payload = {
+      campaignId: id,
+      influencerId: influencerId,
+      status: "approved",
+    };
+    try {
+      const res = await approveCampaignApplication(auth, payload);
+      if (res.status === 404) {
+        toast.error(res.response.data.errorMessage[0]);
+      } else {
+        toast.success("Approval Successful");
+        await getCampaignDetails();
+        setShowAnimation(true);
+        setTimeout(() => setShowAnimation(false), 6000);
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
+
   useEffect(() => {
     if (auth) {
       getCampaignDetails();
     }
   }, [auth]);
 
-  return (
-    <div className="bg-background">
-      <section className=" text-link w-full mx-auto rounded p-4 flex gap-2 items-center">
-        <HiOutlineArrowNarrowLeft />
-        <Link href="/brand/view-campaigns" className="font-semibold text-sm">
-          Back Campaigns
-        </Link>
-      </section>
-      <section className="p-4 text-color space-y-8 mb-8">
-        <div className="w-full mx-auto space-y-4">
-          <section className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
-            <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-              <div className="flex gap-2 items-center justify-between">
-                <p className="font-light">No. of Applicants</p>
-                <FaUsersViewfinder className="text-xl" />
-              </div>
-              <div className="flex gap-4 items-center">
-                <p className="font-semibold text-2xl">
-                  {campaignDetails.collaborators?.length}
-                </p>
-                <small className="text-secondary text-xs font-semibold">
-                  Pending Approval
-                </small>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-              <div className="flex gap-2 items-center justify-between">
-                <p className="font-light">Influencer Posts</p>
-                <MdWorkHistory className="text-xl text-green" />
-              </div>
-              <div className="flex gap-4 items-center">
-                <p className="font-semibold text-2xl">18</p>
-                <small className="text-green text-xs font-semibold">
-                  Total Offers
-                </small>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-              <div className="flex gap-2 items-center justify-between">
-                <p className="font-light">Total Reach</p>
-                <AiOutlineShopping className="text-xl" />
-              </div>
-              <div className="flex gap-4 items-center">
-                <p className="font-semibold text-2xl">12</p>
-                <small className="text-secondary text-xs font-semibold">
-                  Approaching Deadlines
-                </small>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-              <div className="flex gap-2 items-center justify-between">
-                <p className="font-light">Average Likes</p>
-                <FaUsersBetweenLines className="text-xl" />
-              </div>
-              <div className="flex gap-4 items-center">
-                <p className="font-semibold text-2xl">12%</p>
-                <small className="text-primary text-xs font-semibold">
-                  Average Engagement
-                </small>
-              </div>
-            </div>
-          </section>
-        </div>
-      </section>
-      {loading ? (
-        <Skeleton
-          baseColor="#E6E7EB"
-          highlightColor="#f0f0f0"
-          count={4}
-          height={100}
-        />
-      ) : (
-        <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-sm text-color">
-          {/* Campaign Header */}
-          <div className="flex flex-col md:flex-row gap-8 mb-8">
-            {/* Cover Image */}
-            <div className="w-full md:w-2/5">
-              <img
-                src={campaignDetails.coverImage}
-                alt={campaignDetails.title}
-                className="w-full h-64 object-cover rounded-xl shadow-md"
-              />
-            </div>
+  const handleApprove = (influencerId) => {
+    toast.success("Influencer approved successfully");
+  };
 
-            {/* Campaign Metadata */}
-            <div className="w-full md:w-3/5 space-y-4">
-              <div className="flex justify-between items-start">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {campaignDetails.title}
-                </h1>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                  Active
-                </span>
-              </div>
+  const handleReject = (influencerId) => {
+    toast.error("Influencer rejected");
+  };
 
-              <p className="text-gray-600">{campaignDetails.description}</p>
+  const stats = [
+    {
+      title: "No. of Applicants",
+      value: campaignDetails.collaborators?.length || 0,
+      icon: <TeamOutlined style={{ fontSize: 24 }} />,
+      status: "pending",
+      suffix: "Pending Approval",
+    },
+    {
+      title: "Influencer Posts",
+      value: 18,
+      icon: <HistoryOutlined style={{ fontSize: 24, color: "#52c41a" }} />,
+      status: "success",
+      suffix: "Total Offers",
+    },
+    {
+      title: "Total Reach",
+      value: 12,
+      icon: <ShoppingOutlined style={{ fontSize: 24 }} />,
+      status: "warning",
+      suffix: "Approaching Deadlines",
+    },
+    {
+      title: "Average Likes",
+      value: "12%",
+      icon: <TeamOutlined style={{ fontSize: 24 }} />,
+      status: "active",
+      suffix: "Average Engagement",
+    },
+  ];
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Start Date</p>
-                  <p className="font-medium">
-                    {new Date(campaignDetails.startDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">End Date</p>
-                  <p className="font-medium">
-                    {new Date(campaignDetails.endDate).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <a
-                  href={campaignDetails.exampleVideoUrl}
-                  target="_blank"
-                  className="inline-flex items-center text-blue-600 hover:underline"
-                >
-                  <svg
-                    className="w-5 h-5 mr-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M6.3 2.8L14 7.5l-7.7 4.7L2 7.5l4.3-4.7zM2 12.5l7.7 4.7 7.7-4.7-7.7 4.7L2 12.5z" />
-                  </svg>
-                  View Example Video
-                </a>
-              </div>
-            </div>
+  const columns = [
+    {
+      title: "Influencer",
+      dataIndex: "influencerName",
+      key: "influencerName",
+      render: (text, record) => (
+        <Space>
+          <Avatar src={record.profilePhoto} />
+          <div>
+            <Text strong>{text}</Text>
+            <br />
+            <Text type="secondary">
+              @{text.toLowerCase().replace(/\s+/g, "")}
+            </Text>
           </div>
+        </Space>
+      ),
+    },
+    {
+      title: "Country",
+      dataIndex: "influencerCountry",
+      key: "country",
+      responsive: ["md"], // Hide on mobile
+    },
+    {
+      title: "Bio",
+      dataIndex: "bio",
+      key: "bio",
+      responsive: ["lg"], // Hide on small screens
+      render: (text) => (
+        <Paragraph ellipsis={{ rows: 2 }} style={{ margin: 0 }}>
+          {text
+            ? text.length > 50
+              ? `${text.slice(0, 50)}...`
+              : text
+            : "No bio provided"}
+        </Paragraph>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status) => {
+        let color = "";
+        if (status === "approved") {
+          color = "green";
+        } else if (status === "rejected") {
+          color = "red";
+        } else {
+          color = "gold";
+        }
+        return (
+          <Tag color={color} style={{ textTransform: "capitalize" }}>
+            {status}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Profile",
+      key: "profile",
+      width: 100,
+      render: (_, record) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() =>
+            router.push(
+              `/brand/campaign-report/${id}/influencer-profile/${record.influencerId}`
+            )
+          }
+        >
+          View
+        </Button>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 200,
+      render: (_, record) => (
+        <Space>
+          {record.status === "pending" ? (
+            <>
+              <Button
+                type="text"
+                icon={<CheckOutlined />}
+                onClick={() => approveApplication(record.influencerId)}
+                style={{ color: "#52c41a" }}
+              >
+                Approve
+              </Button>
+              <Button
+                type="text"
+                danger
+                icon={<CloseOutlined />}
+                onClick={() => handleReject(record.influencerId)}
+              >
+                Reject
+              </Button>
+            </>
+          ) : (
+            <Button disabled>
+              {record.status === "approved" ? (
+                <Space>
+                  <CheckCircleFilled style={{ color: "#52c41a" }} />
+                  Approved
+                </Space>
+              ) : (
+                <Space>
+                  <CloseCircleFilled style={{ color: "#ff4d4f" }} />
+                  Rejected
+                </Space>
+              )}
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
 
-          {/* Products Section */}
-          <section className="mb-12">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Featured Products
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  return (
+    <div style={{ background: "#f0f2f5", minHeight: "100vh" }}>
+      {showAnimation && <ChristmasAnimation />}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
+        {/* Header */}
+        <Space style={{ marginBottom: 24 }}>
+          <Link href="/brand/view-campaigns">
+            <Button type="text" icon={<ArrowLeftOutlined />}>
+              Back to Campaigns
+            </Button>
+          </Link>
+        </Space>
+
+        {/* Stats */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          {stats.map((stat, index) => (
+            <Col xs={24} sm={12} md={6} key={index}>
+              <Card>
+                <Statistic
+                  title={stat.title}
+                  value={stat.value}
+                  prefix={stat.icon}
+                  suffix={
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {stat.suffix}
+                    </Text>
+                  }
+                />
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+        {loading ? (
+          <Card>
+            <Skeleton active paragraph={{ rows: 8 }} />
+          </Card>
+        ) : (
+          <Card
+            title={<Title level={4}>Campaign Details</Title>}
+            style={{ marginBottom: 24 }}
+            bodyStyle={{ padding: 0 }}
+          >
+            {/* Campaign Main Info */}
+            <div style={{ padding: 24 }}>
+              <Row gutter={[24, 24]}>
+                <Col xs={24} md={8}>
+                  <Image
+                    src={campaignDetails.coverImage}
+                    alt={campaignDetails.title}
+                    style={{ borderRadius: 8 }}
+                    preview={false}
+                  />
+                </Col>
+                <Col xs={24} md={16}>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <Space
+                      style={{ width: "100%", justifyContent: "space-between" }}
+                    >
+                      <Title level={3} style={{ margin: 0 }}>
+                        {campaignDetails.title}
+                      </Title>
+                      <Badge status="success" text="Active" />
+                    </Space>
+                    <Paragraph>{campaignDetails.description}</Paragraph>
+                    <Descriptions column={2}>
+                      <Descriptions.Item label="Start Date">
+                        {new Date(
+                          campaignDetails.startDate
+                        ).toLocaleDateString()}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="End Date">
+                        {new Date(campaignDetails.endDate).toLocaleDateString()}
+                      </Descriptions.Item>
+                    </Descriptions>
+                    {campaignDetails.exampleVideoUrl && (
+                      <Button
+                        type="link"
+                        href={campaignDetails.exampleVideoUrl}
+                        target="_blank"
+                        icon={<EyeOutlined />}
+                      >
+                        View Example Video
+                      </Button>
+                    )}
+                  </Space>
+                </Col>
+              </Row>
+            </div>
+
+            <Divider style={{ margin: 0 }} />
+
+            {/* Products */}
+            <div style={{ padding: 24 }}>
+              <Title level={4} style={{ marginBottom: 16 }}>
+                Featured Products
+              </Title>
               {Array.isArray(campaignDetails.products) &&
-                campaignDetails.products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="border border-input rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <img
-                      src={product.productImages[0]?.url}
-                      alt={product.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-medium text-lg">{product.name}</h3>
-                      <p className="text-gray-600 text-sm mt-1">
-                        {product.description}
-                      </p>
-                      <div className="mt-3 flex justify-start items-center">
-                        <span className="font-bold text-sm">
-                          ${product.price}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </section>
-
-          {/* Campaign Brief */}
-          <section className="mb-12 bg-gray-50 p-6 rounded-xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Campaign Brief
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium">{campaignDetails.briefTitle}</h3>
-                <p className="mt-1 text-sm">
-                  {campaignDetails.briefDescription}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    Content Requirements
-                  </h4>
-                  <ul className="space-y-2 text-sm">
-                    {Array.isArray(campaignDetails.preferences?.videoStyle) &&
-                      campaignDetails.preferences?.videoStyle.map(
-                        (style, i) => (
-                          <li key={i} className="flex items-center">
-                            <svg
-                              className="w-4 h-4 mr-2 text-green"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            {style}
-                          </li>
-                        )
-                      )}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-2">Technical Specs</h4>
-                  <div className="space-y-3 text-sm">
-                    <p>
-                      <span className="text-secondary">Format:</span>{" "}
-                      {campaignDetails.preferences?.videoFormat}
-                    </p>
-                    <p>
-                      <span className="text-secondary">Duration:</span>{" "}
-                      {campaignDetails.preferences?.videoDuration}s
-                    </p>
-                    <p>
-                      <span className="text-secondary">Deliverables:</span>{" "}
-                      {campaignDetails.preferences?.videosPerCreator} videos
-                    </p>
-                    <p>
-                      <span className="text-secondary">Channels:</span>{" "}
-                      {campaignDetails.preferences?.socialChannels.join(", ")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Influencer Collaborators Section */}
-          <section className="mb-12">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">
-                  Collaboration Requests
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  {campaignDetails.collaborators?.length || 0} pending
-                  applications
-                </p>
-              </div>
-              <button className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity shadow-sm flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                Invite Influencers
-              </button>
-            </div>
-
-            {campaignDetails.collaborators?.length > 0 ? (
-              <div className="bg-white rounded-xl border border-input overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-primary">
-                    <thead className="bg-background">
-                      <tr>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Influencer
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Bio
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Platforms
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Status
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Profile
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-input">
-                      {campaignDetails.collaborators.map((collab, index) => (
-                        <tr key={index} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                                <img className="w-10 h-10 rounded-full object-cover" src={collab.profilePhoto} alt="" />
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {collab.influencerName}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  @
-                                  {collab.influencerName
-                                    .toLowerCase()
-                                    .replace(/\s+/g, "")}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 max-w-xs">
-                            <p className="text-sm text-gray-500 line-clamp-2">
-                              {collab.bio || "No bio provided"}
-                            </p>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex gap-2">
-                              {collab.isInstagramAccountConnected && (
-                                  <span className="text-xs">
-                                    <GrInstagram className="text-pink-600" />
-                                  </span>
-                              )}
-                              {collab.isTiktokAccountConnected && (
-                                  <span className="text-xs">
-                                    <IoLogoTiktok className="text-black" />
-                                  </span>
-                              )}
-                              {collab.isTwitterAccountConnected && (
-                                  <span className="text-xs">
-                                    <FaXTwitter className="text-black" />
-                                  </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                collab.status === "approved"
-                                  ? "bg-green-100 text-green-800"
-                                  : collab.status === "rejected"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
-                            >
-                              {collab.status.charAt(0).toUpperCase() +
-                                collab.status.slice(1)}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `/brand/campaign-report/${id}/influencer-profile/${collab.influencerId}`
-                                )
-                              }
-                              className="text-primary hover:text-primary-dark flex items-center gap-1 text-sm"
-                            >
-                              <FiEye className="w-4 h-4" />
-                              View Profile
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            {collab.status === "pending" ? (
-                              <div className="flex justify-end gap-3">
-                                <button
-                                  onClick={() =>
-                                    handleApprove(collab.influencerId)
-                                  }
-                                  className="text-green-600 hover:text-green-800 font-medium text-sm"
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleReject(collab.influencerId)
-                                  }
-                                  className="text-red-600 hover:text-red-800 font-medium text-sm"
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                className="text-gray-400 cursor-not-allowed text-sm"
-                                disabled
+              campaignDetails.products.length > 0 ? (
+                <Row gutter={[16, 16]}>
+                  {campaignDetails.products.map((product) => (
+                    <Col xs={24} sm={12} md={8} key={product.id}>
+                      <Card
+                        hoverable
+                        cover={
+                          <img
+                            alt={product.name}
+                            src={product.productImages[0]?.url}
+                            style={{ height: 200, objectFit: "cover" }}
+                          />
+                        }
+                      >
+                        <Card.Meta
+                          title={product.name}
+                          description={
+                            <Space direction="vertical">
+                              <Paragraph
+                                ellipsis={{ rows: 2 }}
+                                style={{ margin: 0 }}
                               >
-                                Action taken
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl border border-input p-8 text-center">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                  />
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">
-                  No collaboration requests
-                </h3>
-                <p className="mt-1 text-sm text-gray-500 mb-4">
-                  Get started by inviting influencers to your campaign.
-                </p>
-                <button className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity inline-flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                                {product.description}
+                              </Paragraph>
+                              <Text strong>${product.price}</Text>
+                            </Space>
+                          }
+                        />
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              ) : (
+                <Empty description="No products added to this campaign" />
+              )}
+            </div>
+
+            <Divider style={{ margin: 0 }} />
+
+            {/* Brief */}
+            <div style={{ padding: 24 }}>
+              <Title level={4} style={{ marginBottom: 16 }}>
+                Campaign Brief
+              </Title>
+              <Card>
+                <Descriptions column={1} title={campaignDetails.briefTitle}>
+                  <Descriptions.Item>
+                    {campaignDetails.briefDescription}
+                  </Descriptions.Item>
+                </Descriptions>
+
+                <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+                  <Col xs={24} md={12}>
+                    <Title level={5}>Content Requirements</Title>
+                    <List
+                      size="small"
+                      dataSource={campaignDetails.preferences?.videoStyle || []}
+                      renderItem={(item) => (
+                        <List.Item>
+                          <CheckOutlined
+                            style={{ color: "#52c41a", marginRight: 8 }}
+                          />
+                          {item}
+                        </List.Item>
+                      )}
                     />
-                  </svg>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Title level={5}>Technical Specs</Title>
+                    <Descriptions column={1}>
+                      <Descriptions.Item label="Format">
+                        {campaignDetails.preferences?.videoFormat || "N/A"}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Duration">
+                        {campaignDetails.preferences?.videoDuration || "N/A"}s
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Deliverables">
+                        {campaignDetails.preferences?.videosPerCreator || "N/A"}{" "}
+                        videos
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Channels">
+                        {campaignDetails.preferences?.socialChannels?.join(
+                          ", "
+                        ) || "N/A"}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Col>
+                </Row>
+              </Card>
+            </div>
+
+            <Divider style={{ margin: 0 }} />
+
+            {/* Collaborators */}
+            <div style={{ padding: 24 }}>
+              <Space
+                style={{
+                  width: "100%",
+                  justifyContent: "space-between",
+                  marginBottom: 16,
+                }}
+              >
+                <Title level={4} style={{ margin: 0 }}>
+                  Collaboration Requests
+                </Title>
+                <button className="bg-primary text-white px-4 py-2 text-sm font-light">
                   Invite Influencers
                 </button>
-              </div>
-            )}
-          </section>
-        </div>
-      )}
+              </Space>
+
+              {campaignDetails.collaborators?.length > 0 ? (
+                <Table
+                  columns={columns}
+                  dataSource={campaignDetails.collaborators}
+                  rowKey="influencerId"
+                  pagination={{ pageSize: 5 }}
+                  scroll={{ x: "max-content" }} // ✅ Responsive table
+                />
+              ) : (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={
+                    <Space direction="vertical">
+                      <Text>No collaboration requests</Text>
+                      <Text type="secondary">
+                        Get started by inviting influencers to your campaign
+                      </Text>
+                    </Space>
+                  }
+                >
+                  <button className="bg-primary text-white px-4 py-2 text-sm font-light">
+                    Invite Influencers
+                  </button>
+                </Empty>
+              )}
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
