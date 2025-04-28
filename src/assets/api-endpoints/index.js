@@ -54,7 +54,8 @@ export const API_URL = {
   INSTAGRAM_PROFILE_DETAILS: `${baseUrl}/socialAccounts/instagram/profile/get/`,
   FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
   FETCH_TIKTOK_POSTS: `${baseUrl}/socialAccounts/tiktok/media/list/`,
-  FETCH_BRAND_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`
+  FETCH_BRAND_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`,
+  FETCH_INFLUENCER_DISCOVERY_PROFILE: `${baseUrl}/influencers/get/`
 };
 
 
@@ -118,7 +119,8 @@ export const APP_API_URL = {
   INSTAGRAM_PROFILE_DETAILS: "/api/socials/instagram/instagram-profile",
   FETCH_POSTS: '/api/socials/instagram/fetch-instagram-posts',
   FETCH_TIKTOK_POSTS: '/api/socials/tiktok/fetch-tiktok-posts',
-  FETCH_BRAND_INFLUENCER_PROFILE: '/api/socials/influencer-profile'
+  FETCH_BRAND_INFLUENCER_PROFILE: '/api/socials/influencer-profile',
+  FETCH_INFLUENCER_DISCOVERY_PROFILE: '/api/socials/influencer-discovery-profile'
 
 };
 

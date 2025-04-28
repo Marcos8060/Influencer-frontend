@@ -43,7 +43,7 @@ export const fetchTiktokPosts = async (auth) => {
     }
 };
 
-export const fetchInfluencerProfileByBrand = async (auth, influencer_id) => {
+export const fetchInfluencerProfileByBrand = async (auth, influencer_id,campaignId) => {
     try {
         const url = `${APP_API_URL.FETCH_BRAND_INFLUENCER_PROFILE}`;
         
@@ -51,7 +51,25 @@ export const fetchInfluencerProfileByBrand = async (auth, influencer_id) => {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            params: { influencer_id: influencer_id },
+            params: { influencer_id: influencer_id, page: 'campaignCollaborator',campaign_id: campaignId },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
+
+export const fetchInfluencerDiscoveryProfile = async (auth, influencer_id) => {
+    try {
+        const url = `${APP_API_URL.FETCH_INFLUENCER_DISCOVERY_PROFILE}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { influencer_id: influencer_id, page: 'influencerDiscovery' },
         });
 
         return response.data;

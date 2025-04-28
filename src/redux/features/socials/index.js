@@ -1,5 +1,5 @@
 import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
-import { fetchInfluencerProfileByBrand, fetchInstagramProfile, fetchTiktokPosts, fetchTiktokProfile } from "@/redux/services/socials";
+import { fetchInfluencerDiscoveryProfile, fetchInfluencerProfileByBrand, fetchInstagramProfile, fetchTiktokPosts, fetchTiktokProfile } from "@/redux/services/socials";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -8,7 +8,8 @@ const initialState = {
   tiktokProfile: {},
   instagramProfile: {},
   brandInfluencerProfile: {},
-  tiktokPosts: []
+  discoveryProfile: {},
+  tiktokPosts: [],
 };
 
 const SocialsSlice = createSlice({
@@ -33,6 +34,9 @@ const SocialsSlice = createSlice({
     setBrandInfluencerProfile: (state, action) => {
       state.brandInfluencerProfile = action.payload;
     },
+    setDiscoveryProfile: (state, action) => {
+      state.discoveryProfile = action.payload;
+    },
   },
 });
 
@@ -42,7 +46,8 @@ export const {
   setInstagram,
   setInstagramProfile,
   setTiktokPosts,
-  setBrandInfluencerProfile
+  setBrandInfluencerProfile,
+  setDiscoveryProfile
 } = SocialsSlice.actions;
 
 
@@ -96,10 +101,20 @@ export const getAllTiktokPosts = (auth) => async (dispatch) => {
   }
 };
 
-export const getInfluencerProfileByBrand = (auth,influencerId) => async (dispatch) => {
+export const getInfluencerProfileByBrand = (auth,influencerId,campaignId) => async (dispatch) => {
   try {
-    const data = await fetchInfluencerProfileByBrand(auth,influencerId);
+    const data = await fetchInfluencerProfileByBrand(auth,influencerId,campaignId);
     dispatch(setBrandInfluencerProfile(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getInfluencerDiscoveryProfile = (auth,influencerId) => async (dispatch) => {
+  try {
+    const data = await fetchInfluencerDiscoveryProfile(auth,influencerId);
+    dispatch(setDiscoveryProfile(data));
     return data;
   } catch (error) {
     console.log(error);

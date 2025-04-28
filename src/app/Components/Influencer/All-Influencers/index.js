@@ -69,8 +69,7 @@ const AllInfluencers = () => {
   };
 
   const handleViewProfile = (data) => {
-    localStorage.setItem("influencerData", JSON.stringify(data));
-    router.push(`/brand/influencer-discovery/influencerProfile/${data.userId}`);
+    router.push(`/brand/influencer-discovery/influencerProfile/${data.influencerId}`);
   };
 
   useEffect(() => {
