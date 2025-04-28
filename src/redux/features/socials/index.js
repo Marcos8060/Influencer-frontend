@@ -96,9 +96,9 @@ export const getAllTiktokPosts = (auth) => async (dispatch) => {
   }
 };
 
-export const getInfluencerProfileByBrand = (auth,influencerId) => async (dispatch) => {
+export const getInfluencerProfileByBrand = (auth,influencerId,campaignId) => async (dispatch) => {
   try {
-    const data = await fetchInfluencerProfileByBrand(auth,influencerId);
+    const data = await fetchInfluencerProfileByBrand(auth,influencerId,campaignId);
     dispatch(setBrandInfluencerProfile(data));
     return data;
   } catch (error) {

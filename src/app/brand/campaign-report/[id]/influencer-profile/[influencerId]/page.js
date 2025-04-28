@@ -53,6 +53,7 @@ const InfluencerProfile = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [approved, setApproved] = useState(false);
   const [rejected, setRejected] = useState(false);
+  const [collaboratorStatus, setCollaboratorStatus] = useState(undefined);
   const pathname = usePathname();
   const segments = pathname.split("/");
   const campaignIdsegment = pathname?.split("/").filter(Boolean);
@@ -75,9 +76,10 @@ const InfluencerProfile = () => {
   };
 
   const fetchInfluencerProfile = async () => {
+    // const page = 'campaignCollaborator'
     try {
       setLoading(true);
-      await dispatch(getInfluencerProfileByBrand(auth, influencerId));
+      await dispatch(getInfluencerProfileByBrand(auth, influencerId,campaignId));
     } catch (error) {
       // Optional: handle error here
     } finally {
@@ -99,6 +101,7 @@ const InfluencerProfile = () => {
       } else {
         toast.success("Approval Successful");
         setApproved(true);
+        setCollaboratorStatus("approved");
         setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
       }
@@ -122,14 +125,19 @@ const InfluencerProfile = () => {
       } else {
         toast.success("Rejection Successful");
         setRejected(true);
-        setShowAnimation(true);
-        setTimeout(() => setShowAnimation(false), 6000);
+        setCollaboratorStatus("rejected");
       }
     } catch (error) {
     } finally {
       setLoadRejection(false);
     }
   };
+
+  useEffect(() => {
+    if (brandInfluencerProfile?.collaborator?.status) {
+      setCollaboratorStatus(brandInfluencerProfile.collaborator.status);
+    }
+  }, [brandInfluencerProfile]);
 
   useEffect(() => {
     fetchData();
@@ -296,7 +304,7 @@ const InfluencerProfile = () => {
                         </span>
                       )
                     }
-                    disabled={loadApproval || approved}
+                    disabled={collaboratorStatus === 'approved' || approved}
                     className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
                   />
                 </motion.div>
@@ -339,7 +347,7 @@ const InfluencerProfile = () => {
                         </span>
                       )
                     }
-                    disabled={loadRejection || rejected}
+                    disabled={collaboratorStatus === 'rejected' || rejected}
                     className={`w-full py-3 px-4 rounded-lg font-medium bg-red/80 text-white transition-all`}
                   />
                 </motion.div>

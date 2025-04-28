@@ -43,7 +43,7 @@ export const fetchTiktokPosts = async (auth) => {
     }
 };
 
-export const fetchInfluencerProfileByBrand = async (auth, influencer_id) => {
+export const fetchInfluencerProfileByBrand = async (auth, influencer_id,campaignId) => {
     try {
         const url = `${APP_API_URL.FETCH_BRAND_INFLUENCER_PROFILE}`;
         
@@ -51,7 +51,7 @@ export const fetchInfluencerProfileByBrand = async (auth, influencer_id) => {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            params: { influencer_id: influencer_id },
+            params: { influencer_id: influencer_id, page: 'campaignCollaborator',campaign_id: campaignId },
         });
 
         return response.data;
