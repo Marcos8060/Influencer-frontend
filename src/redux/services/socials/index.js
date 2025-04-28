@@ -61,15 +61,15 @@ export const fetchInfluencerProfileByBrand = async (auth, influencer_id,campaign
     }
 };
 
-export const fetchInfluencerDiscoveryProfile = async (auth, influencer_id,campaignId) => {
+export const fetchInfluencerDiscoveryProfile = async (auth, influencer_id) => {
     try {
-        const url = `${APP_API_URL.FETCH_BRAND_INFLUENCER_PROFILE}`;
+        const url = `${APP_API_URL.FETCH_INFLUENCER_DISCOVERY_PROFILE}`;
         
         const response = await axios.get(url, {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            params: { influencer_id: influencer_id, page: 'campaignCollaborator',campaign_id: campaignId },
+            params: { influencer_id: influencer_id, page: 'influencerDiscovery' },
         });
 
         return response.data;

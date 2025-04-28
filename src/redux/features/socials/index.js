@@ -111,9 +111,9 @@ export const getInfluencerProfileByBrand = (auth,influencerId,campaignId) => asy
   }
 };
 
-export const getInfluencerDiscoveryProfile = (auth,influencerId,campaignId) => async (dispatch) => {
+export const getInfluencerDiscoveryProfile = (auth,influencerId) => async (dispatch) => {
   try {
-    const data = await fetchInfluencerDiscoveryProfile(auth,influencerId,campaignId);
+    const data = await fetchInfluencerDiscoveryProfile(auth,influencerId);
     dispatch(setDiscoveryProfile(data));
     return data;
   } catch (error) {

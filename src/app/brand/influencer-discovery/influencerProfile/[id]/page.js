@@ -1,32 +1,5 @@
-// "use client";
-// import React, { useState, useEffect } from "react";
-// import { useSelector } from "react-redux";
-
-// const InfluencersProfile = () => {
-//   const [loading,setLoading] = useState(false);
-//   const { discoveryProfile } = useSelector(( store ) => store.socials);
-
-//   const fetchInfluencerProfile = async () => {
-//     // const page = 'campaignCollaborator'
-//     try {
-//       setLoading(true);
-//       await dispatch(
-//         getInfluencerProfileByBrand(auth, influencerId, campaignId)
-//       );
-//     } catch (error) {
-//       // Optional: handle error here
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return <div>Welcome to Influencers Profile Section</div>;
-// };
-
-// export default InfluencersProfile;
-
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Card,
@@ -65,88 +38,38 @@ import {
 import Image from "next/image";
 import { FaTiktok } from "react-icons/fa";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { getInfluencerDiscoveryProfile } from "@/redux/features/socials";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 export default function InfluencerProfile() {
-  const [profile, setProfile] = useState({
-    id: "f0ed2743-e79e-4ec9-b79e-c9c291082641",
-    age: 32,
-    gender: "Male",
-    bio: "I am a tech influencer who is geeky about Machine Learning and Artificial Intelligence and exploration with Large Language Models",
-    platformVerified: false,
-    ethnicBackground: ["Asian"],
-    ethnicDescription: null,
-    addressLine1: "123 Cherry Blossom Street",
-    addressLine2: "Apt 456",
-    city: "Nairobi",
-    country: "Kenya",
-    zipCode: "94107",
-    phoneNumber: "415-555-7890",
-    website: null,
-    brandsWorkedWith: null,
-    isAvailableForCollaboration: false,
-    isInstagramConnected: true,
-    isTwitterAccountConnected: false,
-    isFacebookAccountConnected: true,
-    isTiktokConnected: true,
-    languages: null,
-    profileCompletionPercentage: "0.00",
-    contentCategories: ["Technology", "Fitness", "Travel"],
-    categories: null,
-    overallRate: "5.0",
-    totalRates: 0,
-    platformIntroductionSource: "Instagram",
-    agreedToTerms: true,
-    finishedOnboarding: true,
-    createdAt: "2025-04-04T13:48:27.129955Z",
-    updatedAt: null,
-    keywords: ["Tech Reviews", "Fitness Routines", "Travel Destinations"],
-    userId: "40678282-c173-4788-89c9-14ea5596651e",
-    influencerId: "f0ed2743-e79e-4ec9-b79e-c9c291082641",
-    fullName: "Jarib Mardo",
-    email: "mardocheejarib64@gmail.com",
-    profilePicture:
-      "http://res.cloudinary.com/dqjnaukdk/image/upload/v1744714739/40678282-c173-4788-89c9-14ea5596651e/profilePicture/z3eq9bxpseznawpkbpr3.jpg",
-    instagramUsername: "je_suis_jarib",
-    instagramBiography:
-      "💻 Full-Stack Developer • Debugging My Life Since 2015 ☕ ⚡ Python | JavaScript | React | existential keyboard",
-    instagramFollowersCount: 516,
-    instagramFollowsCount: 777,
-    instagramMediaCount: 27,
-    instagramProfilePictureUrl:
-      "https://scontent-sof1-2.cdninstagram.com/v/t51.2885-19/355866354_281061937657923_4052581550370811305_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=103&ccb=1-7&_nc_sid=bf7eb4&_nc_ohc=2sL93gCHN20Q7kNvwFxO7rK&_nc_oc=AdkB2SfVAjsoIQHTH4M0HX-Xma2LDksE_Xy7GYcXkA_I9ddtoPziBrm1sbjHZr3Pnic&_nc_zt=24&_nc_ht=scontent-sof1-2.cdninstagram.com&edm=AP4hL3IEAAAA&oh=00_AfECcqQ8iKabfd40BvaX6WOgKpJd5mq5OLZgr4b3mX_dbA&oe=68100120",
-    instagramMediaIds: [
-      "18337519363120349",
-      "17915062727093742",
-      "18165062257024736",
-      "18144191191028344",
-      "17876671501554393",
-    ],
-    tiktokUsername: "ladwetshi",
-    tiktokDisplayName: "Jarib Lad-Wetshi",
-    tiktokBioDescription:
-      "Hello 👋 \nI'm curious about everything worth being curious about✅",
-    tiktokProfileDeepLink: "https://vm.tiktok.com/ZMB7RGwka/",
-    tiktokIsVerified: false,
-    tiktokFollowerCount: 35,
-    tiktokFollowingCount: 206,
-    tiktokLikesCount: 3,
-    tiktokVideoCount: 1,
-    tiktokAvatarUrl:
-      "https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/570a2ee013dc624cbde4a66f3c283c55~tplv-tiktokx-cropcenter:168:168.jpeg?dr=14577&refresh_token=8c5251aa&x-expires=1745733600&x-signature=roV%2Bs6doWEMUezXYwUuaCNGxxbk%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=8aecc5ac&idc=maliva",
-    bucketList: [
-      {
-        bucketList_Id: "b398454e-0585-4151-9739-7e4391f6f2c8",
-        bucketList_Name: "Test bucket",
-      },
-      {
-        bucketList_Id: "f047179c-931c-484b-ad71-547423746af7",
-        bucketList_Name: "Basil the Cat",
-      },
-    ],
-  });
+  const [loading, setLoading] = useState(false);
+  const { discoveryProfile } = useSelector((store) => store.socials);
+  const dispatch = useDispatch();
+  const auth = useAuth();
+  const pathname = usePathname();
+  const segments = pathname.split("/");
+  const influencerId = segments[segments.length - 1];
+
+  const fetchInfluencerProfile = async () => {
+    const page = "campaignCollaborator";
+    try {
+      setLoading(true);
+      await dispatch(getInfluencerDiscoveryProfile(auth, influencerId));
+    } catch (error) {
+      // Optional: handle error here
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInfluencerProfile();
+  }, []);
 
   const formatNumber = (num) => {
     return num ? num.toLocaleString() : 0;
@@ -171,7 +94,7 @@ export default function InfluencerProfile() {
           <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end gap-6 z-10">
             <Badge
               count={
-                profile.platformVerified ? (
+                discoveryProfile.platformVerified ? (
                   <CheckOutlined className="text-white" />
                 ) : (
                   0
@@ -183,7 +106,7 @@ export default function InfluencerProfile() {
               <Avatar
                 src={
                   <Image
-                    src={profile.profilePicture}
+                    src={discoveryProfile?.profilePicture || discoveryProfile.instagramProfilePictureUrl}
                     alt="Profile"
                     width={150}
                     height={150}
@@ -195,27 +118,27 @@ export default function InfluencerProfile() {
             </Badge>
             <div className="text-white">
               <h1 className="text-white text-3xl font-semibold mb-2">
-                {profile.fullName}
+                {discoveryProfile.fullName}
               </h1>
-              <Paragraph className="text-lg text-white/90 mb-6">
-                {profile.bio}
+              <Paragraph className="text-md text-white/90 mb-6">
+                {discoveryProfile.bio}
               </Paragraph>
               <Space size="large">
                 <Statistic
                   title="Followers"
-                  value={formatNumber(profile.instagramFollowersCount)}
+                  value={formatNumber(discoveryProfile.instagramFollowersCount)}
                   className="text-white"
                   valueStyle={{ color: "white", fontSize: "20px" }}
                 />
                 <Statistic
                   title="Following"
-                  value={formatNumber(profile.instagramFollowsCount)}
+                  value={formatNumber(discoveryProfile.instagramFollowsCount)}
                   className="text-white"
                   valueStyle={{ color: "white", fontSize: "20px" }}
                 />
                 <Statistic
                   title="Posts"
-                  value={formatNumber(profile.instagramMediaCount)}
+                  value={formatNumber(discoveryProfile.instagramMediaCount)}
                   className="text-white"
                   valueStyle={{ color: "white", fontSize: "20px" }}
                 />
@@ -240,7 +163,7 @@ export default function InfluencerProfile() {
                   />
                   <div>
                     <Text type="secondary">Age</Text>
-                    <div className="font-medium">{profile.age}</div>
+                    <div className="font-medium">{discoveryProfile.age}</div>
                   </div>
                 </Space>
               </Col>
@@ -253,7 +176,7 @@ export default function InfluencerProfile() {
                   <div>
                     <Text type="secondary">Location</Text>
                     <div className="font-medium">
-                      {profile.city}, {profile.country}
+                      {discoveryProfile.city}, {discoveryProfile.country}
                     </div>
                   </div>
                 </Space>
@@ -267,7 +190,8 @@ export default function InfluencerProfile() {
                   <div>
                     <Text type="secondary">Languages</Text>
                     <div className="font-medium">
-                      {profile.languages?.join(", ") || "Not specified"}
+                      {discoveryProfile.languages?.join(", ") ||
+                        "Not specified"}
                     </div>
                   </div>
                 </Space>
@@ -282,7 +206,7 @@ export default function InfluencerProfile() {
                     <Text type="secondary">Categories</Text>
                     <div className="font-medium">
                       <Space size={[0, 8]} wrap>
-                        {profile.contentCategories?.map((cat, i) => (
+                        {discoveryProfile.contentCategories?.map((cat, i) => (
                           <Tag key={i} color="blue">
                             {cat}
                           </Tag>
@@ -301,7 +225,7 @@ export default function InfluencerProfile() {
               <Col xs={24} sm={12}>
                 <Card
                   className={`border-l-4 ${
-                    profile.isInstagramConnected
+                    discoveryProfile.isInstagramConnected
                       ? "border-pink-500"
                       : "border-gray-300"
                   }`}
@@ -311,7 +235,7 @@ export default function InfluencerProfile() {
                     <Avatar
                       icon={<InstagramOutlined />}
                       className={
-                        profile.isInstagramConnected
+                        discoveryProfile.isInstagramConnected
                           ? "bg-pink-100 text-pink-600"
                           : "bg-gray-200 text-gray-400"
                       }
@@ -319,9 +243,9 @@ export default function InfluencerProfile() {
                     <div>
                       <Text strong>Instagram</Text>
                       <div>
-                        {profile.isInstagramConnected ? (
+                        {discoveryProfile.isInstagramConnected ? (
                           <Text type="secondary">
-                            @{profile.instagramUsername}
+                            @{discoveryProfile.instagramUsername}
                           </Text>
                         ) : (
                           <Text type="secondary">Not connected</Text>
@@ -334,7 +258,7 @@ export default function InfluencerProfile() {
               <Col xs={24} sm={12}>
                 <Card
                   className={`border-l-4 ${
-                    profile.isTiktokConnected
+                    discoveryProfile.isTiktokConnected
                       ? "border-black"
                       : "border-gray-300"
                   }`}
@@ -344,7 +268,7 @@ export default function InfluencerProfile() {
                     <Avatar
                       icon={<FaTiktok />}
                       className={
-                        profile.isTiktokConnected
+                        discoveryProfile.isTiktokConnected
                           ? "bg-black text-white"
                           : "bg-gray-200 text-gray-400"
                       }
@@ -352,9 +276,9 @@ export default function InfluencerProfile() {
                     <div>
                       <Text strong>TikTok</Text>
                       <div>
-                        {profile.isTiktokConnected ? (
+                        {discoveryProfile.isTiktokConnected ? (
                           <Text type="secondary">
-                            @{profile.tiktokUsername}
+                            @{discoveryProfile.tiktokUsername}
                           </Text>
                         ) : (
                           <Text type="secondary">Not connected</Text>
@@ -367,7 +291,7 @@ export default function InfluencerProfile() {
               <Col xs={24} sm={12}>
                 <Card
                   className={`border-l-4 ${
-                    profile.isFacebookAccountConnected
+                    discoveryProfile.isFacebookAccountConnected
                       ? "border-blue-500"
                       : "border-gray-300"
                   }`}
@@ -377,7 +301,7 @@ export default function InfluencerProfile() {
                     <Avatar
                       icon={<FacebookOutlined />}
                       className={
-                        profile.isFacebookAccountConnected
+                        discoveryProfile.isFacebookAccountConnected
                           ? "bg-blue-100 text-blue-600"
                           : "bg-gray-200 text-gray-400"
                       }
@@ -386,7 +310,7 @@ export default function InfluencerProfile() {
                       <Text strong>Facebook</Text>
                       <div>
                         <Text type="secondary">
-                          {profile.isFacebookAccountConnected
+                          {discoveryProfile.isFacebookAccountConnected
                             ? "Connected"
                             : "Not connected"}
                         </Text>
@@ -398,7 +322,7 @@ export default function InfluencerProfile() {
               <Col xs={24} sm={12}>
                 <Card
                   className={`border-l-4 ${
-                    profile.isTwitterAccountConnected
+                    discoveryProfile.isTwitterAccountConnected
                       ? "border-blue-400"
                       : "border-gray-300"
                   }`}
@@ -408,7 +332,7 @@ export default function InfluencerProfile() {
                     <Avatar
                       icon={<TwitterOutlined />}
                       className={
-                        profile.isTwitterAccountConnected
+                        discoveryProfile.isTwitterAccountConnected
                           ? "bg-blue-100 text-blue-400"
                           : "bg-gray-200 text-gray-400"
                       }
@@ -417,7 +341,7 @@ export default function InfluencerProfile() {
                       <Text strong>Twitter</Text>
                       <div>
                         <Text type="secondary">
-                          {profile.isTwitterAccountConnected
+                          {discoveryProfile.isTwitterAccountConnected
                             ? "Connected"
                             : "Not connected"}
                         </Text>
@@ -430,10 +354,10 @@ export default function InfluencerProfile() {
           </Card>
 
           {/* Bucket List */}
-          {profile.bucketList?.length > 0 && (
+          {discoveryProfile.bucketList?.length > 0 && (
             <Card title="Bucket Lists" className="mb-4">
               <Space size={[8, 8]} wrap>
-                {profile.bucketList.map((bucket) => (
+                {discoveryProfile.bucketList.map((bucket) => (
                   <Tag
                     key={bucket.bucketList_Id}
                     icon={<BookOutlined />}
@@ -448,7 +372,7 @@ export default function InfluencerProfile() {
 
           {/* Social Feeds */}
           <Tabs defaultActiveKey="instagram" className="mb-4">
-            {profile.isInstagramConnected && (
+            {discoveryProfile.isInstagramConnected && (
               <TabPane
                 tab={
                   <span>
@@ -459,7 +383,7 @@ export default function InfluencerProfile() {
                 key="instagram"
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                  {profile.instagramMediaIds
+                  {discoveryProfile.instagramMediaIds
                     ?.slice(0, 6)
                     .map((mediaId, index) => (
                       <Card
@@ -473,7 +397,7 @@ export default function InfluencerProfile() {
                 </div>
               </TabPane>
             )}
-            {profile.isTiktokConnected && (
+            {discoveryProfile.isTiktokConnected && (
               <TabPane
                 tab={
                   <span>
@@ -485,7 +409,7 @@ export default function InfluencerProfile() {
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                   {Array.from({
-                    length: Math.min(profile.tiktokVideoCount, 6),
+                    length: Math.min(discoveryProfile.tiktokVideoCount, 6),
                   }).map((_, index) => (
                     <Card
                       key={index}
@@ -510,7 +434,7 @@ export default function InfluencerProfile() {
                 <Card bodyStyle={{ padding: "12px" }}>
                   <Statistic
                     title="Overall Rating"
-                    value={profile.overallRate}
+                    value={discoveryProfile.overallRate}
                     suffix="/ 5.0"
                     prefix={<StarOutlined className="text-yellow-500" />}
                   />
@@ -520,7 +444,7 @@ export default function InfluencerProfile() {
                 <Card bodyStyle={{ padding: "12px" }}>
                   <Statistic
                     title="TikTok Likes"
-                    value={formatNumber(profile.tiktokLikesCount)}
+                    value={formatNumber(discoveryProfile.tiktokLikesCount)}
                     prefix={<LikeOutlined className="text-green-500" />}
                   />
                 </Card>
@@ -529,7 +453,7 @@ export default function InfluencerProfile() {
                 <Card bodyStyle={{ padding: "12px" }}>
                   <Statistic
                     title="TikTok Videos"
-                    value={formatNumber(profile.tiktokVideoCount)}
+                    value={formatNumber(discoveryProfile.tiktokVideoCount)}
                     prefix={<VideoCameraOutlined className="text-purple-500" />}
                   />
                 </Card>
@@ -538,7 +462,7 @@ export default function InfluencerProfile() {
                 <Card bodyStyle={{ padding: "12px" }}>
                   <Statistic
                     title="TikTok Followers"
-                    value={formatNumber(profile.tiktokFollowerCount)}
+                    value={formatNumber(discoveryProfile.tiktokFollowerCount)}
                     prefix={<TeamOutlined className="text-blue-500" />}
                   />
                 </Card>
@@ -547,10 +471,10 @@ export default function InfluencerProfile() {
           </Card>
 
           {/* Keywords */}
-          {profile.keywords?.length > 0 && (
+          {discoveryProfile.keywords?.length > 0 && (
             <Card title="Content Keywords" className="mb-4">
               <Space size={[0, 8]} wrap>
-                {profile.keywords.map((keyword, index) => (
+                {discoveryProfile.keywords.map((keyword, index) => (
                   <Tag key={index} color="geekblue">
                     {keyword}
                   </Tag>
@@ -565,11 +489,13 @@ export default function InfluencerProfile() {
               <Space>
                 <Badge
                   status={
-                    profile.isAvailableForCollaboration ? "success" : "error"
+                    discoveryProfile.isAvailableForCollaboration
+                      ? "success"
+                      : "error"
                   }
                   text={
                     <Text strong>
-                      {profile.isAvailableForCollaboration
+                      {discoveryProfile.isAvailableForCollaboration
                         ? "Available"
                         : "Not Available"}
                     </Text>
@@ -577,7 +503,7 @@ export default function InfluencerProfile() {
                 />
               </Space>
               <Text type="secondary">
-                {profile.isAvailableForCollaboration
+                {discoveryProfile.isAvailableForCollaboration
                   ? "This influencer is open for collaborations"
                   : "This influencer is not currently available for collaborations"}
               </Text>
@@ -591,20 +517,20 @@ export default function InfluencerProfile() {
               dataSource={[
                 {
                   icon: <MailOutlined />,
-                  content: profile.email,
-                  link: `mailto:${profile.email}`,
+                  content: discoveryProfile.email,
+                  link: `mailto:${discoveryProfile.email}`,
                 },
                 {
                   icon: <PhoneOutlined />,
-                  content: profile.phoneNumber,
-                  link: `tel:${profile.phoneNumber}`,
+                  content: discoveryProfile.phoneNumber,
+                  link: `tel:${discoveryProfile.phoneNumber}`,
                 },
-                ...(profile.website
+                ...(discoveryProfile.website
                   ? [
                       {
                         icon: <LinkOutlined />,
-                        content: profile.website,
-                        link: profile.website,
+                        content: discoveryProfile.website,
+                        link: discoveryProfile.website,
                       },
                     ]
                   : []),
