@@ -175,8 +175,8 @@ const InstagramProfile = () => {
           {isInstagramConnected ? (
             <section className="flex flex-col text-color">
               <div className="bg-white shadow-sm rounded-xl p-4">
-                <section className="md:flex justify-between">
-                  <div className="flex gap-4">
+                <section className="md:flex justify-end">
+                  {/* <div className="flex gap-4">
                     <a href={instagramProfile?.profileDeepLink} target="_blank">
                       <img
                         className="h-20 w-20 mx-auto object-cover rounded-full"
@@ -222,7 +222,7 @@ const InstagramProfile = () => {
                         </p>
                       </section>
                     </div>
-                  </div>
+                  </div> */}
                   <div className=" text-color">
                     <button
                       onClick={handleInstagramLogin}
@@ -292,11 +292,11 @@ const InstagramProfile = () => {
           </div>
 
           {/* Posts Grid */}
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-4 px-4 justify-center">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 md:gap-4 px-4 justify-center">
             {categorizedPosts[activeTab]?.map((post, index) => (
               <div
                 key={post.id}
-                className="relative w-[100px] h-[100px] md:w-[160px] md:h-[160px] cursor-pointer group rounded-lg overflow-hidden"
+                className="relative w-[100px] h-[100px] md:w-[150px] md:h-[150px] cursor-pointer group rounded-lg overflow-hidden"
                 onClick={() => openPost(post)}
               >
                 {/* Show first image as thumbnail */}

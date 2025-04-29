@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
-import { FaTiktok, FaInstagram, FaYoutube } from "react-icons/fa";
 
 const InfluencerRegister = () => {
   const [loading, setLoading] = useState(false);
