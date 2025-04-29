@@ -14,6 +14,7 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { FaUsersBetweenLines } from "react-icons/fa6";
 import { AiOutlineShopping } from "react-icons/ai";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
+import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
 
 const CreateCampaign = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const CreateCampaign = () => {
   useEffect(() => {
     if (auth) {
       dispatch(fetchAllBuckets(auth));
+      dispatch(fetchAllBrandCampaigns(auth));
     }
   }, [auth]);
   

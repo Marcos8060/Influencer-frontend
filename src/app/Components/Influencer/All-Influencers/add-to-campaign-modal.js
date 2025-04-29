@@ -3,19 +3,25 @@ import React, { useState } from "react";
 import { Modal, Button, Select, Tag, Space, Form, message, theme } from "antd";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
-import { moveToBucket } from "@/redux/services/influencer/bucket";
-import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
+import { moveToCampaign } from "@/redux/services/campaign";
 
 const { useToken } = theme;
 
 export default function AddToCampaignModal({ data }) {
   const { token } = useToken();
   const [form] = Form.useForm();
-  const { bucketList } = useSelector((store) => store.bucket);
+  const { brandCampaigns } = useSelector((store) => store.campaign);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const auth = useAuth();
   const [open, setOpen] = useState(false);
+
+
+  // Only display campaigns which the influencer has not been added
+  const excludedCampaigns = brandCampaigns.filter(campaign =>
+    !campaign.collaborators.some(influencer => influencer.influencer === data[0]?.influencerId)
+  );
 
   // Create a ref with the new React 19 pattern
   const selectRef = React.useRef(null);
@@ -24,19 +30,19 @@ export default function AddToCampaignModal({ data }) {
     setLoading(true);
 
     try {
-      const influencerIds = Array.isArray(data)
+      const influencers = Array.isArray(data)
         ? data.map((influencer) => String(influencer.influencerId))
         : [String(data.influencerId)];
 
       const payload = {
-        toBrandBucketList: values.selectedBucket,
-        influencerIds,
+        campaign: values.selectedCampaign,
+        influencers,
       };
 
-      const response = await moveToBucket(auth, payload);
+      const response = await moveToCampaign(auth, payload);
       if (response.status === 200) {
-        message.success("Added to bucket successfully");
-        dispatch(fetchAllBuckets(auth));
+        message.success("Added to campaign successfully");
+        dispatch(fetchAllBrandCampaigns(auth));
         setOpen(false);
         form.resetFields();
       } else {
@@ -87,27 +93,27 @@ export default function AddToCampaignModal({ data }) {
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
-            name="selectedBucket"
+            name="selectedCampaign"
             label="Select Campaign"
             rules={[{ required: true, message: "Please select a campaign" }]}
           >
             <Select
-              ref={selectRef}
+              // ref={selectRef}
               placeholder="Select a campaign"
               showSearch
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option?.title?.toLowerCase().includes(input.toLowerCase())
               }
-              options={bucketList.map((bucket) => ({
-                value: bucket.id,
+              options={excludedCampaigns.map((campaign) => ({
+                value: campaign.id,
                 label: (
                   <Space>
-                    <span>{bucket.name}</span>
-                    <Tag color="blue">{bucket.influencers.length}</Tag>
+                    <span>{campaign.title}</span>
+                    <Tag color="blue">{campaign.collaborators?.length}</Tag>
                   </Space>
                 ),
-                title: bucket.name, // <-- added title field for searching
+                title: campaign.title,
               }))}
             />
           </Form.Item>

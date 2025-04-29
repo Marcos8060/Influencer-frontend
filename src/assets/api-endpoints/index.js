@@ -30,6 +30,7 @@ export const API_URL = {
   ADD_BUCKETLIST: `${baseUrl}/brands/bucketList/create/`,
   REMOVE_FROM_BUCKET: `${baseUrl}/brands/bucketList/influencers/remove/`,
   FETCH_BUCKETLIST: `${baseUrl}/search/bucketList/`,
+  FETCH_EXCLUDED_BUCKETLIST: `${baseUrl}/brands/bucketList/influencer/excluded/`,
   DELETE_BUCKETLIST: `${baseUrl}/brands/bucketList/delete/`,
   EDIT_BUCKETLIST: `${baseUrl}/brands/bucketList/update/`,
 
@@ -44,6 +45,7 @@ export const API_URL = {
   ADD_POST_TO_CAMPAIGN: `${baseUrl}/campaigns/posts/add/`,
   FETCH_CAMPAIGN_DETAILS: `${baseUrl}/campaigns/get/`,
   APPROVE_CAMPAIGN_APPLICATION: `${baseUrl}/campaigns/approve/`,
+  MOVE_TO_CAMPAIGN: `${baseUrl}/campaigns/influencers/add/`,
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
@@ -102,12 +104,14 @@ export const APP_API_URL = {
   ADD_POST_TO_CAMPAIGN: '/api/campaign/add-post-to-campaign',
   FETCH_CAMPAIGN_DETAILS: '/api/campaign/fetch-campaign-details',
   APPROVE_CAMPAIGN_APPLICATION: '/api/campaign/approve-application',
+  MOVE_TO_CAMPAIGN: '/api/campaign/move-to-campaign',
 
 
   /***************** BUCKET LIST APIs **********************/
   ADD_BUCKETLIST: "/api/bucketList/create-bucket-list",
   REMOVE_FROM_BUCKET: "/api/bucketList/remove-from-bucket",
   FETCH_BUCKETLIST: "/api/bucketList/fetch-bucket-list",
+  FETCH_EXCLUDED_BUCKETLIST: "/api/bucketList/fetch-excluded-bucket-list",
   DELETE_BUCKETLIST: "/api/bucketList/delete-bucket-list",
   EDIT_BUCKETLIST: "/api/bucketList/edit-bucket-list",
 
