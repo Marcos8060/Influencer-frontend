@@ -1,13 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Select, Tag, Space, Form, message, theme } from "antd";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
-import { moveToBucket } from "@/redux/services/influencer/bucket";
-import { fetchAllBuckets } from "@/redux/features/bucket-list";
+import {
+  fetchAllBuckets,
+  fetchExcludedBuckets,
+} from "@/redux/features/bucket-list";
 import BucketListDialog from "../../Brand/BucketList/bucket-list-dialog";
-import { PlusOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { moveToBucket } from "@/redux/services/influencer/bucket";
 
 const { useToken } = theme;
 
@@ -19,6 +21,11 @@ export default function AddToBucketListModal({ data }) {
   const dispatch = useDispatch();
   const auth = useAuth();
   const [open, setOpen] = useState(false);
+
+  // Only display buckets which the influencer has not been added
+  const excludedBuckets = bucketList.filter(bucket =>
+    !bucket.influencers.some(influencer => influencer.id === data[0]?.influencerId)
+  );
 
   // Create a ref with the new React 19 pattern
   const selectRef = React.useRef(null);
@@ -37,7 +44,6 @@ export default function AddToBucketListModal({ data }) {
       };
 
       const response = await moveToBucket(auth, payload);
-      console.log("BUCKET_RESPONSE ", response);
       if (response.status === 200) {
         toast.success("Added to bucket successfully");
         dispatch(fetchAllBuckets(auth));
@@ -96,19 +102,19 @@ export default function AddToBucketListModal({ data }) {
             rules={[{ required: true, message: "Please select a bucket" }]}
           >
             <Select
-              ref={selectRef}
+              // ref={selectRef}
               placeholder="Select a bucket"
               showSearch
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option?.title?.toLowerCase().includes(input.toLowerCase())
               }
-              options={bucketList.map((bucket) => ({
+              options={excludedBuckets.map((bucket) => ({
                 value: bucket.id,
                 label: (
                   <Space>
                     <span>{bucket.name}</span>
-                    <Tag color="blue">{bucket.influencers.length}</Tag>
+                    <Tag color="blue">{bucket.influencers.length} Influencers Admitted</Tag>
                   </Space>
                 ),
                 title: bucket.name, // <-- added title field for searching

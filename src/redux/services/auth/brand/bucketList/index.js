@@ -29,6 +29,21 @@ export const fetchBucketList = async (auth) => {
     }
 };
 
+export const fetchExcludedBucketList = async (auth,influencer_id) => {
+    try {
+        const response = await axios.get(`${APP_API_URL.FETCH_EXCLUDED_BUCKETLIST}`, {
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { influencer_id: influencer_id },
+        });
+        return response.data
+    } catch (error) {
+        console.error("Error fetching buckets:", error);
+        return error.response?.data || error.message;
+    }
+};
+
 export const deleteBucketList = async(id,auth) =>{
     try {
         const response = await axios.delete(APP_API_URL.DELETE_BUCKETLIST,{

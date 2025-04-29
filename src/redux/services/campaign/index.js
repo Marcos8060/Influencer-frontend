@@ -200,3 +200,17 @@ export const fetchPostInsights = async (auth, payload) => {
         return error.response?.data || error.message;
     }
 };
+
+export const moveToCampaign = async (auth,payload) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.MOVE_TO_CAMPAIGN}`, payload,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response
+    } catch (error) {
+        console.error("Error onboarding brand:", error);
+        return error.response?.data || error.message;
+    }
+};

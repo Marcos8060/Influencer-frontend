@@ -35,11 +35,13 @@ import { useSelector,useDispatch } from "react-redux";
 import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
 import { getInfluencerProfile } from "@/redux/features/socials";
 import { useAuth } from "@/assets/hooks/use-auth";
+import { useProtectedRoute } from "@/assets/hooks/authGuard";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
 const InfluencerProfilePage = () => {
+  const isAuthorized = useProtectedRoute();
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -156,6 +158,11 @@ const InfluencerProfilePage = () => {
 
   if (!influencerProfile) {
     return <div>No data found</div>;
+  }
+
+
+  if (!isAuthorized) {
+    return null;
   }
 
   return (
