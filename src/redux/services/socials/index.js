@@ -78,3 +78,21 @@ export const fetchInfluencerDiscoveryProfile = async (auth, influencer_id) => {
         return error.response?.data || error.message;
     }
 };
+
+export const fetchInfluencerProfile = async (auth) => {
+    try {
+        const url = `${APP_API_URL.FETCH_INFLUENCER_PROFILE}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { page: 'influencerProfile' },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};

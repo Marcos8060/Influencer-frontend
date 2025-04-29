@@ -4,10 +4,12 @@ import { API_URL } from "@/assets/api-endpoints";
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
+    const influencer_id = searchParams.get("influencer_id")?.trim();
     const page = searchParams.get("page")?.trim();
+    const campaign_id = searchParams.get("campaign_id")?.trim();
 
-    if (!page) {
-      return new Response(JSON.stringify({ error: "Missing page parameter" }), { status: 400 });
+    if (!influencer_id || !page || !campaign_id) {
+      return new Response(JSON.stringify({ error: "Missing all required parameters" }), { status: 400 });
     }
 
     const authHeader = req.headers.get("authorization");
@@ -15,9 +17,9 @@ export async function GET(req) {
       return new Response(JSON.stringify({ error: "Missing Authorization header" }), { status: 401 });
     }
 
-    const response = await backendAxiosInstance.get(`${API_URL.FETCH_INFLUENCER_PROFILE}`, {
+    const response = await backendAxiosInstance.get(`${API_URL.FETCH_BRAND_INFLUENCER_PROFILE}`, {
       headers: { Authorization: authHeader },
-      params: { page: page },
+      params: { influencer_id: influencer_id, page: page, campaign_id:campaign_id },
     });
 
     return new Response(JSON.stringify(response.data), {

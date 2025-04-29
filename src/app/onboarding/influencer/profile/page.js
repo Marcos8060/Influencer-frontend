@@ -31,8 +31,10 @@ import {
 } from "@ant-design/icons";
 import SocialMediaTabs from "@/app/Components/Influencer/profile/socialMediaTabs";
 import { motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
+import { getInfluencerProfile } from "@/redux/features/socials";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -41,52 +43,32 @@ const InfluencerProfilePage = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [influencerData, setInfluencerData] = useState(null);
   const [fileList, setFileList] = useState([]);
   const { posts } = useSelector((store) => store.campaign);
+  const { influencerProfile } = useSelector((store) => store.socials);
+  const dispatch = useDispatch();
+  const auth = useAuth();
+
+  const fetchInfluencerProfile = async () => {
+    // const page = 'campaignCollaborator'
+    try {
+      setLoading(true);
+      await dispatch(getInfluencerProfile(auth));
+    } catch (error) {
+      // Optional: handle error here
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulate API fetch
-    setLoading(true);
-    setTimeout(() => {
-      setInfluencerData({
-        id: "f0ed2743-e79e-4ec9-b79e-c9c291082641",
-        fullName: "Jarib Mardo",
-        age: 32,
-        gender: "Male",
-        bio: "I am a tech influencer who is geeky about Machine Learning and Artificial Intelligence and exploration with Large Language Models",
-        email: "mardocheejarib64@gmail.com",
-        profilePicture:
-          "http://res.cloudinary.com/dqjnaukdk/image/upload/v1744714739/40678282-c173-4788-89c9-14ea5596651e/profilePicture/z3eq9bxpseznawpkbpr3.jpg",
-        phoneNumber: "415-555-7890",
-        addressLine1: "123 Cherry Blossom Street",
-        addressLine2: "Apt 456",
-        city: "Nairobi",
-        country: "Kenya",
-        zipCode: "94107",
-        contentCategories: ["Technology", "Fitness", "Travel"],
-        keywords: ["Tech Reviews", "Fitness Routines", "Travel Destinations"],
-        isAvailableForCollaboration: false,
-        instagramUsername: "je_suis_jarib",
-        instagramFollowersCount: 516,
-        instagramProfilePictureUrl:
-          "https://scontent-sof1-2.cdninstagram.com/v/t51.2885-19/355866354_281061937657923_4052581550370811305_n.jpg",
-        tiktokUsername: "ladwetshi",
-        tiktokFollowerCount: 35,
-        tiktokAvatarUrl:
-          "https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/570a2ee013dc624cbde4a66f3c283c55~tplv-tiktokx-cropcenter:168:168.jpeg",
-        isInstagramConnected: true,
-        isFacebookAccountConnected: true,
-        isTiktokConnected: true,
-      });
-      setLoading(false);
-    }, 1000);
+    fetchInfluencerProfile();
   }, []);
 
   const handleEdit = () => {
-    if (influencerData) {
+    if (influencerProfile) {
       form.setFieldsValue({
-        ...influencerData,
+        ...influencerProfile,
       });
       setIsEditing(true);
     }
@@ -164,7 +146,7 @@ const InfluencerProfilePage = () => {
     },
   };
 
-  if (loading && !influencerData) {
+  if (loading && !influencerProfile) {
     return (
       <div className="flex justify-center items-center h-screen">
         Loading...
@@ -172,7 +154,7 @@ const InfluencerProfilePage = () => {
     );
   }
 
-  if (!influencerData) {
+  if (!influencerProfile) {
     return <div>No data found</div>;
   }
 
@@ -246,7 +228,7 @@ const InfluencerProfilePage = () => {
                         size={128}
                         src={
                           form.getFieldValue("profilePicture") ||
-                          influencerData.profilePicture
+                          influencerProfile.profilePicture
                         }
                         className="cursor-pointer"
                       />
@@ -364,7 +346,7 @@ const InfluencerProfilePage = () => {
               <Col span={24}>
                 <Form.Item label="Keywords" name="keywords">
                   <Select mode="tags" placeholder="Add keywords">
-                    {influencerData.keywords.map((keyword) => (
+                    {influencerProfile.keywords.map((keyword) => (
                       <Option key={keyword} value={keyword}>
                         {keyword}
                       </Option>
@@ -392,7 +374,7 @@ const InfluencerProfilePage = () => {
           <Card className="mb-6">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex flex-col items-center">
-                <Avatar size={160} src={influencerData.profilePicture} />
+                <Avatar size={160} src={influencerProfile.profilePicture} />
                 <Button
                   type="link"
                   icon={<EditOutlined />}
@@ -407,21 +389,21 @@ const InfluencerProfilePage = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <Title level={2} className="mb-0">
-                      {influencerData.fullName}
+                      {influencerProfile.fullName}
                     </Title>
                     <Text type="secondary">
-                      {influencerData.age} years • {influencerData.gender}
+                      {influencerProfile.age} years • {influencerProfile.gender}
                     </Text>
                   </div>
 
                   <Tag
                     color={
-                      influencerData.isAvailableForCollaboration
+                      influencerProfile.isAvailableForCollaboration
                         ? "green"
                         : "red"
                     }
                   >
-                    {influencerData.isAvailableForCollaboration ? (
+                    {influencerProfile.isAvailableForCollaboration ? (
                       <Space>
                         <CheckCircleOutlined /> Available for Collabs
                       </Space>
@@ -433,7 +415,7 @@ const InfluencerProfilePage = () => {
                   </Tag>
                 </div>
 
-                <Paragraph className="mt-4">{influencerData.bio}</Paragraph>
+                <Paragraph className="mt-4">{influencerProfile.bio}</Paragraph>
 
                 <Divider />
 
@@ -443,20 +425,20 @@ const InfluencerProfilePage = () => {
                     <div className="mt-2 space-y-1">
                       <div className="flex items-center">
                         <MailOutlined className="mr-2" />
-                        <Text>{influencerData.email}</Text>
+                        <Text>{influencerProfile.email}</Text>
                       </div>
                       <div className="flex items-center">
                         <PhoneOutlined className="mr-2" />
-                        <Text>{influencerData.phoneNumber}</Text>
+                        <Text>{influencerProfile.phoneNumber}</Text>
                       </div>
                       <div className="flex items-center">
                         <EnvironmentOutlined className="mr-2" />
                         <Text>
-                          {influencerData.addressLine1},{" "}
-                          {influencerData.addressLine2}
+                          {influencerProfile.addressLine1},{" "}
+                          {influencerProfile.addressLine2}
                           <br />
-                          {influencerData.city}, {influencerData.country}{" "}
-                          {influencerData.zipCode}
+                          {influencerProfile.city}, {influencerProfile.country}{" "}
+                          {influencerProfile.zipCode}
                         </Text>
                       </div>
                     </div>
@@ -465,7 +447,7 @@ const InfluencerProfilePage = () => {
                   <div>
                     <Text strong>Content Categories</Text>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {influencerData.contentCategories.map((category) => (
+                      {influencerProfile?.contentCategories?.map((category) => (
                         <Tag key={category} color="blue">
                           {category}
                         </Tag>
@@ -476,7 +458,7 @@ const InfluencerProfilePage = () => {
                       Keywords
                     </Text>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {influencerData.keywords.map((keyword) => (
+                      {influencerProfile?.keywords?.map((keyword) => (
                         <Tag key={keyword}>{keyword}</Tag>
                       ))}
                     </div>
@@ -497,9 +479,9 @@ const InfluencerProfilePage = () => {
                       className="mr-4"
                     />
                     <div>
-                      <Text strong>@{influencerData.instagramUsername}</Text>
+                      <Text strong>@{influencerProfile.instagramUsername}</Text>
                       <div className="flex items-center">
-                        {influencerData.isInstagramConnected ? (
+                        {influencerProfile.isInstagramConnected ? (
                           <CheckCircleOutlined className="text-green-500 mr-1" />
                         ) : (
                           <CloseCircleOutlined className="text-red-500 mr-1" />
@@ -512,7 +494,7 @@ const InfluencerProfilePage = () => {
                   <div className="grid grid-cols-3 gap-2">
                     <Statistic
                       title="Followers"
-                      value={influencerData.instagramFollowersCount}
+                      value={influencerProfile.instagramFollowersCount}
                       className="text-center"
                     />
                     <Statistic
@@ -531,13 +513,13 @@ const InfluencerProfilePage = () => {
                   <div className="flex items-center">
                     <Avatar
                       size={64}
-                      src={influencerData.tiktokAvatarUrl}
+                      src={influencerProfile.tiktokAvatarUrl}
                       className="mr-4"
                     />
                     <div>
-                      <Text strong>@{influencerData.tiktokUsername}</Text>
+                      <Text strong>@{influencerProfile.tiktokUsername}</Text>
                       <div className="flex items-center">
-                        {influencerData.isTiktokConnected ? (
+                        {influencerProfile.isTiktokConnected ? (
                           <CheckCircleOutlined className="text-green-500 mr-1" />
                         ) : (
                           <CloseCircleOutlined className="text-red-500 mr-1" />
@@ -550,7 +532,7 @@ const InfluencerProfilePage = () => {
                   <div className="grid grid-cols-3 gap-2">
                     <Statistic
                       title="Followers"
-                      value={influencerData.tiktokFollowerCount}
+                      value={influencerProfile.tiktokFollowerCount}
                       className="text-center"
                     />
                     <Statistic
@@ -575,7 +557,7 @@ const InfluencerProfilePage = () => {
                     <div>
                       <Text strong>Facebook</Text>
                       <div className="flex items-center">
-                        {influencerData.isFacebookAccountConnected ? (
+                        {influencerProfile.isFacebookAccountConnected ? (
                           <CheckCircleOutlined className="text-green-500 mr-1" />
                         ) : (
                           <CloseCircleOutlined className="text-red-500 mr-1" />
