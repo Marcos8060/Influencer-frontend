@@ -58,7 +58,8 @@ export const API_URL = {
   FETCH_TIKTOK_POSTS: `${baseUrl}/socialAccounts/tiktok/media/list/`,
   FETCH_BRAND_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`,
   FETCH_INFLUENCER_DISCOVERY_PROFILE: `${baseUrl}/influencers/get/`,
-  FETCH_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`
+  FETCH_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`,
+  UPDATE_INFLUENCER_PROFILE: `${baseUrl}/influencers/update/`
 };
 
 
@@ -126,7 +127,8 @@ export const APP_API_URL = {
   FETCH_TIKTOK_POSTS: '/api/socials/tiktok/fetch-tiktok-posts',
   FETCH_BRAND_INFLUENCER_PROFILE: '/api/socials/brand-influencer-profile',
   FETCH_INFLUENCER_DISCOVERY_PROFILE: '/api/socials/influencer-discovery-profile',
-  FETCH_INFLUENCER_PROFILE: '/api/socials/influencer-profile'
+  FETCH_INFLUENCER_PROFILE: '/api/socials/influencer-profile',
+  UPDATE_INFLUENCER_PROFILE: '/api/socials/update-influencer-profile',
 
 };
 
