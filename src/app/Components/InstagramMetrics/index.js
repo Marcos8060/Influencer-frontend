@@ -360,7 +360,7 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
             }
             style={{ width: "100%" }}
           >
-            <div style={{ width: "100%", height: "250px" }}>
+            <div style={{ width: "100%", height: "400px" }}>
               <Bar
                 data={chartData}
                 options={{
@@ -402,7 +402,7 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
             <div
               style={{
                 width: "100%",
-                height: "300px", // Adjust this value to control the size
+                height: "500px", // Adjust this value to control the size
                 margin: "0 auto",
                 maxWidth: "500px", // Optional: prevents it from getting too wide
               }}
