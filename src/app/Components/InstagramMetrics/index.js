@@ -617,13 +617,12 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
                 onClick={() => {
                   form.resetFields();
                   setSelectedMetric(null);
-                  setMetricsData(null);
                 }}
               >
                 Reset
               </ActionButton>
               <ActionButton
-                type="primary"
+                className="bg-primary text-white"
                 htmlType="submit"
                 loading={loading}
                 icon={<FilterOutlined />}
