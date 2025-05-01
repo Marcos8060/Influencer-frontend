@@ -12,6 +12,7 @@ import {
   Select,
   Space,
   Statistic,
+  DatePicker,
   Tag,
   Typography,
   Upload,
@@ -38,6 +39,7 @@ import { getInfluencerProfile } from "@/redux/features/socials";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
 import { updateInfluencerProfile } from "@/redux/services/socials";
+import moment from "moment";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -47,19 +49,89 @@ const InfluencerProfilePage = () => {
   const [form] = Form.useForm();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [fileList, setFileList] = useState([]);
   const { posts } = useSelector((store) => store.campaign);
   const { influencerProfile } = useSelector((store) => store.socials);
   const dispatch = useDispatch();
   const auth = useAuth();
 
+  // Create edit payload structure based on second object format
+  const createEditPayload = (profile) => {
+    if (!profile) return null;
+
+    // Parse phone number
+    let phoneNumberObj = { number: "", code: "" };
+    if (profile.phoneNumber) {
+      const phoneMatch = profile.phoneNumber.match(/^(\+\d+)?\s*(\d+.*)$/);
+      if (phoneMatch) {
+        phoneNumberObj = {
+          code: phoneMatch[1] || "+1",
+          number: phoneMatch[2] || "",
+        };
+      }
+    }
+
+    let dateOfBirth;
+    if (profile.dateOfBirth && moment(profile.dateOfBirth).isValid()) {
+      dateOfBirth = moment(profile.dateOfBirth);
+    } else {
+      dateOfBirth = profile.age
+        ? moment().subtract(profile.age, "years")
+        : null;
+    }
+
+    // Format for display if needed
+    const dateOfBirthFormatted = dateOfBirth
+      ? dateOfBirth.format("YYYY-MM-DD")
+      : null;
+
+    // Parse country
+    let countryObj = {
+      name: profile.country || "",
+      code: "", // You'll need to get this from somewhere
+      flag: "", // You'll need to get this from somewhere
+    };
+
+    return {
+      dateOfBirth: dateOfBirth,
+      gender: profile.gender || "",
+      bio: profile.bio || "",
+      ethnicBackground: profile.ethnicBackground || [],
+      addressLine1: profile.addressLine1 || "",
+      addressLine2: profile.addressLine2 || "",
+      city: profile.city || "",
+      country: countryObj,
+      zipCode: profile.zipCode || "",
+      phoneNumber: phoneNumberObj,
+      isAvailableForCollaboration: profile.isAvailableForCollaboration || false,
+      languages: profile.languages || [],
+      contentCategories: profile.contentCategories || [],
+      keywords: profile.keywords || [],
+      firstName: profile.fullName?.split(" ")[0] || "",
+      lastName: profile.fullName?.split(" ").slice(-1)[0] || "",
+      middleName:
+        profile.fullName?.split(" ").length > 2
+          ? profile.fullName?.split(" ").slice(1, -1).join(" ")
+          : "",
+      influencerPreference: profile.influencerPreference || {
+        preferredBrands: [],
+        preferredCollaborationContentFormat: [],
+        preferredCompaniesType: [],
+        preferredPaymentOption: [],
+        preferredLeadTimeForProjectDays: 0,
+        preferredPaidMinimumPay: "0",
+        preferredPaidMaximumPay: "0",
+      },
+    };
+  };
+
   const fetchInfluencerProfile = async () => {
-    // const page = 'campaignCollaborator'
     try {
       setLoading(true);
       await dispatch(getInfluencerProfile(auth));
     } catch (error) {
-      // Optional: handle error here
+      console.error("Error fetching profile:", error);
     } finally {
       setLoading(false);
     }
@@ -71,33 +143,70 @@ const InfluencerProfilePage = () => {
 
   const handleEdit = () => {
     if (influencerProfile) {
-      form.setFieldsValue({
-        ...influencerProfile,
-      });
+      const editPayload = createEditPayload(influencerProfile);
+      form.setFieldsValue(editPayload);
       setIsEditing(true);
     }
   };
 
   const handleSave = async () => {
     try {
-      setLoading(true);
-      await form.validateFields();
-      const values = form.getFieldsValue();
-
-      // Simulate API update
-      await updateInfluencerProfile(values);
-      setTimeout(() => {
-        setInfluencerData((prev) => ({
-          ...prev,
-          ...values,
-        }));
-        setLoading(false);
-        setIsEditing(false);
-        message.success("Profile updated successfully!");
-      }, 1000);
+      setSubmitting(true);
+      const values = await form.validateFields();
+  
+      // Transform the payment options properly
+      const transformPaymentOptions = (options) => {
+        if (!options) return [];
+        
+        // If options are already in {label, description} format, return as-is
+        if (options[0]?.label && options[0]?.description) {
+          return options;
+        }
+        
+        // If options are strings, convert to objects
+        if (typeof options[0] === 'string') {
+          return options.map(option => ({
+            label: option,
+            description: option
+          }));
+        }
+        
+        // Fallback for any other format
+        return [];
+      };
+  
+      // Prepare the payload
+      const payload = {
+        ...values,
+        dateOfBirth: values.dateOfBirth?.format("YYYY-MM-DD"),
+        phoneNumber: {
+          code: values.phoneNumber?.code || "+1",
+          number: values.phoneNumber?.number || "",
+        },
+        country: {
+          name: values.country?.name || "",
+          code: values.country?.code || "",
+          flag: values.country?.flag || "",
+        },
+        influencerPreference: {
+          ...values.influencerPreference,
+          preferredPaymentOption: transformPaymentOptions(
+            values.influencerPreference?.preferredPaymentOption
+          )
+        }
+      };
+  
+      await updateInfluencerProfile(auth, payload);
+      message.success("Profile updated successfully!");
+      setIsEditing(false);
+      fetchInfluencerProfile();
     } catch (error) {
-      setLoading(false);
-      console.error("Validation failed:", error);
+      console.error("Error updating profile:", error);
+      message.error(
+        error.response?.data?.message || "Failed to update profile"
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -107,6 +216,7 @@ const InfluencerProfilePage = () => {
     setFileList([]);
   };
 
+  // ... (keep existing upload and other helper functions)
   const handleUploadChange = (info) => {
     let newFileList = [...info.fileList];
 
@@ -133,7 +243,6 @@ const InfluencerProfilePage = () => {
       message.error(`${info.file.name} file upload failed.`);
     }
   };
-
   const uploadProps = {
     name: "file",
     action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
@@ -189,7 +298,7 @@ const InfluencerProfilePage = () => {
                     onClick={handleSave}
                     type="submit"
                     label={
-                      loading ? (
+                      submitting ? (
                         <span className="flex items-center justify-center">
                           <svg
                             className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -220,7 +329,7 @@ const InfluencerProfilePage = () => {
                         </span>
                       )
                     }
-                    disabled={loading}
+                    disabled={submitting}
                     className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
                   />
                 </Space>
@@ -230,7 +339,7 @@ const InfluencerProfilePage = () => {
               <Form form={form} layout="vertical" onFinish={handleSave}>
                 <Row gutter={24}>
                   <Col span={24}>
-                    <Form.Item label="Profile Picture" name="profilePicture">
+                    <Form.Item label="Profile Picture">
                       <Upload
                         {...uploadProps}
                         listType="picture-card"
@@ -239,10 +348,7 @@ const InfluencerProfilePage = () => {
                         {fileList.length >= 1 ? null : (
                           <Avatar
                             size={128}
-                            src={
-                              form.getFieldValue("profilePicture") ||
-                              influencerProfile.profilePicture
-                            }
+                            src={influencerProfile.profilePicture}
                             className="cursor-pointer"
                           />
                         )}
@@ -250,14 +356,35 @@ const InfluencerProfilePage = () => {
                     </Form.Item>
                   </Col>
 
-                  <Col xs={24} md={12}>
+                  <Col xs={24} md={8}>
                     <Form.Item
-                      label="Full Name"
-                      name="fullName"
+                      label="First Name"
+                      name="firstName"
                       rules={[
                         {
                           required: true,
-                          message: "Please input your full name",
+                          message: "Please input your first name",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={8}>
+                    <Form.Item label="Middle Name" name="middleName">
+                      <Input />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={8}>
+                    <Form.Item
+                      label="Last Name"
+                      name="lastName"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your last name",
                         },
                       ]}
                     >
@@ -267,14 +394,43 @@ const InfluencerProfilePage = () => {
 
                   <Col xs={24} md={12}>
                     <Form.Item
-                      label="Age"
-                      name="age"
+                      label="Date of Birth"
+                      name="dateOfBirth"
                       rules={[
-                        { required: true, message: "Please input your age" },
-                        { type: "number", message: "Age must be a number" },
+                        {
+                          required: true,
+                          message: "Please select your date of birth",
+                        },
                       ]}
                     >
-                      <Input type="number" />
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        disabledDate={(current) =>
+                          current && current > moment().endOf("day")
+                        }
+                        format="YYYY-MM-DD"
+                        value={form.getFieldValue("dateOfBirth")} // Ensure this is a Moment object
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Gender"
+                      name="gender"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select your gender",
+                        },
+                      ]}
+                    >
+                      <Select>
+                        <Option value="Male">Male</Option>
+                        <Option value="Female">Female</Option>
+                        <Option value="Non-binary">Non-binary</Option>
+                        <Option value="Other">Other</Option>
+                      </Select>
                     </Form.Item>
                   </Col>
 
@@ -292,28 +448,77 @@ const InfluencerProfilePage = () => {
 
                   <Col xs={24} md={12}>
                     <Form.Item
-                      label="Email"
-                      name="email"
+                      label="Phone Number"
+                      name={["phoneNumber", "number"]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: "Please input your phone number",
+                      //   },
+                      //   {
+                      //     pattern: /^\d+$/,
+                      //     message:
+                      //       "Please enter digits only (no spaces or special characters)",
+                      //   },
+                      // ]}
+                    >
+                      <Input
+                        addonBefore={
+                          <Form.Item
+                            name={["phoneNumber", "code"]}
+                            noStyle
+                            initialValue="+1" // Set default value
+                          >
+                            <Select style={{ width: 120 }}>
+                              <Option value="+1">+1 (US)</Option>
+                              <Option value="+44">+44 (UK)</Option>
+                              <Option value="+254">+254 (KE)</Option>
+                              {/* Add more country codes as needed */}
+                            </Select>
+                          </Form.Item>
+                        }
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Country"
+                      name={["country", "name"]}
                       rules={[
-                        { required: true, message: "Please input your email" },
                         {
-                          type: "email",
-                          message: "Please enter a valid email",
+                          required: true,
+                          message: "Please select your country",
                         },
                       ]}
                     >
-                      <Input prefix={<MailOutlined />} />
+                      <Select showSearch>
+                        <Option value="Kenya">Kenya</Option>
+                        <Option value="United States">United States</Option>
+                        <Option value="United Kingdom">United Kingdom</Option>
+                      </Select>
+                    </Form.Item>
+
+                    {/* Add hidden fields for country code and flag if needed */}
+                    <Form.Item name={["country", "code"]} noStyle hidden>
+                      <Input />
+                    </Form.Item>
+                    <Form.Item name={["country", "flag"]} noStyle hidden>
+                      <Input />
                     </Form.Item>
                   </Col>
 
                   <Col xs={24} md={12}>
-                    <Form.Item label="Phone" name="phoneNumber">
-                      <Input prefix={<PhoneOutlined />} />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item label="Address Line 1" name="addressLine1">
+                    <Form.Item
+                      label="Address Line 1"
+                      name="addressLine1"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your address",
+                        },
+                      ]}
+                    >
                       <Input prefix={<EnvironmentOutlined />} />
                     </Form.Item>
                   </Col>
@@ -325,20 +530,51 @@ const InfluencerProfilePage = () => {
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item label="City" name="city">
+                    <Form.Item
+                      label="City"
+                      name="city"
+                      rules={[
+                        { required: true, message: "Please input your city" },
+                      ]}
+                    >
                       <Input />
                     </Form.Item>
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item label="Country" name="country">
+                    <Form.Item
+                      label="Zip Code"
+                      name="zipCode"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your zip code",
+                        },
+                      ]}
+                    >
                       <Input />
                     </Form.Item>
                   </Col>
 
-                  <Col xs={24} md={8}>
-                    <Form.Item label="Zip Code" name="zipCode">
-                      <Input />
+                  <Col span={24}>
+                    <Form.Item
+                      label="Ethnic Background"
+                      name="ethnicBackground"
+                    >
+                      <Select mode="multiple">
+                        <Option value="Asian">Asian</Option>
+                        <Option value="Black">Black</Option>
+                        <Option value="Hispanic">Hispanic</Option>
+                        <Option value="White">White</Option>
+                        <Option value="Native American">Native American</Option>
+                        <Option value="Other">Other</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={24}>
+                    <Form.Item label="Languages" name="languages">
+                      <Select mode="tags" tokenSeparators={[","]} />
                     </Form.Item>
                   </Col>
 
@@ -353,7 +589,7 @@ const InfluencerProfilePage = () => {
                         },
                       ]}
                     >
-                      <Select mode="multiple" placeholder="Select categories">
+                      <Select mode="multiple">
                         <Option value="Technology">Technology</Option>
                         <Option value="Fitness">Fitness</Option>
                         <Option value="Travel">Travel</Option>
@@ -366,17 +602,11 @@ const InfluencerProfilePage = () => {
 
                   <Col span={24}>
                     <Form.Item label="Keywords" name="keywords">
-                      <Select mode="tags" placeholder="Add keywords">
-                        {influencerProfile.keywords.map((keyword) => (
-                          <Option key={keyword} value={keyword}>
-                            {keyword}
-                          </Option>
-                        ))}
-                      </Select>
+                      <Select mode="tags" tokenSeparators={[","]} />
                     </Form.Item>
                   </Col>
 
-                  <Col span={24}>
+                  <Col xs={24} md={12}>
                     <Form.Item
                       label="Available for Collaboration"
                       name="isAvailableForCollaboration"
@@ -384,6 +614,89 @@ const InfluencerProfilePage = () => {
                       <Select>
                         <Option value={true}>Yes</Option>
                         <Option value={false}>No</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={24}>
+                    <Divider orientation="left">Influencer Preferences</Divider>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Preferred Brands"
+                      name={["influencerPreference", "preferredBrands"]}
+                    >
+                      <Select mode="multiple">
+                        <Option value="Technology">Technology</Option>
+                        <Option value="Fitness Equipment">
+                          Fitness Equipment
+                        </Option>
+                        <Option value="Travel Gear">Travel Gear</Option>
+                        <Option value="Fashion">Fashion</Option>
+                        <Option value="Beauty">Beauty</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Preferred Collaboration Format"
+                      name={[
+                        "influencerPreference",
+                        "preferredCollaborationContentFormat",
+                      ]}
+                    >
+                      <Select mode="multiple">
+                        <Option value="Stories">Stories</Option>
+                        <Option value="Posts">Posts</Option>
+                        <Option value="Reels">Reels</Option>
+                        <Option value="Videos">Videos</Option>
+                        <Option value="Live">Live</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Minimum Pay ($)"
+                      name={["influencerPreference", "preferredPaidMinimumPay"]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Maximum Pay ($)"
+                      name={["influencerPreference", "preferredPaidMaximumPay"]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Lead Time (Days)"
+                      name={[
+                        "influencerPreference",
+                        "preferredLeadTimeForProjectDays",
+                      ]}
+                    >
+                      <Input type="number" />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      label="Preferred Payment Options"
+                      name={["influencerPreference", "preferredPaymentOption"]}
+                    >
+                      <Select mode="multiple">
+                        <Option value="Bank Transfer">Bank Transfer</Option>
+                        <Option value="PayPal">PayPal</Option>
+                        <Option value="Cash">Cash</Option>
+                        <Option value="Crypto">Crypto</Option>
                       </Select>
                     </Form.Item>
                   </Col>
