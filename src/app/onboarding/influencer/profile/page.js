@@ -201,7 +201,7 @@ const InfluencerProfilePage = () => {
       setIsEditing(false);
       fetchInfluencerProfile();
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error updating profile:", error)
       message.error(
         error.response?.data?.message || "Failed to update profile"
       );
