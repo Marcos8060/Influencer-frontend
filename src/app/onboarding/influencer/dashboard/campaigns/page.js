@@ -154,8 +154,8 @@ const Campaigns = () => {
                           }}
                           className={`cursor-pointer p-4 rounded-xl shadow-sm transition-all border ${
                             selectedCampaign?.id === campaign.id
-                              ? "border-primary bg-gradient-to-r from-primary/5 to-white"
-                              : "border-gray-200 hover:border-primary/30 hover:bg-gray-50"
+                              ? "border-2 border-primary bg-gradient-to-r from-primary/5 to-white"
+                              : "border-input hover:border-primary/30 hover:bg-gray-50"
                           }`}
                         >
                           <div className="flex justify-between items-start">
@@ -370,10 +370,10 @@ const Campaigns = () => {
                             whileTap={{ scale: 0.98 }}
                             onClick={() => handleApply(selectedCampaign.id)}
                             disabled={applyLoading}
-                            className={`px-6 py-3 rounded-lg font-medium text-white transition-all ${
+                            className={`px-6 py-3 rounded-sm font-medium text-white transition-all ${
                               applyLoading
                                 ? "bg-primary/70 cursor-not-allowed"
-                                : "bg-primary hover:bg-primary-dark shadow-md"
+                                : "bg-primary text-sm hover:bg-primary-dark shadow-md"
                             }`}
                           >
                             {applyLoading ? (

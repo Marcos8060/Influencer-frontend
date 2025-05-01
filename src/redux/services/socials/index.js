@@ -96,3 +96,18 @@ export const fetchInfluencerProfile = async (auth) => {
         return error.response?.data || error.message;
     }
 };
+export const updateInfluencerProfile = async (auth, formData) => {
+    const payload = {
+        ...formData,
+    }
+    try {
+        const response = await axios.patch(`${APP_API_URL.UPDATE_INFLUENCER_PROFILE}`, payload,{
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+        });
+        return response;
+    } catch (error) {
+        return error.message;
+    }
+};
