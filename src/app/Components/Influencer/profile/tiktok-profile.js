@@ -137,58 +137,7 @@ const TiktokProfile = () => {
           {isTiktokConnected ? (
             <section className="flex flex-col text-color">
               <div className="bg-white shadow-sm rounded-xl p-4">
-                <section className="md:flex justify-between">
-                  <div className="flex gap-4">
-                    <a
-                      href={`https://tiktok.com/@${tiktokProfile?.username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        className="h-20 w-20 mx-auto object-cover rounded-full"
-                        src={tiktokProfile?.avatarUrl}
-                        alt="TikTok profile"
-                      />
-                    </a>
-                    <div className="space-y-3">
-                      <section className="flex items-center gap-2">
-                        <p className="font-bold text-xl">
-                          {tiktokProfile?.displayName}
-                        </p>
-                        {tiktokProfile?.isVerified && (
-                          <MdVerifiedUser className="text-link" />
-                        )}
-                      </section>
-                      <section>
-                        <p>@{tiktokProfile?.username}</p>
-                      </section>
-                      <section className="flex items-center gap-6">
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {tiktokProfile?.followingCount}
-                          </span>{" "}
-                          Following
-                        </p>
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {tiktokProfile?.followerCount}
-                          </span>{" "}
-                          Followers
-                        </p>
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {tiktokProfile?.likesCount}
-                          </span>{" "}
-                          Likes
-                        </p>
-                      </section>
-                      <section>
-                        <p className="italic font-light text-sm">
-                          {tiktokProfile?.bioDescription}
-                        </p>
-                      </section>
-                    </div>
-                  </div>
+                <section className="md:flex justify-end">
                   <div>
                     <button
                       onClick={handleTiktokLogin}

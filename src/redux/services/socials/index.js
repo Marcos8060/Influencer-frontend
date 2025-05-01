@@ -111,3 +111,21 @@ export const updateInfluencerProfile = async (auth, formData) => {
         return error.message;
     }
 };
+
+export const fetchInstagramMetricsLifetime = async (auth,payload) => {
+    try {
+        const url = `${APP_API_URL.INSTAGRAM_METRICS_LIFETIME}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { breakdown: payload.breakdown, metric: payload.metric, start_date: payload.start_date, end_date: payload.end_date, user_id: payload.user_id },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
