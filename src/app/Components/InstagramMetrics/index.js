@@ -103,10 +103,10 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
   // State for the filter form
   const [form] = Form.useForm();
   const [selectedMetric, setSelectedMetric] = useState(null);
-  const { instagramMetricsLifetime } = useSelector(( store ) => store.socials);
+  const { instagramMetricsLifetime } = useSelector((store) => store.socials);
 
   // State for the results
-//   const [metricsData, setMetricsData] = useState(null);
+  //   const [metricsData, setMetricsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState(null);
 
@@ -201,11 +201,11 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       const response = await dispatch(
         getInstagramMetricsLifetime(auth, payload)
       );
-      console.log("RESPONSE ",response)
-      if(response.statusCode === 10){
-        toast.error('The Influencer has less than 100 engaged audience')
+      console.log("RESPONSE ", response);
+      if (response.statusCode === 10) {
+        toast.error("The Influencer has less than 100 engaged audience");
       }
-    //   setMetricsData(response.payload);
+      //   setMetricsData(response.payload);
     } catch (error) {
       toast.error(error.response?.data?.errorMessage?.[0] || "Filter failed");
     } finally {
@@ -350,7 +350,7 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
 
     return (
       <Row gutter={16} style={{ marginTop: 16 }}>
-        <Col xs={24} md={12}>
+        <Col xs={24} style={{ padding: 0 }}>
           <MetricsDisplayCard
             title={
               <Space>
@@ -358,34 +358,39 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
                 <Text strong>Top {formValues?.breakdown}s</Text>
               </Space>
             }
+            style={{ width: "100%" }}
           >
-            <Bar
-              data={chartData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => {
-                        const total = instagramMetricsLifetime.breakdownValues.reduce(
-                          (sum, item) => sum + item.breakdownValue,
-                          0
-                        );
-                        return `${context.parsed.y.toLocaleString()} (${Math.round(
-                          (context.parsed.y / total) * 100
-                        )}%)`;
+            <div style={{ width: "100%", height: "250px" }}>
+              <Bar
+                data={chartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false, // This allows the chart to fill its container
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => {
+                          const total =
+                            instagramMetricsLifetime.breakdownValues.reduce(
+                              (sum, item) => sum + item.breakdownValue,
+                              0
+                            );
+                          return `${context.parsed.y.toLocaleString()} (${Math.round(
+                            (context.parsed.y / total) * 100
+                          )}%)`;
+                        },
                       },
                     },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </div>
           </MetricsDisplayCard>
         </Col>
-        <Col xs={24} md={12}>
+        <Col xs={24}>
           <MetricsDisplayCard
             title={
               <Space>
@@ -394,25 +399,35 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
               </Space>
             }
           >
-            <Pie
-              data={chartData}
-              options={{
-                responsive: true,
-                plugins: {
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => {
-                        return `${
-                          context.label
-                        }: ${context.parsed.toLocaleString()} (${
-                          context.formattedValue
-                        }%)`;
+            <div
+              style={{
+                width: "100%",
+                height: "300px", // Adjust this value to control the size
+                margin: "0 auto",
+                maxWidth: "500px", // Optional: prevents it from getting too wide
+              }}
+            >
+              <Pie
+                data={chartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false, // Important for size control
+                  plugins: {
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => {
+                          return `${
+                            context.label
+                          }: ${context.parsed.toLocaleString()} (${
+                            context.formattedValue
+                          }%)`;
+                        },
                       },
                     },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </div>
           </MetricsDisplayCard>
         </Col>
       </Row>
@@ -420,15 +435,21 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
   };
 
   const renderDateInfo = () => {
-    if (!instagramMetricsLifetime?.start_date && !instagramMetricsLifetime?.end_date) return null;
+    if (
+      !instagramMetricsLifetime?.start_date &&
+      !instagramMetricsLifetime?.end_date
+    )
+      return null;
 
     return (
       <div style={{ marginBottom: 16 }}>
         <Space>
           <CalendarOutlined />
           <Text type="secondary">
-            {instagramMetricsLifetime.start_date && `From ${instagramMetricsLifetime.start_date}`}
-            {instagramMetricsLifetime.end_date && ` to ${instagramMetricsLifetime.end_date}`}
+            {instagramMetricsLifetime.start_date &&
+              `From ${instagramMetricsLifetime.start_date}`}
+            {instagramMetricsLifetime.end_date &&
+              ` to ${instagramMetricsLifetime.end_date}`}
           </Text>
         </Space>
       </div>
