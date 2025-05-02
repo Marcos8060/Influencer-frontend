@@ -307,7 +307,7 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
           columns={columns}
           dataSource={instagramMetricsLifetime.breakdownValues}
           rowKey="breakdownKey"
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 6 }}
           size="middle"
         />
       </MetricsDisplayCard>
