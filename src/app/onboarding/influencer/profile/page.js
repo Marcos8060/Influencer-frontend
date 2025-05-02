@@ -347,7 +347,7 @@ const InfluencerProfilePage = () => {
                       >
                         {fileList.length >= 1 ? null : (
                           <Avatar
-                            size={128}
+                            size={68}
                             src={influencerProfile.profilePicture}
                             className="cursor-pointer"
                           />
