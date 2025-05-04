@@ -201,3 +201,13 @@
     margin-bottom: 8px;
     color: #3b4a54;
   }
+
+  /* For sent messages (your messages) */
+.message.sent .message-meta .message-time {
+  color: white;
+}
+
+/* For received messages (recipient's messages) */
+.message.received .message-meta .message-time {
+  color: black;
+}

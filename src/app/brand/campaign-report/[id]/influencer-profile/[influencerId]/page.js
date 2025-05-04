@@ -24,12 +24,13 @@ import {
   EnvironmentOutlined,
   CloseCircleFilled,
   ArrowLeftOutlined,
+  MessageOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPosts } from "@/redux/features/stepper/campaign-stepper";
 import { getInfluencerProfileByBrand } from "@/redux/features/socials";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import { approveCampaignApplication } from "@/redux/services/campaign";
@@ -62,6 +63,7 @@ const InfluencerProfile = () => {
 
   const dispatch = useDispatch();
   const auth = useAuth();
+  const router = useRouter();
   const userId = "40678282-c173-4788-89c9-14ea5596651e";
 
   const fetchData = async () => {
@@ -79,7 +81,9 @@ const InfluencerProfile = () => {
     // const page = 'campaignCollaborator'
     try {
       setLoading(true);
-      await dispatch(getInfluencerProfileByBrand(auth, influencerId,campaignId));
+      await dispatch(
+        getInfluencerProfileByBrand(auth, influencerId, campaignId)
+      );
     } catch (error) {
       // Optional: handle error here
     } finally {
@@ -133,6 +137,15 @@ const InfluencerProfile = () => {
     }
   };
 
+  const handleStartChat = () => {
+    const userId = brandInfluencerProfile?.userId;
+    const fullName = encodeURIComponent(brandInfluencerProfile?.fullName || "");
+    
+    router.push(
+      `/onboarding/brand/chat-box?userId=${userId}&fullName=${fullName}`
+    );
+  };
+
   useEffect(() => {
     if (brandInfluencerProfile?.collaborator?.status) {
       setCollaboratorStatus(brandInfluencerProfile.collaborator.status);
@@ -149,12 +162,12 @@ const InfluencerProfile = () => {
       {showAnimation && <ChristmasAnimation />}
       {/* Profile Header */}
       <Space style={{ marginBottom: 24 }}>
-          <Link href={`/brand/campaign-report/${campaignId}`}>
-            <Button type="text" icon={<ArrowLeftOutlined />}>
-              Back to Campaigns Details
-            </Button>
-          </Link>
-        </Space>
+        <Link href={`/brand/campaign-report/${campaignId}`}>
+          <Button type="text" icon={<ArrowLeftOutlined />}>
+            Back to Campaigns Details
+          </Button>
+        </Link>
+      </Space>
       {loading ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 8 }).map((_, idx) => (
@@ -269,6 +282,18 @@ const InfluencerProfile = () => {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
+                  <button
+                    className="bg-secondary rounded-sm text-white px-4 py-3 text-xs flex items-center gap-2"
+                    onClick={handleStartChat}
+                  >
+                    Chat with this Influencer
+                    <MessageOutlined />
+                  </button>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
                   <SuccessButtonComponent
                     onClick={approveApplication}
                     type="submit"
@@ -304,7 +329,7 @@ const InfluencerProfile = () => {
                         </span>
                       )
                     }
-                    disabled={collaboratorStatus === 'approved' || approved}
+                    disabled={collaboratorStatus === "approved" || approved}
                     className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
                   />
                 </motion.div>
@@ -347,7 +372,7 @@ const InfluencerProfile = () => {
                         </span>
                       )
                     }
-                    disabled={collaboratorStatus === 'rejected' || rejected}
+                    disabled={collaboratorStatus === "rejected" || rejected}
                     className={`w-full py-3 px-4 rounded-lg font-medium bg-red/80 text-white transition-all`}
                   />
                 </motion.div>

@@ -37,7 +37,8 @@
     "react-owl-carousel": "^2.3.3",
     "react-redux": "^9.2.0",
     "react-world-flags": "^1.6.0",
-    "styled-components": "^6.1.17"
+    "styled-components": "^6.1.17",
+    "websocket": "^1.0.35"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
