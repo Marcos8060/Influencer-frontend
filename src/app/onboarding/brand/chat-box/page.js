@@ -80,18 +80,18 @@ const WhatsAppChat = () => {
 
     // Sort messages by timestamp (oldest first)
     const sortedMessages = [...historyData.messages].sort((a, b) => 
-      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
-
+  
     setChats(prevChats => {
       return prevChats.map(chat => {
         if (chat.id === recipientId) {
           return {
             ...chat,
             messages: sortedMessages,
-            lastMessage: sortedMessages[sortedMessages.length - 1]?.message || "",
-            time: sortedMessages[sortedMessages.length - 1]?.timestamp 
-              ? formatTime(sortedMessages[sortedMessages.length - 1].timestamp)
+            lastMessage: sortedMessages[0]?.message || "", // First message is newest
+            time: sortedMessages[0]?.timestamp 
+              ? formatTime(sortedMessages[0].timestamp)
               : "Just now"
           };
         }
@@ -379,7 +379,7 @@ const WhatsAppChat = () => {
                   title={
                     <div className="chat-title">
                       <span>{chat.name}</span>
-                      <span className="chat-time">{chat.time}</span>
+                      {/* <span className="chat-time">{chat.time}</span> */}
                     </div>
                   }
                   description={

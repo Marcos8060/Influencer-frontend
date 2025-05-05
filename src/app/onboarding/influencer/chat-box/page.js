@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
-  Suspense
+  Suspense,
 } from "react";
 import {
   Input,
@@ -39,6 +39,7 @@ const InfluencerChat = () => {
   const [searchText, setSearchText] = useState("");
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [selectedChatMessages, setSelectedChatMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
@@ -48,19 +49,6 @@ const InfluencerChat = () => {
   const userId = user?.user_id;
 
   // Helper functions
-  const createNewChat = useCallback((id, name, messages) => {
-    return {
-      id,
-      name,
-      avatar: name.charAt(0),
-      lastMessage: messages[0]?.body?.message || "",
-      time: messages[0]?.body?.timestamp
-        ? formatTime(messages[0].body.timestamp)
-        : "Just now",
-      unread: 0,
-      messages,
-    };
-  }, []);
 
   const formatTime = useCallback((timestamp) => {
     try {
@@ -85,6 +73,23 @@ const InfluencerChat = () => {
     }
   }, []);
 
+  const createNewChat = useCallback(
+    (id, name, messages) => {
+      return {
+        id,
+        name,
+        avatar: name.charAt(0),
+        lastMessage: messages[0]?.message || "",
+        time: messages[0]?.timestamp
+          ? formatTime(messages[0].timestamp)
+          : "Just now",
+        unread: 0,
+        messages: [], // Start with empty messages, will be populated after chat.join
+      };
+    },
+    [formatTime]
+  );
+
   // Handle all chats response
   const handleAllChats = useCallback(
     (allChatsData) => {
@@ -95,67 +100,65 @@ const InfluencerChat = () => {
         return;
       }
 
-      // Group messages by user
-      const chatGroups = {};
-      allChatsData.messages.forEach((message) => {
-        const otherUserId = message.user.user_id;
-        if (!chatGroups[otherUserId]) {
-          chatGroups[otherUserId] = {
-            id: otherUserId,
-            name: message.user.user_name,
-            avatar: message.user.user_name.charAt(0),
-            messages: [],
+      const formattedChats = allChatsData.messages
+        .map((chatGroup) => {
+          // Skip if no user data
+          if (!chatGroup.user) {
+            console.warn("Chat group missing user data:", chatGroup);
+            return null;
+          }
+
+          return {
+            id: chatGroup.user.user_id, // user_id will be used for chat.join
+            name: chatGroup.user.user_name, // Display name in sidebar
+            chatGroupId: chatGroup.chatGroupId, // Store for reference
+            avatar: chatGroup.user.user_name?.charAt(0) || "U",
             lastMessage: "",
-            time: formatTime(message.created_at),
-            unread: 0, // You might need to adjust this based on your actual data
+            time: formatTime(chatGroup.created_at),
+            unread: 0,
+            messages: [],
           };
-        }
-        chatGroups[otherUserId].messages.push(message);
-        chatGroups[otherUserId].lastMessage = message.body?.message || "";
-        chatGroups[otherUserId].time = formatTime(message.created_at);
-      });
+        })
+        .filter((chat) => chat !== null); // Remove any null entries
 
-      const formattedChats = Object.values(chatGroups);
       setChats(formattedChats);
-
-      // Set the first chat as active if none is selected
-      if (formattedChats.length > 0 && !activeChat) {
-        setActiveChat(formattedChats[0].id);
-      }
     },
-    [activeChat, formatTime]
+    [formatTime]
   );
 
   // Chat history handler for a specific chat
   const handleChatHistory = useCallback(
     (historyData) => {
       console.log("Processing chat history:", historyData);
-
       if (!historyData.messages?.length) {
         console.log("No messages in chat history");
         return;
       }
-
       // Sort messages by timestamp (oldest first)
       const sortedMessages = [...historyData.messages].sort(
         (a, b) =>
-          new Date(a.body.timestamp).getTime() -
-          new Date(b.body.timestamp).getTime()
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
 
+      // Update the messages for the active chat
+      setSelectedChatMessages(sortedMessages);
+
+      // Update last message in sidebar
       setChats((prevChats) => {
         return prevChats.map((chat) => {
-          if (chat.id === historyData.chat_id) {
+          console.log("CHAT ", chat);
+          console.log("HISTORY ", historyData);
+          if (chat.id === historyData.messages[0].recipient) {
             return {
               ...chat,
-              messages: sortedMessages,
               lastMessage:
-                sortedMessages[sortedMessages.length - 1]?.body?.message || "",
-              time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp
+                sortedMessages[sortedMessages.length - 1]?.message || "",
+              time: sortedMessages[sortedMessages.length - 1]?.timestamp
                 ? formatTime(
-                    sortedMessages[sortedMessages.length - 1].body.timestamp
+                    sortedMessages[sortedMessages.length - 1].timestamp
                   )
                 : "Just now",
+              messages: sortedMessages, // Add the messages to the chat object
             };
           }
           return chat;
@@ -165,46 +168,77 @@ const InfluencerChat = () => {
     [formatTime]
   );
 
+  const handleChatSelect = useCallback((chatId) => {
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      antdMessage.warning("Connection not ready. Please try again.");
+      return;
+    }
+
+    setActiveChat(chatId);
+    setSelectedChatMessages([]);
+
+    const joinChatRequest = {
+      type: "chat.join",
+      user_id: chatId, // Using the user_id directly
+    };
+
+    console.log("Sending chat join:", joinChatRequest);
+    socketRef.current.send(JSON.stringify(joinChatRequest));
+  }, []);
+
   // New message handler
   const handleNewMessage = useCallback(
     (messageData) => {
-      console.log("Processing new message:", messageData);
+      // Normalize message structure
+      const message = messageData.body || messageData;
 
-      if (!messageData.body) {
-        console.error("Message missing body:", messageData);
+      if (!message.sender || !message.recipient) {
+        console.error("Invalid message format:", message);
         return;
       }
 
-      const messageBody = messageData.body;
-      const isMe = messageBody.sender === userId;
-      const chatId = isMe ? messageBody.recipient : messageBody.sender;
-      const chatName = isMe
-        ? messageBody.recipient_name
-        : messageBody.sender_name;
+      const isMe = message.sender === userId;
+      const chatId = isMe ? message.recipient : message.sender;
 
+      // Update active chat messages if this is the current chat
+      if (activeChat === chatId) {
+        setSelectedChatMessages((prev) => [...prev, message]);
+      }
+
+      // Update chats list
       setChats((prevChats) => {
-        // Find or create the chat
-        const chatExists = prevChats.some((chat) => chat.id === chatId);
-        if (!chatExists) {
-          const newChat = createNewChat(chatId, chatName, [messageData]);
-          return [...prevChats, newChat];
+        const updatedChats = [...prevChats];
+        const chatIndex = updatedChats.findIndex((c) => c.id === chatId);
+
+        if (chatIndex === -1) {
+          // New chat
+          updatedChats.push({
+            id: chatId,
+            name: isMe ? message.recipient_name : message.sender_name,
+            avatar: (isMe
+              ? message.recipient_name
+              : message.sender_name
+            ).charAt(0),
+            lastMessage: message.message,
+            time: formatTime(message.timestamp),
+            unread: isMe ? 0 : 1,
+            messages: [message],
+          });
+        } else {
+          // Existing chat
+          updatedChats[chatIndex] = {
+            ...updatedChats[chatIndex],
+            lastMessage: message.message,
+            time: formatTime(message.timestamp),
+            unread: isMe ? 0 : updatedChats[chatIndex].unread + 1,
+            messages: [...(updatedChats[chatIndex].messages || []), message],
+          };
         }
 
-        return prevChats.map((chat) => {
-          if (chat.id === chatId) {
-            return {
-              ...chat,
-              lastMessage: messageBody.message,
-              time: formatTime(messageBody.timestamp),
-              messages: [...chat.messages, messageData],
-              unread: isMe ? 0 : chat.unread + 1,
-            };
-          }
-          return chat;
-        });
+        return updatedChats;
       });
     },
-    [formatTime, userId, createNewChat]
+    [userId, activeChat, formatTime]
   );
 
   // WebSocket initialization with auth in headers
@@ -255,6 +289,19 @@ const InfluencerChat = () => {
         try {
           const data = JSON.parse(event.data);
           console.log("Received message:", data);
+
+          if (data.type === "chat.message") {
+            // Handle server confirmation of sent message
+            if (data.body?.sender === userId) {
+              setSelectedChatMessages(prev => prev.map(msg => 
+                msg.id === data.tempId ? { ...msg, status: "delivered" } : msg
+              ));
+            } 
+            // Handle incoming messages
+            else {
+              handleNewMessage(data);
+            }
+          }
 
           switch (data.type) {
             case "connection.success":
@@ -384,34 +431,38 @@ const InfluencerChat = () => {
   }, [activeChat]);
 
   // Send message handler
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) {
-      antdMessage.warning("Message cannot be empty");
-      return;
-    }
-
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      antdMessage.warning("Cannot send message - connection not ready");
-      return;
-    }
-
-    if (!activeChat) {
-      antdMessage.warning("Please select a chat to send message");
-      return;
-    }
+  const handleSendMessage = (e) => {
+    e?.stopPropagation();
+    if (!inputMessage.trim()) return;
 
     const message = {
-      type: "chat.message",
-      user_id: activeChat,
+      id: Date.now().toString(), // Temporary ID
+      sender: userId,
+      recipient: activeChat,
       message: inputMessage,
+      timestamp: new Date().toISOString(),
+      status: "sending",
     };
 
+    // Optimistically update UI
+    setSelectedChatMessages((prev) => [...prev, message]);
+    setInputMessage("");
+
+    // Send via WebSocket
     try {
-      socketRef.current.send(JSON.stringify(message));
-      setInputMessage("");
+      socketRef.current.send(
+        JSON.stringify({
+          type: "chat.message",
+          user_id: activeChat,
+          message: inputMessage,
+        })
+      );
     } catch (error) {
-      console.error("Error sending message:", error);
-      antdMessage.error("Failed to send message");
+      console.error("Send failed:", error);
+      // Remove optimistic update if failed
+      setSelectedChatMessages((prev) =>
+        prev.filter((m) => m.id !== message.id)
+      );
     }
   };
 
@@ -473,7 +524,7 @@ const InfluencerChat = () => {
                 className={`chat-item ${
                   activeChat === chat.id ? "active" : ""
                 }`}
-                onClick={() => setActiveChat(chat.id)}
+                onClick={() => handleChatSelect(chat.id)}
               >
                 <List.Item.Meta
                   avatar={
@@ -521,55 +572,50 @@ const InfluencerChat = () => {
               <Button type="text" icon={<SearchOutlined />} />
             </div>
           </div>
-
           {/* Messages area */}
           <div className="chat-messages">
-            {chats
-              .find((chat) => chat.id === activeChat)
-              ?.messages.map((message, index) => {
-                const messageBody = message.body || {};
-                return (
-                  <div
-                    key={messageBody.id || index}
-                    className={`message ${
-                      messageBody.sender === userId ? "sent" : "received"
-                    }`}
-                  >
-                    <div className="message-content">
-                      <div className="message-text text-sm">
-                        {messageBody.message}
-                      </div>
-                      <div className="message-meta">
-                        <span
-                          className="message-time"
-                          style={{
-                            color:
-                              messageBody.sender === userId ? "white" : "black",
-                          }}
-                        >
-                          {formatTime(messageBody.timestamp)}
+            {selectedChatMessages.map((message, index) => {
+              // Direct access to message properties without body
+              const isMe = message.sender === userId;
+
+              return (
+                <div
+                  key={message.id || index}
+                  className={`message ${isMe ? "sent" : "received"}`}
+                >
+                  {!isMe && (
+                    <Avatar className="message-avatar">
+                      {chats
+                        .find((c) => c.id === message.sender)
+                        ?.name.charAt(0) || "U"}
+                    </Avatar>
+                  )}
+                  <div className="message-content">
+                    <div className="message-text text-sm">
+                      {message.message}
+                    </div>
+                    <div className="message-meta">
+                      <span className="message-time">
+                        {formatTime(message.timestamp)}
+                      </span>
+                      {isMe && (
+                        <span className="message-status">
+                          {message.status === "read" ? (
+                            <CheckCircleOutlined style={{ color: "#53bdeb" }} />
+                          ) : message.status === "delivered" ? (
+                            <CheckCircleOutlined />
+                          ) : (
+                            <CheckOutlined />
+                          )}
                         </span>
-                        {messageBody.sender === userId && (
-                          <span className="message-status">
-                            {messageBody.status === "read" ? (
-                              <CheckCircleOutlined
-                                style={{ color: "#53bdeb" }}
-                              />
-                            ) : messageBody.status === "delivered" ? (
-                              <CheckCircleOutlined />
-                            ) : (
-                              <CheckOutlined />
-                            )}
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
-
           {/* Message input area */}
           <div className="chat-input">
             <div className="input-actions">
@@ -597,9 +643,17 @@ const InfluencerChat = () => {
           </div>
         </div>
       ) : (
-        <div className="chat-window empty-chat">
-          <div className="empty-message">
-            <h3>Select a chat to start a conversation</h3>
+        <div className="empty-chat">
+          <div className="empty-content">
+            <Avatar size={100} icon={<UserOutlined />} />
+            <h2>Influencer Platform</h2>
+            <p>
+              {connectionStatus === "connected"
+                ? chats.length > 0
+                  ? "Select a chat to start messaging"
+                  : "You have no chats yet"
+                : connectionStatusText}
+            </p>
           </div>
         </div>
       )}
@@ -609,8 +663,12 @@ const InfluencerChat = () => {
 
 export default function TikTokCallbackPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-center">Loading Influencer chat...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-4 text-center">Loading Influencer chat...</div>
+      }
+    >
       <InfluencerChat />
     </Suspense>
-  )
+  );
 }
