@@ -211,3 +211,15 @@
 .message.received .message-meta .message-time {
   color: black;
 }
+.empty-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f9f9f9;
+}
+
+.empty-message {
+  text-align: center;
+  color: #888;
+}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect, useContext, useCallback } from "react";
+import React, { useState, useRef, useEffect, useContext, useCallback, Suspense } from "react";
 import {
   Input,
   Button,
@@ -490,4 +490,10 @@ const WhatsAppChat = () => {
   );
 };
 
-export default WhatsAppChat;
+export default function TikTokCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading Brand chat...</div>}>
+      <WhatsAppChat />
+    </Suspense>
+  )
+}

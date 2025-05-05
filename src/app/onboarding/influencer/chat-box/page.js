@@ -1,5 +1,12 @@
 "use client";
-import React, { useState, useRef, useEffect, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+  Suspense
+} from "react";
 import {
   Input,
   Button,
@@ -47,7 +54,9 @@ const InfluencerChat = () => {
       name,
       avatar: name.charAt(0),
       lastMessage: messages[0]?.body?.message || "",
-      time: messages[0]?.body?.timestamp ? formatTime(messages[0].body.timestamp) : "Just now",
+      time: messages[0]?.body?.timestamp
+        ? formatTime(messages[0].body.timestamp)
+        : "Just now",
       unread: 0,
       messages,
     };
@@ -56,17 +65,20 @@ const InfluencerChat = () => {
   const formatTime = useCallback((timestamp) => {
     try {
       if (!timestamp) return "Just now";
-      
-      const normalizedTimestamp = timestamp.endsWith('+00:00') 
-        ? timestamp.replace('+00:00', 'Z')
+
+      const normalizedTimestamp = timestamp.endsWith("+00:00")
+        ? timestamp.replace("+00:00", "Z")
         : timestamp;
-      
+
       const date = new Date(normalizedTimestamp);
       if (isNaN(date.getTime())) {
         console.error("Invalid date:", timestamp);
         return "Just now";
       }
-      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } catch (error) {
       console.error("Error formatting time:", error, timestamp);
       return "Just now";
@@ -74,110 +86,126 @@ const InfluencerChat = () => {
   }, []);
 
   // Handle all chats response
-  const handleAllChats = useCallback((allChatsData) => {
-    console.log("Processing all chats:", allChatsData);
-    
-    if (!allChatsData.messages?.length) {
-      antdMessage.info("You have no chat history yet");
-      return;
-    }
+  const handleAllChats = useCallback(
+    (allChatsData) => {
+      console.log("Processing all chats:", allChatsData);
 
-    // Group messages by user
-    const chatGroups = {};
-    allChatsData.messages.forEach(message => {
-      const otherUserId = message.user.user_id;
-      if (!chatGroups[otherUserId]) {
-        chatGroups[otherUserId] = {
-          id: otherUserId,
-          name: message.user.user_name,
-          avatar: message.user.user_name.charAt(0),
-          messages: [],
-          lastMessage: "",
-          time: formatTime(message.created_at),
-          unread: 0 // You might need to adjust this based on your actual data
-        };
+      if (!allChatsData.messages?.length) {
+        antdMessage.info("You have no chat history yet");
+        return;
       }
-      chatGroups[otherUserId].messages.push(message);
-      chatGroups[otherUserId].lastMessage = message.body?.message || "";
-      chatGroups[otherUserId].time = formatTime(message.created_at);
-    });
 
-    const formattedChats = Object.values(chatGroups);
-    setChats(formattedChats);
-    
-    // Set the first chat as active if none is selected
-    if (formattedChats.length > 0 && !activeChat) {
-      setActiveChat(formattedChats[0].id);
-    }
-  }, [activeChat, formatTime]);
+      // Group messages by user
+      const chatGroups = {};
+      allChatsData.messages.forEach((message) => {
+        const otherUserId = message.user.user_id;
+        if (!chatGroups[otherUserId]) {
+          chatGroups[otherUserId] = {
+            id: otherUserId,
+            name: message.user.user_name,
+            avatar: message.user.user_name.charAt(0),
+            messages: [],
+            lastMessage: "",
+            time: formatTime(message.created_at),
+            unread: 0, // You might need to adjust this based on your actual data
+          };
+        }
+        chatGroups[otherUserId].messages.push(message);
+        chatGroups[otherUserId].lastMessage = message.body?.message || "";
+        chatGroups[otherUserId].time = formatTime(message.created_at);
+      });
+
+      const formattedChats = Object.values(chatGroups);
+      setChats(formattedChats);
+
+      // Set the first chat as active if none is selected
+      if (formattedChats.length > 0 && !activeChat) {
+        setActiveChat(formattedChats[0].id);
+      }
+    },
+    [activeChat, formatTime]
+  );
 
   // Chat history handler for a specific chat
-  const handleChatHistory = useCallback((historyData) => {
-    console.log("Processing chat history:", historyData);
-    
-    if (!historyData.messages?.length) {
-      console.log("No messages in chat history");
-      return;
-    }
+  const handleChatHistory = useCallback(
+    (historyData) => {
+      console.log("Processing chat history:", historyData);
 
-    // Sort messages by timestamp (oldest first)
-    const sortedMessages = [...historyData.messages].sort((a, b) => 
-      new Date(a.body.timestamp).getTime() - new Date(b.body.timestamp).getTime()
-    );
-
-    setChats(prevChats => {
-      return prevChats.map(chat => {
-        if (chat.id === historyData.chat_id) {
-          return {
-            ...chat,
-            messages: sortedMessages,
-            lastMessage: sortedMessages[sortedMessages.length - 1]?.body?.message || "",
-            time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp 
-              ? formatTime(sortedMessages[sortedMessages.length - 1].body.timestamp)
-              : "Just now"
-          };
-        }
-        return chat;
-      });
-    });
-  }, [formatTime]);
-
-  // New message handler
-  const handleNewMessage = useCallback((messageData) => {
-    console.log("Processing new message:", messageData);
-    
-    if (!messageData.body) {
-      console.error("Message missing body:", messageData);
-      return;
-    }
-
-    const messageBody = messageData.body;
-    const isMe = messageBody.sender === userId;
-    const chatId = isMe ? messageBody.recipient : messageBody.sender;
-    const chatName = isMe ? messageBody.recipient_name : messageBody.sender_name;
-    
-    setChats(prevChats => {
-      // Find or create the chat
-      const chatExists = prevChats.some(chat => chat.id === chatId);
-      if (!chatExists) {
-        const newChat = createNewChat(chatId, chatName, [messageData]);
-        return [...prevChats, newChat];
+      if (!historyData.messages?.length) {
+        console.log("No messages in chat history");
+        return;
       }
 
-      return prevChats.map(chat => {
-        if (chat.id === chatId) {
-          return {
-            ...chat,
-            lastMessage: messageBody.message,
-            time: formatTime(messageBody.timestamp),
-            messages: [...chat.messages, messageData],
-            unread: isMe ? 0 : chat.unread + 1,
-          };
-        }
-        return chat;
+      // Sort messages by timestamp (oldest first)
+      const sortedMessages = [...historyData.messages].sort(
+        (a, b) =>
+          new Date(a.body.timestamp).getTime() -
+          new Date(b.body.timestamp).getTime()
+      );
+
+      setChats((prevChats) => {
+        return prevChats.map((chat) => {
+          if (chat.id === historyData.chat_id) {
+            return {
+              ...chat,
+              messages: sortedMessages,
+              lastMessage:
+                sortedMessages[sortedMessages.length - 1]?.body?.message || "",
+              time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp
+                ? formatTime(
+                    sortedMessages[sortedMessages.length - 1].body.timestamp
+                  )
+                : "Just now",
+            };
+          }
+          return chat;
+        });
       });
-    });
-  }, [formatTime, userId, createNewChat]);
+    },
+    [formatTime]
+  );
+
+  // New message handler
+  const handleNewMessage = useCallback(
+    (messageData) => {
+      console.log("Processing new message:", messageData);
+
+      if (!messageData.body) {
+        console.error("Message missing body:", messageData);
+        return;
+      }
+
+      const messageBody = messageData.body;
+      const isMe = messageBody.sender === userId;
+      const chatId = isMe ? messageBody.recipient : messageBody.sender;
+      const chatName = isMe
+        ? messageBody.recipient_name
+        : messageBody.sender_name;
+
+      setChats((prevChats) => {
+        // Find or create the chat
+        const chatExists = prevChats.some((chat) => chat.id === chatId);
+        if (!chatExists) {
+          const newChat = createNewChat(chatId, chatName, [messageData]);
+          return [...prevChats, newChat];
+        }
+
+        return prevChats.map((chat) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              lastMessage: messageBody.message,
+              time: formatTime(messageBody.timestamp),
+              messages: [...chat.messages, messageData],
+              unread: isMe ? 0 : chat.unread + 1,
+            };
+          }
+          return chat;
+        });
+      });
+    },
+    [formatTime, userId, createNewChat]
+  );
 
   // WebSocket initialization with auth in headers
   const initWebSocket = useCallback(() => {
@@ -215,10 +243,10 @@ const InfluencerChat = () => {
         setConnectionStatus("connected");
         setReconnectAttempts(0);
         antdMessage.success("Connected to chat server");
-        
+
         // First request: Get all chats for current user
         const allChatsRequest = {
-          type: "chats.all"
+          type: "chats.all",
         };
         ws.send(JSON.stringify(allChatsRequest));
       };
@@ -256,16 +284,22 @@ const InfluencerChat = () => {
         console.error("WebSocket error event:", error);
         setConnectionStatus("disconnected");
         antdMessage.error("Connection error. Please check your network.");
-        
+
         // Try to reconnect if this was an unexpected error
         const MAX_RECONNECT_ATTEMPTS = 5;
         if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-          const delay = Math.min(1000 * (2 ** reconnectAttempts), 30000);
-          antdMessage.warning(`Connection error. Reconnecting in ${delay/1000} seconds...`);
-          
+          const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+          antdMessage.warning(
+            `Connection error. Reconnecting in ${delay / 1000} seconds...`
+          );
+
           reconnectTimeoutRef.current = setTimeout(() => {
-            console.log(`Attempting to reconnect (${reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS})...`);
-            setReconnectAttempts(prev => prev + 1);
+            console.log(
+              `Attempting to reconnect (${
+                reconnectAttempts + 1
+              }/${MAX_RECONNECT_ATTEMPTS})...`
+            );
+            setReconnectAttempts((prev) => prev + 1);
             initWebSocket();
           }, delay);
         }
@@ -274,37 +308,52 @@ const InfluencerChat = () => {
       ws.onclose = (event) => {
         console.log("WebSocket closed:", event.code, event.reason);
         setConnectionStatus("disconnected");
-        
-        if (event.code !== 1000) { // 1000 is normal closure
+
+        if (event.code !== 1000) {
+          // 1000 is normal closure
           const MAX_RECONNECT_ATTEMPTS = 5;
           if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
-            const delay = Math.min(1000 * (2 ** reconnectAttempts), 30000);
-            antdMessage.warning(`Connection lost. Reconnecting in ${delay/1000} seconds...`);
-            
+            const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+            antdMessage.warning(
+              `Connection lost. Reconnecting in ${delay / 1000} seconds...`
+            );
+
             reconnectTimeoutRef.current = setTimeout(() => {
-              console.log(`Attempting to reconnect (${reconnectAttempts + 1}/${MAX_RECONNECT_ATTEMPTS})...`);
-              setReconnectAttempts(prev => prev + 1);
+              console.log(
+                `Attempting to reconnect (${
+                  reconnectAttempts + 1
+                }/${MAX_RECONNECT_ATTEMPTS})...`
+              );
+              setReconnectAttempts((prev) => prev + 1);
               initWebSocket();
             }, delay);
           } else {
-            antdMessage.error("Failed to connect after multiple attempts. Please refresh the page.");
+            antdMessage.error(
+              "Failed to connect after multiple attempts. Please refresh the page."
+            );
           }
         }
       };
-
     } catch (error) {
       console.error("WebSocket initialization error:", error);
       antdMessage.error("Failed to initialize connection");
       setConnectionStatus("disconnected");
     }
-  }, [auth, handleAllChats, handleChatHistory, handleNewMessage, reconnectAttempts, userId]);
+  }, [
+    auth,
+    handleAllChats,
+    handleChatHistory,
+    handleNewMessage,
+    reconnectAttempts,
+    userId,
+  ]);
 
   // Initialize WebSocket connection
   useEffect(() => {
     if (auth) {
       initWebSocket();
     }
-    
+
     return () => {
       // Clean up WebSocket connection
       if (socketRef.current) {
@@ -328,7 +377,7 @@ const InfluencerChat = () => {
     if (activeChat && socketRef.current?.readyState === WebSocket.OPEN) {
       const joinChatRequest = {
         type: "chat.join",
-        user_id: activeChat
+        user_id: activeChat,
       };
       socketRef.current.send(JSON.stringify(joinChatRequest));
     }
@@ -354,7 +403,7 @@ const InfluencerChat = () => {
     const message = {
       type: "chat.message",
       user_id: activeChat,
-      message: inputMessage
+      message: inputMessage,
     };
 
     try {
@@ -421,7 +470,9 @@ const InfluencerChat = () => {
             dataSource={filteredChats}
             renderItem={(chat) => (
               <List.Item
-                className={`chat-item ${activeChat === chat.id ? "active" : ""}`}
+                className={`chat-item ${
+                  activeChat === chat.id ? "active" : ""
+                }`}
                 onClick={() => setActiveChat(chat.id)}
               >
                 <List.Item.Meta
@@ -439,7 +490,9 @@ const InfluencerChat = () => {
                   description={
                     <div className="chat-description">
                       <span>{chat.lastMessage}</span>
-                      {chat.unread > 0 && <span className="unread-badge bg-primary" />}
+                      {chat.unread > 0 && (
+                        <span className="unread-badge bg-primary" />
+                      )}
                     </div>
                   }
                 />
@@ -455,10 +508,12 @@ const InfluencerChat = () => {
           <div className="chat-header">
             <div className="chat-info">
               <Avatar size="large">
-                {chats.find(c => c.id === activeChat)?.name.charAt(0) || "U"}
+                {chats.find((c) => c.id === activeChat)?.name.charAt(0) || "U"}
               </Avatar>
               <div className="chat-details">
-                <h3>{chats.find(c => c.id === activeChat)?.name || "User"}</h3>
+                <h3>
+                  {chats.find((c) => c.id === activeChat)?.name || "User"}
+                </h3>
                 <p>{connectionStatusText}</p>
               </div>
             </div>
@@ -469,40 +524,49 @@ const InfluencerChat = () => {
 
           {/* Messages area */}
           <div className="chat-messages">
-            {chats.find(chat => chat.id === activeChat)?.messages.map((message, index) => {
-              const messageBody = message.body || {};
-              return (
-                <div
-                  key={messageBody.id || index}
-                  className={`message ${messageBody.sender === userId ? "sent" : "received"}`}
-                >
-                  <div className="message-content">
-                    <div className="message-text text-sm">{messageBody.message}</div>
-                    <div className="message-meta">
-                      <span 
-                        className="message-time" 
-                        style={{ 
-                          color: messageBody.sender === userId ? 'white' : 'black' 
-                        }}
-                      >
-                        {formatTime(messageBody.timestamp)}
-                      </span>
-                      {messageBody.sender === userId && (
-                        <span className="message-status">
-                          {messageBody.status === "read" ? (
-                            <CheckCircleOutlined style={{ color: "#53bdeb" }} />
-                          ) : messageBody.status === "delivered" ? (
-                            <CheckCircleOutlined />
-                          ) : (
-                            <CheckOutlined />
-                          )}
+            {chats
+              .find((chat) => chat.id === activeChat)
+              ?.messages.map((message, index) => {
+                const messageBody = message.body || {};
+                return (
+                  <div
+                    key={messageBody.id || index}
+                    className={`message ${
+                      messageBody.sender === userId ? "sent" : "received"
+                    }`}
+                  >
+                    <div className="message-content">
+                      <div className="message-text text-sm">
+                        {messageBody.message}
+                      </div>
+                      <div className="message-meta">
+                        <span
+                          className="message-time"
+                          style={{
+                            color:
+                              messageBody.sender === userId ? "white" : "black",
+                          }}
+                        >
+                          {formatTime(messageBody.timestamp)}
                         </span>
-                      )}
+                        {messageBody.sender === userId && (
+                          <span className="message-status">
+                            {messageBody.status === "read" ? (
+                              <CheckCircleOutlined
+                                style={{ color: "#53bdeb" }}
+                              />
+                            ) : messageBody.status === "delivered" ? (
+                              <CheckCircleOutlined />
+                            ) : (
+                              <CheckOutlined />
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
             <div ref={messagesEndRef} />
           </div>
 
@@ -525,23 +589,17 @@ const InfluencerChat = () => {
               type="primary"
               icon={<SendOutlined />}
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || connectionStatus !== "connected"}
+              disabled={
+                !inputMessage.trim() || connectionStatus !== "connected"
+              }
               className="send-button"
             />
           </div>
         </div>
       ) : (
-        <div className="empty-chat">
-          <div className="empty-content">
-            <Avatar size={100} icon={<UserOutlined />} />
-            <h2>WhatsApp Web</h2>
-            <p>
-              {connectionStatus === "connected"
-                ? chats.length > 0 
-                  ? "Select a chat to start messaging"
-                  : "You have no chats yet"
-                : connectionStatusText}
-            </p>
+        <div className="chat-window empty-chat">
+          <div className="empty-message">
+            <h3>Select a chat to start a conversation</h3>
           </div>
         </div>
       )}
@@ -549,4 +607,10 @@ const InfluencerChat = () => {
   );
 };
 
-export default InfluencerChat;
+export default function TikTokCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading Influencer chat...</div>}>
+      <InfluencerChat />
+    </Suspense>
+  )
+}
