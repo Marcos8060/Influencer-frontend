@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
-  Suspense
+  Suspense,
 } from "react";
 import {
   Input,
@@ -39,6 +39,7 @@ const InfluencerChat = () => {
   const [searchText, setSearchText] = useState("");
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [selectedChatMessages, setSelectedChatMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
@@ -58,7 +59,7 @@ const InfluencerChat = () => {
         ? formatTime(messages[0].body.timestamp)
         : "Just now",
       unread: 0,
-      messages,
+      messages: [], // Start with empty messages, will be populated after chat.join
     };
   }, []);
 
@@ -104,13 +105,13 @@ const InfluencerChat = () => {
             id: otherUserId,
             name: message.user.user_name,
             avatar: message.user.user_name.charAt(0),
-            messages: [],
+            messages: [], // Will be populated after chat.join
             lastMessage: "",
             time: formatTime(message.created_at),
-            unread: 0, // You might need to adjust this based on your actual data
+            unread: 0,
           };
         }
-        chatGroups[otherUserId].messages.push(message);
+        // Store last message info for the sidebar
         chatGroups[otherUserId].lastMessage = message.body?.message || "";
         chatGroups[otherUserId].time = formatTime(message.created_at);
       });
@@ -118,12 +119,9 @@ const InfluencerChat = () => {
       const formattedChats = Object.values(chatGroups);
       setChats(formattedChats);
 
-      // Set the first chat as active if none is selected
-      if (formattedChats.length > 0 && !activeChat) {
-        setActiveChat(formattedChats[0].id);
-      }
+      // Don't set active chat automatically - wait for user to click
     },
-    [activeChat, formatTime]
+    [formatTime]
   );
 
   // Chat history handler for a specific chat
@@ -139,16 +137,19 @@ const InfluencerChat = () => {
       // Sort messages by timestamp (oldest first)
       const sortedMessages = [...historyData.messages].sort(
         (a, b) =>
-          new Date(a.body.timestamp).getTime() -
-          new Date(b.body.timestamp).getTime()
+          new Date(a.body?.timestamp).getTime() -
+          new Date(b.body?.timestamp).getTime()
       );
 
+      // Update the messages for the active chat
+      setSelectedChatMessages(sortedMessages);
+
+      // Update last message in sidebar
       setChats((prevChats) => {
         return prevChats.map((chat) => {
           if (chat.id === historyData.chat_id) {
             return {
               ...chat,
-              messages: sortedMessages,
               lastMessage:
                 sortedMessages[sortedMessages.length - 1]?.body?.message || "",
               time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp
@@ -164,6 +165,23 @@ const InfluencerChat = () => {
     },
     [formatTime]
   );
+
+  const handleChatSelect = useCallback((chatId) => {
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      antdMessage.warning("Connection not ready. Please try again.");
+      return;
+    }
+
+    setActiveChat(chatId);
+    setSelectedChatMessages([]); // Clear previous messages while loading new ones
+
+    // Send chat.join request
+    const joinChatRequest = {
+      type: "chat.join",
+      user_id: chatId,
+    };
+    socketRef.current.send(JSON.stringify(joinChatRequest));
+  }, []);
 
   // New message handler
   const handleNewMessage = useCallback(
@@ -473,7 +491,7 @@ const InfluencerChat = () => {
                 className={`chat-item ${
                   activeChat === chat.id ? "active" : ""
                 }`}
-                onClick={() => setActiveChat(chat.id)}
+                onClick={() => handleChatSelect(chat.id)}
               >
                 <List.Item.Meta
                   avatar={
@@ -524,49 +542,84 @@ const InfluencerChat = () => {
 
           {/* Messages area */}
           <div className="chat-messages">
-            {chats
-              .find((chat) => chat.id === activeChat)
-              ?.messages.map((message, index) => {
-                const messageBody = message.body || {};
-                return (
-                  <div
-                    key={messageBody.id || index}
-                    className={`message ${
-                      messageBody.sender === userId ? "sent" : "received"
-                    }`}
-                  >
-                    <div className="message-content">
-                      <div className="message-text text-sm">
-                        {messageBody.message}
+            {selectedChatMessages.length > 0 ? (
+              // Group messages by date
+              (() => {
+                const groupedMessages = {};
+                selectedChatMessages.forEach((message) => {
+                  const messageBody = message.body || {};
+                  const date = new Date(messageBody.timestamp);
+                  const dateKey = date.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  });
+
+                  if (!groupedMessages[dateKey]) {
+                    groupedMessages[dateKey] = [];
+                  }
+                  groupedMessages[dateKey].push(message);
+                });
+
+                return Object.entries(groupedMessages).map(
+                  ([date, messages]) => (
+                    <React.Fragment key={date}>
+                      <div className="date-divider">
+                        <span>{date}</span>
                       </div>
-                      <div className="message-meta">
-                        <span
-                          className="message-time"
-                          style={{
-                            color:
-                              messageBody.sender === userId ? "white" : "black",
-                          }}
-                        >
-                          {formatTime(messageBody.timestamp)}
-                        </span>
-                        {messageBody.sender === userId && (
-                          <span className="message-status">
-                            {messageBody.status === "read" ? (
-                              <CheckCircleOutlined
-                                style={{ color: "#53bdeb" }}
-                              />
-                            ) : messageBody.status === "delivered" ? (
-                              <CheckCircleOutlined />
-                            ) : (
-                              <CheckOutlined />
+                      {messages.map((message, index) => {
+                        const messageBody = message.body || {};
+                        const isMe = messageBody.sender === userId;
+                        const showAvatar =
+                          index === messages.length - 1 ||
+                          messages[index + 1].body.sender !==
+                            messageBody.sender;
+
+                        return (
+                          <div
+                            key={messageBody.id || index}
+                            className={`message ${isMe ? "sent" : "received"}`}
+                          >
+                            {!isMe && showAvatar && (
+                              <Avatar className="message-avatar">
+                                {messageBody.sender_name?.charAt(0) || "U"}
+                              </Avatar>
                             )}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                            <div className="message-content">
+                              <div className="message-text">
+                                {messageBody.message}
+                              </div>
+                              <div className="message-meta">
+                                <span className="message-time">
+                                  {formatTime(messageBody.timestamp)}
+                                </span>
+                                {isMe && (
+                                  <span className="message-status">
+                                    {messageBody.status === "read" ? (
+                                      <CheckCircleOutlined
+                                        style={{ color: "#53bdeb" }}
+                                      />
+                                    ) : messageBody.status === "delivered" ? (
+                                      <CheckCircleOutlined />
+                                    ) : (
+                                      <CheckOutlined />
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  )
                 );
-              })}
+              })()
+            ) : (
+              <div className="empty-chat-messages">
+                <p>No messages yet</p>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -597,9 +650,17 @@ const InfluencerChat = () => {
           </div>
         </div>
       ) : (
-        <div className="chat-window empty-chat">
-          <div className="empty-message">
-            <h3>Select a chat to start a conversation</h3>
+        <div className="empty-chat">
+          <div className="empty-content">
+            <Avatar size={100} icon={<UserOutlined />} />
+            <h2>Influencer Platform</h2>
+            <p>
+              {connectionStatus === "connected"
+                ? chats.length > 0
+                  ? "Select a chat to start messaging"
+                  : "You have no chats yet"
+                : connectionStatusText}
+            </p>
           </div>
         </div>
       )}
@@ -609,8 +670,12 @@ const InfluencerChat = () => {
 
 export default function TikTokCallbackPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-center">Loading Influencer chat...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-4 text-center">Loading Influencer chat...</div>
+      }
+    >
       <InfluencerChat />
     </Suspense>
-  )
+  );
 }
