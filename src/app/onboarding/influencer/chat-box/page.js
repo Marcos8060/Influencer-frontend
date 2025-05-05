@@ -42,7 +42,7 @@ const InfluencerChat = () => {
   const [selectedChatMessages, setSelectedChatMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null)
   const auth = useAuth();
 
   const { user } = useContext(authContext);
