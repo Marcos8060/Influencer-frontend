@@ -1,182 +1,478 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
-import { Input, Button, List, Avatar, Badge, Tabs, Dropdown, Menu } from 'antd';
-import { 
-  SearchOutlined, 
-  MoreOutlined, 
-  PaperClipOutlined, 
-  SmileOutlined, 
-  SendOutlined, 
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+  Suspense
+} from "react";
+import {
+  Input,
+  Button,
+  List,
+  Avatar,
+  Badge,
+  Dropdown,
+  Menu,
+  message as antdMessage,
+} from "antd";
+import {
+  SearchOutlined,
+  MoreOutlined,
+  PaperClipOutlined,
+  SmileOutlined,
+  SendOutlined,
   CheckOutlined,
   CheckCircleOutlined,
-  UserOutlined
-} from '@ant-design/icons';
-import '../../../../app/chat.css'; // Create this CSS file for custom styles
+  UserOutlined,
+} from "@ant-design/icons";
+import "../../../../app/chat.css";
+import { authContext } from "@/assets/context/use-context";
+import { useAuth } from "@/assets/hooks/use-auth";
 
-const WhatsAppChat = () => {
-  // Sample chat data
-  const [chats, setChats] = useState([
-    {
-      id: '1',
-      name: 'John Doe',
-      avatar: 'JD',
-      lastMessage: 'Hey, how are you?',
-      time: '10:30 AM',
-      unread: 2,
-      messages: [
-        { id: '1', text: 'Hey there!', sender: 'them', time: '10:20 AM', status: 'read' },
-        { id: '2', text: 'How are you doing?', sender: 'them', time: '10:21 AM', status: 'read' },
-        { id: '3', text: "I'm good, thanks!", sender: 'me', time: '10:25 AM', status: 'read' },
-        { id: '4', text: 'Hey, how are you?', sender: 'them', time: '10:30 AM', status: 'delivered' }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      avatar: 'JS',
-      lastMessage: 'Meeting at 3pm',
-      time: '9:15 AM',
-      unread: 0,
-      messages: [
-        { id: '1', text: 'Hi Jane!', sender: 'me', time: '9:00 AM', status: 'read' },
-        { id: '2', text: 'Meeting at 3pm', sender: 'them', time: '9:15 AM', status: 'read' }
-      ]
-    },
-    {
-      id: '3',
-      name: 'Work Group',
-      avatar: 'WG',
-      lastMessage: 'Alice: I sent the files',
-      time: 'Yesterday',
-      unread: 5,
-      messages: [
-        { id: '1', text: 'Bob: Has everyone reviewed the proposal?', sender: 'them', time: 'Yesterday', status: 'read' },
-        { id: '2', text: "I'll review it today", sender: 'me', time: 'Yesterday', status: 'read' },
-        { id: '3', text: 'Alice: I sent the files', sender: 'them', time: 'Yesterday', status: 'delivered' }
-      ]
-    }
-  ]);
-
+const InfluencerChat = () => {
+  // State management
+  const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
-  const [inputMessage, setInputMessage] = useState('');
-  const [searchText, setSearchText] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState("disconnected");
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const auth = useAuth();
 
-  // Set first chat as active by default
-  useEffect(() => {
-    if (chats.length > 0 && !activeChat) {
-      setActiveChat(chats[0].id);
-    }
-  }, [chats, activeChat]);
+  const { user } = useContext(authContext);
+  const userId = user?.user_id;
 
-  // Auto-scroll to bottom of messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeChat, chats]);
-
-  const handleSendMessage = () => {
-    if (!inputMessage.trim() || !activeChat) return;
-
-    const newMessage = {
-      id: Date.now().toString(),
-      text: inputMessage,
-      sender: 'me',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      status: 'sent'
+  // Helper functions
+  const createNewChat = useCallback((id, name, messages) => {
+    return {
+      id,
+      name,
+      avatar: name.charAt(0),
+      lastMessage: messages[0]?.body?.message || "",
+      time: messages[0]?.body?.timestamp
+        ? formatTime(messages[0].body.timestamp)
+        : "Just now",
+      unread: 0,
+      messages,
     };
+  }, []);
 
-    const updatedChats = chats.map(chat => {
-      if (chat.id === activeChat) {
-        return {
-          ...chat,
-          lastMessage: inputMessage,
-          time: 'Just now',
-          messages: [...chat.messages, newMessage]
-        };
+  const formatTime = useCallback((timestamp) => {
+    try {
+      if (!timestamp) return "Just now";
+
+      const normalizedTimestamp = timestamp.endsWith("+00:00")
+        ? timestamp.replace("+00:00", "Z")
+        : timestamp;
+
+      const date = new Date(normalizedTimestamp);
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date:", timestamp);
+        return "Just now";
       }
-      return chat;
-    });
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      console.error("Error formatting time:", error, timestamp);
+      return "Just now";
+    }
+  }, []);
 
-    setChats(updatedChats);
-    setInputMessage('');
+  // Handle all chats response
+  const handleAllChats = useCallback(
+    (allChatsData) => {
+      console.log("Processing all chats:", allChatsData);
 
-    // Simulate reply after 1-3 seconds
-    setTimeout(() => {
-      const replyMessage = {
-        id: Date.now().toString(),
-        text: `Reply to: "${inputMessage}"`,
-        sender: 'them',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'delivered'
-      };
+      if (!allChatsData.messages?.length) {
+        antdMessage.info("You have no chat history yet");
+        return;
+      }
 
-      setChats(prevChats => 
-        prevChats.map(chat => {
-          if (chat.id === activeChat) {
+      // Group messages by user
+      const chatGroups = {};
+      allChatsData.messages.forEach((message) => {
+        const otherUserId = message.user.user_id;
+        if (!chatGroups[otherUserId]) {
+          chatGroups[otherUserId] = {
+            id: otherUserId,
+            name: message.user.user_name,
+            avatar: message.user.user_name.charAt(0),
+            messages: [],
+            lastMessage: "",
+            time: formatTime(message.created_at),
+            unread: 0, // You might need to adjust this based on your actual data
+          };
+        }
+        chatGroups[otherUserId].messages.push(message);
+        chatGroups[otherUserId].lastMessage = message.body?.message || "";
+        chatGroups[otherUserId].time = formatTime(message.created_at);
+      });
+
+      const formattedChats = Object.values(chatGroups);
+      setChats(formattedChats);
+
+      // Set the first chat as active if none is selected
+      if (formattedChats.length > 0 && !activeChat) {
+        setActiveChat(formattedChats[0].id);
+      }
+    },
+    [activeChat, formatTime]
+  );
+
+  // Chat history handler for a specific chat
+  const handleChatHistory = useCallback(
+    (historyData) => {
+      console.log("Processing chat history:", historyData);
+
+      if (!historyData.messages?.length) {
+        console.log("No messages in chat history");
+        return;
+      }
+
+      // Sort messages by timestamp (oldest first)
+      const sortedMessages = [...historyData.messages].sort(
+        (a, b) =>
+          new Date(a.body.timestamp).getTime() -
+          new Date(b.body.timestamp).getTime()
+      );
+
+      setChats((prevChats) => {
+        return prevChats.map((chat) => {
+          if (chat.id === historyData.chat_id) {
             return {
               ...chat,
-              lastMessage: replyMessage.text,
-              time: 'Just now',
-              messages: [...chat.messages, replyMessage]
+              messages: sortedMessages,
+              lastMessage:
+                sortedMessages[sortedMessages.length - 1]?.body?.message || "",
+              time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp
+                ? formatTime(
+                    sortedMessages[sortedMessages.length - 1].body.timestamp
+                  )
+                : "Just now",
             };
           }
           return chat;
-        })
-      );
-    }, 1000 + Math.random() * 2000);
+        });
+      });
+    },
+    [formatTime]
+  );
+
+  // New message handler
+  const handleNewMessage = useCallback(
+    (messageData) => {
+      console.log("Processing new message:", messageData);
+
+      if (!messageData.body) {
+        console.error("Message missing body:", messageData);
+        return;
+      }
+
+      const messageBody = messageData.body;
+      const isMe = messageBody.sender === userId;
+      const chatId = isMe ? messageBody.recipient : messageBody.sender;
+      const chatName = isMe
+        ? messageBody.recipient_name
+        : messageBody.sender_name;
+
+      setChats((prevChats) => {
+        // Find or create the chat
+        const chatExists = prevChats.some((chat) => chat.id === chatId);
+        if (!chatExists) {
+          const newChat = createNewChat(chatId, chatName, [messageData]);
+          return [...prevChats, newChat];
+        }
+
+        return prevChats.map((chat) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              lastMessage: messageBody.message,
+              time: formatTime(messageBody.timestamp),
+              messages: [...chat.messages, messageData],
+              unread: isMe ? 0 : chat.unread + 1,
+            };
+          }
+          return chat;
+        });
+      });
+    },
+    [formatTime, userId, createNewChat]
+  );
+
+  // WebSocket initialization with auth in headers
+  const initWebSocket = useCallback(() => {
+    if (!userId || !auth) {
+      antdMessage.warning("Please log in to access your chats");
+      return;
+    }
+
+    // Clean up any existing connection
+    if (socketRef.current) {
+      socketRef.current.onopen = null;
+      socketRef.current.onmessage = null;
+      socketRef.current.onerror = null;
+      socketRef.current.onclose = null;
+      socketRef.current.close();
+      socketRef.current = null;
+    }
+
+    // Clear any pending reconnection attempts
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
+    setConnectionStatus("connecting");
+    console.log("Attempting to connect to WebSocket with auth token in URL");
+
+    try {
+      const ws = new WebSocket(wsUrl);
+      socketRef.current = ws;
+
+      ws.onopen = () => {
+        console.log("WebSocket connected successfully");
+        setConnectionStatus("connected");
+        setReconnectAttempts(0);
+        antdMessage.success("Connected to chat server");
+
+        // First request: Get all chats for current user
+        const allChatsRequest = {
+          type: "chats.all",
+        };
+        ws.send(JSON.stringify(allChatsRequest));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          console.log("Received message:", data);
+
+          switch (data.type) {
+            case "connection.success":
+              antdMessage.success(data.message);
+              break;
+            case "chats.all":
+              handleAllChats(data);
+              break;
+            case "chat.history":
+              handleChatHistory(data);
+              break;
+            case "chat.message":
+              handleNewMessage(data);
+              break;
+            case "chat.join.success":
+              console.log("Successfully joined chat:", data);
+              break;
+            default:
+              console.warn("Unknown message type:", data.type);
+          }
+        } catch (error) {
+          console.error("Error parsing message:", error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error event:", error);
+        setConnectionStatus("disconnected");
+        antdMessage.error("Connection error. Please check your network.");
+
+        // Try to reconnect if this was an unexpected error
+        const MAX_RECONNECT_ATTEMPTS = 5;
+        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+          const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+          antdMessage.warning(
+            `Connection error. Reconnecting in ${delay / 1000} seconds...`
+          );
+
+          reconnectTimeoutRef.current = setTimeout(() => {
+            console.log(
+              `Attempting to reconnect (${
+                reconnectAttempts + 1
+              }/${MAX_RECONNECT_ATTEMPTS})...`
+            );
+            setReconnectAttempts((prev) => prev + 1);
+            initWebSocket();
+          }, delay);
+        }
+      };
+
+      ws.onclose = (event) => {
+        console.log("WebSocket closed:", event.code, event.reason);
+        setConnectionStatus("disconnected");
+
+        if (event.code !== 1000) {
+          // 1000 is normal closure
+          const MAX_RECONNECT_ATTEMPTS = 5;
+          if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
+            antdMessage.warning(
+              `Connection lost. Reconnecting in ${delay / 1000} seconds...`
+            );
+
+            reconnectTimeoutRef.current = setTimeout(() => {
+              console.log(
+                `Attempting to reconnect (${
+                  reconnectAttempts + 1
+                }/${MAX_RECONNECT_ATTEMPTS})...`
+              );
+              setReconnectAttempts((prev) => prev + 1);
+              initWebSocket();
+            }, delay);
+          } else {
+            antdMessage.error(
+              "Failed to connect after multiple attempts. Please refresh the page."
+            );
+          }
+        }
+      };
+    } catch (error) {
+      console.error("WebSocket initialization error:", error);
+      antdMessage.error("Failed to initialize connection");
+      setConnectionStatus("disconnected");
+    }
+  }, [
+    auth,
+    handleAllChats,
+    handleChatHistory,
+    handleNewMessage,
+    reconnectAttempts,
+    userId,
+  ]);
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    if (auth) {
+      initWebSocket();
+    }
+
+    return () => {
+      // Clean up WebSocket connection
+      if (socketRef.current) {
+        socketRef.current.onopen = null;
+        socketRef.current.onmessage = null;
+        socketRef.current.onerror = null;
+        socketRef.current.onclose = null;
+        socketRef.current.close(1000, "Component unmounted");
+        socketRef.current = null;
+      }
+      // Clear any pending reconnection attempts
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+    };
+  }, [initWebSocket, auth]);
+
+  // Join chat when active chat changes
+  useEffect(() => {
+    if (activeChat && socketRef.current?.readyState === WebSocket.OPEN) {
+      const joinChatRequest = {
+        type: "chat.join",
+        user_id: activeChat,
+      };
+      socketRef.current.send(JSON.stringify(joinChatRequest));
+    }
+  }, [activeChat]);
+
+  // Send message handler
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) {
+      antdMessage.warning("Message cannot be empty");
+      return;
+    }
+
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      antdMessage.warning("Cannot send message - connection not ready");
+      return;
+    }
+
+    if (!activeChat) {
+      antdMessage.warning("Please select a chat to send message");
+      return;
+    }
+
+    const message = {
+      type: "chat.message",
+      user_id: activeChat,
+      message: inputMessage,
+    };
+
+    try {
+      socketRef.current.send(JSON.stringify(message));
+      setInputMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      antdMessage.error("Failed to send message");
+    }
   };
 
+  // Handle enter key press
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
-  const filteredChats = chats.filter(chat => 
+  // Auto-scroll to bottom of messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chats]);
+
+  // Filter chats based on search text
+  const filteredChats = chats.filter((chat) =>
     chat.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const activeChatData = chats.find(chat => chat.id === activeChat);
-
-  const menu = (
-    <Menu>
-      <Menu.Item key="1">View contact</Menu.Item>
-      <Menu.Item key="2">Mute notifications</Menu.Item>
-      <Menu.Item key="3">Clear messages</Menu.Item>
-      <Menu.Item key="4">Delete chat</Menu.Item>
-    </Menu>
-  );
+  // Connection status text
+  const connectionStatusText = {
+    connecting: "Connecting...",
+    connected: "Online",
+    disconnected: "Offline",
+  }[connectionStatus];
 
   return (
     <div className="whatsapp-container">
-      {/* Left sidebar - Chat list */}
+      {/* Chat list sidebar */}
       <div className="chat-list p-2">
         <div className="chat-list-header">
           <div className="user-avatar">
-            <Avatar size="large" className='bg-primary'>ME</Avatar>
+            <Avatar size="large" className="bg-primary">
+              {user?.firstName?.charAt(0) || "ME"}
+            </Avatar>
           </div>
           <div className="chat-list-actions p-2">
             <Button type="text" icon={<SearchOutlined />} />
             <Button type="text" icon={<MoreOutlined />} />
           </div>
         </div>
-        
+
         <div className="chat-search">
-          <Input 
+          <Input
             placeholder="Search or start new chat"
             prefix={<SearchOutlined />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
         </div>
-        
+
         <div className="chat-items">
           <List
             dataSource={filteredChats}
-            renderItem={chat => (
+            renderItem={(chat) => (
               <List.Item
-                className={`chat-item ${activeChat === chat.id ? 'active' : ''}`}
+                className={`chat-item ${
+                  activeChat === chat.id ? "active" : ""
+                }`}
                 onClick={() => setActiveChat(chat.id)}
               >
                 <List.Item.Meta
@@ -194,7 +490,9 @@ const WhatsAppChat = () => {
                   description={
                     <div className="chat-description">
                       <span>{chat.lastMessage}</span>
-                      {chat.unread > 0 && <span className="unread-badge bg-primary" />}
+                      {chat.unread > 0 && (
+                        <span className="unread-badge bg-primary" />
+                      )}
                     </div>
                   }
                 />
@@ -204,51 +502,75 @@ const WhatsAppChat = () => {
         </div>
       </div>
 
-      {/* Right side - Active chat */}
-      {activeChatData ? (
+      {/* Main chat window */}
+      {activeChat ? (
         <div className="chat-window">
           <div className="chat-header">
             <div className="chat-info">
-              <Avatar size="large">{activeChatData.avatar}</Avatar>
+              <Avatar size="large">
+                {chats.find((c) => c.id === activeChat)?.name.charAt(0) || "U"}
+              </Avatar>
               <div className="chat-details">
-                <h3>{activeChatData.name}</h3>
-                <p>Online</p>
+                <h3>
+                  {chats.find((c) => c.id === activeChat)?.name || "User"}
+                </h3>
+                <p>{connectionStatusText}</p>
               </div>
             </div>
             <div className="chat-actions">
               <Button type="text" icon={<SearchOutlined />} />
-              <Button type="text" icon={<MoreOutlined />} />
             </div>
           </div>
-          
+
+          {/* Messages area */}
           <div className="chat-messages">
-            {activeChatData.messages.map(message => (
-              <div 
-                key={message.id} 
-                className={`message ${message.sender === 'me' ? 'sent' : 'received'}`}
-              >
-                <div className="message-content">
-                  <div className="message-text text-sm">{message.text}</div>
-                  <div className="message-meta">
-                    <span className="message-time text-white">{message.time}</span>
-                    {message.sender === 'me' && (
-                      <span className="message-status">
-                        {message.status === 'read' ? (
-                          <CheckCircleOutlined style={{ color: '#ffffff' }} />
-                        ) : message.status === 'delivered' ? (
-                          <CheckCircleOutlined />
-                        ) : (
-                          <CheckOutlined />
+            {chats
+              .find((chat) => chat.id === activeChat)
+              ?.messages.map((message, index) => {
+                const messageBody = message.body || {};
+                return (
+                  <div
+                    key={messageBody.id || index}
+                    className={`message ${
+                      messageBody.sender === userId ? "sent" : "received"
+                    }`}
+                  >
+                    <div className="message-content">
+                      <div className="message-text text-sm">
+                        {messageBody.message}
+                      </div>
+                      <div className="message-meta">
+                        <span
+                          className="message-time"
+                          style={{
+                            color:
+                              messageBody.sender === userId ? "white" : "black",
+                          }}
+                        >
+                          {formatTime(messageBody.timestamp)}
+                        </span>
+                        {messageBody.sender === userId && (
+                          <span className="message-status">
+                            {messageBody.status === "read" ? (
+                              <CheckCircleOutlined
+                                style={{ color: "#53bdeb" }}
+                              />
+                            ) : messageBody.status === "delivered" ? (
+                              <CheckCircleOutlined />
+                            ) : (
+                              <CheckOutlined />
+                            )}
+                          </span>
                         )}
-                      </span>
-                    )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                );
+              })}
             <div ref={messagesEndRef} />
           </div>
-          
+
+          {/* Message input area */}
           <div className="chat-input">
             <div className="input-actions">
               <Button type="text" icon={<SmileOutlined />} />
@@ -261,22 +583,23 @@ const WhatsAppChat = () => {
               placeholder="Type a message"
               autoSize={{ minRows: 1, maxRows: 4 }}
               className="message-input"
+              disabled={connectionStatus !== "connected"}
             />
             <Button
               type="primary"
               icon={<SendOutlined />}
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim()}
-              className="bg-primary"
+              disabled={
+                !inputMessage.trim() || connectionStatus !== "connected"
+              }
+              className="send-button"
             />
           </div>
         </div>
       ) : (
-        <div className="empty-chat">
-          <div className="empty-content">
-            <Avatar size={100} icon={<UserOutlined />} />
-            <h2>WhatsApp Web</h2>
-            <p>Select a chat to start messaging</p>
+        <div className="chat-window empty-chat">
+          <div className="empty-message">
+            <h3>Select a chat to start a conversation</h3>
           </div>
         </div>
       )}
@@ -284,4 +607,10 @@ const WhatsAppChat = () => {
   );
 };
 
-export default WhatsAppChat;
+export default function TikTokCallbackPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-center">Loading Influencer chat...</div>}>
+      <InfluencerChat />
+    </Suspense>
+  )
+}
