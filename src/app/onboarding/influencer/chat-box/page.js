@@ -49,19 +49,6 @@ const InfluencerChat = () => {
   const userId = user?.user_id;
 
   // Helper functions
-  const createNewChat = useCallback((id, name, messages) => {
-    return {
-      id,
-      name,
-      avatar: name.charAt(0),
-      lastMessage: messages[0]?.body?.message || "",
-      time: messages[0]?.body?.timestamp
-        ? formatTime(messages[0].body.timestamp)
-        : "Just now",
-      unread: 0,
-      messages: [], // Start with empty messages, will be populated after chat.join
-    };
-  }, []);
 
   const formatTime = useCallback((timestamp) => {
     try {
@@ -86,6 +73,23 @@ const InfluencerChat = () => {
     }
   }, []);
 
+  const createNewChat = useCallback(
+    (id, name, messages) => {
+      return {
+        id,
+        name,
+        avatar: name.charAt(0),
+        lastMessage: messages[0]?.message || "",
+        time: messages[0]?.timestamp
+          ? formatTime(messages[0].timestamp)
+          : "Just now",
+        unread: 0,
+        messages: [], // Start with empty messages, will be populated after chat.join
+      };
+    },
+    [formatTime]
+  );
+
   // Handle all chats response
   const handleAllChats = useCallback(
     (allChatsData) => {
@@ -96,30 +100,28 @@ const InfluencerChat = () => {
         return;
       }
 
-      // Group messages by user
-      const chatGroups = {};
-      allChatsData.messages.forEach((message) => {
-        const otherUserId = message.user.user_id;
-        if (!chatGroups[otherUserId]) {
-          chatGroups[otherUserId] = {
-            id: otherUserId,
-            name: message.user.user_name,
-            avatar: message.user.user_name.charAt(0),
-            messages: [], // Will be populated after chat.join
+      const formattedChats = allChatsData.messages
+        .map((chatGroup) => {
+          // Skip if no user data
+          if (!chatGroup.user) {
+            console.warn("Chat group missing user data:", chatGroup);
+            return null;
+          }
+
+          return {
+            id: chatGroup.user.user_id, // user_id will be used for chat.join
+            name: chatGroup.user.user_name, // Display name in sidebar
+            chatGroupId: chatGroup.chatGroupId, // Store for reference
+            avatar: chatGroup.user.user_name?.charAt(0) || "U",
             lastMessage: "",
-            time: formatTime(message.created_at),
+            time: formatTime(chatGroup.created_at),
             unread: 0,
+            messages: [],
           };
-        }
-        // Store last message info for the sidebar
-        chatGroups[otherUserId].lastMessage = message.body?.message || "";
-        chatGroups[otherUserId].time = formatTime(message.created_at);
-      });
+        })
+        .filter((chat) => chat !== null); // Remove any null entries
 
-      const formattedChats = Object.values(chatGroups);
       setChats(formattedChats);
-
-      // Don't set active chat automatically - wait for user to click
     },
     [formatTime]
   );
@@ -128,17 +130,14 @@ const InfluencerChat = () => {
   const handleChatHistory = useCallback(
     (historyData) => {
       console.log("Processing chat history:", historyData);
-
       if (!historyData.messages?.length) {
         console.log("No messages in chat history");
         return;
       }
-
       // Sort messages by timestamp (oldest first)
       const sortedMessages = [...historyData.messages].sort(
         (a, b) =>
-          new Date(a.body?.timestamp).getTime() -
-          new Date(b.body?.timestamp).getTime()
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
 
       // Update the messages for the active chat
@@ -147,16 +146,19 @@ const InfluencerChat = () => {
       // Update last message in sidebar
       setChats((prevChats) => {
         return prevChats.map((chat) => {
-          if (chat.id === historyData.chat_id) {
+          console.log("CHAT ", chat);
+          console.log("HISTORY ", historyData);
+          if (chat.id === historyData.messages[0].recipient) {
             return {
               ...chat,
               lastMessage:
-                sortedMessages[sortedMessages.length - 1]?.body?.message || "",
-              time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp
+                sortedMessages[sortedMessages.length - 1]?.message || "",
+              time: sortedMessages[sortedMessages.length - 1]?.timestamp
                 ? formatTime(
-                    sortedMessages[sortedMessages.length - 1].body.timestamp
+                    sortedMessages[sortedMessages.length - 1].timestamp
                   )
                 : "Just now",
+              messages: sortedMessages, // Add the messages to the chat object
             };
           }
           return chat;
@@ -173,13 +175,14 @@ const InfluencerChat = () => {
     }
 
     setActiveChat(chatId);
-    setSelectedChatMessages([]); // Clear previous messages while loading new ones
+    setSelectedChatMessages([]);
 
-    // Send chat.join request
     const joinChatRequest = {
       type: "chat.join",
-      user_id: chatId,
+      user_id: chatId, // Using the user_id directly
     };
+
+    console.log("Sending chat join:", joinChatRequest);
     socketRef.current.send(JSON.stringify(joinChatRequest));
   }, []);
 
@@ -188,24 +191,41 @@ const InfluencerChat = () => {
     (messageData) => {
       console.log("Processing new message:", messageData);
 
-      if (!messageData.body) {
-        console.error("Message missing body:", messageData);
+      // For new messages, the structure might be different - check if there's a body property
+      const messageBody = messageData.body || messageData;
+
+      // Add safety checks for sender/recipient
+      if (!messageBody.sender || !messageBody.recipient) {
+        console.error("Message missing sender/recipient:", messageBody);
         return;
       }
 
-      const messageBody = messageData.body;
       const isMe = messageBody.sender === userId;
       const chatId = isMe ? messageBody.recipient : messageBody.sender;
       const chatName = isMe
         ? messageBody.recipient_name
         : messageBody.sender_name;
 
+      // Add message to selectedChatMessages if it belongs to the active chat
+      if (activeChat === chatId) {
+        setSelectedChatMessages((prev) => [...prev, messageBody]);
+      }
+
       setChats((prevChats) => {
-        // Find or create the chat
         const chatExists = prevChats.some((chat) => chat.id === chatId);
         if (!chatExists) {
-          const newChat = createNewChat(chatId, chatName, [messageData]);
-          return [...prevChats, newChat];
+          return [
+            ...prevChats,
+            {
+              id: chatId,
+              name: chatName || `User ${chatId.slice(0, 4)}`,
+              avatar: (chatName || "U").charAt(0),
+              lastMessage: messageBody.message,
+              time: formatTime(messageBody.timestamp),
+              unread: isMe ? 0 : 1,
+              messages: [messageBody],
+            },
+          ];
         }
 
         return prevChats.map((chat) => {
@@ -214,15 +234,16 @@ const InfluencerChat = () => {
               ...chat,
               lastMessage: messageBody.message,
               time: formatTime(messageBody.timestamp),
-              messages: [...chat.messages, messageData],
               unread: isMe ? 0 : chat.unread + 1,
+              // Update the messages array with the new message
+              messages: [...(chat.messages || []), messageBody],
             };
           }
           return chat;
         });
       });
     },
-    [formatTime, userId, createNewChat]
+    [formatTime, userId, activeChat]
   );
 
   // WebSocket initialization with auth in headers
@@ -539,90 +560,50 @@ const InfluencerChat = () => {
               <Button type="text" icon={<SearchOutlined />} />
             </div>
           </div>
-
           {/* Messages area */}
           <div className="chat-messages">
-            {selectedChatMessages.length > 0 ? (
-              // Group messages by date
-              (() => {
-                const groupedMessages = {};
-                selectedChatMessages.forEach((message) => {
-                  const messageBody = message.body || {};
-                  const date = new Date(messageBody.timestamp);
-                  const dateKey = date.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  });
+            {selectedChatMessages.map((message, index) => {
+              // Direct access to message properties without body
+              const isMe = message.sender === userId;
 
-                  if (!groupedMessages[dateKey]) {
-                    groupedMessages[dateKey] = [];
-                  }
-                  groupedMessages[dateKey].push(message);
-                });
-
-                return Object.entries(groupedMessages).map(
-                  ([date, messages]) => (
-                    <React.Fragment key={date}>
-                      <div className="date-divider">
-                        <span>{date}</span>
-                      </div>
-                      {messages.map((message, index) => {
-                        const messageBody = message.body || {};
-                        const isMe = messageBody.sender === userId;
-                        const showAvatar =
-                          index === messages.length - 1 ||
-                          messages[index + 1].body.sender !==
-                            messageBody.sender;
-
-                        return (
-                          <div
-                            key={messageBody.id || index}
-                            className={`message ${isMe ? "sent" : "received"}`}
-                          >
-                            {!isMe && showAvatar && (
-                              <Avatar className="message-avatar">
-                                {messageBody.sender_name?.charAt(0) || "U"}
-                              </Avatar>
-                            )}
-                            <div className="message-content">
-                              <div className="message-text">
-                                {messageBody.message}
-                              </div>
-                              <div className="message-meta">
-                                <span className="message-time">
-                                  {formatTime(messageBody.timestamp)}
-                                </span>
-                                {isMe && (
-                                  <span className="message-status">
-                                    {messageBody.status === "read" ? (
-                                      <CheckCircleOutlined
-                                        style={{ color: "#53bdeb" }}
-                                      />
-                                    ) : messageBody.status === "delivered" ? (
-                                      <CheckCircleOutlined />
-                                    ) : (
-                                      <CheckOutlined />
-                                    )}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </React.Fragment>
-                  )
-                );
-              })()
-            ) : (
-              <div className="empty-chat-messages">
-                <p>No messages yet</p>
-              </div>
-            )}
+              return (
+                <div
+                  key={message.id || index}
+                  className={`message ${isMe ? "sent" : "received"}`}
+                >
+                  {!isMe && (
+                    <Avatar className="message-avatar">
+                      {chats
+                        .find((c) => c.id === message.sender)
+                        ?.name.charAt(0) || "U"}
+                    </Avatar>
+                  )}
+                  <div className="message-content">
+                    <div className="message-text text-sm">
+                      {message.message}
+                    </div>
+                    <div className="message-meta">
+                      <span className="message-time">
+                        {formatTime(message.timestamp)}
+                      </span>
+                      {isMe && (
+                        <span className="message-status">
+                          {message.status === "read" ? (
+                            <CheckCircleOutlined style={{ color: "#53bdeb" }} />
+                          ) : message.status === "delivered" ? (
+                            <CheckCircleOutlined />
+                          ) : (
+                            <CheckOutlined />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
-
           {/* Message input area */}
           <div className="chat-input">
             <div className="input-actions">
