@@ -42,7 +42,7 @@ const InfluencerChat = () => {
   const [selectedChatMessages, setSelectedChatMessages] = useState([]);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
-  const reconnectTimeoutRef = useRef(null)
+  const reconnectTimeoutRef = useRef(null);
   const auth = useAuth();
 
   const { user } = useContext(authContext);
@@ -189,61 +189,56 @@ const InfluencerChat = () => {
   // New message handler
   const handleNewMessage = useCallback(
     (messageData) => {
-      console.log("Processing new message:", messageData);
+      // Normalize message structure
+      const message = messageData.body || messageData;
 
-      // For new messages, the structure might be different - check if there's a body property
-      const messageBody = messageData.body || messageData;
-
-      // Add safety checks for sender/recipient
-      if (!messageBody.sender || !messageBody.recipient) {
-        console.error("Message missing sender/recipient:", messageBody);
+      if (!message.sender || !message.recipient) {
+        console.error("Invalid message format:", message);
         return;
       }
 
-      const isMe = messageBody.sender === userId;
-      const chatId = isMe ? messageBody.recipient : messageBody.sender;
-      const chatName = isMe
-        ? messageBody.recipient_name
-        : messageBody.sender_name;
+      const isMe = message.sender === userId;
+      const chatId = isMe ? message.recipient : message.sender;
 
-      // Add message to selectedChatMessages if it belongs to the active chat
+      // Update active chat messages if this is the current chat
       if (activeChat === chatId) {
-        setSelectedChatMessages((prev) => [...prev, messageBody]);
+        setSelectedChatMessages((prev) => [...prev, message]);
       }
 
+      // Update chats list
       setChats((prevChats) => {
-        const chatExists = prevChats.some((chat) => chat.id === chatId);
-        if (!chatExists) {
-          return [
-            ...prevChats,
-            {
-              id: chatId,
-              name: chatName || `User ${chatId.slice(0, 4)}`,
-              avatar: (chatName || "U").charAt(0),
-              lastMessage: messageBody.message,
-              time: formatTime(messageBody.timestamp),
-              unread: isMe ? 0 : 1,
-              messages: [messageBody],
-            },
-          ];
+        const updatedChats = [...prevChats];
+        const chatIndex = updatedChats.findIndex((c) => c.id === chatId);
+
+        if (chatIndex === -1) {
+          // New chat
+          updatedChats.push({
+            id: chatId,
+            name: isMe ? message.recipient_name : message.sender_name,
+            avatar: (isMe
+              ? message.recipient_name
+              : message.sender_name
+            ).charAt(0),
+            lastMessage: message.message,
+            time: formatTime(message.timestamp),
+            unread: isMe ? 0 : 1,
+            messages: [message],
+          });
+        } else {
+          // Existing chat
+          updatedChats[chatIndex] = {
+            ...updatedChats[chatIndex],
+            lastMessage: message.message,
+            time: formatTime(message.timestamp),
+            unread: isMe ? 0 : updatedChats[chatIndex].unread + 1,
+            messages: [...(updatedChats[chatIndex].messages || []), message],
+          };
         }
 
-        return prevChats.map((chat) => {
-          if (chat.id === chatId) {
-            return {
-              ...chat,
-              lastMessage: messageBody.message,
-              time: formatTime(messageBody.timestamp),
-              unread: isMe ? 0 : chat.unread + 1,
-              // Update the messages array with the new message
-              messages: [...(chat.messages || []), messageBody],
-            };
-          }
-          return chat;
-        });
+        return updatedChats;
       });
     },
-    [formatTime, userId, activeChat]
+    [userId, activeChat, formatTime]
   );
 
   // WebSocket initialization with auth in headers
@@ -294,6 +289,19 @@ const InfluencerChat = () => {
         try {
           const data = JSON.parse(event.data);
           console.log("Received message:", data);
+
+          if (data.type === "chat.message") {
+            // Handle server confirmation of sent message
+            if (data.body?.sender === userId) {
+              setSelectedChatMessages(prev => prev.map(msg => 
+                msg.id === data.tempId ? { ...msg, status: "delivered" } : msg
+              ));
+            } 
+            // Handle incoming messages
+            else {
+              handleNewMessage(data);
+            }
+          }
 
           switch (data.type) {
             case "connection.success":
@@ -423,34 +431,38 @@ const InfluencerChat = () => {
   }, [activeChat]);
 
   // Send message handler
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) {
-      antdMessage.warning("Message cannot be empty");
-      return;
-    }
-
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      antdMessage.warning("Cannot send message - connection not ready");
-      return;
-    }
-
-    if (!activeChat) {
-      antdMessage.warning("Please select a chat to send message");
-      return;
-    }
+  const handleSendMessage = (e) => {
+    e?.stopPropagation();
+    if (!inputMessage.trim()) return;
 
     const message = {
-      type: "chat.message",
-      user_id: activeChat,
+      id: Date.now().toString(), // Temporary ID
+      sender: userId,
+      recipient: activeChat,
       message: inputMessage,
+      timestamp: new Date().toISOString(),
+      status: "sending",
     };
 
+    // Optimistically update UI
+    setSelectedChatMessages((prev) => [...prev, message]);
+    setInputMessage("");
+
+    // Send via WebSocket
     try {
-      socketRef.current.send(JSON.stringify(message));
-      setInputMessage("");
+      socketRef.current.send(
+        JSON.stringify({
+          type: "chat.message",
+          user_id: activeChat,
+          message: inputMessage,
+        })
+      );
     } catch (error) {
-      console.error("Error sending message:", error);
-      antdMessage.error("Failed to send message");
+      console.error("Send failed:", error);
+      // Remove optimistic update if failed
+      setSelectedChatMessages((prev) =>
+        prev.filter((m) => m.id !== message.id)
+      );
     }
   };
 
