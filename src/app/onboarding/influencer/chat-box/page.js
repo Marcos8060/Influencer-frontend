@@ -22,11 +22,9 @@ import {
 } from "@ant-design/icons";
 import "../../../../app/chat.css";
 import { authContext } from "@/assets/context/use-context";
-import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/assets/hooks/use-auth";
 
-
-const WhatsAppChat = () => {
+const InfluencerChat = () => {
   // State management
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -39,22 +37,8 @@ const WhatsAppChat = () => {
   const reconnectTimeoutRef = useRef(null);
   const auth = useAuth();
 
-  // Get parameters from URL
-  const searchParams = useSearchParams();
-  const recipientId = searchParams.get("userId");
-  const influencerFullName = searchParams.get("fullName");
   const { user } = useContext(authContext);
   const userId = user?.user_id;
-  console.log(userId)
-
-  // Initialize chat with recipient from URL params
-  useEffect(() => {
-    if (recipientId && influencerFullName && chats.length === 0) {
-      const newChat = createNewChat(recipientId, influencerFullName, []);
-      setChats([newChat]);
-      setActiveChat(recipientId);
-    }
-  }, [recipientId, influencerFullName]);
 
   // Helper functions
   const createNewChat = useCallback((id, name, messages) => {
@@ -62,57 +46,130 @@ const WhatsAppChat = () => {
       id,
       name,
       avatar: name.charAt(0),
-      lastMessage: messages[0]?.message || "",
-      time: messages[0]?.timestamp ? formatTime(messages[0].timestamp) : "Just now",
+      lastMessage: messages[0]?.body?.message || "",
+      time: messages[0]?.body?.timestamp ? formatTime(messages[0].body.timestamp) : "Just now",
       unread: 0,
       messages,
     };
   }, []);
 
   const formatTime = useCallback((timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    try {
+      if (!timestamp) return "Just now";
+      
+      const normalizedTimestamp = timestamp.endsWith('+00:00') 
+        ? timestamp.replace('+00:00', 'Z')
+        : timestamp;
+      
+      const date = new Date(normalizedTimestamp);
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date:", timestamp);
+        return "Just now";
+      }
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch (error) {
+      console.error("Error formatting time:", error, timestamp);
+      return "Just now";
+    }
   }, []);
 
-  // Chat history handler
+  // Handle all chats response
+  const handleAllChats = useCallback((allChatsData) => {
+    console.log("Processing all chats:", allChatsData);
+    
+    if (!allChatsData.messages?.length) {
+      antdMessage.info("You have no chat history yet");
+      return;
+    }
+
+    // Group messages by user
+    const chatGroups = {};
+    allChatsData.messages.forEach(message => {
+      const otherUserId = message.user.user_id;
+      if (!chatGroups[otherUserId]) {
+        chatGroups[otherUserId] = {
+          id: otherUserId,
+          name: message.user.user_name,
+          avatar: message.user.user_name.charAt(0),
+          messages: [],
+          lastMessage: "",
+          time: formatTime(message.created_at),
+          unread: 0 // You might need to adjust this based on your actual data
+        };
+      }
+      chatGroups[otherUserId].messages.push(message);
+      chatGroups[otherUserId].lastMessage = message.body?.message || "";
+      chatGroups[otherUserId].time = formatTime(message.created_at);
+    });
+
+    const formattedChats = Object.values(chatGroups);
+    setChats(formattedChats);
+    
+    // Set the first chat as active if none is selected
+    if (formattedChats.length > 0 && !activeChat) {
+      setActiveChat(formattedChats[0].id);
+    }
+  }, [activeChat, formatTime]);
+
+  // Chat history handler for a specific chat
   const handleChatHistory = useCallback((historyData) => {
+    console.log("Processing chat history:", historyData);
+    
     if (!historyData.messages?.length) {
+      console.log("No messages in chat history");
       return;
     }
 
     // Sort messages by timestamp (oldest first)
     const sortedMessages = [...historyData.messages].sort((a, b) => 
-      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      new Date(a.body.timestamp).getTime() - new Date(b.body.timestamp).getTime()
     );
 
     setChats(prevChats => {
       return prevChats.map(chat => {
-        if (chat.id === recipientId) {
+        if (chat.id === historyData.chat_id) {
           return {
             ...chat,
             messages: sortedMessages,
-            lastMessage: sortedMessages[sortedMessages.length - 1]?.message || "",
-            time: sortedMessages[sortedMessages.length - 1]?.timestamp 
-              ? formatTime(sortedMessages[sortedMessages.length - 1].timestamp)
+            lastMessage: sortedMessages[sortedMessages.length - 1]?.body?.message || "",
+            time: sortedMessages[sortedMessages.length - 1]?.body?.timestamp 
+              ? formatTime(sortedMessages[sortedMessages.length - 1].body.timestamp)
               : "Just now"
           };
         }
         return chat;
       });
     });
-  }, [recipientId, formatTime]);
+  }, [formatTime]);
 
   // New message handler
   const handleNewMessage = useCallback((messageData) => {
+    console.log("Processing new message:", messageData);
+    
+    if (!messageData.body) {
+      console.error("Message missing body:", messageData);
+      return;
+    }
+
+    const messageBody = messageData.body;
+    const isMe = messageBody.sender === userId;
+    const chatId = isMe ? messageBody.recipient : messageBody.sender;
+    const chatName = isMe ? messageBody.recipient_name : messageBody.sender_name;
+    
     setChats(prevChats => {
-      const isMe = messageData.sender === userId;
-      
+      // Find or create the chat
+      const chatExists = prevChats.some(chat => chat.id === chatId);
+      if (!chatExists) {
+        const newChat = createNewChat(chatId, chatName, [messageData]);
+        return [...prevChats, newChat];
+      }
+
       return prevChats.map(chat => {
-        if (chat.id === recipientId) {
+        if (chat.id === chatId) {
           return {
             ...chat,
-            lastMessage: messageData.message,
-            time: formatTime(messageData.timestamp),
+            lastMessage: messageBody.message,
+            time: formatTime(messageBody.timestamp),
             messages: [...chat.messages, messageData],
             unread: isMe ? 0 : chat.unread + 1,
           };
@@ -120,12 +177,12 @@ const WhatsAppChat = () => {
         return chat;
       });
     });
-  }, [formatTime, recipientId, userId]);
+  }, [formatTime, userId, createNewChat]);
 
   // WebSocket initialization with auth in headers
   const initWebSocket = useCallback(() => {
-    if (!userId || !recipientId || !auth) {
-      antdMessage.warning("Please log in and select a user to chat with");
+    if (!userId || !auth) {
+      antdMessage.warning("Please log in to access your chats");
       return;
     }
 
@@ -145,7 +202,7 @@ const WhatsAppChat = () => {
       reconnectTimeoutRef.current = null;
     }
 
-    const wsUrl = `ws://147.78.141.96:8075/chats/?user_id=${recipientId}&token=${auth}`;
+    const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
     setConnectionStatus("connecting");
     console.log("Attempting to connect to WebSocket with auth token in URL");
 
@@ -159,12 +216,11 @@ const WhatsAppChat = () => {
         setReconnectAttempts(0);
         antdMessage.success("Connected to chat server");
         
-        // Request chat history after connection is established
-        const historyRequest = {
-          type: "chat.history.request",
-          recipient_id: recipientId
+        // First request: Get all chats for current user
+        const allChatsRequest = {
+          type: "chats.all"
         };
-        ws.send(JSON.stringify(historyRequest));
+        ws.send(JSON.stringify(allChatsRequest));
       };
 
       ws.onmessage = (event) => {
@@ -176,11 +232,17 @@ const WhatsAppChat = () => {
             case "connection.success":
               antdMessage.success(data.message);
               break;
+            case "chats.all":
+              handleAllChats(data);
+              break;
             case "chat.history":
               handleChatHistory(data);
               break;
             case "chat.message":
               handleNewMessage(data);
+              break;
+            case "chat.join.success":
+              console.log("Successfully joined chat:", data);
               break;
             default:
               console.warn("Unknown message type:", data.type);
@@ -235,11 +297,11 @@ const WhatsAppChat = () => {
       antdMessage.error("Failed to initialize connection");
       setConnectionStatus("disconnected");
     }
-  }, [auth, handleChatHistory, handleNewMessage, reconnectAttempts, recipientId, userId]);
+  }, [auth, handleAllChats, handleChatHistory, handleNewMessage, reconnectAttempts, userId]);
 
   // Initialize WebSocket connection
   useEffect(() => {
-    if (recipientId && auth) {
+    if (auth) {
       initWebSocket();
     }
     
@@ -259,7 +321,18 @@ const WhatsAppChat = () => {
         reconnectTimeoutRef.current = null;
       }
     };
-  }, [initWebSocket, recipientId, auth]);
+  }, [initWebSocket, auth]);
+
+  // Join chat when active chat changes
+  useEffect(() => {
+    if (activeChat && socketRef.current?.readyState === WebSocket.OPEN) {
+      const joinChatRequest = {
+        type: "chat.join",
+        user_id: activeChat
+      };
+      socketRef.current.send(JSON.stringify(joinChatRequest));
+    }
+  }, [activeChat]);
 
   // Send message handler
   const handleSendMessage = () => {
@@ -273,11 +346,15 @@ const WhatsAppChat = () => {
       return;
     }
 
+    if (!activeChat) {
+      antdMessage.warning("Please select a chat to send message");
+      return;
+    }
+
     const message = {
       type: "chat.message",
-      message: inputMessage,
-      recipient_id: recipientId,
-      sender: userId
+      user_id: activeChat,
+      message: inputMessage
     };
 
     try {
@@ -314,19 +391,6 @@ const WhatsAppChat = () => {
     disconnected: "Offline",
   }[connectionStatus];
 
-  // Render empty state if no recipient selected
-  if (!recipientId) {
-    return (
-      <div className="empty-chat">
-        <div className="empty-content">
-          <Avatar size={100} icon={<UserOutlined />} />
-          <h2>No Chat Selected</h2>
-          <p>Please select a user to start chatting</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="whatsapp-container">
       {/* Chat list sidebar */}
@@ -334,7 +398,7 @@ const WhatsAppChat = () => {
         <div className="chat-list-header">
           <div className="user-avatar">
             <Avatar size="large" className="bg-primary">
-              {user?.username?.charAt(0) || "ME"}
+              {user?.firstName?.charAt(0) || "ME"}
             </Avatar>
           </div>
           <div className="chat-list-actions p-2">
@@ -400,48 +464,45 @@ const WhatsAppChat = () => {
             </div>
             <div className="chat-actions">
               <Button type="text" icon={<SearchOutlined />} />
-              <Dropdown
-                overlay={
-                  <Menu>
-                    <Menu.Item key="1">View contact</Menu.Item>
-                    <Menu.Item key="2">Mute notifications</Menu.Item>
-                    <Menu.Item key="3">Clear messages</Menu.Item>
-                    <Menu.Item key="4">Delete chat</Menu.Item>
-                  </Menu>
-                }
-                trigger={["click"]}
-              >
-                <Button type="text" icon={<MoreOutlined />} />
-              </Dropdown>
             </div>
           </div>
 
           {/* Messages area */}
           <div className="chat-messages">
-            {chats.find(chat => chat.id === activeChat)?.messages.map((message, index) => (
-              <div
-                key={message.id || index}
-                className={`message ${message.sender === userId ? "sent" : "received"}`}
-              >
-                <div className="message-content">
-                  <div className="message-text text-sm">{message.message}</div>
-                  <div className="message-meta">
-                    <span className="message-time">{formatTime(message.timestamp)}</span>
-                    {message.sender === userId && (
-                      <span className="message-status">
-                        {message.status === "read" ? (
-                          <CheckCircleOutlined style={{ color: "#53bdeb" }} />
-                        ) : message.status === "delivered" ? (
-                          <CheckCircleOutlined />
-                        ) : (
-                          <CheckOutlined />
-                        )}
+            {chats.find(chat => chat.id === activeChat)?.messages.map((message, index) => {
+              const messageBody = message.body || {};
+              return (
+                <div
+                  key={messageBody.id || index}
+                  className={`message ${messageBody.sender === userId ? "sent" : "received"}`}
+                >
+                  <div className="message-content">
+                    <div className="message-text text-sm">{messageBody.message}</div>
+                    <div className="message-meta">
+                      <span 
+                        className="message-time" 
+                        style={{ 
+                          color: messageBody.sender === userId ? 'white' : 'black' 
+                        }}
+                      >
+                        {formatTime(messageBody.timestamp)}
                       </span>
-                    )}
+                      {messageBody.sender === userId && (
+                        <span className="message-status">
+                          {messageBody.status === "read" ? (
+                            <CheckCircleOutlined style={{ color: "#53bdeb" }} />
+                          ) : messageBody.status === "delivered" ? (
+                            <CheckCircleOutlined />
+                          ) : (
+                            <CheckOutlined />
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
 
@@ -476,7 +537,9 @@ const WhatsAppChat = () => {
             <h2>WhatsApp Web</h2>
             <p>
               {connectionStatus === "connected"
-                ? "Select a chat to start messaging"
+                ? chats.length > 0 
+                  ? "Select a chat to start messaging"
+                  : "You have no chats yet"
                 : connectionStatusText}
             </p>
           </div>
@@ -486,4 +549,4 @@ const WhatsAppChat = () => {
   );
 };
 
-export default WhatsAppChat;
+export default InfluencerChat;

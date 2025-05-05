@@ -25,7 +25,6 @@ import { authContext } from "@/assets/context/use-context";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/assets/hooks/use-auth";
 
-
 const WhatsAppChat = () => {
   // State management
   const [chats, setChats] = useState([]);
@@ -45,7 +44,6 @@ const WhatsAppChat = () => {
   const influencerFullName = searchParams.get("fullName");
   const { user } = useContext(authContext);
   const userId = user?.user_id;
-  console.log(userId)
 
   // Initialize chat with recipient from URL params
   useEffect(() => {
@@ -145,7 +143,7 @@ const WhatsAppChat = () => {
       reconnectTimeoutRef.current = null;
     }
 
-    const wsUrl = `ws://147.78.141.96:8075/chats/?user_id=${recipientId}&token=${auth}`;
+    const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
     setConnectionStatus("connecting");
     console.log("Attempting to connect to WebSocket with auth token in URL");
 
@@ -159,12 +157,18 @@ const WhatsAppChat = () => {
         setReconnectAttempts(0);
         antdMessage.success("Connected to chat server");
         
-        // Request chat history after connection is established
-        const historyRequest = {
-          type: "chat.history.request",
-          recipient_id: recipientId
+        // First request: Get all chats for current user
+        const allChatsRequest = {
+          type: "chats.all"
         };
-        ws.send(JSON.stringify(historyRequest));
+        ws.send(JSON.stringify(allChatsRequest));
+        
+        // Second request: Join specific chat
+        const joinChatRequest = {
+          type: "chat.join",
+          user_id: recipientId
+        };
+        ws.send(JSON.stringify(joinChatRequest));
       };
 
       ws.onmessage = (event) => {
@@ -181,6 +185,13 @@ const WhatsAppChat = () => {
               break;
             case "chat.message":
               handleNewMessage(data);
+              break;
+            case "chats.all":
+              // Handle the response for all chats if needed
+              console.log("Received all chats data:", data);
+              break;
+            case "chat.join.success":
+              console.log("Successfully joined chat:", data);
               break;
             default:
               console.warn("Unknown message type:", data.type);
@@ -275,9 +286,8 @@ const WhatsAppChat = () => {
 
     const message = {
       type: "chat.message",
-      message: inputMessage,
-      recipient_id: recipientId,
-      sender: userId
+      user_id: activeChat, // Using activeChat as the user_id
+      message: inputMessage
     };
 
     try {
@@ -334,7 +344,7 @@ const WhatsAppChat = () => {
         <div className="chat-list-header">
           <div className="user-avatar">
             <Avatar size="large" className="bg-primary">
-              {user?.username?.charAt(0) || "ME"}
+              {user?.firstName?.charAt(0) || "ME"}
             </Avatar>
           </div>
           <div className="chat-list-actions p-2">
@@ -400,19 +410,6 @@ const WhatsAppChat = () => {
             </div>
             <div className="chat-actions">
               <Button type="text" icon={<SearchOutlined />} />
-              {/* <Dropdown
-                overlay={
-                  <Menu>
-                    <Menu.Item key="1">View contact</Menu.Item>
-                    <Menu.Item key="2">Mute notifications</Menu.Item>
-                    <Menu.Item key="3">Clear messages</Menu.Item>
-                    <Menu.Item key="4">Delete chat</Menu.Item>
-                  </Menu>
-                }
-                trigger={["click"]}
-              >
-                <Button type="text" icon={<MoreOutlined />} />
-              </Dropdown> */}
             </div>
           </div>
 
@@ -420,34 +417,34 @@ const WhatsAppChat = () => {
           <div className="chat-messages">
             {chats.find(chat => chat.id === activeChat)?.messages.map((message, index) => (
               <div
-              key={message.id || index}
-              className={`message ${message.sender === userId ? "sent" : "received"}`}
-            >
-              <div className="message-content">
-                <div className="message-text text-sm">{message.message}</div>
-                <div className="message-meta">
-                  <span 
-                    className="message-time" 
-                    style={{ 
-                      color: message.sender === userId ? 'white' : 'black' 
-                    }}
-                  >
-                    {formatTime(message.timestamp)}
-                  </span>
-                  {message.sender === userId && (
-                    <span className="message-status">
-                      {message.status === "read" ? (
-                        <CheckCircleOutlined style={{ color: "#53bdeb" }} />
-                      ) : message.status === "delivered" ? (
-                        <CheckCircleOutlined />
-                      ) : (
-                        <CheckOutlined />
-                      )}
+                key={message.id || index}
+                className={`message ${message.sender === userId ? "sent" : "received"}`}
+              >
+                <div className="message-content">
+                  <div className="message-text text-sm">{message.message}</div>
+                  <div className="message-meta">
+                    <span 
+                      className="message-time" 
+                      style={{ 
+                        color: message.sender === userId ? 'white' : 'black' 
+                      }}
+                    >
+                      {formatTime(message.timestamp)}
                     </span>
-                  )}
+                    {message.sender === userId && (
+                      <span className="message-status">
+                        {message.status === "read" ? (
+                          <CheckCircleOutlined style={{ color: "#53bdeb" }} />
+                        ) : message.status === "delivered" ? (
+                          <CheckCircleOutlined />
+                        ) : (
+                          <CheckOutlined />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
             ))}
             <div ref={messagesEndRef} />
           </div>
