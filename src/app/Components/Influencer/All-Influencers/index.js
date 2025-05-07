@@ -125,9 +125,9 @@ const AllInfluencers = () => {
       ),
     },
     {
-      title: "Ethnicity",
-      dataIndex: "ethnicBackground",
-      key: "ethnicity",
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
       render: (text) => <Tag color="geekblue">{text}</Tag>,
     },
     {
