@@ -5,6 +5,7 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import { moveToCampaign } from "@/redux/services/campaign";
+import toast from "react-hot-toast";
 
 const { useToken } = theme;
 
@@ -41,7 +42,7 @@ export default function AddToCampaignModal({ data }) {
 
       const response = await moveToCampaign(auth, payload);
       if (response.status === 200) {
-        message.success("Added to campaign successfully");
+        toast.success("Added to campaign successfully");
         dispatch(fetchAllBrandCampaigns(auth));
         setOpen(false);
         form.resetFields();

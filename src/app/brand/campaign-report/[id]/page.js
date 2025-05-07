@@ -456,9 +456,6 @@ const CampaignReport = () => {
                 <Title level={4} style={{ margin: 0 }}>
                   Collaboration Requests
                 </Title>
-                <button className="bg-primary text-white px-4 py-2 text-sm font-light">
-                  Invite Influencers
-                </button>
               </Space>
 
               {campaignDetails.collaborators?.length > 0 ? (
@@ -467,7 +464,7 @@ const CampaignReport = () => {
                   dataSource={campaignDetails.collaborators}
                   rowKey="influencerId"
                   pagination={{ pageSize: 5 }}
-                  scroll={{ x: "max-content" }} // ✅ Responsive table
+                  scroll={{ x: "max-content" }}
                 />
               ) : (
                 <Empty

@@ -11,7 +11,10 @@ import { createProduct } from "@/redux/services/campaign";
 import toast from "react-hot-toast";
 import ProductCoverImageModal from "./productCoverImage";
 
-export default function ProductServiceDrawer({ setSelectedProducts,selectedProducts }) {
+export default function ProductServiceDrawer({
+  setSelectedProducts,
+  selectedProducts,
+}) {
   const dispatch = useDispatch();
   const auth = useAuth();
   const [loading, setLoading] = useState(false);
@@ -23,11 +26,68 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
     productManualUrl: "",
     productManualText: "",
     price: "",
-    productImages: []
+    productImages: [],
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    productManualUrl: "",
+    productManualText: "",
+    price: "",
+  });
+
+  const validateFields = () => {
+    let isValid = true;
+    const newErrors = {
+      name: "",
+      description: "",
+      productManualUrl: "",
+      productManualText: "",
+      price: "",
+    };
+
+    if (!details.name.trim()) {
+      newErrors.name = "Product name is required";
+      isValid = false;
+    }
+
+    if (!details.description.trim()) {
+      newErrors.description = "Description is required";
+      isValid = false;
+    }
+
+    if (!details.price) {
+      newErrors.price = "Price is required";
+      isValid = false;
+    } else if (isNaN(details.price)) {
+      newErrors.price = "Price must be a number";
+      isValid = false;
+    }
+
+    if (!details.productManualUrl.trim()) {
+      newErrors.productManualUrl = "Website URL is required";
+      isValid = false;
+    } else if (!/^https?:\/\/.+\..+/.test(details.productManualUrl)) {
+      newErrors.productManualUrl = "Please enter a valid URL";
+      isValid = false;
+    }
+
+    if (!details.productManualText.trim()) {
+      newErrors.productManualText = "Access instructions are required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateFields()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -43,6 +103,7 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
           price: "",
           productImages: [],
         });
+        setVisible(false);
       } else {
         toast.error(response.response.data.errorMessage[0]);
       }
@@ -54,7 +115,6 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
       }
     } finally {
       setLoading(false);
-      setVisible(false);
     }
   };
 
@@ -64,7 +124,7 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
         <Sidebar
           visible={visible}
           onHide={() => setVisible(false)}
-          className="md:w-5/12 w-full"
+          className="md:w-4/12 w-full"
         >
           <section className="border-b border-b-input w-full flex items-center justify-center">
             <div className="flex items-center gap-8">
@@ -94,7 +154,9 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
             <div>
               <section className="border border-input rounded p-4 mt-4">
                 <div className="mb-4">
-                  <h2 className="font-semibold text-xs text-center">Product | Service Image</h2>
+                  <h2 className="font-semibold text-xs text-center">
+                    Product | Service Image
+                  </h2>
                 </div>
                 <ProductCoverImageModal setDetails={setDetails} />
               </section>
@@ -118,6 +180,9 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                         }))
                       }
                     />
+                    {errors.name && (
+                      <p className="text-red text-xs mt-1">{errors.name}</p>
+                    )}
                   </section>
                   {/* DESCRIPTION */}
                   <section className="">
@@ -137,6 +202,11 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                         }))
                       }
                     />
+                    {errors.description && (
+                      <p className="text-red text-xs mt-1">
+                        {errors.description}
+                      </p>
+                    )}
                   </section>
                   {/* PRICE */}
                   <section className="">
@@ -157,6 +227,9 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                         }))
                       }
                     />
+                    {errors.price && (
+                      <p className="text-red text-xs mt-1">{errors.price}</p>
+                    )}
                   </section>
                   {/* WEBSITE */}
                   <section className="">
@@ -168,16 +241,9 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                       placeholder="website"
                       required
                       name="productManualUrl"
-                      value={details.productManualUrl || "https://"}
+                      value={details.productManualUrl}
                       onChange={(e) => {
                         let url = e.target.value;
-                        if (!url.startsWith("https://")) {
-                          if (url === "https:/") {
-                            url = "https://";
-                          } else if (!url.startsWith("http://")) {
-                            url = `https://${url.replace(/^https?:\/\//, "")}`;
-                          }
-                        }
                         setDetails({ ...details, productManualUrl: url });
                       }}
                       onFocus={(e) => {
@@ -186,6 +252,11 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                         }
                       }}
                     />
+                    {errors.productManualUrl && (
+                      <p className="text-red text-xs mt-1">
+                        {errors.productManualUrl}
+                      </p>
+                    )}
                   </section>
                   {/* ACCESS INSTRUCTIONS */}
                   <section className="">
@@ -205,6 +276,11 @@ export default function ProductServiceDrawer({ setSelectedProducts,selectedProdu
                         }))
                       }
                     />
+                    {errors.productManualText && (
+                      <p className="text-red text-xs mt-1">
+                        {errors.productManualText}
+                      </p>
+                    )}
                   </section>
                   <section className="flex justify-end">
                     <div className="flex items-center gap-4">

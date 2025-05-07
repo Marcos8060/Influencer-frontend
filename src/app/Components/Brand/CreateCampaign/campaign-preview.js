@@ -361,7 +361,8 @@ const CampaignPreview = () => {
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {campaignData.showFace
+                        
+                        {campaignData.campaignPreferences.showFace
                           ? "Yes, show face"
                           : "No face required"}
                       </div>
