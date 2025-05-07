@@ -798,7 +798,7 @@ const InfluencerProfilePage = () => {
                         </div>
 
                         <Text strong className="mt-4 block">
-                          Keywords
+                          Topics
                         </Text>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {influencerProfile?.keywords?.map((keyword) => (

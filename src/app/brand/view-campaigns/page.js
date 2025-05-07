@@ -93,16 +93,16 @@ const CampaignsTable = () => {
       sorter: true,
       render: (status) => getStatusBadge(status),
     },
-    {
-      title: "Description",
-      dataIndex: "description",
-      responsive: ["lg"],
-      render: (desc) => (
-        <Tooltip title={desc}>
-          {desc.length > 50 ? `${desc.slice(0, 50)}...` : desc}
-        </Tooltip>
-      ),
-    },
+    // {
+    //   title: "Description",
+    //   dataIndex: "description",
+    //   responsive: ["lg"],
+    //   render: (desc) => (
+    //     <Tooltip title={desc}>
+    //       {desc.length > 50 ? `${desc.slice(0, 50)}...` : desc}
+    //     </Tooltip>
+    //   ),
+    // },
     {
       title: "Applications",
       dataIndex: "numberOfInfluencers",
