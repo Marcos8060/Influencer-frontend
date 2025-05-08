@@ -39,6 +39,17 @@ const CampaignRequirements = () => {
     },
   });
 
+  const validateVideoUrl = (url) => {
+    if (!url) return false;
+    
+    // Regular expressions for supported platforms
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+    const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
+    const instagramRegex = /^(https?:\/\/)?(www\.)?instagram\.com\/.+/;
+    
+    return youtubeRegex.test(url) || tiktokRegex.test(url) || instagramRegex.test(url);
+  };
+
   useEffect(() => {
     dispatch(setCurrentStep(2));
   }, [dispatch]);
@@ -49,6 +60,11 @@ const CampaignRequirements = () => {
         details.campaignPreferences.socialChannels.length === 0 || 
         !details.exampleVideoUrl) {
       toast.error("Please complete all required fields");
+      return;
+    }
+
+    if (!validateVideoUrl(details.exampleVideoUrl)) {
+      toast.error("Please provide a valid YouTube, TikTok, or Instagram URL");
       return;
     }
 
