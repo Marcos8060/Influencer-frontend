@@ -95,6 +95,9 @@ export default function ProductServiceDrawer({
 
       if (response.status === 200 || response.status === 201) {
         toast.success("Product saved successfully");
+        if (response.data?.id) {
+          setSelectedProducts(prev => [...prev, response.data.id]);
+        }
         setDetails({
           name: "",
           description: "",

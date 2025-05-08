@@ -1,16 +1,14 @@
-"use client";
+'use client'
 import React, { useEffect, useState } from "react";
 import {
   Badge,
   Button,
   Card,
   Divider,
-  Progress,
   Tag,
   Tooltip,
   Avatar,
   Space,
-  Rate,
 } from "antd";
 import {
   InstagramOutlined,
@@ -28,16 +26,16 @@ import {
 } from "@ant-design/icons";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllPosts } from "@/redux/features/stepper/campaign-stepper";
+import {
+  getAllPosts,
+  updateCollaboratorStatus,
+} from "@/redux/features/stepper/campaign-stepper";
 import { getInfluencerProfileByBrand } from "@/redux/features/socials";
 import { usePathname, useRouter } from "next/navigation";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton from "react-loading-skeleton";
 import { approveCampaignApplication } from "@/redux/services/campaign";
 import { motion } from "framer-motion";
-import { set } from "date-fns";
-import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
 import toast from "react-hot-toast";
 import ChristmasAnimation from "@/app/Components/SharedComponents/ChristmasAnimation";
@@ -52,9 +50,10 @@ const InfluencerProfile = () => {
   const [loadApproval, setLoadApproval] = useState(false);
   const [loadRejection, setLoadRejection] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [approved, setApproved] = useState(false);
-  const [rejected, setRejected] = useState(false);
-  const [collaboratorStatus, setCollaboratorStatus] = useState(undefined);
+  const [buttonState, setButtonState] = useState({
+    approveDisabled: false,
+    rejectDisabled: false
+  });
   const pathname = usePathname();
   const segments = pathname.split("/");
   const campaignIdsegment = pathname?.split("/").filter(Boolean);
@@ -65,6 +64,29 @@ const InfluencerProfile = () => {
   const auth = useAuth();
   const router = useRouter();
   const userId = "40678282-c173-4788-89c9-14ea5596651e";
+
+  const collaboratorStatus = brandInfluencerProfile?.collaborator?.status;
+
+  useEffect(() => {
+    // Set initial button states based on collaborator status
+    if (collaboratorStatus === "approved") {
+      setButtonState({
+        approveDisabled: true,
+        rejectDisabled: false
+      });
+    } else if (collaboratorStatus === "rejected") {
+      setButtonState({
+        approveDisabled: false,
+        rejectDisabled: true
+      });
+    } else {
+      // If status is pending or undefined
+      setButtonState({
+        approveDisabled: false,
+        rejectDisabled: false
+      });
+    }
+  }, [collaboratorStatus]);
 
   const fetchData = async () => {
     try {
@@ -78,7 +100,6 @@ const InfluencerProfile = () => {
   };
 
   const fetchInfluencerProfile = async () => {
-    // const page = 'campaignCollaborator'
     try {
       setLoading(true);
       await dispatch(
@@ -104,12 +125,24 @@ const InfluencerProfile = () => {
         toast.error(res.response.data.errorMessage[0]);
       } else {
         toast.success("Approval Successful");
-        setApproved(true);
-        setCollaboratorStatus("approved");
+        // Update button states
+        setButtonState({
+          approveDisabled: true,
+          rejectDisabled: false
+        });
+        
+        dispatch(
+          updateCollaboratorStatus({
+            influencerId,
+            campaignId,
+            status: "approved",
+          })
+        );
         setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
       }
     } catch (error) {
+      toast.error("Error approving application");
     } finally {
       setLoadApproval(false);
     }
@@ -128,10 +161,22 @@ const InfluencerProfile = () => {
         toast.error(res.response.data.errorMessage[0]);
       } else {
         toast.success("Rejection Successful");
-        setRejected(true);
-        setCollaboratorStatus("rejected");
+        // Update button states
+        setButtonState({
+          approveDisabled: false,
+          rejectDisabled: true
+        });
+        
+        dispatch(
+          updateCollaboratorStatus({
+            influencerId,
+            campaignId,
+            status: "rejected",
+          })
+        );
       }
     } catch (error) {
+      toast.error("Error rejecting application");
     } finally {
       setLoadRejection(false);
     }
@@ -140,17 +185,11 @@ const InfluencerProfile = () => {
   const handleStartChat = () => {
     const userId = brandInfluencerProfile?.userId;
     const fullName = encodeURIComponent(brandInfluencerProfile?.fullName || "");
-    
+
     router.push(
       `/onboarding/brand/chat-box?userId=${userId}&fullName=${fullName}`
     );
   };
-
-  useEffect(() => {
-    if (brandInfluencerProfile?.collaborator?.status) {
-      setCollaboratorStatus(brandInfluencerProfile.collaborator.status);
-    }
-  }, [brandInfluencerProfile]);
 
   useEffect(() => {
     fetchData();
@@ -276,7 +315,6 @@ const InfluencerProfile = () => {
             <div className="flex justify-between items-center">
               <div className="flex gap-3">{/* Social media icons */}</div>
 
-              {/* Add this approve/reject section */}
               <div className="flex gap-3">
                 <motion.div
                   whileHover={{ scale: 1.01 }}
@@ -290,6 +328,8 @@ const InfluencerProfile = () => {
                     <MessageOutlined />
                   </button>
                 </motion.div>
+
+                {/* Approve Button */}
                 <motion.div
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
@@ -324,15 +364,21 @@ const InfluencerProfile = () => {
                         </span>
                       ) : (
                         <span className="flex items-center justify-center">
-                          {approved ? "Approved" : "Approve"}{" "}
+                          {buttonState.approveDisabled ? "Approved" : "Approve"}
                           <CheckCircleFilled className="ml-2" />
                         </span>
                       )
                     }
-                    disabled={collaboratorStatus === "approved" || approved}
-                    className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
+                    disabled={buttonState.approveDisabled || loadApproval || loadRejection}
+                    className={`w-full py-3 px-4 rounded-lg font-medium ${
+                      buttonState.approveDisabled
+                        ? "bg-green-300 cursor-not-allowed"
+                        : "bg-green-500 hover:bg-green-600"
+                    } text-white transition-all`}
                   />
                 </motion.div>
+
+                {/* Reject Button */}
                 <motion.div
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
@@ -367,13 +413,17 @@ const InfluencerProfile = () => {
                         </span>
                       ) : (
                         <span className="flex items-center justify-center">
-                          {rejected ? "Rejected" : "Reject"}{" "}
+                          {buttonState.rejectDisabled ? "Rejected" : "Reject"}
                           <CloseCircleFilled className="ml-2" />
                         </span>
                       )
                     }
-                    disabled={collaboratorStatus === "rejected" || rejected}
-                    className={`w-full py-3 px-4 rounded-lg font-medium bg-red/80 text-white transition-all`}
+                    disabled={buttonState.rejectDisabled || loadRejection || loadApproval}
+                    className={`w-full py-3 px-4 rounded-lg font-medium ${
+                      buttonState.rejectDisabled
+                        ? "bg-red-300 cursor-not-allowed"
+                        : "bg-red-500 hover:bg-red-600"
+                    } text-white transition-all`}
                   />
                 </motion.div>
               </div>
@@ -474,7 +524,6 @@ const InfluencerProfile = () => {
           </Card>
         </div>
       )}
-      {/* Stats Overview */}
 
       {/* Bio and Contact Section */}
       {loading ? (
