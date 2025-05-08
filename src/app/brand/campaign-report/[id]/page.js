@@ -50,6 +50,7 @@ const CampaignReport = () => {
   const pathname = usePathname();
   const router = useRouter();
   const auth = useAuth();
+  const [processingActions, setProcessingActions] = useState({});
 
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
@@ -66,11 +67,18 @@ const CampaignReport = () => {
   };
 
   const approveApplication = async (influencerId) => {
+    // Set processing state for this influencer
+    setProcessingActions(prev => ({
+      ...prev,
+      [influencerId]: { approving: true, rejecting: false }
+    }));
+
     const payload = {
       campaignId: id,
       influencerId: influencerId,
       status: "approved",
     };
+    
     try {
       const res = await approveCampaignApplication(auth, payload);
       if (res.status === 404) {
@@ -79,9 +87,57 @@ const CampaignReport = () => {
         toast.success("Approval Successful");
         setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
+        
+        // Update local state to reflect the approved status
+        // This will update the UI without needing to refetch data
+        await getCampaignDetails();
       }
     } catch (error) {
+      toast.error("Failed to approve influencer");
     } finally {
+      // Reset processing state
+      setProcessingActions(prev => ({
+        ...prev,
+        [influencerId]: { approving: false, rejecting: false }
+      }));
+    }
+  };
+
+  const rejectApplication = async (influencerId) => {
+    // Set processing state for this influencer
+    setProcessingActions(prev => ({
+      ...prev,
+      [influencerId]: { approving: false, rejecting: true }
+    }));
+
+    const payload = {
+      campaignId: id,
+      influencerId: influencerId,
+      status: "rejected",
+    };
+    
+    try {
+      // Assuming there's a similar API call for rejection
+      // If not, you'd need to implement it in your services
+      // This is a placeholder for the API call
+      // const res = await rejectCampaignApplication(auth, payload);
+      
+      // Simulating API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.error("Influencer rejected");
+      
+      // Update local state to reflect the rejected status
+      // This will update the UI without needing to refetch data
+      await getCampaignDetails();
+    } catch (error) {
+      toast.error("Failed to reject influencer");
+    } finally {
+      // Reset processing state
+      setProcessingActions(prev => ({
+        ...prev,
+        [influencerId]: { approving: false, rejecting: false }
+      }));
     }
   };
 
@@ -90,14 +146,6 @@ const CampaignReport = () => {
       getCampaignDetails();
     }
   }, [auth]);
-
-  const handleApprove = (influencerId) => {
-    toast.success("Influencer approved successfully");
-  };
-
-  const handleReject = (influencerId) => {
-    toast.error("Influencer rejected");
-  };
 
   const stats = [
     {
@@ -208,49 +256,57 @@ const CampaignReport = () => {
         </Button>
       ),
     },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 200,
-      render: (_, record) => (
-        <Space>
-          {record.status === "pending" ? (
-            <>
-              <Button
-                type="text"
-                icon={<CheckOutlined />}
-                onClick={() => approveApplication(record.influencerId)}
-                style={{ color: "#52c41a" }}
-              >
-                Approve
-              </Button>
-              <Button
-                type="text"
-                danger
-                icon={<CloseOutlined />}
-                onClick={() => handleReject(record.influencerId)}
-              >
-                Reject
-              </Button>
-            </>
-          ) : (
-            <Button disabled>
-              {record.status === "approved" ? (
-                <Space>
-                  <CheckCircleFilled style={{ color: "#52c41a" }} />
-                  Approved
-                </Space>
-              ) : (
-                <Space>
-                  <CloseCircleFilled style={{ color: "#ff4d4f" }} />
-                  Rejected
-                </Space>
-              )}
-            </Button>
-          )}
-        </Space>
-      ),
-    },
+    // {
+    //   title: "Actions",
+    //   key: "actions",
+    //   width: 200,
+    //   render: (_, record) => {
+    //     const processing = processingActions[record.influencerId] || { approving: false, rejecting: false };
+        
+    //     if (record.status === "pending") {
+    //       return (
+    //         <Space>
+    //           <Button
+    //             type="text"
+    //             icon={<CheckOutlined />}
+    //             onClick={() => approveApplication(record.influencerId)}
+    //             style={{ color: "#52c41a" }}
+    //             loading={processing.approving}
+    //             disabled={processing.rejecting}
+    //           >
+    //             Approve
+    //           </Button>
+    //           <Button
+    //             type="text"
+    //             danger
+    //             icon={<CloseOutlined />}
+    //             onClick={() => rejectApplication(record.influencerId)}
+    //             loading={processing.rejecting}
+    //             disabled={processing.approving}
+    //           >
+    //             Reject
+    //           </Button>
+    //         </Space>
+    //       );
+    //     } else {
+    //       return (
+    //         <Button disabled>
+    //           {record.status === "approved" ? (
+    //             <Space>
+    //               <CheckCircleFilled style={{ color: "#52c41a" }} />
+    //               Approved
+    //             </Space>
+    //           ) : (
+    //             <Space>
+    //               <CloseCircleFilled style={{ color: "#ff4d4f" }} />
+    //               Rejected
+    //             </Space>
+    //           )}
+    //         </Button>
+    //       );
+    //     }
+    //   },
+    // },
   ];
 
   return (

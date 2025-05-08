@@ -84,7 +84,37 @@ const CampaignSlice = createSlice({
     },
     setCampaignDetails: (state,action) => {
       state.campaignDetails = action.payload;
-    }
+    },
+    updateCollaboratorStatus: (state, action) => {
+      const { influencerId, campaignId, status } = action.payload;
+      
+      // Update in campaignData.campaignCollaborators if this is the current campaign
+      if (state.campaignData.id === campaignId) {
+        const collaboratorIndex = state.campaignData.campaignCollaborators.findIndex(
+          c => c.influencerId === influencerId
+        );
+        
+        if (collaboratorIndex !== -1) {
+          state.campaignData.campaignCollaborators[collaboratorIndex].status = status;
+        } else {
+          state.campaignData.campaignCollaborators.push({
+            influencerId,
+            status
+          });
+        }
+      }
+      
+      // Also update in campaignDetails if we're viewing that campaign
+      if (state.campaignDetails.id === campaignId) {
+        const collaboratorIndex = state.campaignDetails.campaignCollaborators?.findIndex(
+          c => c.influencerId === influencerId
+        );
+        
+        if (collaboratorIndex !== -1) {
+          state.campaignDetails.campaignCollaborators[collaboratorIndex].status = status;
+        }
+      }
+    },
   },
 });
 
@@ -101,7 +131,8 @@ export const {
   setPosts,
   setAppliedCampaigns,
   setApprovedCampaigns,
-  setCampaignDetails
+  setCampaignDetails,
+  updateCollaboratorStatus
 } = CampaignSlice.actions;
 
 export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
