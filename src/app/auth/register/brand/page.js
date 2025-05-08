@@ -29,8 +29,19 @@ const BrandRegister = () => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^\+?(\d{1,3})?[-. ]?\(?\d{1,3}\)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
+    return phoneRegex.test(phone);
+  }
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!validatePhoneNumber(formData.phoneNumber)) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+    
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       return;
@@ -80,6 +91,8 @@ const BrandRegister = () => {
       setLoading(false);
     }
   };
+
+  
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
