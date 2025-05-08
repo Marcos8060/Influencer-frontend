@@ -42,7 +42,7 @@ export default function AddToCampaignModal({ data }) {
 
       const response = await moveToCampaign(auth, payload);
       if (response.status === 200) {
-        toast.success("Added to campaign successfully");
+        toast.success("Added to campaign successfully,visit your campaigns to view all influencers");
         dispatch(fetchAllBrandCampaigns(auth));
         setOpen(false);
         form.resetFields();
