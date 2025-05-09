@@ -203,21 +203,6 @@ const CampaignReport = () => {
       responsive: ["md"], // Hide on mobile
     },
     {
-      title: "Bio",
-      dataIndex: "bio",
-      key: "bio",
-      responsive: ["lg"], // Hide on small screens
-      render: (text) => (
-        <Paragraph ellipsis={{ rows: 2 }} style={{ margin: 0 }}>
-          {text
-            ? text.length > 50
-              ? `${text.slice(0, 50)}...`
-              : text
-            : "No bio provided"}
-        </Paragraph>
-      ),
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
