@@ -67,6 +67,8 @@ const CampaignBasics = () => {
     dispatch(nextStep());
   };
 
+  const descriptionLength = details.description.length || 0;
+
   return (
     <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
       <div className="max-w-3xl w-full mx-auto space-y-4">
@@ -113,6 +115,23 @@ const CampaignBasics = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[120px]"
                 id="description"
               />
+              {details.description && (
+              <div className="mt-2">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      descriptionLength < 30 ? "bg-red" :
+                      descriptionLength < 60 ? "bg-yellow" : "bg-green"
+                    }`}
+                    style={{ width: `${Math.min(descriptionLength, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {descriptionLength < 30 ? "Too brief" :
+                   descriptionLength < 60 ? "Good start" : "Excellent description"}
+                </p>
+              </div>
+            )}
               <p className="mt-1 text-xs text-gray-500">What makes this campaign special?</p>
             </div>
           </div>
