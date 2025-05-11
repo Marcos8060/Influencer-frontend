@@ -134,24 +134,25 @@ export default function InfluencerProfile() {
                   </Paragraph>
                   <Space size="large">
                     <Statistic
-                      title="Followers"
+                      title={<span className="custom-statistic-title">Followers</span>}
                       value={formatNumber(
-                        discoveryProfile.instagramFollowersCount
+                        discoveryProfile.instagram?.followersCount
+                      )}
+                      className="text-white"
+                      valueStyle={{ color: "white", fontSize: "20px" }}
+                      titleStyle={{ color: "#FFFFFF" }} 
+                    />
+                    <Statistic
+                      title={<span className="custom-statistic-title">Following</span>}
+                      value={formatNumber(
+                        discoveryProfile.instagram?.followsCount
                       )}
                       className="text-white"
                       valueStyle={{ color: "white", fontSize: "20px" }}
                     />
                     <Statistic
-                      title="Following"
-                      value={formatNumber(
-                        discoveryProfile.instagramFollowsCount
-                      )}
-                      className="text-white"
-                      valueStyle={{ color: "white", fontSize: "20px" }}
-                    />
-                    <Statistic
-                      title="Posts"
-                      value={formatNumber(discoveryProfile.instagramMediaCount)}
+                      title={<span className="custom-statistic-title">Posts</span>}
+                      value={formatNumber(discoveryProfile.instagram?.mediaCount)}
                       className="text-white"
                       valueStyle={{ color: "white", fontSize: "20px" }}
                     />

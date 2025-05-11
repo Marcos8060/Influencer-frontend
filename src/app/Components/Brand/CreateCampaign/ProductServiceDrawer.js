@@ -96,7 +96,7 @@ export default function ProductServiceDrawer({
       if (response.status === 200 || response.status === 201) {
         toast.success("Product saved successfully");
         if (response.data?.id) {
-          setSelectedProducts(prev => [...prev, response.data.id]);
+          setSelectedProducts((prev) => [...prev, response.data.id]);
         }
         setDetails({
           name: "",
@@ -120,6 +120,9 @@ export default function ProductServiceDrawer({
       setLoading(false);
     }
   };
+
+  const descriptionLength = details.description.length || 0;
+  const manualLength = details.productManualText.length || 0;
 
   return (
     <>
@@ -205,6 +208,31 @@ export default function ProductServiceDrawer({
                         }))
                       }
                     />
+                    {details.description && (
+                      <div className="mt-2">
+                        <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              descriptionLength < 30
+                                ? "bg-red"
+                                : descriptionLength < 60
+                                ? "bg-yellow"
+                                : "bg-green"
+                            }`}
+                            style={{
+                              width: `${Math.min(descriptionLength, 100)}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {descriptionLength < 30
+                            ? "Too brief"
+                            : descriptionLength < 60
+                            ? "Good start"
+                            : "Excellent description"}
+                        </p>
+                      </div>
+                    )}
                     {errors.description && (
                       <p className="text-red text-xs mt-1">
                         {errors.description}
@@ -279,6 +307,31 @@ export default function ProductServiceDrawer({
                         }))
                       }
                     />
+                    {details.productManualText && (
+                      <div className="mt-2">
+                        <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              manualLength < 30
+                                ? "bg-red"
+                                : manualLength < 60
+                                ? "bg-yellow"
+                                : "bg-green"
+                            }`}
+                            style={{
+                              width: `${Math.min(manualLength, 100)}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {manualLength < 30
+                            ? "Too brief"
+                            : manualLength < 60
+                            ? "Good start"
+                            : "Excellent description"}
+                        </p>
+                      </div>
+                    )}
                     {errors.productManualText && (
                       <p className="text-red text-xs mt-1">
                         {errors.productManualText}

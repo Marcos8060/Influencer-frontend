@@ -158,7 +158,36 @@ export default function FiltersDrawer() {
                 />
               </div>
             </section>
-
+            {/* Niche */}
+            <section className="flex items-center gap-2">
+              <div className="w-3/12">
+                <small>Niche</small>
+              </div>
+              <div className="w-9/12">
+                <MultiSelectCheckBox
+                  value={filters.niche}
+                  onChange={(e) => handleFilterChange("niche", e.value)}
+                  options={niches.map((item) => ({ name: item, value: item }))}
+                  optionLabel="name"
+                  placeholder="Select Niche"
+                />
+              </div>
+            </section>
+            {/* Category */}
+            <section className="flex items-center gap-2 w-full">
+              <div className="w-3/12">
+                <small>Category</small>
+              </div>
+              <div className="w-9/12">
+                <FilterDropdown
+                  className="w-full"
+                  value={filters.category}
+                  onChange={(e) =>
+                    handleFilterChange("category", e.target.value)
+                  }
+                />
+              </div>
+            </section>
             {/* Race */}
             <section className="flex items-center gap-2">
               <div className="w-3/12">
@@ -181,40 +210,34 @@ export default function FiltersDrawer() {
                 <small>Followers</small>
               </div>
               <div className="w-9/12 flex items-center gap-2">
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="From"
-                  value={filters.minimumNumberOfFollowers}
-                  onChange={(e) =>
-                    handleFilterChange("minimumNumberOfFollowers", e.target.value)
-                  }
-                />
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="To"
-                  value={filters.maximumNumberOfFollowers}
-                  onChange={(e) =>
-                    handleFilterChange("maximumNumberOfFollowers", e.target.value)
-                  }
-                />
-              </div>
-            </section>
-
-            {/* Niche */}
-            <section className="flex items-center gap-2">
-              <div className="w-3/12">
-                <small>Niche</small>
-              </div>
-              <div className="w-9/12">
-                <MultiSelectCheckBox
-                  value={filters.niche}
-                  onChange={(e) => handleFilterChange("niche", e.value)}
-                  options={niches.map((item) => ({ name: item, value: item }))}
-                  optionLabel="name"
-                  placeholder="Select Niche"
-                />
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="From"
+                    value={filters.minimumNumberOfFollowers}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "minimumNumberOfFollowers",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="To"
+                    value={filters.maximumNumberOfFollowers}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "maximumNumberOfFollowers",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
               </div>
             </section>
 
@@ -224,40 +247,34 @@ export default function FiltersDrawer() {
                 <small>Engagement Rate</small>
               </div>
               <div className="w-9/12 flex items-center gap-2">
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="From"
-                  value={filters.minimumEngagementRate}
-                  onChange={(e) =>
-                    handleFilterChange("minimumEngagementRate", e.target.value)
-                  }
-                />
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="To"
-                  value={filters.maximumEngagementRate}
-                  onChange={(e) =>
-                    handleFilterChange("maximumEngagementRate", e.target.value)
-                  }
-                />
-              </div>
-            </section>
-
-            {/* Category */}
-            <section className="flex items-center gap-2 w-full">
-              <div className="w-3/12">
-                <small>Category</small>
-              </div>
-              <div className="w-9/12">
-                <FilterDropdown
-                  className="w-full"
-                  value={filters.category}
-                  onChange={(e) =>
-                    handleFilterChange("category", e.target.value)
-                  }
-                />
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="From"
+                    value={filters.minimumEngagementRate}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "minimumEngagementRate",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="To"
+                    value={filters.maximumEngagementRate}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "maximumEngagementRate",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
               </div>
             </section>
 
@@ -267,22 +284,28 @@ export default function FiltersDrawer() {
                 <small>Age Range</small>
               </div>
               <div className="w-9/12 flex items-center gap-2">
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="From"
-                  value={filters.minimumAge}
-                  onChange={(e) =>
-                    handleFilterChange("minimumAge", e.target.value)
-                  }
-                />
-                <InputComponent
-                  type="number"
-                  className="w-full"
-                  placeholder="To"
-                  value={filters.maximumAge}
-                  onChange={(e) => handleFilterChange("maximumAge", e.target.value)}
-                />
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="From"
+                    value={filters.minimumAge}
+                    onChange={(e) =>
+                      handleFilterChange("minimumAge", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <InputComponent
+                    type="number"
+                    className="w-full"
+                    placeholder="To"
+                    value={filters.maximumAge}
+                    onChange={(e) =>
+                      handleFilterChange("maximumAge", e.target.value)
+                    }
+                  />
+                </div>
               </div>
             </section>
 

@@ -99,6 +99,8 @@ const CampaignBrief = () => {
     }));
   };
 
+  const descriptionLength = details.briefDescription.length || 0;
+
   return (
     <div className="bg-gray-50 min-h-screen px-4 py-8 flex items-center justify-center text-color">
       <div className="max-w-3xl w-full mx-auto space-y-6">
@@ -140,9 +142,26 @@ const CampaignBrief = () => {
               <TextAreaComponent
                 value={details.briefDescription}
                 onChange={(e) => setDetails({ ...details, briefDescription: e.target.value })}
-                placeholder="Describe your campaign goals, target audience, and any specific requirements..."
+                placeholder="What are you looking to receive from content creators/influencers. Be as detailed as possible...."
                 className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[120px]"
               />
+              {details.briefDescription && (
+              <div className="mt-2">
+                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      descriptionLength < 30 ? "bg-red" :
+                      descriptionLength < 60 ? "bg-yellow" : "bg-green"
+                    }`}
+                    style={{ width: `${Math.min(descriptionLength, 100)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {descriptionLength < 30 ? "Too brief" :
+                   descriptionLength < 60 ? "Good start" : "Excellent description"}
+                </p>
+              </div>
+            )}
               <p className="mt-1 text-xs text-gray-500">Be as detailed as possible to guide creators</p>
             </div>
           </div>
