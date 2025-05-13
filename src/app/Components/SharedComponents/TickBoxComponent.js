@@ -1,22 +1,34 @@
 import React from "react";
-import { GiCheckMark } from "react-icons/gi";
+import { motion } from "framer-motion";
+import { CheckOutlined } from "@ant-design/icons";
 
 const TickBoxComponent = ({ label, checked, onChange }) => {
   return (
-    <div
-      className={`cursor-pointer border border-input rounded px-4 py-2 w-full 
-        ${
-          checked
-            ? "border-2 border-primary bg-background font-semibold rounded"
-            : "bg-white"
-        }`}
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      className={`cursor-pointer transition-all rounded-lg p-4 w-full border ${
+        checked
+          ? "border-primary border-2 bg-blue-50"
+          : "border-input hover:border-gray-300 bg-white"
+      }`}
       onClick={onChange}
     >
-      <section className="flex items-center justify-between">
-        <div>{label}</div>
-        <div>{checked && <GiCheckMark className="text-xl" />}</div>
-      </section>
-    </div>
+      <div className="flex items-center justify-between">
+        <span className={`text-sm ${checked ? "font-medium text-gray-900" : "text-gray-700"}`}>
+          {label}
+        </span>
+        {checked && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="text-primary"
+          >
+            <CheckOutlined className="text-lg" />
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+
 const initialState = {
   currentStep: 0,
   influencerData: {
@@ -8,12 +9,12 @@ const initialState = {
     isTwitterAccountConnected: false,
     isFacebookAccountConnected: false,
     isTiktokAccountConnected: false,
-    gender: null,
-    dateOfBirth: null,
-    ethnicBackground: null,
-    contentCategories: null,
+    // gender: null,
+    // dateOfBirth: null,
+    // ethnicBackground: null,
+    // contentCategories: null,
     preferredCompaniesType: null,
-    brandTypes: null,
+    // brandTypes: null,
     influencerTopics: null,
     influencerAddressLine1: null,
     influencerAddressLine2: null,
@@ -21,14 +22,14 @@ const initialState = {
     influencerCountry: null,
     influencerZipCode: null,
     influencerPhoneNumber: null,
-    preferredCollaborationContentFormat: null,
-    preferredPaymentOption: [],
-    preferredPaidMinimumPay: null,
-    preferredPaidMaximumPay: null,
+    // preferredCollaborationContentFormat: null,
+    // preferredPaymentOption: [],
+    // preferredPaidMinimumPay: null,
+    // preferredPaidMaximumPay: null,
     preferredLeadTimeForProjectDays: 0,
     agreedToTerms: false,
     finishedOnboarding: false,
-    userId: null,
+    // userId: null,
   },
 };
 
