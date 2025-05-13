@@ -114,7 +114,6 @@ const InfluencerChat = () => {
   );
 
   // Chat history handler for a specific chat - modified to match Django backend
-  // Chat history handler for a specific chat - modified to match Django backend
   const handleChatHistory = useCallback(
     (historyData) => {
       console.log("Processing chat history:", historyData);
@@ -192,41 +191,58 @@ const InfluencerChat = () => {
     (messageData) => {
       // Normalize message structure (handle both formats)
       const message = messageData.body || messageData;
-
+  
       if (!message.sender || !message.recipient) {
         console.error("Invalid message format:", message);
         return;
       }
-
+  
       const isMe = message.sender === userId;
       const chatId = isMe ? message.recipient : message.sender;
-
+  
+  
       // Update active chat messages if this is the current chat
       if (activeChat === chatId) {
-        // If we have a temporary message with the same ID, replace it
-        if (message.id) {
-          setSelectedChatMessages((prev) => {
-            const tempIndex = prev.findIndex((m) => m.tempId === message.id);
-            if (tempIndex !== -1) {
-              const updated = [...prev];
-              updated[tempIndex] = { ...message, status: "delivered" };
-              return updated;
+        setSelectedChatMessages((prev) => {
+          // First check if we already have this message to avoid duplicates
+          const messageExists = prev.some(
+            (m) => 
+              (m.id && m.id === message.id) || 
+              (m.tempId && m.tempId === message.temp_id) ||
+              (m.sender === message.sender && 
+               m.timestamp === message.timestamp && 
+               m.message === message.message)
+          );
+          
+          if (messageExists) {
+            // If it's a temp message being confirmed, update its status
+            if (message.temp_id) {
+              return prev.map(m => 
+                m.tempId === message.temp_id 
+                  ? { ...message, status: "delivered" } 
+                  : m
+              );
             }
-            return [...prev, message];
-          });
-        } else {
-          setSelectedChatMessages((prev) => [...prev, message]);
-        }
+            return prev; // Don't add duplicates
+          }
+          
+          // If it's a new message, add it to the list
+          return [...prev, message];
+        });
+      } else {
+        // If this is a message for a chat that's not currently active,
+        // we still need to update the sidebar but not the messages
+        console.log("Message for inactive chat", chatId);
       }
-
+  
       // Update chats list
       setChats((prevChats) => {
         const updatedChats = [...prevChats];
         const chatIndex = updatedChats.findIndex((c) => c.id === chatId);
-
+  
         const displayMessage =
           message.message || (message.photo_url ? "Photo" : "");
-
+  
         if (chatIndex === -1) {
           // New chat
           updatedChats.push({
@@ -255,7 +271,7 @@ const InfluencerChat = () => {
                 : updatedChats[chatIndex].unread + 1,
           };
         }
-
+  
         return updatedChats;
       });
     },
@@ -464,8 +480,6 @@ const InfluencerChat = () => {
   };
 
   // Send message handler - modified to handle photos
-  // Modified handleSendMessage function to include tempId in the message payload
-
   const handleSendMessage = (e) => {
     e?.stopPropagation();
     if (!inputMessage.trim() && !selectedPhoto) return;
@@ -774,13 +788,13 @@ const InfluencerChat = () => {
                 : connectionStatusText}
             </p>
           </div>
-        </div>
+        </div> 
       )}
     </div>
   );
 };
 
-export default function TikTokCallbackPage() {
+export default function InfluencerChatPage() {
   return (
     <Suspense
       fallback={

@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
+  Suspense
 } from "react";
 import {
   Input,
@@ -29,7 +30,7 @@ import { authContext } from "@/assets/context/use-context";
 import { useAuth } from "@/assets/hooks/use-auth";
 import "../../../../app/chat.css";
 
-const WhatsAppChat = () => {
+const BrandChat = () => {
   // State management
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -431,4 +432,16 @@ const WhatsAppChat = () => {
   );
 };
 
-export default WhatsAppChat;
+
+
+export default function BrandChatPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-4 text-center">Loading Brand chat...</div>
+      }
+    >
+      <BrandChat />
+    </Suspense>
+  );
+}
