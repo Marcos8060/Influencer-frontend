@@ -663,13 +663,6 @@ const InfluencerChat = () => {
                   key={message.id || message.tempId || index}
                   className={`message ${isMe ? "sent" : "received"}`}
                 >
-                  {/* {!isMe && (
-                    <Avatar className="message-avatar">
-                      {chats
-                        .find((c) => c.id === message.sender)
-                        ?.name.charAt(0) || "U"}
-                    </Avatar>
-                  )} */}
                   <div className="message-content">
                     {message.photo_url && (
                       <div className="message-photo">
