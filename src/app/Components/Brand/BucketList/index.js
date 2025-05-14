@@ -45,13 +45,13 @@ const BucketList = () => {
       width: 150,
       render: (text) => <span className="font-medium">{text}</span>,
     },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      width: 200,
-      ellipsis: true,
-    },
+    // {
+    //   title: 'Description',
+    //   dataIndex: 'description',
+    //   key: 'description',
+    //   width: 200,
+    //   ellipsis: true,
+    // },
     {
       title: 'No. Of Influencers',
       dataIndex: 'influencers',
@@ -103,9 +103,9 @@ const BucketList = () => {
       title="Bucket List"
       extra={
         <Space>
-          <Button className="flex items-center">
+          {/* <Button className="flex items-center">
             Add to Campaign
-          </Button>
+          </Button> */}
           <BucketListDialog />
         </Space>
       }
