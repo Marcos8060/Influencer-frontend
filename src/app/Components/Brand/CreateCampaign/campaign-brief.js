@@ -224,13 +224,13 @@ const CampaignBrief = () => {
           </div>
 
           {/* Selected Platforms */}
-          {details.campaignPreferences.socialChannels.length > 0 && (
+          {details.campaignPreferences.socialChannels?.length > 0 && (
             <div className="mb-2">
               <h3 className="text-sm font-medium text-gray-700 mb-2">
-                Selected Platforms ({details.campaignPreferences.socialChannels.length})
+                Selected Platforms ({details.campaignPreferences.socialChannels?.length})
               </h3>
               <div className="flex flex-wrap gap-2">
-                {details.campaignPreferences.socialChannels.map(platform => {
+                {details.campaignPreferences?.socialChannels.map(platform => {
                   const platformInfo = platforms.find(p => p.name === platform);
                   return (
                     <div 
