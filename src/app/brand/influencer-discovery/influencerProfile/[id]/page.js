@@ -129,21 +129,30 @@ export default function InfluencerProfile() {
                   <h1 className="text-white text-3xl font-semibold mb-2">
                     {discoveryProfile.fullName}
                   </h1>
-                  <Paragraph className="text-md text-white/90 mb-6">
-                    {discoveryProfile.bio}
+                  <Paragraph className="text-md text-xs text-white/90 mb-6">
+                    {discoveryProfile.bio?.slice(0, 700)}
+                    {discoveryProfile.bio?.length > 700 && "..."}
                   </Paragraph>
                   <Space size="large">
                     <Statistic
-                      title={<span className="custom-statistic-title">Followers</span>}
+                      title={
+                        <span className="custom-statistic-title">
+                          Followers
+                        </span>
+                      }
                       value={formatNumber(
                         discoveryProfile.instagram?.followersCount
                       )}
                       className="text-white"
                       valueStyle={{ color: "white", fontSize: "20px" }}
-                      titleStyle={{ color: "#FFFFFF" }} 
+                      titleStyle={{ color: "#FFFFFF" }}
                     />
                     <Statistic
-                      title={<span className="custom-statistic-title">Following</span>}
+                      title={
+                        <span className="custom-statistic-title">
+                          Following
+                        </span>
+                      }
                       value={formatNumber(
                         discoveryProfile.instagram?.followsCount
                       )}
@@ -151,8 +160,12 @@ export default function InfluencerProfile() {
                       valueStyle={{ color: "white", fontSize: "20px" }}
                     />
                     <Statistic
-                      title={<span className="custom-statistic-title">Posts</span>}
-                      value={formatNumber(discoveryProfile.instagram?.mediaCount)}
+                      title={
+                        <span className="custom-statistic-title">Posts</span>
+                      }
+                      value={formatNumber(
+                        discoveryProfile.instagram?.mediaCount
+                      )}
                       className="text-white"
                       valueStyle={{ color: "white", fontSize: "20px" }}
                     />
@@ -390,19 +403,19 @@ export default function InfluencerProfile() {
 
               {/* Social Feeds */}
               <Tabs defaultActiveKey="instagram" className="mb-4">
-                  <TabPane
-                    tab={
-                      <span>
-                        <InstagramOutlined />
-                        Instagram Metrics
-                      </span>
-                    }
-                    key="instagram"
-                  >
-                    <div >
-                      <InstagramMetricsFilter {...{ discoveryProfile }} />
-                    </div>
-                  </TabPane>
+                <TabPane
+                  tab={
+                    <span>
+                      <InstagramOutlined />
+                      Instagram Metrics
+                    </span>
+                  }
+                  key="instagram"
+                >
+                  <div>
+                    <InstagramMetricsFilter {...{ discoveryProfile }} />
+                  </div>
+                </TabPane>
                 {discoveryProfile.isTiktokConnected && (
                   <TabPane
                     tab={
