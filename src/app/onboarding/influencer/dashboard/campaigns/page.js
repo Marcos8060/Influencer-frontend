@@ -335,7 +335,7 @@ const Campaigns = () => {
                             <div className="bg-gray-50 p-4 rounded-lg">
                               <h4 className="font-medium text-gray-700 mb-2">Social Channels</h4>
                               <ul className="space-y-2">
-                                {selectedCampaign.preferences.socialChannels.map(
+                                {Array.isArray(selectedCampaign.preferences?.socialChannels) && selectedCampaign.preferences?.socialChannels.map(
                                   (channel, index) => (
                                     <li
                                       key={index}
@@ -351,7 +351,7 @@ const Campaigns = () => {
                             <div className="bg-gray-50 p-4 rounded-lg">
                               <h4 className="font-medium text-gray-700 mb-2">Video Style</h4>
                               <ul className="space-y-2">
-                                {selectedCampaign.preferences.videoStyle.map((style, index) => (
+                                {Array.isArray(selectedCampaign.preferences.videoStyle) && selectedCampaign.preferences.videoStyle.map((style, index) => (
                                   <li
                                     key={index}
                                     className="flex items-center gap-2 text-sm text-gray-600"
