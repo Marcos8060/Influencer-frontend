@@ -108,7 +108,7 @@ const SearchInfluencers = () => {
   const countries = Array.from(new Set(influencers.map((i) => i.country)));
 
   useEffect(() => {
-    if (auth && influencers.length === 0) {
+    if (auth) {
       setLoading(true);
       dispatch(getAllInfluencers(auth))
         .then((response) => {
@@ -123,7 +123,7 @@ const SearchInfluencers = () => {
           setLoading(false);
         });
     }
-  }, [auth, dispatch, influencers.length]);
+  }, [auth, dispatch]);
 
   // Filter influencers based on search criteria
   const filteredInfluencers = influencers.filter((influencer) => {
