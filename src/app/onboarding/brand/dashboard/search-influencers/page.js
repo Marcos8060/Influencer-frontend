@@ -65,9 +65,7 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const pageSize = 12;
-  const { influencers } = useSelector(
-    (store) => store.filterResults
-  );
+  const { influencers } = useSelector((store) => store.filterResults);
 
   // Available filters
   const categories = [
@@ -292,7 +290,9 @@ const SearchInfluencers = () => {
                   setMinFollowers(value[0]);
                   setMaxFollowers(value[1]);
                 }}
-                tipFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                tooltip={{
+                  formatter: (value) => `${(value / 1000).toFixed(0)}k`,
+                }}
               />
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Text type="secondary">
@@ -354,9 +354,12 @@ const SearchInfluencers = () => {
                   </span>
                 }
               >
-                <Button type="primary" onClick={clearFilters}>
+                <button
+                  className="bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-light text-white rounded-sm"
+                  onClick={clearFilters}
+                >
                   Clear all filters
-                </Button>
+                </button>
               </Empty>
             </Card>
           )}
