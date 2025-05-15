@@ -23,10 +23,24 @@ export const menu = [
     role: ["Influencer"],
   },
   {
-    label: "Influencer Discovery",
+    label: "Influencers",
     path: "/brand/influencer-discovery",
     icon: <FaUsersGear />,
     role: ["Brand"],
+    children: [
+      {
+        label: "Influencer Discovery",
+        path: "/brand/influencer-discovery",
+        icon: <GoDotFill className="text-xs" />,
+        role: ["Brand"],
+      },
+      {
+        label: "Search Influencers",
+        path: "/onboarding/brand/dashboard/search-influencers",
+        icon: <GoDotFill className="text-xs" />,
+        role: ["Brand"],
+      },
+    ],
   },
   {
     label: "Brand Discovery",
