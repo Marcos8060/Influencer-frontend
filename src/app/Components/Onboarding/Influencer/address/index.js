@@ -409,9 +409,9 @@ const Address = () => {
                     value={details.gender || undefined}
                     onChange={(value) => setDetails({ ...details, gender: value })}
                   >
-                    <Option value="Male">Male</Option>
-                    <Option value="Female">Female</Option>
-                    <Option value="Other">Other</Option>
+                    <Select.Option value="Male">Male</Select.Option>
+                    <Select.Option value="Female">Female</Select.Option>
+                    <Select.Option value="Other">Other</Select.Option>
                   </Select>
                 </div>
                 <div>
