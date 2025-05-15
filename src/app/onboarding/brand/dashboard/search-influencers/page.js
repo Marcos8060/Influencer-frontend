@@ -42,6 +42,7 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -513,9 +514,7 @@ const InfluencerCard = ({ influencer }) => {
         hoverable
         className="h-full rounded-md p-2"
         cover={
-          <div
-            className="flex items-center justify-center relative h-[60px] bg-[#f0f2f5]"
-          >
+          <div className="flex items-center justify-center relative h-[60px] bg-[#f0f2f5]">
             <Avatar
               size={80}
               src={influencer.profilePicture}
@@ -530,9 +529,17 @@ const InfluencerCard = ({ influencer }) => {
           </div>
         }
         actions={[
-          <button className="bg-primary text-sm" type="primary" block>
-            View Profile
-          </button>,
+          <Link
+            href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`}
+          >
+            <button
+              className="bg-primary text-xs text-white rounded-sm px-4 py-2 w-full"
+              type="primary"
+              block
+            >
+              View Profile
+            </button>
+          </Link>,
         ]}
       >
         <div style={{ paddingTop: "32px" }}>
