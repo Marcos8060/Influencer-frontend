@@ -29,6 +29,12 @@ export const menu = [
     role: ["Brand"],
   },
   {
+    label: "Brand Discovery",
+    path: "/onboarding/influencer/brand-discovery",
+    icon: <FaUsersGear />,
+    role: ["Influencer"],
+  },
+  {
     label: "Campaigns",
     path: "/brand/create-campaign",
     icon: <MdCampaign className="text-xl" />,
