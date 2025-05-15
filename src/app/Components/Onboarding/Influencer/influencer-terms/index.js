@@ -33,21 +33,24 @@ const InfluencerTerms = () => {
       toast.error("Please agree to the terms to continue");
       return;
     }
-
+  
     dispatch(updateFormData({ agreedToTerms: true }));
     dispatch(updateFormData({ finishedOnboarding: true }));
     setLoading(true);
-
+  
     try {
-      const updatedFormData = {
-        ...influencerData,
-        agreedToTerms: true,
-        finishedOnboarding: true,
-      };
-
+      // Clean empty strings to null
+      const cleanedData = Object.fromEntries(
+        Object.entries({
+          ...influencerData,
+          agreedToTerms: true,
+          finishedOnboarding: true,
+        }).map(([key, value]) => [key, value === "" ? null : value])
+      );
+  
       if (auth) {
-        const response = await influencerOnboarding(auth, updatedFormData);
-
+        const response = await influencerOnboarding(auth, cleanedData);
+  
         if (response.status === 200) {
           toast.success("Onboarding completed successfully!");
           router.push("/onboarding/influencer/dashboard");
@@ -62,7 +65,7 @@ const InfluencerTerms = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   useEffect(() => {
     dispatch(setCurrentStep(5));
