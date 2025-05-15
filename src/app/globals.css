@@ -126,3 +126,219 @@
 .custom-statistic-title{
   color: white
 }
+.brand-discovery-container {
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.discovery-hero {
+  color: white;
+  padding: 64px 24px;
+  text-align: center;
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  color: white !important;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 16px !important;
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 0 auto !important;
+}
+
+.search-filters-card {
+  margin: 0 auto 24px;
+  width: calc(100% - 48px);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+}
+
+.search-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.search-input {
+  border-radius: 14px;
+  padding: 8px 18px;
+  margin-bottom: 16px;
+}
+
+.filter-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.filter-select .ant-select-selector {
+  border-radius: 20px !important;
+  padding: 8px 16px !important;
+}
+
+.clear-filters-btn {
+  color: #8c8c8c;
+}
+
+.discovery-tabs .ant-tabs-nav {
+  margin: 24px 0 0;
+}
+
+.discovery-tabs .ant-tabs-tab {
+  padding: 12px 0;
+  margin: 0 24px 0 0;
+  font-weight: 500;
+}
+
+.discovery-tabs .ant-tabs-ink-bar {
+  height: 3px;
+}
+
+.results-container {
+  padding: 0 24px;
+}
+
+.brand-card {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100%;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid #f0f0f0;
+}
+
+.brand-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.brand-cover {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.brand-logo {
+  position: absolute;
+  bottom: -32px;
+  left: 24px;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.brand-rating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.rating {
+  font-weight: 500;
+  color: #595959;
+}
+
+.partnership-tag {
+  margin-left: 8px;
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.brand-description {
+  color: #595959;
+  margin-bottom: 16px !important;
+}
+
+.brand-industries {
+  margin-bottom: 16px;
+}
+
+.industry-tag {
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.brand-divider {
+  margin: 12px 0 !important;
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+}
+
+.meta-icon {
+  color: #1890ff;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.meta-text {
+  color: #8c8c8c;
+}
+
+.connect-btn {
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.brand-pagination .ant-pagination-item {
+  border-radius: 8px;
+}
+
+.brand-pagination .ant-pagination-item-active {
+  font-weight: 500;
+}
+
+.empty-state-card {
+  border-radius: 12px;
+  padding: 48px 0;
+}
+
+.empty-description {
+  color: #8c8c8c;
+  font-size: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .discovery-hero {
+    padding: 48px 16px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .search-filters-card {
+    width: calc(100% - 32px);
+    padding: 16px;
+  }
+}

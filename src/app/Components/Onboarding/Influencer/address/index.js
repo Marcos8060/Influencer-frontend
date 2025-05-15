@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ReactCountryFlag } from "react-country-flag";
 import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
+import { Select, DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const countryData = countries.getData();
 
@@ -30,6 +32,9 @@ const Address = () => {
       name: "",
       code: "",
     },
+    influencerZipCode: influencerData.influencerZipCode || "",
+    gender: influencerData.gender || "",
+    dateOfBirth: influencerData.dateOfBirth || "",
     influencerZipCode: influencerData.influencerZipCode || "",
     influencerPhoneNumber: influencerData.influencerPhoneNumber || {
       code: "+1",
@@ -98,6 +103,8 @@ const Address = () => {
       !details.influencerCountry.name,
       !details.influencerZipCode,
       !details.influencerPhoneNumber.number,
+      !details.gender,
+      !details.dateOfBirth,
     ];
 
     if (requiredFields.some(Boolean)) {
@@ -391,11 +398,46 @@ const Address = () => {
                   </div>
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+                  <Select
+                    placeholder="Select gender"
+                    className="w-full"
+                    value={details.gender || undefined}
+                    onChange={(value) => setDetails({ ...details, gender: value })}
+                  >
+                    <Select.Option value="Male">Male</Select.Option>
+                    <Select.Option value="Female">Female</Select.Option>
+                    <Select.Option value="Other">Other</Select.Option>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date Of Birth <span className="text-red-500">*</span>
+                  </label>
+                  <DatePicker
+                    className="w-full"
+                    placeholder="Select date of birth"
+                    value={details.dateOfBirth ? dayjs(details.dateOfBirth) : null}
+                    onChange={(date, dateString) => {
+                      setDetails({ ...details, dateOfBirth: dateString });
+                    }}
+                    format="YYYY-MM-DD"
+                    disabledDate={(current) => {
+                      // Disable future dates
+                      return current && current > dayjs().endOf('day');
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end pt-6">
+          <div className="flex justify-end">
             {/* <CustomizedBackButton 
               onClick={() => dispatch(previousStep())} 
               className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
