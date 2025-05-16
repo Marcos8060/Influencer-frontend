@@ -95,7 +95,7 @@ export default function InfluencerProfile() {
             className="relative overflow-hidden mb-6 border-none"
             bodyStyle={{ padding: 0 }}
           >
-            <div className="h-80 w-full bg-gradient-to-r from-primary to-secondary relative">
+            <div className="h-56 w-full bg-gradient-to-r from-primary to-secondary relative">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end gap-6 z-10">
                 <Badge
@@ -130,8 +130,8 @@ export default function InfluencerProfile() {
                     {discoveryProfile.fullName}
                   </h1>
                   <Paragraph className="text-md text-xs text-white/90 mb-6">
-                    {discoveryProfile.bio?.slice(0, 700)}
-                    {discoveryProfile.bio?.length > 700 && "..."}
+                    {discoveryProfile.bio?.slice(0, 300)}
+                    {discoveryProfile.bio?.length > 300 && "..."}
                   </Paragraph>
                   <Space size="large">
                     <Statistic

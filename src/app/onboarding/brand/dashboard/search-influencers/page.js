@@ -41,8 +41,11 @@ import {
   CheckCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import { useAuth } from "@/assets/hooks/use-auth";
+import toast from "react-hot-toast";
+import { getAllInfluencers } from "@/redux/features/influencer/filter";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -59,98 +62,10 @@ const SearchInfluencers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const dispatch = useDispatch();
+  const auth = useAuth();
   const pageSize = 12;
-  const { influencers, filterResults } = useSelector(
-    (store) => store.filterResults
-  );
-
-  console.log("INFLUENCERS ", influencers);
-
-  // Mock data - in a real app, this would come from an API
-  const mockInfluencers = [
-    {
-      id: 6,
-      fullName: "Jarib Lad-Wetshi Mardo",
-      email: "mardocheejarib64@gmail.com",
-      phoneNumber: "+2547890765432",
-      gender: "Non-binary",
-      age: null,
-      dob: "2027-01-31",
-      accountStatus: "Active",
-      dateJoined: "2025-04-04T13:48:25.145107Z",
-      emailVerified: true,
-      accountVerified: false,
-      addressLine1: "123 Cherry Blossom Street",
-      addressLine2: "Apt 456",
-      isInstagramAccountConnected: true,
-      isTwitterAccountConnected: false,
-      isFacebookAccountConnected: true,
-      isTiktokAccountConnected: true,
-      profilePicture:
-        "http://res.cloudinary.com/dqjnaukdk/image/upload/v1744714739/40678282-c173-4788-89c9-14ea5596651e/profilePicture/z3eq9bxpseznawpkbpr3.jpg",
-      userId: "40678282-c173-4788-89c9-14ea5596651e",
-      brandsWorkedWith: null,
-      bio: "I am a tech influencer who is geeky about Machine Learning and Artificial Intelligence and exploration with Large Language Models",
-      ethnicBackground: ["Asian"],
-      country: "Kenya",
-      city: "Nairobi",
-      zipCode: "94107",
-      contentCategories: ["Technology", "Fitness", "Travel"],
-      preferredCollaborationContentFormat: ["Live", "Stories", "Reels"],
-      categories: null,
-      tags: "['Tech Reviews', 'Fitness Routines', 'Travel Destinations']",
-      overallRate: "5.0",
-      totalRates: 0,
-      finishedOnboarding: true,
-      languages: null,
-      location: null,
-      influencerId: "f0ed2743-e79e-4ec9-b79e-c9c291082641",
-      igAccessToken: null,
-      igWithFacebookAccessToken: null,
-      igFacebookActivePageName: null,
-      igBusinessAccount: null,
-      igUserId: null,
-      igUsername: null,
-      igBio: null,
-      igFollowersCount: null,
-      igFollowsCount: null,
-      igHasProfilePicture: null,
-      igMediaCount: null,
-      igMedias: null,
-      igName: null,
-      igWebsite: null,
-      igShoppingProductTagEligibility: null,
-      igProfilePictureUrl: null,
-      igProfileLink: null,
-      igIsPublished: null,
-      tkAccessToken: null,
-      tkUserId: null,
-      tkProfilePictureUrl: null,
-      tkName: null,
-      tkBio: null,
-      tkProfileLink: null,
-      tkIsVerified: null,
-      tkUsername: null,
-      tkFollowersCount: null,
-      tkFollowsCount: null,
-      tkLikesCount: null,
-      tkVideosCount: null,
-      twId: null,
-      twBio: null,
-      twCreatedAt: null,
-      twLocation: null,
-      twName: null,
-      twProfileBannerUrl: null,
-      twProfileImageUrl: null,
-      twProtected: null,
-      twPublicMetrics: null,
-      twUrl: null,
-      twUsername: null,
-      twVerified: null,
-      fbUserId: null,
-      fbAccessToken: null,
-    },
-  ];
+  const { influencers } = useSelector((store) => store.filterResults);
 
   // Available filters
   const categories = [
@@ -188,21 +103,31 @@ const SearchInfluencers = () => {
   ];
 
   const genders = ["Male", "Female", "Non-binary"];
-  const countries = Array.from(new Set(mockInfluencers.map((i) => i.country)));
+  const countries = Array.from(new Set(influencers.map((i) => i.country)));
 
   useEffect(() => {
-    // Simulate API loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    if (auth) {
+      setLoading(true);
+      dispatch(getAllInfluencers(auth))
+        .then((response) => {
+          if (response.error) {
+            throw new Error(response.error.message);
+          }
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [auth, dispatch]);
 
   // Filter influencers based on search criteria
-  const filteredInfluencers = mockInfluencers.filter((influencer) => {
+  const filteredInfluencers = influencers.filter((influencer) => {
     const matchesSearch =
       influencer.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
-      influencer.bio.toLowerCase().includes(searchText.toLowerCase()) ||
+      // influencer.bio.toLowerCase().includes(searchText.toLowerCase()) ||
       influencer.contentCategories?.some((cat) =>
         cat.toLowerCase().includes(searchText.toLowerCase())
       ) ||
@@ -264,10 +189,7 @@ const SearchInfluencers = () => {
   };
 
   return (
-    <div
-      className="influencer-search-container"
-      style={{ padding: "24px", maxWidth: "1600px", margin: "0 auto" }}
-    >
+    <div className="w-full text-color">
       {/* Header Section */}
       <div className="search-header" style={{ marginBottom: "32px" }}>
         <Title level={2} style={{ marginBottom: "8px" }}>
@@ -291,27 +213,13 @@ const SearchInfluencers = () => {
           allowClear
           style={{ maxWidth: "800px", marginBottom: "24px" }}
         />
-
-        {/* Tabs */}
-        <div className="influencer-tabs" style={{ marginBottom: "24px" }}>
-          <Radio.Group
-            value={activeTab}
-            onChange={(e) => setActiveTab(e.target.value)}
-            buttonStyle="solid"
-          >
-            <Radio.Button value="all">All Influencers</Radio.Button>
-            <Radio.Button value="instagram">Instagram</Radio.Button>
-            <Radio.Button value="tiktok">TikTok</Radio.Button>
-            <Radio.Button value="verified">Verified</Radio.Button>
-          </Radio.Group>
-        </div>
       </div>
 
       <div className="search-content" style={{ display: "flex", gap: "24px" }}>
         {/* Filters Sidebar */}
         <div
           className="filters-sidebar"
-          style={{ width: "280px", flexShrink: 0 }}
+          style={{ width: "240px", flexShrink: 0 }}
         >
           <Card
             title={
@@ -382,7 +290,9 @@ const SearchInfluencers = () => {
                   setMinFollowers(value[0]);
                   setMaxFollowers(value[1]);
                 }}
-                tipFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                tooltip={{
+                  formatter: (value) => `${(value / 1000).toFixed(0)}k`,
+                }}
               />
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Text type="secondary">
@@ -392,24 +302,6 @@ const SearchInfluencers = () => {
                   {(maxFollowers / 1000).toFixed(0)}k
                 </Text>
               </div>
-            </div>
-
-            <div className="filter-section">
-              <Title level={5} style={{ marginBottom: "12px" }}>
-                Minimum Rating
-              </Title>
-              <Rate
-                allowHalf
-                value={minRating}
-                onChange={setMinRating}
-                style={{ color: "#faad14" }}
-              />
-              <Text
-                type="secondary"
-                style={{ display: "block", marginTop: "8px" }}
-              >
-                {minRating > 0 ? `${minRating}+ stars` : "Any rating"}
-              </Text>
             </div>
           </Card>
         </div>
@@ -434,7 +326,7 @@ const SearchInfluencers = () => {
                 </Text>
               </div>
 
-              <Row gutter={[24, 24]}>
+              <Row gutter={[20, 20]}>
                 {paginatedInfluencers.map((influencer) => (
                   <Col xs={24} sm={12} lg={8} key={influencer.id}>
                     <InfluencerCard influencer={influencer} />
@@ -462,9 +354,12 @@ const SearchInfluencers = () => {
                   </span>
                 }
               >
-                <Button type="primary" onClick={clearFilters}>
+                <button
+                  className="bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-light text-white rounded-sm"
+                  onClick={clearFilters}
+                >
                   Clear all filters
-                </Button>
+                </button>
               </Empty>
             </Card>
           )}
@@ -514,15 +409,15 @@ const InfluencerCard = ({ influencer }) => {
         hoverable
         className="h-full rounded-md p-2"
         cover={
-          <div className="flex items-center justify-center relative h-[60px] bg-[#f0f2f5]">
+          <div className="flex items-center justify-center relative h-[55px] bg-[#f0f2f5]">
             <Avatar
-              size={80}
+              size={60}
               src={influencer.profilePicture}
               style={{
                 border: "3px solid #fff",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
                 position: "absolute",
-                bottom: "-40px",
+                bottom: "-10px",
                 left: "24px",
               }}
             />
@@ -542,63 +437,36 @@ const InfluencerCard = ({ influencer }) => {
           </Link>,
         ]}
       >
-        <div style={{ paddingTop: "32px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "12px",
-            }}
-          >
-            <Title level={4} style={{ margin: 0 }}>
-              {influencer.fullName}
-            </Title>
-          </div>
+        <div>
+          <p className="text-lg font-semibold ">{influencer.fullName}</p>
+          <div className="border-b border-input my-2"></div>
 
-          <div style={{ marginBottom: "12px" }}>
-            <Space size={[0, 8]} wrap>
-              {influencer.contentCategories?.map((category) => (
-                <Tag key={category} color="blue">
-                  {category}
-                </Tag>
-              ))}
+          <div>
+            <Space className="grid grid-cols-1">
+              <div className="flex gap-2">
+                {influencer.gender === "Female" ? (
+                  <WomanOutlined />
+                ) : (
+                  <ManOutlined />
+                )}
+                <Text>{influencer.gender}</Text>
+              </div>
+
+              <div className="flex gap-2">
+                <EnvironmentOutlined />
+                <Text>
+                  {influencer.city}, {influencer.country}
+                </Text>
+              </div>
             </Space>
           </div>
 
-          <Divider style={{ margin: "12px 0" }} />
-
-          <div style={{ marginBottom: "8px" }}>
-            <Space>
-              {influencer.gender === "Female" ? (
-                <WomanOutlined />
-              ) : (
-                <ManOutlined />
-              )}
-              <Text>{influencer.gender}</Text>
-              <Text type="secondary">•</Text>
-              <EnvironmentOutlined />
-              <Text>
-                {influencer.city}, {influencer.country}
-              </Text>
-            </Space>
-          </div>
-
-          <div style={{ marginBottom: "8px" }}>
-            <Space>
-              <MailOutlined />
-              <Text>{influencer.email}</Text>
-            </Space>
-          </div>
-
-          <div style={{ marginBottom: "8px" }}>
+          <div>
             <Space>
               <PhoneOutlined />
               <Text>{influencer.phoneNumber}</Text>
             </Space>
           </div>
-
-          <Divider style={{ margin: "12px 0" }} />
         </div>
       </Card>
     </Badge.Ribbon>
