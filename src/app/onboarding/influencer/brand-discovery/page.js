@@ -351,16 +351,9 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => {
         </div>
       }
       actions={[
-        <Tooltip
-          title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-        >
-        </Tooltip>,
         <Button className="bg-primary" type="primary" icon={<ArrowRightOutlined />}>
           Connect
-        </Button>,
-        <Dropdown menu={menu} trigger={["click"]}>
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
+        </Button>
       ]}
     >
       <div >
