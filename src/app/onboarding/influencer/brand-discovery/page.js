@@ -1,15 +1,15 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import { 
-  Input, 
-  Select, 
-  Card, 
-  Row, 
-  Col, 
-  Tag, 
-  Button, 
-  Space, 
-  Typography, 
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Input,
+  Select,
+  Card,
+  Row,
+  Col,
+  Tag,
+  Button,
+  Space,
+  Typography,
   Divider,
   Avatar,
   Pagination,
@@ -19,8 +19,9 @@ import {
   Tooltip,
   Dropdown,
   Menu,
-  Tabs
-} from 'antd';
+  Tabs,
+  Rate,
+} from "antd";
 import {
   SearchOutlined,
   GlobalOutlined,
@@ -31,167 +32,95 @@ import {
   HeartFilled,
   ShareAltOutlined,
   MoreOutlined,
-  ArrowRightOutlined
-} from '@ant-design/icons';
+  ArrowRightOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
+import { getAllBrands } from "@/redux/features/influencer/filter";
+import { useAuth } from "@/assets/hooks/use-auth";
+import { useDispatch, useSelector } from "react-redux";
+import { ReactCountryFlag } from "react-country-flag";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 const BrandDiscovery = () => {
-  const [searchText, setSearchText] = useState('');
-  const [selectedIndustry, setSelectedIndustry] = useState();
-  const [selectedCountry, setSelectedCountry] = useState();
+  const [searchText, setSearchText] = useState("");
+  const [selectedIndustry, setSelectedIndustry] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState("all");
   const [favorites, setFavorites] = useState([]);
+  const dispatch = useDispatch();
+  const { brands } = useSelector((store) => store.filterResults);
+  const auth = useAuth();
   const pageSize = 8;
 
-  // Mock data - in a real app, this would come from an API
-  const mockBrands = [
-    {
-      id: "1",
-      name: "EcoFashion",
-      website: "ecofashion.com",
-      city: "Portland",
-      state: "Oregon",
-      country: "United States",
-      description: "Sustainable fashion brand creating eco-friendly clothing with organic materials and ethical production practices.",
-      businessType: "E-commerce",
-      industry: ["Fashion", "Sustainability"],
-      logoColor: "#52c41a",
-      partnership: true,
-      rating: 4.8,
-      featured: true
-    },
-    {
-      id: "2",
-      name: "TechGadgets",
-      website: "techgadgets.io",
-      city: "San Francisco",
-      state: "California",
-      country: "United States",
-      description: "Innovative tech accessories for the modern lifestyle. We create products that blend design and functionality.",
-      businessType: "Manufacturer",
-      industry: ["Technology", "Electronics"],
-      logoColor: "#1890ff",
-      partnership: false,
-      rating: 4.5
-    },
-    {
-      id: "3",
-      name: "GreenEats",
-      website: "greeneats.com",
-      city: "Berlin",
-      state: "",
-      country: "Germany",
-      description: "Plant-based meal kits delivered to your door. Chef-designed recipes with locally sourced ingredients.",
-      businessType: "Subscription",
-      industry: ["Food & Beverage", "Health"],
-      logoColor: "#722ed1",
-      partnership: true,
-      rating: 4.9,
-      featured: true
-    },
-    {
-      id: "4",
-      name: "Adventure Gear",
-      website: "adventuregear.co",
-      city: "Vancouver",
-      state: "British Columbia",
-      country: "Canada",
-      description: "High-quality outdoor equipment for your next adventure. Designed by explorers, for explorers.",
-      businessType: "Retail",
-      industry: ["Outdoor", "Sports"],
-      logoColor: "#fa8c16",
-      partnership: false,
-      rating: 4.7
-    },
-    {
-      id: "5",
-      name: "BeautyBloom",
-      website: "beautybloom.com",
-      city: "Paris",
-      state: "",
-      country: "France",
-      description: "Cruelty-free cosmetics with natural ingredients. Luxury beauty that's kind to your skin and the planet.",
-      businessType: "E-commerce",
-      industry: ["Beauty", "Skincare"],
-      logoColor: "#eb2f96",
-      partnership: true,
-      rating: 4.6
-    },
-    {
-      id: "6",
-      name: "HomeHaven",
-      website: "homehaven.design",
-      city: "Copenhagen",
-      state: "",
-      country: "Denmark",
-      description: "Scandinavian-inspired home decor and furniture. Minimalist design with maximum functionality.",
-      businessType: "Retail",
-      industry: ["Home Decor", "Interior Design"],
-      logoColor: "#13c2c2",
-      partnership: false,
-      rating: 4.4
-    },
-    {
-      id: "7",
-      name: "FitFuel",
-      website: "fitfuel.com",
-      city: "Sydney",
-      state: "NSW",
-      country: "Australia",
-      description: "Performance nutrition for athletes and fitness enthusiasts. Science-backed formulas for optimal results.",
-      businessType: "E-commerce",
-      industry: ["Health", "Fitness"],
-      logoColor: "#f5222d",
-      partnership: true,
-      rating: 4.9,
-      featured: true
-    },
-    {
-      id: "8",
-      name: "PetPals",
-      website: "petpals.co",
-      city: "Austin",
-      state: "Texas",
-      country: "United States",
-      description: "Premium pet products for your furry friends. Because they deserve the best.",
-      businessType: "E-commerce",
-      industry: ["Pets", "Animals"],
-      logoColor: "#faad14",
-      partnership: false,
-      rating: 4.3
-    }
-  ];
-
   useEffect(() => {
-    // Simulate API loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (auth) {
+      setLoading(true);
+      dispatch(getAllBrands(auth))
+        .then((response) => {
+          if (response.error) {
+            throw new Error(response.error.message);
+          }
+        })
+        .catch((error) => {
+          console.error(error.message);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [auth, dispatch]);
 
-  // Filter brands based on search criteria
-  const filteredBrands = mockBrands.filter(brand => {
-    const matchesSearch = brand.name.toLowerCase().includes(searchText.toLowerCase()) || 
-                         brand.description.toLowerCase().includes(searchText.toLowerCase());
-    const matchesIndustry = !selectedIndustry || brand.industry.includes(selectedIndustry);
-    const matchesCountry = !selectedCountry || brand.country === selectedCountry;
-    const matchesTab = activeTab === 'all' || 
-                      (activeTab === 'featured' && brand.featured) || 
-                      (activeTab === 'partnership' && brand.partnership) ||
-                      (activeTab === 'favorites' && favorites.includes(brand.id));
-    
+  const filteredBrands = brands.filter((brand) => {
+    const brandName = brand?.name ?? "";
+    const brandDescription = brand?.description ?? "";
+    const brandIndustry = brand?.industry ?? "";
+  
+    const searchTerm = searchText.toLowerCase();
+  
+    const matchesSearch =
+      searchText === "" ||
+      brandName.toLowerCase().includes(searchTerm) ||
+      brandDescription.toLowerCase().includes(searchTerm) ||
+      brandIndustry.toLowerCase().includes(searchTerm);
+  
+    const matchesIndustry =
+      selectedIndustry === "" ||
+      (brandIndustry &&
+        brandIndustry
+          .split(",")
+          .some((ind) => ind.trim() === selectedIndustry));
+  
+    const matchesCountry =
+      selectedCountry === "" ||
+      (brand.countryData && brand.countryData.name === selectedCountry);
+  
+    const matchesTab = activeTab === "all";
+  
     return matchesSearch && matchesIndustry && matchesCountry && matchesTab;
   });
 
   // Get unique industries and countries for filters
-  const industries = Array.from(new Set(mockBrands.flatMap(brand => brand.industry)));
-  const countries = Array.from(new Set(mockBrands.map(brand => brand.country)));
+  const industries = Array.from(
+    new Set(
+      brands
+        .flatMap((brand) =>
+          (brand?.industry || "") // Fallback to empty string if null/undefined
+            .split(",")
+            .map((i) => i.trim())
+            .filter(Boolean)
+        )
+        .filter(Boolean) // Additional safety check
+    )
+  ).filter(Boolean); // Final safety check
+
+  const countries = Array.from(
+    new Set(brands.map((brand) => brand.countryData?.name).filter(Boolean))
+  );
 
   // Pagination logic
   const paginatedBrands = filteredBrands.slice(
@@ -200,104 +129,137 @@ const BrandDiscovery = () => {
   );
 
   const toggleFavorite = (id) => {
-    setFavorites(prev => 
-      prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
     );
+  };
+
+  const clearFilters = () => {
+    setSearchText("");
+    setSelectedIndustry("");
+    setSelectedCountry("");
+    setActiveTab("all");
+    setCurrentPage(1); // Also reset pagination
   };
 
   const menu = (
     <Menu>
-      <Menu.Item key="1" icon={<ShareAltOutlined />}>Share</Menu.Item>
-      <Menu.Item key="2" icon={<StarFilled />}>Add to list</Menu.Item>
-      <Menu.Item key="3">Report</Menu.Item>
+      <Menu.Item key="1" icon={<ShareAltOutlined />}>
+        Share
+      </Menu.Item>
+      <Menu.Item key="2" icon={<StarFilled />}>
+        Add to list
+      </Menu.Item>
     </Menu>
   );
 
   return (
-    <div className="brand-discovery-container">
+    <div
+      className="brand-discovery-container"
+      style={{ maxWidth: "1400px", margin: "0 auto" }}
+    >
       {/* Hero Section */}
-      <div className="discovery-hero bg-gradient-to-r from-primary to-secondary">
-        <Title level={1} className="hero-title">Discover Brands That Match Your Vibe</Title>
-        <Paragraph className="hero-subtitle">
-          Connect with premium brands looking for authentic voices like yours. 
-          <br />Filter by industry, location, and partnership opportunities.
+      <div
+        className="discovery-hero bg-gradient-to-r from-primary to-secondary"
+        style={{
+          color: "white",
+          padding: "60px 24px",
+          textAlign: "center",
+          borderRadius: "0 0 12px 12px",
+          marginBottom: "24px",
+        }}
+      >
+        <Title level={2} style={{ color: "white", marginBottom: "16px" }}>
+          Discover Brands That Match Your Vibe
+        </Title>
+        <Paragraph
+          style={{
+            color: "rgba(255, 255, 255, 0.85)",
+            maxWidth: "700px",
+            margin: "0 auto",
+          }}
+        >
+          Connect with premium brands looking for authentic voices like yours.
+          <br />
+          Filter by industry, location, and partnership opportunities.
         </Paragraph>
       </div>
 
       {/* Search and Filters */}
-      <Card className="search-filters-card" bordered={false}>
-        <div className="search-container">
+      <Card
+        className="search-filters-card"
+        bordered={false}
+        style={{
+          margin: "0 auto 24px",
+          width: "calc(100% - 48px)",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+          padding: "24px",
+        }}
+      >
+        <div
+          className="search-container"
+          style={{ maxWidth: "1000px", margin: "0 auto" }}
+        >
           <Input
             placeholder="Search brands by name, description, or keywords..."
-            prefix={<SearchOutlined style={{ color: '#8c8c8c' }} />}
+            prefix={<SearchOutlined style={{ color: "#8c8c8c" }} />}
             size="large"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
-            className="search-input"
+            style={{ marginBottom: "16px" }}
           />
-          
+
           <div className="filter-controls">
             <Space wrap>
               <Select
                 placeholder="Industry"
                 style={{ width: 180 }}
+                value={selectedIndustry}
                 onChange={setSelectedIndustry}
                 allowClear
-                className="filter-select"
                 suffixIcon={<FilterOutlined />}
               >
-                {industries.map(industry => (
-                  <Option key={industry} value={industry}>{industry}</Option>
+                {industries.map((industry) => (
+                  <Option key={industry} value={industry}>
+                    {industry}
+                  </Option>
                 ))}
               </Select>
-              
+
               <Select
                 placeholder="Country"
                 style={{ width: 180 }}
+                value={selectedCountry}
                 onChange={setSelectedCountry}
                 allowClear
-                className="filter-select"
               >
-                {countries.map(country => (
-                  <Option key={country} value={country}>{country}</Option>
+                {countries.map((country) => (
+                  <Option key={country} value={country}>
+                    {country}
+                  </Option>
                 ))}
               </Select>
-              
-              <Button 
-                type="text" 
-                onClick={() => {
-                  setSearchText('');
-                  setSelectedIndustry(undefined);
-                  setSelectedCountry(undefined);
-                }}
-                className="clear-filters-btn"
+
+              <Button
+                type="text"
+                onClick={clearFilters}
               >
-                Clear all
+                Clear all Filters
               </Button>
             </Space>
           </div>
         </div>
-
-        <Tabs 
-          activeKey={activeTab} 
-          onChange={setActiveTab}
-          className="discovery-tabs"
-        >
-          <TabPane tab="All Brands" key="all" />
-          <TabPane tab="Featured" key="featured" />
-          <TabPane tab="Partnerships" key="partnership" />
-          <TabPane tab="Favorites" key="favorites" />
-        </Tabs>
       </Card>
-      
+
       {/* Results */}
-      <div className="results-container">
+      <div className="results-container" style={{ padding: "0 24px" }}>
         {loading ? (
           <Row gutter={[24, 24]}>
             {[...Array(8)].map((_, i) => (
               <Col xs={24} sm={12} md={12} lg={8} xl={6} key={i}>
-                <Card className="brand-card">
+                <Card style={{ height: "100%", borderRadius: "8px" }}>
                   <Skeleton active avatar paragraph={{ rows: 3 }} />
                 </Card>
               </Col>
@@ -306,10 +268,10 @@ const BrandDiscovery = () => {
         ) : filteredBrands.length > 0 ? (
           <>
             <Row gutter={[24, 24]}>
-              {paginatedBrands.map(brand => (
+              {paginatedBrands.map((brand) => (
                 <Col xs={24} sm={12} md={12} lg={8} xl={6} key={brand.id}>
-                  <BrandCard 
-                    brand={brand} 
+                  <BrandCard
+                    brand={brand}
                     isFavorite={favorites.includes(brand.id)}
                     onFavoriteToggle={toggleFavorite}
                     menu={menu}
@@ -317,36 +279,31 @@ const BrandDiscovery = () => {
                 </Col>
               ))}
             </Row>
-            
-            <div className="pagination-container">
+
+            <div style={{ textAlign: "center", marginTop: "24px" }}>
               <Pagination
                 current={currentPage}
                 total={filteredBrands.length}
                 pageSize={pageSize}
                 onChange={(page) => setCurrentPage(page)}
                 showSizeChanger={false}
-                className="brand-pagination"
               />
             </div>
           </>
         ) : (
-          <Card className="empty-state-card">
+          <Card style={{ borderRadius: "12px", padding: "48px 0" }}>
             <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={
-                <span className="empty-description">
-                  No brands found matching your criteria. Try adjusting your filters.
+                <span>
+                  No brands found matching your criteria. Try adjusting your
+                  filters.
                 </span>
               }
             >
-              <Button 
-                type="primary" 
-                onClick={() => {
-                  setSearchText('');
-                  setSelectedIndustry(undefined);
-                  setSelectedCountry(undefined);
-                  setActiveTab('all');
-                }}
+              <Button
+                type="primary"
+                className="bg-primary"
+                onClick={clearFilters}
               >
                 Clear all filters
               </Button>
@@ -358,104 +315,123 @@ const BrandDiscovery = () => {
   );
 };
 
-// Brand Card Component
 const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => {
   return (
-    <Badge.Ribbon 
-      text="Featured" 
-      color="gold"
-      style={{ display: brand.featured ? 'block' : 'none' }}
+    <Card
+      hoverable
+      style={{
+        height: "100%",
+        borderRadius: "8px",
+        overflow: "hidden",
+      }}
+      cover={
+        <div
+          style={{
+            height: "120px",
+            backgroundColor: "#f0f2f5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          <Avatar
+            size={64}
+            className="bg-gradient-to-r from-primary to-secondary"
+            style={{
+              fontSize: "24px",
+              fontWeight: "bold",
+              color: "#fff",
+              border: "3px solid white",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {brand?.name ? brand.name.charAt(0) : "?"}
+          </Avatar>
+        </div>
+      }
+      actions={[
+        <Button className="bg-primary" type="primary" icon={<ArrowRightOutlined />}>
+          Connect
+        </Button>
+      ]}
     >
-      <Card
-        hoverable
-        className="brand-card"
-        cover={
-          <div 
-            className="brand-cover" 
-            style={{ backgroundColor: brand.logicColor || '#f0f2f5' }}
-          >
-            <div className="brand-logo">
-              <Avatar 
-                size={64} 
-                style={{ 
-                  backgroundColor: brand.logoColor,
-                  fontSize: '24px',
-                  fontWeight: 'bold',
-                  color: '#fff'
-                }}
-              >
-                {brand.name.charAt(0)}
-              </Avatar>
-            </div>
+      <div >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "12px",
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
+            {brand.name}
+          </Title>
+        </div>
+
+        <Divider style={{ margin: "12px 0" }} />
+
+        <div style={{ marginBottom: "8px" }}>
+          <Space>
+            <GlobalOutlined />
+            <Text ellipsis style={{ maxWidth: "180px" }}>
+              {brand.website}
+            </Text>
+          </Space>
+        </div>
+
+        <div style={{ marginBottom: "8px" }}>
+          <Space>
+            <EnvironmentOutlined />
+            <Text>
+              {brand.city}
+              {brand.state ? `, ${brand.state}` : ""}
+              {brand.countryData ? `, ${brand.countryData.name}` : ""}
+            </Text>
+          </Space>
+        </div>
+
+        <div style={{ marginBottom: "8px" }}>
+          <Space>
+            <PhoneOutlined />
+            <Text>
+              {brand.brandPhoneNumber?.code} {brand.brandPhoneNumber?.number}
+            </Text>
+          </Space>
+        </div>
+
+        {brand.preferences?.preferredInfluencerCountries && (
+          <div style={{ marginTop: "12px" }}>
+            <Text strong style={{ display: "block", marginBottom: "4px" }}>
+              Target Countries:
+            </Text>
+            <Space size={[0, 8]} wrap>
+              {brand.preferences.preferredInfluencerCountries.map(
+                (country, index) => (
+                  <span
+                    key={index}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <ReactCountryFlag
+                      countryCode={country.code}
+                      svg
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        marginRight: "4px",
+                        borderRadius: "2px",
+                      }}
+                    />
+                    <Text>{country.name}</Text>
+                  </span>
+                )
+              )}
+            </Space>
           </div>
-        }
-        actions={[
-          <Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"}>
-            <Button 
-              type="text" 
-              icon={isFavorite ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />} 
-              onClick={() => onFavoriteToggle(brand.id)}
-            />
-          </Tooltip>,
-          <Button 
-            type="primary" 
-            className="connect-btn bg-primary"
-            icon={<ArrowRightOutlined />}
-          >
-            Connect
-          </Button>,
-          <Dropdown overlay={menu} trigger={['click']}>
-            <Button type="text" icon={<MoreOutlined />} />
-          </Dropdown>
-        ]}
-      >
-        {/* <div className="brand-rating">
-          {brand.rating && (
-            <span className="rating">
-              <StarFilled style={{ color: '#faad14' }} /> {brand.rating}
-            </span>
-          )}
-          {brand.partnership && (
-            <Tag color="blue" className="partnership-tag">Partnership Available</Tag>
-          )}
-        </div> */}
-        
-        <Card.Meta
-          title={<span className="brand-name">{brand.name}</span>}
-          description={
-            <>
-              <Paragraph ellipsis={{ rows: 2 }} className="brand-description">
-                {brand.description}
-              </Paragraph>
-              
-              <div className="brand-industries">
-                {brand.industry.map(ind => (
-                  <Tag key={ind} className="industry-tag">{ind}</Tag>
-                ))}
-              </div>
-              
-              <Divider className="brand-divider" />
-              
-              <div className="brand-meta">
-                <div className="meta-item">
-                  <GlobalOutlined className="meta-icon" />
-                  <Text ellipsis className="meta-text">
-                    {brand.website}
-                  </Text>
-                </div>
-                
-                <div className="meta-item">
-                  <EnvironmentOutlined className="meta-icon" />
-                  <Text ellipsis className="meta-text">
-                    {brand.city}{brand.state ? `, ${brand.state}` : ''}, {brand.country}
-                  </Text>
-                </div>
-              </div>
-            </>
-          }
-        />
-      </Card>
-    </Badge.Ribbon>
+        )}
+      </div>
+    </Card>
   );
 };
 

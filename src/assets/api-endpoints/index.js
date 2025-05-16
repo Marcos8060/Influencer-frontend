@@ -24,6 +24,8 @@ export const API_URL = {
   EDIT_INFLUENCER_PREFENCES: `${baseUrl}/influencers/preferences/update/`,
   EDIT_INFLUENCER_ONBOARDING: `${baseUrl}/influencers/update/`,
   EDIT_PROFILE_PHOTO: `${baseUrl}/medias/upload/`,
+  SEARCH_BRANDS: `${baseUrl}/brands/search/`,
+  FETCH_BRANDS: `${baseUrl}/brands/`,
   FETCH_INFLUENCERS_IN_BUCKET: `${baseUrl}/search/bucketList/list/influencers/`,
 
   /***************** BUCKET LIST APIS **********************/
@@ -90,6 +92,8 @@ export const APP_API_URL = {
   EDIT_INFLUENCER_PREFERENCES: "/api/influencer/profile/edit-influencer-preferences",
   EDIT_INFLUENCER_ONBOARDING: "/api/influencer/profile/edit-influencer-onboarding",
   EDIT_PROFILE_PHOTO: "/api/influencer/profile/upload-photo",
+  SEARCH_BRANDS: "/api/influencer/search-brands",
+  FETCH_BRANDS: "/api/influencer/fetch-brands",
   FETCH_INFLUENCERS_IN_BUCKET: '/api/bucketList/fetch-influencers-in-bucket',
 
 
