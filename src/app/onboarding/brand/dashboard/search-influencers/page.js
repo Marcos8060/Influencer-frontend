@@ -12,7 +12,6 @@ import {
   Typography,
   Divider,
   Avatar,
-  List,
   Pagination,
   Empty,
   Slider,
@@ -21,26 +20,24 @@ import {
   Rate,
   Badge,
   Tooltip,
-  DatePicker,
   Skeleton,
+  Collapse
 } from "antd";
 import {
   SearchOutlined,
   FilterOutlined,
-  StarFilled,
   InstagramOutlined,
   TwitterOutlined,
   FacebookOutlined,
   TikTokOutlined,
-  GlobalOutlined,
   EnvironmentOutlined,
   MailOutlined,
   PhoneOutlined,
   WomanOutlined,
   ManOutlined,
-  CheckCircleOutlined,
+  DownOutlined,
+  UpOutlined
 } from "@ant-design/icons";
-import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { useAuth } from "@/assets/hooks/use-auth";
@@ -48,8 +45,7 @@ import toast from "react-hot-toast";
 import { getAllInfluencers } from "@/redux/features/influencer/filter";
 
 const { Title, Text, Paragraph } = Typography;
-const { Option } = Select;
-const { RangePicker } = DatePicker;
+const { Panel } = Collapse;
 
 const SearchInfluencers = () => {
   const [searchText, setSearchText] = useState("");
@@ -62,6 +58,7 @@ const SearchInfluencers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pageSize = 12;
@@ -102,6 +99,9 @@ const SearchInfluencers = () => {
     "Women's Interests",
   ];
 
+  // Show only first 5 categories initially
+  const visibleCategories = showAllCategories ? categories : categories.slice(0, 5);
+
   const genders = ["Male", "Female", "Non-binary"];
   const countries = Array.from(new Set(influencers.map((i) => i.country)));
 
@@ -127,7 +127,6 @@ const SearchInfluencers = () => {
   const filteredInfluencers = influencers.filter((influencer) => {
     const matchesSearch =
       influencer.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
-      // influencer.bio.toLowerCase().includes(searchText.toLowerCase()) ||
       influencer.contentCategories?.some((cat) =>
         cat.toLowerCase().includes(searchText.toLowerCase())
       ) ||
@@ -235,19 +234,31 @@ const SearchInfluencers = () => {
             }
             style={{ marginBottom: "24px" }}
           >
-            <div className="filter-section" style={{ marginBottom: "24px" }}>
-              <Title level={5} style={{ marginBottom: "12px" }}>
+            {/* Categories Section with Collapse */}
+            <div className="filter-section" style={{ marginBottom: "20px" }}>
+              <Title level={5} style={{ marginBottom: "8px" }}>
                 Categories
               </Title>
               <Checkbox.Group
-                options={categories}
+                options={visibleCategories}
                 value={selectedCategories}
                 onChange={setSelectedCategories}
                 style={{ display: "flex", flexDirection: "column", gap: "8px" }}
               />
+              {categories.length > 5 && (
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  style={{ paddingLeft: 0, marginTop: "8px" }}
+                  icon={showAllCategories ? <UpOutlined /> : <DownOutlined />}
+                >
+                  {showAllCategories ? "Show less" : "Show more"}
+                </Button>
+              )}
             </div>
 
-            <div className="filter-section" style={{ marginBottom: "24px" }}>
+            <div className="filter-section" style={{ marginBottom: "20px" }}>
               <Title level={5} style={{ marginBottom: "12px" }}>
                 Gender
               </Title>
