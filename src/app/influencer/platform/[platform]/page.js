@@ -13,8 +13,6 @@ import {
   Skeleton,
   Badge,
   Tooltip,
-  Row,
-  Col,
   List,
   Steps,
 } from "antd";
@@ -24,19 +22,18 @@ import {
   TikTokOutlined,
   TwitterOutlined,
   StarOutlined,
-  FireOutlined,
   SearchOutlined,
   FilterOutlined,
   MailOutlined,
   LinkOutlined,
-  CheckCircleOutlined,
   TeamOutlined,
-  DashboardOutlined,
+  CheckOutlined,
   RocketOutlined,
-  DollarOutlined,
+  BulbOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import Head from "next/head";
+import Footer from "@/app/Components/Footer";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -251,12 +248,13 @@ export default function PlatformPage({ params }) {
       <Head>
         <title>
           {influencers.length}+ Best {formattedPlatformName} Influencers in{" "}
-          {cityName}, {countryName} in {currentYear}
+          {countryName} in {currentYear}
         </title>
         <meta
           name="description"
-          content={`Work with ${influencers.length} top ${formattedPlatformName} influencers in ${cityName}, ${countryName}. Use Grace Belgravia to run campaigns and get high-quality content that boosts your brand.`}
+          content={`Browse ${influencers.length} of the best ${formattedPlatformName} influencers in ${countryName}. Run influencer campaigns with Grace Belgravia and grow your brand using UGC and social media reach.`}
         />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -276,46 +274,42 @@ export default function PlatformPage({ params }) {
           </div>
           <Title
             level={1}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-center"
           >
-            Find {formattedPlatformName} Creators in{" "}
-            <span
-              style={{
-                background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              {cityName}, {countryName}
-            </span>
+            Connect with Top{" "}
+            <span className="text-primary font-bold">
+              {formattedPlatformName}
+            </span>{" "}
+            Influencers in{" "}
+            <span className="text-primary font-bold">{countryName}</span>
           </Title>
-          <Text className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Who know how to deliver real results for your brand
-          </Text>
         </div>
-
         {/* Top Content Section */}
-        <div className="mb-16 bg-white p-8 rounded-xl shadow-sm border border-input">
-          <div className="max-w-4xl mx-auto text-center">
-            <Title level={2} className="!mb-6 !text-gray-900">
-              Looking to reach your audience on {formattedPlatformName} in{" "}
-              {cityName}, {countryName}?
-            </Title>
-            <Text className="text-lg text-gray-600 mb-8 block">
-              Grace Belgravia is your one-stop shop to find influencers who live
-              and breathe content – and know how to get real results. Whether
-              it's fashion, beauty, wellness, tech or something niche, we've got
-              creators ready to collaborate on campaigns that fit your brand.
-            </Text>
-            <Text className="text-lg text-gray-600 block">
-              You can create gifted, paid or affiliate campaigns and use our
-              filters to find creators based on their follower count, content
-              style, engagement levels and more. Run everything from your laptop
-              or our mobile app, and start turning scrolls into sales with UGC
-              that actually performs.
-            </Text>
-          </div>
-        </div>
+
+        <Text className="text-lg text-gray-600 mb-6 block text-center max-w-3xl mx-auto">
+          Want to make an impact on{" "}
+          <span className="text-primary font-bold">
+            {formattedPlatformName}
+          </span>{" "}
+          in <span className="text-primary font-bold">{countryName}</span>?
+          We've got just the creators to help. Grace Belgravia gives you instant
+          access to some of the best{" "}
+          <span className="text-primary font-bold">
+            {formattedPlatformName}
+          </span>{" "}
+          influencers who are already engaging your ideal audience. Whether
+          you're running paid ads, looking for UGC, or simply want to grow your
+          following, our platform makes it quick and easy to start meaningful
+          collaborations.
+        </Text>
+        {/* <Text className="text-lg text-gray-600 block text-center max-w-3xl mx-auto">
+          You can launch paid, gifted or affiliate campaigns, choose influencers
+          based on their niche, performance, audience insights, and manage
+          everything on the go with our Apple and Android apps. This is
+          influencer marketing made simple – with the perfect{" "}
+          {formattedPlatformName} stars in {countryName} ready to help your
+          brand shine.
+        </Text> */}
 
         {/* Filters Section */}
         <div className="mb-8 bg-white p-4 rounded-xl shadow-sm border border-input">
@@ -502,96 +496,67 @@ export default function PlatformPage({ params }) {
 
         {/* How It Works Section */}
         <Divider className="my-16" />
-        <div className="mb-16">
-          <Title level={2} className="text-center mb-12">
-            <RocketOutlined className="mr-2" style={{ color: platformColor }} />
-            How It Works
-          </Title>
+        <div className="grid md:grid-cols-2 gap-12 mb-16">
+          <div className="mb-16">
+            <Title level={2} className="text-center mb-12">
+              <RocketOutlined
+                className="mr-2"
+                style={{ color: platformColor }}
+              />
+              How It Works
+            </Title>
 
-          <Steps direction="vertical" current={1} className="max-w-3xl mx-auto">
-            <Step
-              title="Find the right influencers"
-              description={
-                <Text type="secondary">
-                  Filter {formattedPlatformName} influencers in {cityName},{" "}
-                  {countryName} by audience type, content quality and follower
-                  data
-                </Text>
-              }
-              icon={<SearchOutlined style={{ color: platformColor }} />}
+            <List
+              itemLayout="horizontal"
+              dataSource={[
+                `Discover ${platformName} influencers in ${countryName} by audience, location, engagement and more`,
+                "Save favourites into buckets for faster campaign planning",
+                "Build campaigns in minutes - choose gifted, paid, affiliate or a combo",
+                "Invite influencers or let them apply to your campaign",
+                "Approve collaborators and track content delivery",
+                `See full performance reporting pulled from ${platformName}`,
+              ]}
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<CheckOutlined style={{ color: primaryColor }} />}
+                    description={item}
+                  />
+                </List.Item>
+              )}
             />
-            <Step
-              title="Organize your selections"
-              description={
-                <Text type="secondary">
-                  Organize influencers into buckets to streamline campaign
-                  invites
-                </Text>
-              }
-              icon={<DashboardOutlined style={{ color: platformColor }} />}
+          </div>
+          <div>
+            <Title level={2} className="flex items-center mb-6">
+              <BulbOutlined className="mr-3" style={{ color: primaryColor }} />
+              Why Choose Grace Belgravia
+            </Title>
+
+            <List
+              itemLayout="horizontal"
+              dataSource={[
+                `Find creators who are already performing on ${platformName} in ${countryName}`,
+                `Launch cost-effective campaigns with clear ROE`,
+                "Collect reusable UGC for social media, ads, emails and more",
+                "Full content rights with built-in contracts",
+                "Your brand is discoverable to influencers via our Discovery section",
+                `Get notified when new ${platformName} creators join in ${countryName}`,
+                "Run and monitor everything with our mobile apps",
+              ]}
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<CheckOutlined style={{ color: primaryColor }} />}
+                    description={item}
+                  />
+                </List.Item>
+              )}
             />
-            <Step
-              title="Set up your campaign"
-              description={
-                <Text type="secondary">
-                  Set up a campaign in minutes - include your brief, goals and
-                  offer type
-                </Text>
-              }
-              icon={<CheckCircleOutlined style={{ color: platformColor }} />}
-            />
-            <Step
-              title="Connect with creators"
-              description={
-                <Text type="secondary">
-                  Invite influencers directly or accept applications
-                </Text>
-              }
-              icon={<TeamOutlined style={{ color: platformColor }} />}
-            />
-            <Step
-              title="Launch and monitor"
-              description={
-                <Text type="secondary">
-                  Approve who you want to work with and monitor progress
-                </Text>
-              }
-              icon={<DollarOutlined style={{ color: platformColor }} />}
-            />
-          </Steps>
+          </div>
         </div>
 
         {/* CTA Section */}
-        <div
-          className="rounded-2xl p-8 md:p-12 text-center text-white"
-          style={{
-            background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
-          }}
-        >
-          <Title level={2} className="!text-white !mb-4">
-            Ready to Boost Your {formattedPlatformName} Presence?
-          </Title>
-          <Text className="text-blue-100 block mb-8 max-w-2xl mx-auto">
-            Start collaborating with top {formattedPlatformName} creators in{" "}
-            {cityName}, {countryName} today
-          </Text>
-          <Space>
-            <Button
-              type="primary"
-              size="large"
-              className="!bg-white !font-semibold"
-              style={{ color: primaryColor }}
-            >
-              Launch Campaign
-            </Button>
-            <Button
-              size="large"
-              className="!bg-transparent !border-white !text-white hover:!bg-white hover:!bg-opacity-10"
-            >
-              Book Strategy Call
-            </Button>
-          </Space>
-        </div>
+        <Footer />
       </div>
     </>
   );
