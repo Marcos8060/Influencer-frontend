@@ -36,7 +36,6 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 import Head from "next/head";
-import Footer from "@/app/Components/Footer";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -269,22 +268,37 @@ export default function CountryPage({ params }) {
               {formattedCountryName}
             </Text>
           </div>
-          <p className="text-2xl md:text-2xl lg:text-4xl mb-4 font-normal">
-            Explore <span className="font-bold text-primary">{influencers?.length}</span> of the best influencers in{" "}
-            <span className="font-bold text-primary">{formattedCountryName}</span> and run powerful campaigns with Grace
-            Belgravia. Get UGC, grow your reach and connect with the right
-            audiences today.
-          </p>
-          <Text className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <Title
+            level={1}
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+          >
+            Find the Best Influencers in{" "}
+            <span
+              style={{
+                background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {formattedCountryName}
+            </span>{" "}
+            for Your Campaigns
+          </Title>
+          <p className=" text-gray-600 max-w-2xl mx-auto">
             Looking to grow your brand in {formattedCountryName}? Grace
             Belgravia gives you instant access to some of the best influencers
             in the country. Whether you're a small business, an e-commerce brand
             or a growing startup, you'll find creators here who match your vibe
             and help you get real results.
-          </Text>
+          </p>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            From paid partnerships to gifted and affiliate campaigns, it’s all
+            quick and easy to set up. You can filter by audience type, social
+            platform, influencer location and more. Use our mobile apps to keep
+            things moving wherever you are. If you’re serious about scaling in
+            <span className="text-primary">{formattedCountryName}</span>, this is where it starts.
+          </p>
         </div>
-
-        {/* Country Overview */}
 
         {/* Filters Section */}
         <div className="mb-8 bg-white p-4 rounded-xl shadow-sm border border-input">
@@ -538,7 +552,35 @@ export default function CountryPage({ params }) {
           </div>
         </div>
 
-        <Footer />
+        {/* CTA Section */}
+        <div
+          className="rounded-2xl p-8 md:p-12 text-center text-white"
+          style={gradientStyle}
+        >
+          <Title level={2} className="!text-white !mb-4">
+            Need Country-Specific Campaigns?
+          </Title>
+          <Text className="text-blue-100 block mb-8 max-w-2xl mx-auto">
+            Our regional experts can help you build effective influencer
+            campaigns tailored to {formattedCountryName}'s market
+          </Text>
+          <Space>
+            <Button
+              type="primary"
+              size="large"
+              className="!bg-white !font-semibold"
+              style={{ color: primaryColor }}
+            >
+              Get Country Report
+            </Button>
+            <Button
+              size="large"
+              className="!bg-transparent !border-white !text-white hover:!bg-white hover:!bg-opacity-10"
+            >
+              Speak to Regional Expert
+            </Button>
+          </Space>
+        </div>
       </div>
     </>
   );
