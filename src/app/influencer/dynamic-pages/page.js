@@ -94,19 +94,6 @@ export default function InfluencerDynamicPages() {
     { value: "5M+", label: "Audience Reach" },
   ];
 
-  const getIcon = (platformName) => {
-    switch (platformName.toLowerCase()) {
-      case "instagram":
-        return <InstagramOutlined />;
-      case "youtube":
-        return <YoutubeOutlined />;
-      case "tiktok":
-        return <TikTokOutlined />;
-      default:
-        return <GlobalOutlined />;
-    }
-  };
-
   return (
     <>
       <Head>
