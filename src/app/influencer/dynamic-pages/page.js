@@ -29,6 +29,7 @@ import {
 } from "@ant-design/icons";
 import Head from "next/head";
 import Link from "next/link";
+import Footer from "@/app/Components/Footer";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -156,7 +157,6 @@ export default function InfluencerDynamicPages() {
               Discover authentic influencers who align with your brand values
               across 100+ cities and 50+ countries
             </p>
-
             <div className="max-w-2xl mx-auto bg-white p-1 rounded-xl shadow-lg">
               <Space.Compact className="w-full">
                 <Select
@@ -186,17 +186,27 @@ export default function InfluencerDynamicPages() {
                       : "Search platforms..."
                   }
                   onChange={(e) => setSearchValue(e.target.value)}
+                  onPressEnter={() => {
+                    const searchPath = `/${searchType}/${searchValue
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`;
+                    window.location.href = searchPath;
+                  }}
                 />
-                <Link href={`/${searchType}/${searchValue || "all"}`} passHref>
-                  <Button
-                    type="primary"
-                    size="large"
-                    className="!h-14 !px-8 !flex items-center !rounded-r-xl bg-primary"
-                    icon={<SearchOutlined />}
-                  >
-                    Search
-                  </Button>
-                </Link>
+                <Button
+                  type="primary"
+                  size="large"
+                  className="!h-14 !px-8 !flex items-center !rounded-r-xl bg-primary"
+                  icon={<SearchOutlined />}
+                  onClick={() => {
+                    const searchPath = `/influencer/${searchType}/${searchValue
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`;
+                    window.location.href = searchPath;
+                  }}
+                >
+                  Search
+                </Button>
               </Space.Compact>
             </div>
           </div>
@@ -412,38 +422,7 @@ export default function InfluencerDynamicPages() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-gradient-to-r from-primary to-secondary rounded-3xl p-12 text-center relative overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{ backgroundImage: "url('/images/pattern.svg')" }}
-          ></div>
-          <div className="relative max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Ready to launch your campaign?
-            </h2>
-            <p className="text-blue-100 mb-8 text-lg">
-              Join thousands of brands finding perfect influencers on Grace
-              Belgravia
-            </p>
-            <Space>
-              <Button
-                type="primary"
-                size="large"
-                className="!h-12 !px-8 !bg-white !text-blue-600 hover:!bg-gray-100 !font-semibold !border-0 !rounded-xl"
-                icon={<CheckOutlined />}
-              >
-                Get Started
-              </Button>
-              <Button
-                size="large"
-                className="!h-12 !px-8 !bg-transparent hover:!bg-white hover:!bg-opacity-10 !text-white !font-semibold !border-white !border-2 !rounded-xl"
-              >
-                Book a Demo
-              </Button>
-            </Space>
-          </div>
-        </section>
+        <Footer />
       </div>
     </>
   );
