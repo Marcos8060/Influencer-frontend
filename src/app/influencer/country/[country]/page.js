@@ -285,19 +285,19 @@ export default function CountryPage({ params }) {
             for Your Campaigns
           </Title>
           <p className=" text-gray-600 max-w-2xl mx-auto">
-            Looking to grow your brand in {formattedCountryName}? Grace
+            Looking to grow your brand in <span className="text-primary font-bold">{formattedCountryName}</span>? Grace
             Belgravia gives you instant access to some of the best influencers
             in the country. Whether you're a small business, an e-commerce brand
             or a growing startup, you'll find creators here who match your vibe
             and help you get real results.
           </p>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          {/* <p className="text-gray-600 max-w-2xl mx-auto">
             From paid partnerships to gifted and affiliate campaigns, it’s all
             quick and easy to set up. You can filter by audience type, social
             platform, influencer location and more. Use our mobile apps to keep
             things moving wherever you are. If you’re serious about scaling in
-            <span className="text-primary">{formattedCountryName}</span>, this is where it starts.
-          </p>
+            <span className="text-primary font-bold">{formattedCountryName}</span>, this is where it starts.
+          </p> */}
         </div>
 
         {/* Filters Section */}

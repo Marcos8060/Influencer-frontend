@@ -233,23 +233,25 @@ export default function CityPage({ params }) {
               Influencers in {formattedCityName}
             </Text>
           </div>
-          <p
-            className="text-2xl md:text-2xl lg:text-4xl mb-4 font-normal"
-          >
-            Explore <span className="text-primary font-bold">{influencers?.length}</span> of the best influencers in{" "}
-            <span
-              className="font-bold"
-              style={{
-                background: `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              {formattedCityName}
-            </span>{" "}
-            and run powerful campaigns with Grace Belgravia. Get UGC, grow your
-            reach and connect with the right audiences today
-          </p>
+          <div className="space-y-2">
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Want to get your brand buzzing in{" "}
+              <span className="text-primary font-bold">{formattedCityName}</span>? We got
+              you covered. Grace Belgravia helps you connect with talented local
+              influencers who know how to create content that grabs attention
+              and gets results. Whether you're after beautiful UGC for your
+              social channels or want to build awareness in a specific area, our
+              platform makes it easy and fun.
+            </p>
+            {/* <p className="text-gray-600 max-w-2xl mx-auto">
+              Campaigns can be gifted, paid or affiliate - you choose. You will
+              be able to browse influencers, build campaigns, and manage
+              everything on the go with our iOS and Android apps. And if{" "}
+              <span className="text-primary font-bold">{formattedCityName}</span> is your
+              target market, you will find the perfect creators to bring your
+              campaign to life right here. Let us get started!
+            </p> */}
+          </div>
         </div>
 
         {/* Filters Section */}
