@@ -190,7 +190,8 @@ export default function PlatformPage({ params }) {
     };
 
     fetchData();
-  }, [platformName, formattedPlatformName, cityName, countryName]);
+    document.title = `${influencers?.length} Best Influencers on ${platformName} in ${countryName} ${currentYear}`;
+  }, [platformName, formattedPlatformName, cityName, countryName,influencers]);
 
   const getPlatformIcon = () => {
     switch (platformName) {
@@ -252,7 +253,7 @@ export default function PlatformPage({ params }) {
         </title>
         <meta
           name="description"
-          content={`Browse ${influencers.length} of the best ${formattedPlatformName} influencers in ${countryName}. Run influencer campaigns with Grace Belgravia and grow your brand using UGC and social media reach.`}
+          content={`Browse ${influencers?.length} of the best ${formattedPlatformName} influencers in ${countryName}. Run influencer campaigns with Grace Belgravia and grow your brand using UGC and social media reach.`}
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
