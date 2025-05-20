@@ -32,13 +32,13 @@ import {
   CheckCircleFilled,
 } from "@ant-design/icons";
 import SocialMediaTabs from "@/app/Components/Influencer/profile/socialMediaTabs";
-import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
 import { getInfluencerProfile } from "@/redux/features/socials";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
 import { updateInfluencerProfile } from "@/redux/services/socials";
+import { countryOptions } from "@/assets/utils/countryData";
 import moment from "moment";
 // PrimeReact Components
 import { Calendar } from "primereact/calendar";
@@ -46,7 +46,6 @@ import { InputMask } from "primereact/inputmask";
 import { Chips } from "primereact/chips";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { AutoComplete } from "primereact/autocomplete";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import toast from "react-hot-toast";
@@ -253,17 +252,6 @@ const InfluencerProfilePage = () => {
       setSubmitting(false);
     }
   };
-
-  const countryOptions = [
-    { label: "+1 (US)", value: "+1" },
-    { label: "+44 (UK)", value: "+44" },
-    { label: "+254 (KE)", value: "+254" },
-    { label: "+61 (AU)", value: "+61" },
-    { label: "+33 (FR)", value: "+33" },
-    { label: "+49 (DE)", value: "+49" },
-    { label: "+81 (JP)", value: "+81" },
-    { label: "+86 (CN)", value: "+86" },
-  ];
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -568,7 +556,7 @@ const InfluencerProfilePage = () => {
                         </div>
                       </div>
                       {/* Add debug display to see current values */}
-                      <div className="text-xs text-gray-400 mt-1">
+                      <div className="text-xs text-primary font-semibold mt-1">
                         Current: {countryCode} {phoneNumber}
                       </div>
                     </Form.Item>
