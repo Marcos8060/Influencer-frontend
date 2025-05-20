@@ -141,9 +141,7 @@ const InfluencerProfile = () => {
         setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
       }
-    } catch (error) {
-      toast.error("Error approving application");
-    } finally {
+    } catch (error) {} finally {
       setLoadApproval(false);
     }
   };
@@ -175,9 +173,7 @@ const InfluencerProfile = () => {
           })
         );
       }
-    } catch (error) {
-      toast.error("Error rejecting application");
-    } finally {
+    } catch (error) {} finally {
       setLoadRejection(false);
     }
   };
