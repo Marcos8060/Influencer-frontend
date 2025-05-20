@@ -125,6 +125,7 @@ const InfluencerProfile = () => {
         toast.error(res.response.data.errorMessage[0]);
       } else {
         toast.success("Approval Successful");
+        setShowAnimation(true);
         // Update button states
         setButtonState({
           approveDisabled: true,
@@ -138,12 +139,9 @@ const InfluencerProfile = () => {
             status: "approved",
           })
         );
-        setShowAnimation(true);
         setTimeout(() => setShowAnimation(false), 6000);
       }
-    } catch (error) {
-      toast.error("Error approving application");
-    } finally {
+    } catch (error) {} finally {
       setLoadApproval(false);
     }
   };
@@ -175,9 +173,7 @@ const InfluencerProfile = () => {
           })
         );
       }
-    } catch (error) {
-      toast.error("Error rejecting application");
-    } finally {
+    } catch (error) {} finally {
       setLoadRejection(false);
     }
   };
