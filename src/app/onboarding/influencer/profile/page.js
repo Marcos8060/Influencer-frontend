@@ -32,14 +32,23 @@ import {
   CheckCircleFilled,
 } from "@ant-design/icons";
 import SocialMediaTabs from "@/app/Components/Influencer/profile/socialMediaTabs";
-import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
 import { getInfluencerProfile } from "@/redux/features/socials";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
 import { updateInfluencerProfile } from "@/redux/services/socials";
+import { countryOptions } from "@/assets/utils/countryData";
 import moment from "moment";
+// PrimeReact Components
+import { Calendar } from "primereact/calendar";
+import { InputMask } from "primereact/inputmask";
+import { Chips } from "primereact/chips";
+import { InputText } from "primereact/inputtext";
+import { Dropdown } from "primereact/dropdown";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import toast from "react-hot-toast";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -50,6 +59,9 @@ const InfluencerProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+  const [countryCode, setCountryCode] = useState("+1");
   const [fileList, setFileList] = useState([]);
   const { posts } = useSelector((store) => store.campaign);
   const { influencerProfile } = useSelector((store) => store.socials);
@@ -57,34 +69,58 @@ const InfluencerProfilePage = () => {
   const auth = useAuth();
 
   // Create edit payload structure based on second object format
+  // Update this function in your InfluencerProfilePage component
   const createEditPayload = (profile) => {
     if (!profile) return null;
 
     // Parse phone number
     let phoneNumberObj = { number: "", code: "" };
     if (profile.phoneNumber) {
-      const phoneMatch = profile.phoneNumber.match(/^(\+\d+)?\s*(\d+.*)$/);
-      if (phoneMatch) {
+      // Handle when phoneNumber is an object from API
+      if (
+        typeof profile.phoneNumber === "object" &&
+        profile.phoneNumber.code &&
+        profile.phoneNumber.number
+      ) {
         phoneNumberObj = {
-          code: phoneMatch[1] || "+1",
-          number: phoneMatch[2] || "",
+          code: profile.phoneNumber.code,
+          number: profile.phoneNumber.number,
         };
+        setPhoneNumber(profile.phoneNumber.number);
+        setCountryCode(profile.phoneNumber.code);
+      }
+      // Handle when phoneNumber is a string like "+254(070) 285-4204"
+      else if (typeof profile.phoneNumber === "string") {
+        // Extract country code (everything before the parenthesis)
+        const codeMatch = profile.phoneNumber.match(/^(\+\d+)/);
+        const code = codeMatch ? codeMatch[1] : "+1";
+
+        // Extract the actual phone number (everything inside and after parentheses)
+        const numberMatch = profile.phoneNumber.match(/\(([^)]+)\)\s*([\d-]+)/);
+        const number = numberMatch
+          ? `(${numberMatch[1]}) ${numberMatch[2]}`
+          : profile.phoneNumber.replace(/^\+\d+\s*/, "");
+
+        phoneNumberObj = { code, number };
+        setPhoneNumber(number);
+        setCountryCode(code);
       }
     }
 
-    let dateOfBirth;
-    if (profile.dateOfBirth && moment(profile.dateOfBirth).isValid()) {
-      dateOfBirth = moment(profile.dateOfBirth);
-    } else {
-      dateOfBirth = profile.age
-        ? moment().subtract(profile.age, "years")
-        : null;
+    // Rest of the function remains the same...
+    let dob = null;
+    if (profile.dateOfBirth) {
+      // Try to parse the date using moment
+      const parsedDate = moment(profile.dateOfBirth);
+      if (parsedDate.isValid()) {
+        dob = parsedDate.toDate();
+        setDateOfBirth(dob);
+      }
+    } else if (profile.age) {
+      // Fallback to calculating from age
+      dob = moment().subtract(profile.age, "years").toDate();
+      setDateOfBirth(dob);
     }
-
-    // Format for display if needed
-    const dateOfBirthFormatted = dateOfBirth
-      ? dateOfBirth.format("YYYY-MM-DD")
-      : null;
 
     // Parse country
     let countryObj = {
@@ -149,59 +185,66 @@ const InfluencerProfilePage = () => {
     }
   };
 
+  // Update the handleSave function to correctly format the phone number for the API
   const handleSave = async () => {
+    setSubmitting(true);
+    const values = await form.validateFields();
+
+    const transformPaymentOptions = (options) => {
+      if (!options) return [];
+
+      if (options[0]?.label && options[0]?.description) {
+        return options;
+      }
+
+      if (typeof options[0] === "string") {
+        return options.map((option) => ({
+          label: option,
+          description: option,
+        }));
+      }
+
+      return [];
+    };
+
+    // Make sure phone number is properly formatted for the API
+    // The API expects: { code: "+254", number: "(070) 285-4204" }
+    const payload = {
+      ...values,
+      dateOfBirth: dateOfBirth
+        ? moment(dateOfBirth).format("YYYY-MM-DD")
+        : null,
+      phoneNumber: {
+        code: countryCode || "+1", // Make sure this is just the country code like "+254"
+        number: phoneNumber || "", // This should be in format "(070) 285-4204"
+      },
+      country: {
+        name: values.country?.name || "",
+        code: values.country?.code || "",
+        flag: values.country?.flag || "",
+      },
+      influencerPreference: {
+        ...values.influencerPreference,
+        preferredPaymentOption: transformPaymentOptions(
+          values.influencerPreference?.preferredPaymentOption
+        ),
+      },
+    };
+
     try {
-      setSubmitting(true);
-      const values = await form.validateFields();
-  
-      // Transform the payment options properly
-      const transformPaymentOptions = (options) => {
-        if (!options) return [];
-        
-        // If options are already in {label, description} format, return as-is
-        if (options[0]?.label && options[0]?.description) {
-          return options;
-        }
-        
-        // If options are strings, convert to objects
-        if (typeof options[0] === 'string') {
-          return options.map(option => ({
-            label: option,
-            description: option
-          }));
-        }
-        
-        // Fallback for any other format
-        return [];
-      };
-  
-      // Prepare the payload
-      const payload = {
-        ...values,
-        dateOfBirth: values.dateOfBirth?.format("YYYY-MM-DD"),
-        phoneNumber: {
-          code: values.phoneNumber?.code || "+1",
-          number: values.phoneNumber?.number || "",
-        },
-        country: {
-          name: values.country?.name || "",
-          code: values.country?.code || "",
-          flag: values.country?.flag || "",
-        },
-        influencerPreference: {
-          ...values.influencerPreference,
-          preferredPaymentOption: transformPaymentOptions(
-            values.influencerPreference?.preferredPaymentOption
-          )
-        }
-      };
-  
-      await updateInfluencerProfile(auth, payload);
-      message.success("Profile updated successfully!");
-      setIsEditing(false);
-      fetchInfluencerProfile();
+      console.log("Saving profile with payload:", payload);
+      const response = await updateInfluencerProfile(auth, payload);
+      console.log("UPDATE_RESPONSE ", response);
+      if (response.status === 200) {
+        toast("Profile updated successfully!");
+        setIsEditing(false);
+        // Refresh the profile data to show the updated values
+        fetchInfluencerProfile();
+      } else {
+        // toast.error(response.data.errorMessage)
+      }
     } catch (error) {
-      console.error("Error updating profile:", error)
+      console.error("Error updating profile:", error);
       message.error(
         error.response?.data?.message || "Failed to update profile"
       );
@@ -259,6 +302,56 @@ const InfluencerProfilePage = () => {
       return isImage;
     },
   };
+
+  const parsePhoneNumber = (phoneString) => {
+    if (!phoneString) return { code: "+1", number: "" };
+    
+    console.log("Parsing phone number:", phoneString);
+    
+    // Handle different formats of phone numbers from API
+    // Format 1: "+254(070) 285-4204"
+    const formatOne = phoneString.match(/^(\+\d+)\((\d+)\)\s*(.+)$/);
+    if (formatOne) {
+      const code = formatOne[1];
+      const number = `(${formatOne[2]}) ${formatOne[3]}`;
+      console.log("Format 1 parsed:", { code, number });
+      return { code, number };
+    }
+    
+    // Format 2: "+254 1234567890"
+    const formatTwo = phoneString.match(/^(\+\d+)\s+(.+)$/);
+    if (formatTwo) {
+      const code = formatTwo[1];
+      // Try to format the number if possible
+      const digits = formatTwo[2].replace(/\D/g, '');
+      let number = formatTwo[2];
+      if (digits.length === 10) {  // US format
+        number = `(${digits.substring(0, 3)}) ${digits.substring(3, 6)}-${digits.substring(6)}`;
+      }
+      console.log("Format 2 parsed:", { code, number });
+      return { code, number };
+    }
+    
+    // Default case: just a number, assume US format
+    if (phoneString.startsWith("+")) {
+      const code = phoneString.match(/^(\+\d+)/)[1] || "+1";
+      const number = phoneString.replace(code, "").trim();
+      console.log("Default format parsed:", { code, number });
+      return { code, number };
+    }
+    
+    // Just a number without code
+    return { code: "+1", number: phoneString };
+  };
+
+  useEffect(() => {
+    if (influencerProfile?.phoneNumber) {
+      const { code, number } = parsePhoneNumber(influencerProfile.phoneNumber);
+      setCountryCode(code);
+      setPhoneNumber(number);
+      console.log("Initialized phone with:", { code, number });
+    }
+  }, [influencerProfile]);
 
   if (loading && !influencerProfile) {
     return (
@@ -393,24 +486,18 @@ const InfluencerProfilePage = () => {
                   </Col>
 
                   <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Date of Birth"
-                      name="dateOfBirth"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select your date of birth",
-                        },
-                      ]}
-                    >
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        disabledDate={(current) =>
-                          current && current > moment().endOf("day")
-                        }
-                        format="YYYY-MM-DD"
-                        value={form.getFieldValue("dateOfBirth")} // Ensure this is a Moment object
-                      />
+                    <Form.Item label="Date of Birth" name="dateOfBirth">
+                      <div className="w-full">
+                        <Calendar
+                          value={dateOfBirth}
+                          onChange={(e) => setDateOfBirth(e.value)}
+                          dateFormat="yy-mm-dd"
+                          showIcon
+                          maxDate={new Date()}
+                          className="w-full border border-input text-sm rounded p-1"
+                          touchUI
+                        />
+                      </div>
                     </Form.Item>
                   </Col>
 
@@ -447,37 +534,31 @@ const InfluencerProfilePage = () => {
                   </Col>
 
                   <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Phone Number"
-                      name={["phoneNumber", "number"]}
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: "Please input your phone number",
-                      //   },
-                      //   {
-                      //     pattern: /^\d+$/,
-                      //     message:
-                      //       "Please enter digits only (no spaces or special characters)",
-                      //   },
-                      // ]}
-                    >
-                      <Input
-                        addonBefore={
-                          <Form.Item
-                            name={["phoneNumber", "code"]}
-                            noStyle
-                            initialValue="+1" // Set default value
-                          >
-                            <Select style={{ width: 120 }}>
-                              <Option value="+1">+1 (US)</Option>
-                              <Option value="+44">+44 (UK)</Option>
-                              <Option value="+254">+254 (KE)</Option>
-                              {/* Add more country codes as needed */}
-                            </Select>
-                          </Form.Item>
-                        }
-                      />
+                    <Form.Item label="Phone Number" required>
+                      <div className="flex">
+                        <div className="w-1/3 mr-2">
+                          <Dropdown
+                            value={countryCode}
+                            options={countryOptions}
+                            onChange={(e) => setCountryCode(e.value)}
+                            placeholder="Code"
+                            className="w-full border border-input text-xs"
+                          />
+                        </div>
+                        <div className="w-2/3">
+                          <InputMask
+                            mask="(999) 999-9999"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder="(555) 555-5555"
+                            className="w-full p-2 border border-input rounded"
+                          />
+                        </div>
+                      </div>
+                      {/* Add debug display to see current values */}
+                      <div className="text-xs text-primary font-semibold mt-1">
+                        Current: {countryCode} {phoneNumber}
+                      </div>
                     </Form.Item>
                   </Col>
 

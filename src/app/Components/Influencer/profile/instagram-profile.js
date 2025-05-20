@@ -122,9 +122,9 @@ const InstagramProfile = () => {
 
   // Group posts by type
   const categorizedPosts = {
-    FEED: posts.filter((post) => post.mediaProductType === "FEED"),
-    REELS: posts.filter((post) => post.mediaProductType === "REELS"),
-    CAROUSEL: posts.filter((post) => post.mediaType === "CAROUSEL_ALBUM"),
+    FEED: Array.isArray(posts) && posts.filter((post) => post.mediaProductType === "FEED"),
+    REELS: Array.isArray(posts) && posts.filter((post) => post.mediaProductType === "REELS"),
+    CAROUSEL: Array.isArray(posts) && posts.filter((post) => post.mediaType === "CAROUSEL_ALBUM"),
   };
 
   const handleInstagramLogin = async () => {
@@ -293,7 +293,7 @@ const InstagramProfile = () => {
 
           {/* Posts Grid */}
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 gap-2 md:gap-4 px-4 justify-center">
-            {categorizedPosts[activeTab]?.map((post, index) => (
+            {Array.isArray(categorizedPosts[activeTab]) && categorizedPosts[activeTab]?.map((post, index) => (
               <div
                 key={post.id}
                 className="relative w-[100px] h-[100px] md:w-[150px] md:h-[150px] cursor-pointer group rounded-lg overflow-hidden"
