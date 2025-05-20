@@ -397,7 +397,7 @@ export default function InfluencerHomePage() {
                     >
                       <Card
                         hoverable
-                        className="!rounded-2xl !border !border-gray-200 !shadow-sm transition-all h-full"
+                        className="!rounded-2xl !border !border-input !shadow-sm transition-all h-full"
                         cover={
                           <div className="h-48 relative">
                             <img
@@ -448,7 +448,7 @@ export default function InfluencerHomePage() {
                       href={`/influencer/country/${country.name.toLowerCase()}`}
                       key={country.name}
                     >
-                      <div className="border border-gray-200 rounded-xl p-6 text-center hover:shadow-md transition-all h-full flex flex-col items-center bg-white">
+                      <div className="border border-input rounded-xl p-6 text-center hover:shadow-md transition-all h-full flex flex-col items-center bg-white">
                         <div className="text-3xl mb-3">{country.flag}</div>
                         <Title level={5} className="!mb-1">
                           {country.name}
@@ -486,7 +486,7 @@ export default function InfluencerHomePage() {
                       href={`/influencer/platform/${platform.name.toLowerCase()}`}
                       key={platform.name}
                     >
-                      <div className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all h-full flex flex-col items-center text-center bg-white">
+                      <div className="border border-input rounded-xl p-6 hover:shadow-md transition-all h-full flex flex-col items-center text-center bg-white">
                         <div
                           className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
                           style={{
@@ -525,7 +525,7 @@ export default function InfluencerHomePage() {
                       href={`/influencer/category/${category.name.toLowerCase()}`}
                       key={category.name}
                     >
-                      <div className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all h-full flex flex-col items-center text-center bg-white">
+                      <div className="border border-input rounded-xl p-6 hover:shadow-md transition-all h-full flex flex-col items-center text-center bg-white">
                         <div className="text-3xl mb-3">{category.icon}</div>
                         <Title level={5} className="!mb-1">
                           {category.name}
@@ -605,36 +605,6 @@ export default function InfluencerHomePage() {
               </Text>
             </Card>
           </div>
-        </div>
-
-        {/* CTA Section */}
-        <div
-          className="rounded-2xl p-8 md:p-12 text-center text-white"
-          style={gradientStyle}
-        >
-          <Title level={2} className="!text-white !mb-4">
-            Ready to Find Your Perfect Influencers?
-          </Title>
-          <Text className="text-blue-100 block mb-8 max-w-2xl mx-auto">
-            Join thousands of brands who trust Grace Belgravia for their
-            influencer marketing needs
-          </Text>
-          <Space>
-            <Button
-              type="primary"
-              size="large"
-              className="!bg-white !font-semibold"
-              style={{ color: primaryColor }}
-            >
-              Get Started
-            </Button>
-            <Button
-              size="large"
-              className="!bg-transparent !border-white !text-white hover:!bg-white hover:!bg-opacity-10"
-            >
-              Schedule Demo
-            </Button>
-          </Space>
         </div>
       </div>
 
