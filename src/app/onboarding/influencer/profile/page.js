@@ -305,9 +305,9 @@ const InfluencerProfilePage = () => {
 
   const parsePhoneNumber = (phoneString) => {
     if (!phoneString) return { code: "+1", number: "" };
-    
+
     console.log("Parsing phone number:", phoneString);
-    
+
     // Handle different formats of phone numbers from API
     // Format 1: "+254(070) 285-4204"
     const formatOne = phoneString.match(/^(\+\d+)\((\d+)\)\s*(.+)$/);
@@ -317,21 +317,25 @@ const InfluencerProfilePage = () => {
       console.log("Format 1 parsed:", { code, number });
       return { code, number };
     }
-    
+
     // Format 2: "+254 1234567890"
     const formatTwo = phoneString.match(/^(\+\d+)\s+(.+)$/);
     if (formatTwo) {
       const code = formatTwo[1];
       // Try to format the number if possible
-      const digits = formatTwo[2].replace(/\D/g, '');
+      const digits = formatTwo[2].replace(/\D/g, "");
       let number = formatTwo[2];
-      if (digits.length === 10) {  // US format
-        number = `(${digits.substring(0, 3)}) ${digits.substring(3, 6)}-${digits.substring(6)}`;
+      if (digits.length === 10) {
+        // US format
+        number = `(${digits.substring(0, 3)}) ${digits.substring(
+          3,
+          6
+        )}-${digits.substring(6)}`;
       }
       console.log("Format 2 parsed:", { code, number });
       return { code, number };
     }
-    
+
     // Default case: just a number, assume US format
     if (phoneString.startsWith("+")) {
       const code = phoneString.match(/^(\+\d+)/)[1] || "+1";
@@ -339,7 +343,7 @@ const InfluencerProfilePage = () => {
       console.log("Default format parsed:", { code, number });
       return { code, number };
     }
-    
+
     // Just a number without code
     return { code: "+1", number: phoneString };
   };
@@ -764,7 +768,7 @@ const InfluencerProfilePage = () => {
                         "preferredLeadTimeForProjectDays",
                       ]}
                     >
-                      <Input type="number" />
+                      <Input type="number" min={0} />
                     </Form.Item>
                   </Col>
 
