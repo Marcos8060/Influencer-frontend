@@ -903,7 +903,7 @@ const InfluencerProfilePage = () => {
                       <div className="flex items-center">
                         <Avatar
                           size={64}
-                          src={posts[0]?.profilePictureUrl}
+                          src={influencerProfile?.instagram?.profilePictureUrl}
                           className="mr-4"
                         />
                         <div>
@@ -948,12 +948,12 @@ const InfluencerProfilePage = () => {
                       <div className="flex items-center">
                         <Avatar
                           size={64}
-                          src={influencerProfile.tiktokAvatarUrl}
+                          src={influencerProfile.tiktok.avatarUrl}
                           className="mr-4"
                         />
                         <div>
                           <Text strong>
-                            @{influencerProfile.tiktokUsername}
+                            @{influencerProfile.tiktok.username}
                           </Text>
                           <div className="flex items-center">
                             {influencerProfile.isTiktokConnected ? (
@@ -969,17 +969,17 @@ const InfluencerProfilePage = () => {
                       <div className="grid grid-cols-3 gap-2">
                         <Statistic
                           title="Followers"
-                          value={influencerProfile.tiktokFollowerCount}
+                          value={influencerProfile.tiktok?.followerCount}
                           className="text-center"
                         />
                         <Statistic
                           title="Videos"
-                          value={1}
+                          value={influencerProfile.tiktok?.videoCount}
                           className="text-center"
                         />
                         <Statistic
                           title="Likes"
-                          value={3}
+                          value={influencerProfile.tiktok?.likesCount}
                           className="text-center"
                         />
                       </div>
