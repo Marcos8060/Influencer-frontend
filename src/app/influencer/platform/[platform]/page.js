@@ -62,9 +62,7 @@ export default function PlatformPage({ params }) {
   const platformColor =
     {
       instagram: "#3680A1",
-      youtube: "#FF0000",
-      tiktok: "#000000",
-      twitter: "#1DA1F2",
+      
     }[platformName] || primaryColor;
 
   // Categories data
@@ -556,7 +554,6 @@ export default function PlatformPage({ params }) {
           </div>
         </div>
 
-        {/* CTA Section */}
         <Footer />
       </div>
     </>
