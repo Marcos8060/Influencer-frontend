@@ -6,8 +6,6 @@ import {
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
-import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 
 const Pricing = () => {
   const dispatch = useDispatch();
@@ -87,7 +85,7 @@ const Pricing = () => {
                 Monthly
               </button>
               <button
-                className="px-6 py-2 rounded-full text-sm font-medium text-white bg-[#3680A1] shadow-sm"
+                className="px-6 py-2 rounded-full text-sm font-medium text-white bg-[#3680A1] shadow-md"
               >
                 <span>Yearly</span>
                 <span className="ml-2 px-2 py-1 text-xs rounded-full bg-[#5373d4]">
@@ -103,14 +101,14 @@ const Pricing = () => {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative p-8 bg-white rounded-2xl shadow-sm border-2 ${
+              className={`relative p-8 bg-white rounded-2xl shadow-md border-2 ${
                 plan.popular ? "border-[#5373d4]" : "border-transparent"
               }`}
             >
               {plan.popular && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <span className="px-4 py-1 text-xs font-semibold tracking-wide text-white uppercase bg-[#5373d4] rounded-full">
-                    Most Popular
+                    Best for Small Teams
                   </span>
                 </div>
               )}
@@ -153,7 +151,7 @@ const Pricing = () => {
               {/* CTA */}
               <div className="mt-8">
                 <button
-                  className={`w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
+                  className={`w-full px-6 py-3 border border-transparent rounded-md shadow-md text-base font-medium text-white ${
                     plan.popular
                       ? "bg-[#5373d4] hover:bg-[#3e5cb2]"
                       : "bg-[#3680A1] hover:bg-[#2a6a8a]"

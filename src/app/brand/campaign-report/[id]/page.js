@@ -6,11 +6,9 @@ import {
   TeamOutlined,
   HistoryOutlined,
   EyeOutlined,
+  FilePdfOutlined,
   PlusOutlined,
   CheckOutlined,
-  CloseOutlined,
-  CheckCircleFilled,
-  CloseCircleFilled,
 } from "@ant-design/icons";
 import {
   Card,
@@ -30,6 +28,8 @@ import {
   List,
   Descriptions,
   Badge,
+  Dropdown,
+  Menu,
 } from "antd";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,20 +37,16 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { getAllCampaignDetails } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
-import { approveCampaignApplication } from "@/redux/services/campaign";
-import ChristmasAnimation from "@/app/Components/SharedComponents/ChristmasAnimation";
 
 const { Title, Text, Paragraph } = Typography;
 
 const CampaignReport = () => {
   const { campaignDetails } = useSelector((store) => store.campaign);
-  const [showAnimation, setShowAnimation] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const auth = useAuth();
-  const [processingActions, setProcessingActions] = useState({});
 
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
@@ -76,30 +72,26 @@ const CampaignReport = () => {
     {
       title: "No. of Applicants",
       value: campaignDetails.collaborators?.length || 0,
-      icon: <TeamOutlined style={{ fontSize: 24 }} />,
-      status: "pending",
+      icon: <TeamOutlined className="text-blue-500" />,
       suffix: "Pending Approval",
     },
     {
       title: "Influencer Posts",
       value: 18,
-      icon: <HistoryOutlined style={{ fontSize: 24, color: "#52c41a" }} />,
-      status: "success",
+      icon: <HistoryOutlined className="text-green-500" />,
       suffix: "Total Offers",
     },
     {
       title: "Total Reach",
-      value: 12,
-      icon: <ShoppingOutlined style={{ fontSize: 24 }} />,
-      status: "warning",
-      suffix: "Approaching Deadlines",
+      value: "1.2M",
+      icon: <ShoppingOutlined className="text-purple-500" />,
+      suffix: "Total Reach",
     },
     {
-      title: "Average Likes",
+      title: "Engagement Rate",
       value: "12%",
-      icon: <TeamOutlined style={{ fontSize: 24 }} />,
-      status: "active",
-      suffix: "Average Engagement",
+      icon: <TeamOutlined className="text-orange-500" />,
+      suffix: "Avg Engagement",
     },
   ];
 
@@ -125,7 +117,7 @@ const CampaignReport = () => {
       title: "Country",
       dataIndex: "influencerCountry",
       key: "country",
-      responsive: ["md"], // Hide on mobile
+      responsive: ["md"],
     },
     {
       title: "Status",
@@ -133,25 +125,22 @@ const CampaignReport = () => {
       key: "status",
       width: 120,
       render: (status) => {
-        let color = "";
-        if (status === "approved") {
-          color = "green";
-        } else if (status === "rejected") {
-          color = "red";
-        } else {
-          color = "gold";
-        }
+        const statusMap = {
+          approved: { color: "green", text: "Approved" },
+          rejected: { color: "red", text: "Rejected" },
+          pending: { color: "gold", text: "Pending" },
+        };
         return (
-          <Tag color={color} style={{ textTransform: "capitalize" }}>
-            {status}
+          <Tag color={statusMap[status]?.color || "default"}>
+            {statusMap[status]?.text || status}
           </Tag>
         );
       },
     },
     {
-      title: "Profile",
-      key: "profile",
-      width: 100,
+      title: "Actions",
+      key: "actions",
+      width: 150,
       render: (_, record) => (
         <Button
           type="link"
@@ -161,129 +150,106 @@ const CampaignReport = () => {
               `/brand/campaign-report/${id}/influencer-profile/${record.influencerId}`
             )
           }
+          className="text-primary"
         >
-          View
+          View Profile
         </Button>
       ),
     },
-    // {
-    //   title: "Actions",
-    //   key: "actions",
-    //   width: 200,
-    //   render: (_, record) => {
-    //     const processing = processingActions[record.influencerId] || { approving: false, rejecting: false };
-        
-    //     if (record.status === "pending") {
-    //       return (
-    //         <Space>
-    //           <Button
-    //             type="text"
-    //             icon={<CheckOutlined />}
-    //             onClick={() => approveApplication(record.influencerId)}
-    //             style={{ color: "#52c41a" }}
-    //             loading={processing.approving}
-    //             disabled={processing.rejecting}
-    //           >
-    //             Approve
-    //           </Button>
-    //           <Button
-    //             type="text"
-    //             danger
-    //             icon={<CloseOutlined />}
-    //             onClick={() => rejectApplication(record.influencerId)}
-    //             loading={processing.rejecting}
-    //             disabled={processing.approving}
-    //           >
-    //             Reject
-    //           </Button>
-    //         </Space>
-    //       );
-    //     } else {
-    //       return (
-    //         <Button disabled>
-    //           {record.status === "approved" ? (
-    //             <Space>
-    //               <CheckCircleFilled style={{ color: "#52c41a" }} />
-    //               Approved
-    //             </Space>
-    //           ) : (
-    //             <Space>
-    //               <CloseCircleFilled style={{ color: "#ff4d4f" }} />
-    //               Rejected
-    //             </Space>
-    //           )}
-    //         </Button>
-    //       );
-    //     }
-    //   },
-    // },
+  ];
+
+  const exportMenu = [
+    {
+      key: "1",
+      label: "Download PDF Report",
+      icon: <FilePdfOutlined />,
+    },
+    {
+      key: "2",
+      label: "Export as CSV",
+      icon: <FilePdfOutlined />,
+    },
   ];
 
   return (
-    <div style={{ background: "#f0f2f5", minHeight: "100vh" }}>
-      {showAnimation && <ChristmasAnimation />}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
-        {/* Header */}
-        <Space style={{ marginBottom: 24 }}>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header with back button and report button */}
+        <div className="flex justify-between items-center mb-8">
           <Link href="/brand/view-campaigns">
-            <Button type="text" icon={<ArrowLeftOutlined />}>
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              className="flex items-center"
+            >
               Back to Campaigns
             </Button>
           </Link>
-        </Space>
 
-        {/* Stats */}
-        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-          {stats.map((stat, index) => (
-            <Col xs={24} sm={12} md={6} key={index}>
-              <Card>
+          <Link
+           href="/brand/campaign-report/report"
+            className="bg-primary text-white rounded text-sm px-4 py-2 hover:bg-primary-dark"
+          >
+            Campaign Report
+          </Link>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {Array.isArray(stats) &&
+            stats.map((stat, index) => (
+              <Card
+                key={index}
+                className="shadow-sm hover:shadow-md transition-all"
+              >
                 <Statistic
-                  title={stat.title}
+                  title={<span className="text-gray-600">{stat.title}</span>}
                   value={stat.value}
                   prefix={stat.icon}
+                  valueStyle={{ fontSize: "24px", fontWeight: 600 }}
                   suffix={
-                    <Text type="secondary" style={{ fontSize: 12 }}>
+                    <span className="text-gray-500 text-xs block mt-1">
                       {stat.suffix}
-                    </Text>
+                    </span>
                   }
                 />
               </Card>
-            </Col>
-          ))}
-        </Row>
+            ))}
+        </div>
 
         {loading ? (
           <Card>
             <Skeleton active paragraph={{ rows: 8 }} />
           </Card>
         ) : (
-          <Card
-            title={<Title level={4}>Campaign Details</Title>}
-            style={{ marginBottom: 24 }}
-            bodyStyle={{ padding: 0 }}
-          >
-            {/* Campaign Main Info */}
-            <div style={{ padding: 24 }}>
+          <div className="space-y-6">
+            {/* Campaign Overview */}
+            <Card
+              title={
+                <span className="text-lg font-semibold">Campaign Overview</span>
+              }
+              className="shadow-sm"
+            >
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={8}>
                   <Image
                     src={campaignDetails.coverImage}
                     alt={campaignDetails.title}
-                    style={{ borderRadius: 8 }}
+                    className="rounded-lg"
                     preview={false}
                   />
                 </Col>
                 <Col xs={24} md={16}>
-                  <Space direction="vertical" style={{ width: "100%" }}>
-                    <Space
-                      style={{ width: "100%", justifyContent: "space-between" }}
-                    >
-                      <Title level={3} style={{ margin: 0 }}>
+                  <Space direction="vertical" className="w-full">
+                    <div className="flex justify-between items-start">
+                      <Title level={3} className="m-0">
                         {campaignDetails.title}
                       </Title>
                       <Badge status="success" text="Active" />
-                    </Space>
-                    <Paragraph>{campaignDetails.description}</Paragraph>
+                    </div>
+                    <Paragraph className="text-gray-600">
+                      {campaignDetails.description}
+                    </Paragraph>
                     <Descriptions column={2}>
                       <Descriptions.Item label="Start Date">
                         {new Date(
@@ -300,6 +266,7 @@ const CampaignReport = () => {
                         href={campaignDetails.exampleVideoUrl}
                         target="_blank"
                         icon={<EyeOutlined />}
+                        className="text-primary pl-0"
                       >
                         View Example Video
                       </Button>
@@ -307,85 +274,86 @@ const CampaignReport = () => {
                   </Space>
                 </Col>
               </Row>
-            </div>
+            </Card>
 
-            <Divider style={{ margin: 0 }} />
-
-            {/* Products */}
-            <div style={{ padding: 24 }}>
-              <Title level={4} style={{ marginBottom: 16 }}>
-                Featured Products
-              </Title>
-              {Array.isArray(campaignDetails.products) &&
-              campaignDetails.products.length > 0 ? (
+            {/* Products Section */}
+            <Card
+              title={
+                <span className="text-lg font-semibold">Featured Products</span>
+              }
+              className="shadow-sm"
+            >
+              {campaignDetails.products?.length > 0 ? (
                 <Row gutter={[16, 16]}>
-                  {campaignDetails.products.map((product) => (
-                    <Col xs={24} sm={12} md={8} key={product.id}>
-                      <Card
-                        hoverable
-                        cover={
-                          <img
-                            alt={product.name}
-                            src={product.productImages[0]?.url}
-                            style={{ height: 200, objectFit: "cover" }}
-                          />
-                        }
-                      >
-                        <Card.Meta
-                          title={product.name}
-                          description={
-                            <Space direction="vertical">
-                              <Paragraph
-                                ellipsis={{ rows: 2 }}
-                                style={{ margin: 0 }}
-                              >
-                                {product.description}
-                              </Paragraph>
-                              <Text strong>${product.price}</Text>
-                            </Space>
+                  {Array.isArray(campaignDetails.products) &&
+                    campaignDetails.products.map((product) => (
+                      <Col xs={24} sm={12} md={8} key={product.id}>
+                        <Card
+                          hoverable
+                          cover={
+                            <img
+                              alt={product.name}
+                              src={product.productImages[0]?.url}
+                              className="h-48 object-cover"
+                            />
                           }
-                        />
-                      </Card>
-                    </Col>
-                  ))}
+                          className="h-full"
+                        >
+                          <Card.Meta
+                            title={product.name}
+                            description={
+                              <Space direction="vertical">
+                                <Paragraph
+                                  ellipsis={{ rows: 2 }}
+                                  className="m-0 text-gray-600"
+                                >
+                                  {product.description}
+                                </Paragraph>
+                                <Text strong className="text-lg">
+                                  ${product.price}
+                                </Text>
+                              </Space>
+                            }
+                          />
+                        </Card>
+                      </Col>
+                    ))}
                 </Row>
               ) : (
                 <Empty description="No products added to this campaign" />
               )}
-            </div>
+            </Card>
 
-            <Divider style={{ margin: 0 }} />
+            {/* Campaign Brief */}
+            <Card
+              title={
+                <span className="text-lg font-semibold">Campaign Brief</span>
+              }
+              className="shadow-sm"
+            >
+              <Descriptions column={1} title={campaignDetails.briefTitle}>
+                <Descriptions.Item>
+                  {campaignDetails.briefDescription}
+                </Descriptions.Item>
+              </Descriptions>
 
-            {/* Brief */}
-            <div style={{ padding: 24 }}>
-              <Title level={4} style={{ marginBottom: 16 }}>
-                Campaign Brief
-              </Title>
-              <Card>
-                <Descriptions column={1} title={campaignDetails.briefTitle}>
-                  <Descriptions.Item>
-                    {campaignDetails.briefDescription}
-                  </Descriptions.Item>
-                </Descriptions>
-
-                <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-                  <Col xs={24} md={12}>
-                    <Title level={5}>Content Requirements</Title>
+              <Row gutter={[24, 24]} className="mt-6">
+                <Col xs={24} md={12}>
+                  <Card title="Content Requirements" className="shadow-none">
                     <List
                       size="small"
                       dataSource={campaignDetails.preferences?.videoStyle || []}
                       renderItem={(item) => (
                         <List.Item>
-                          <CheckOutlined
-                            style={{ color: "#52c41a", marginRight: 8 }}
-                          />
+                          <CheckOutlined className="text-green-500 mr-2" />
                           {item}
                         </List.Item>
                       )}
                     />
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Title level={5}>Technical Specs</Title>
+                  </Card>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Card title="Technical Specs" className="shadow-none">
                     <Descriptions column={1}>
                       <Descriptions.Item label="Format">
                         {campaignDetails.preferences?.videoFormat || "N/A"}
@@ -403,27 +371,29 @@ const CampaignReport = () => {
                         ) || "N/A"}
                       </Descriptions.Item>
                     </Descriptions>
-                  </Col>
-                </Row>
-              </Card>
-            </div>
-
-            <Divider style={{ margin: 0 }} />
+                  </Card>
+                </Col>
+              </Row>
+            </Card>
 
             {/* Collaborators */}
-            <div style={{ padding: 24 }}>
-              <Space
-                style={{
-                  width: "100%",
-                  justifyContent: "space-between",
-                  marginBottom: 16,
-                }}
-              >
-                <Title level={4} style={{ margin: 0 }}>
+            <Card
+              title={
+                <span className="text-lg font-semibold">
                   Collaboration Requests
-                </Title>
-              </Space>
-
+                </span>
+              }
+              className="shadow-sm"
+              extra={
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  className="bg-primary hover:bg-primary-dark"
+                >
+                  Invite Influencers
+                </Button>
+              }
+            >
               {campaignDetails.collaborators?.length > 0 ? (
                 <Table
                   columns={columns}
@@ -431,26 +401,19 @@ const CampaignReport = () => {
                   rowKey="influencerId"
                   pagination={{ pageSize: 5 }}
                   scroll={{ x: "max-content" }}
+                  className="ant-table-striped"
                 />
               ) : (
                 <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description={
-                    <Space direction="vertical">
-                      <Text>No collaboration requests</Text>
-                      <Text type="secondary">
-                        Get started by inviting influencers to your campaign
-                      </Text>
-                    </Space>
+                    <span className="text-gray-500">
+                      No collaboration requests yet
+                    </span>
                   }
-                >
-                  <button className="bg-primary text-white px-4 py-2 text-sm font-light">
-                    Invite Influencers
-                  </button>
-                </Empty>
+                />
               )}
-            </div>
-          </Card>
+            </Card>
+          </div>
         )}
       </div>
     </div>
