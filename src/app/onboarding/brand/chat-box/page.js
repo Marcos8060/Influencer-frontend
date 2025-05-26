@@ -1,446 +1,406 @@
 "use client";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useCallback,
-  Suspense
-} from "react";
-import {
-  Input,
-  Button,
-  List,
-  Avatar,
-  Badge,
-  message as antdMessage,
-} from "antd";
-import {
-  SearchOutlined,
-  MoreOutlined,
-  PaperClipOutlined,
-  SmileOutlined,
-  SendOutlined,
-  CheckOutlined,
-  CheckCircleOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { useSearchParams } from "next/navigation";
-import { authContext } from "@/assets/context/use-context";
-import { useAuth } from "@/assets/hooks/use-auth";
-import "../../../../app/chat.css";
+import React, { useState, useRef, useEffect, useContext, useCallback,Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { message as antdMessage } from 'antd';
+import { authContext } from '@/assets/context/use-context';
+import { useAuth } from '@/assets/hooks/use-auth';
+import ChatLayout from '@/app/Components/Chat/ChatLayout';
+import ChatSidebar from '@/app/Components/Chat/ChatSidebar';
+import ChatMessages from '@/app/Components/Chat/ChatMessages';
+import ChatInput from '@/app/Components/Chat/ChatInput';
+import useWindowSize from '@/assets/hooks/use-window-size';
 
 const BrandChat = () => {
   // State management
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
-  const [inputMessage, setInputMessage] = useState("");
-  const [searchText, setSearchText] = useState("");
-  const [connectionStatus, setConnectionStatus] = useState("disconnected");
+  const [inputMessage, setInputMessage] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [selectedChatMessages, setSelectedChatMessages] = useState([]);
+  
+  // Refs and context
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const { user } = useContext(authContext);
   const userId = user?.user_id;
   const auth = useAuth();
+  
+  // Window size hook for responsive design
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
 
-  // Get parameters from URL
+  // URL parameters
   const searchParams = useSearchParams();
-  const recipientId = searchParams.get("userId");
-  const recipientName = searchParams.get("fullName");
+  const recipientId = searchParams.get('userId');
+  const recipientName = searchParams.get('fullName');
 
   // Format time helper
   const formatTime = useCallback((timestamp) => {
-    if (!timestamp) return "Just now";
+    if (!timestamp) return 'Just now';
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }, []);
 
   // Initialize chat with recipient from URL params
   useEffect(() => {
     if (recipientId && recipientName) {
-      const existingChat = chats.find((chat) => chat.id === recipientId);
+      const existingChat = chats.find(chat => chat.id === recipientId);
       if (!existingChat) {
         const newChat = {
           id: recipientId,
           name: recipientName,
           avatar: recipientName.charAt(0),
-          lastMessage: "",
-          time: "Just now",
+          lastMessage: '',
+          time: 'Just now',
           unread: 0,
-          messages: [],
+          messages: []
         };
-        setChats((prev) => [...prev, newChat]);
+        setChats(prev => [...prev, newChat]);
         setActiveChat(recipientId);
       } else {
         setActiveChat(recipientId);
       }
     }
-  }, [recipientId, recipientName]);
-
-  // WebSocket message handlers
-  const handleChatHistory = useCallback(
-    (data) => {
-      if (!data.messages?.length) return;
-
-      const sortedMessages = [...data.messages].sort(
-        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-      );
-
-      setChats((prev) =>
-        prev.map((chat) => {
-          if (chat.id === recipientId) {
-            const lastMessage = sortedMessages[sortedMessages.length - 1];
-            return {
-              ...chat,
-              messages: sortedMessages,
-              lastMessage: lastMessage?.message || "",
-              time: lastMessage?.timestamp
-                ? formatTime(lastMessage.timestamp)
-                : "Just now",
-            };
-          }
-          return chat;
-        })
-      );
-    },
-    [recipientId, formatTime]
-  );
-
-  const handleNewMessage = useCallback(
-    (data) => {
-      const messageData = data.body || data;
-      const isMe = messageData.sender === userId;
-
-      setChats((prev) =>
-        prev.map((chat) => {
-          if (
-            chat.id ===
-            (messageData.recipient === userId
-              ? messageData.sender
-              : messageData.recipient)
-          ) {
-            return {
-              ...chat,
-              lastMessage: messageData.message,
-              time: formatTime(messageData.timestamp),
-              messages: [...chat.messages, messageData],
-              unread: isMe ? 0 : chat.unread + 1,
-            };
-          }
-          return chat;
-        })
-      );
-
-      // Auto-scroll to new message
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    },
-    [userId, formatTime]
-  );
-
-  const handleAllChats = useCallback(
-    (allChatsData) => {
-      console.log("Processing all chats:", allChatsData);
-
-      if (!allChatsData.messages?.length) {
-        antdMessage.info("You have no chat history yet");
-        return;
-      }
-
-      const formattedChats = allChatsData.messages
-        .map((chatGroup) => {
-          // Skip if no user data
-          if (!chatGroup.user) {
-            console.warn("Chat group missing user data:", chatGroup);
-            return null;
-          }
-
-          return {
-            id: chatGroup.user.user_id, // user_id will be used for chat.join
-            name: chatGroup.user.user_name, // Display name in sidebar
-            chatGroupId: chatGroup.chatGroupId, // Store for reference
-            avatar:
-              chatGroup.user.user_photo ||
-              chatGroup.user.user_name?.charAt(0) ||
-              "U",
-            lastMessage: "",
-            time: formatTime(chatGroup.created_at),
-            unread: 0,
-            messages: [],
-          };
-        })
-        .filter((chat) => chat !== null); // Remove any null entries
-
-      setChats(formattedChats);
-    },
-    [formatTime]
-  );
+  }, [recipientId, recipientName, chats]);
 
   // WebSocket connection management
-  const initWebSocket = useCallback(() => {
+  useEffect(() => {
     if (!userId || !auth) return;
 
-    if (socketRef.current) {
-      socketRef.current.close();
-    }
+    const connectWebSocket = () => {
+      if (socketRef.current?.readyState === WebSocket.OPEN) return;
 
-    const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
-    setConnectionStatus("connecting");
+      const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
+      const ws = new WebSocket(wsUrl);
+      socketRef.current = ws;
 
-    const ws = new WebSocket(wsUrl);
-    socketRef.current = ws;
-
-    ws.onopen = () => {
-      setConnectionStatus("connected");
-      antdMessage.success("Connected to chat server");
-
-      // Join the chat with the recipient
-      if (recipientId) {
-        ws.send(
-          JSON.stringify({
-            type: "chat.join",
-            user_id: recipientId,
-          })
-        );
-      }
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("WebSocket message:", data);
-
-        switch (data.type) {
-          case "chat.history":
-            handleChatHistory(data);
-            break;
-          case "chat.message":
-            handleNewMessage(data);
-            break;
-          case "connection.success":
-            // Connection already established
-            break;
-          case "chats.all":
-            handleAllChats(data);
-            break;
-          default:
-            console.warn("Unhandled message type:", data.type);
+      ws.onopen = () => {
+        setConnectionStatus('connected');
+        antdMessage.success('Connected to chat server');
+        
+        // Request all chats on connection
+        ws.send(JSON.stringify({ type: 'chats.all' }));
+        
+        // Join specific chat if active
+        if (activeChat) {
+          ws.send(JSON.stringify({
+            type: 'chat.join',
+            user_id: activeChat
+          }));
         }
-      } catch (error) {
-        console.error("Error parsing message:", error);
-      }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleWebSocketMessage(data);
+        } catch (error) {
+          console.error('Error parsing message:', error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        setConnectionStatus('disconnected');
+        antdMessage.error('Connection error');
+      };
+
+      ws.onclose = () => {
+        setConnectionStatus('disconnected');
+        setTimeout(connectWebSocket, 5000);
+      };
     };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setConnectionStatus("disconnected");
-      antdMessage.error("Connection error");
-    };
-
-    // ws.onclose = () => {
-    //   setConnectionStatus("disconnected");
-    //   setTimeout(() => initWebSocket(), 5000);
-    // };
+    connectWebSocket();
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close();
-      }
-    };
-  }, [auth, handleChatHistory, handleNewMessage, recipientId, userId,handleAllChats]);
-
-  // Initialize WebSocket connection
-  useEffect(() => {
-    initWebSocket();
-    return () => {
-      if (socketRef.current) {
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
         socketRef.current.close();
       }
     };
-  }, [initWebSocket]);
+  }, [userId, auth, activeChat]);
 
-  // Send message handler
-  const handleSendMessage = () => {
-    if (
-      !inputMessage.trim() ||
-      !socketRef.current ||
-      socketRef.current.readyState !== WebSocket.OPEN
-    ) {
-      antdMessage.warning(
-        connectionStatus !== "connected"
-          ? "Cannot send message - connection not ready"
-          : "Message cannot be empty"
-      );
+  // WebSocket message handler
+  const handleWebSocketMessage = useCallback((data) => {
+    switch (data.type) {
+      case 'chat.history':
+        handleChatHistory(data);
+        break;
+      case 'chat.message':
+        handleNewMessage(data);
+        break;
+      case 'chats.all':
+        handleAllChats(data);
+        break;
+      default:
+        console.warn('Unhandled message type:', data.type);
+    }
+  }, []);
+
+  // Message handlers
+  const handleChatHistory = useCallback((data) => {
+    if (!data.messages?.length) return;
+
+    const sortedMessages = [...data.messages].sort(
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    );
+
+    setSelectedChatMessages(sortedMessages);
+    
+    // Update last message in chat list
+    const lastMessage = sortedMessages[sortedMessages.length - 1];
+    setChats(prev => prev.map(chat => {
+      if (chat.id === activeChat) {
+        return {
+          ...chat,
+          lastMessage: lastMessage.message,
+          time: formatTime(lastMessage.timestamp)
+        };
+      }
+      return chat;
+    }));
+
+    // Scroll to bottom
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }, [activeChat, formatTime]);
+
+  const handleNewMessage = useCallback((data) => {
+    const messageData = data.body || data;
+    
+    // Skip if message is invalid
+    if (!messageData.sender || !messageData.recipient) {
+      console.error('Invalid message format:', messageData);
       return;
     }
 
-    const message = {
-      type: "chat.message",
-      user_id: recipientId,
+    const isMe = messageData.sender === userId;
+    const chatId = isMe ? messageData.recipient : messageData.sender;
+
+    // Update messages if this is the active chat
+    if (chatId === activeChat) {
+      setSelectedChatMessages(prev => {
+        // Check for duplicates
+        const isDuplicate = prev.some(m => 
+          (m.id && m.id === messageData.id) || 
+          (m.tempId && messageData.temp_id && m.tempId === messageData.temp_id)
+        );
+        
+        if (isDuplicate) {
+          return prev.map(m => {
+            if ((m.tempId && m.tempId === messageData.temp_id) || m.id === messageData.id) {
+              return { ...m, status: 'delivered', id: messageData.id };
+            }
+            return m;
+          });
+        }
+        
+        return [...prev, {
+          ...messageData,
+          status: isMe ? 'delivered' : 'received'
+        }];
+      });
+    }
+
+    // Update chat list
+    setChats(prev => {
+      const existingChat = prev.find(chat => chat.id === chatId);
+      
+      if (!existingChat) {
+        // New chat
+        return [...prev, {
+          id: chatId,
+          name: isMe ? messageData.recipient_name : messageData.sender_name,
+          avatar: (isMe ? messageData.recipient_name : messageData.sender_name)?.charAt(0) || 'U',
+          lastMessage: messageData.message,
+          time: formatTime(messageData.timestamp),
+          unread: isMe ? 0 : 1
+        }];
+      }
+
+      // Existing chat
+      return prev.map(chat => {
+        if (chat.id === chatId) {
+          return {
+            ...chat,
+            lastMessage: messageData.message,
+            time: formatTime(messageData.timestamp),
+            unread: isMe || activeChat === chatId ? 0 : chat.unread + 1
+          };
+        }
+        return chat;
+      });
+    });
+
+    // Scroll to bottom for new messages in active chat
+    if (chatId === activeChat) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [userId, activeChat, formatTime]);
+
+  const handleAllChats = useCallback((data) => {
+    if (!data.messages?.length) {
+      antdMessage.info('No chat history yet');
+      return;
+    }
+
+    const formattedChats = data.messages
+      .map(chatGroup => {
+        if (!chatGroup.user) return null;
+
+        return {
+          id: chatGroup.user.user_id,
+          name: chatGroup.user.user_name,
+          chatGroupId: chatGroup.chatGroupId,
+          avatar: chatGroup.user.user_photo || chatGroup.user.user_name?.charAt(0) || 'U',
+          lastMessage: '',
+          time: formatTime(chatGroup.created_at),
+          unread: 0,
+          messages: []
+        };
+      })
+      .filter(chat => chat !== null);
+
+    setChats(formattedChats);
+  }, [formatTime]);
+
+  // Chat actions
+  const handleChatSelect = useCallback((chatId) => {
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      antdMessage.warning('Connection not ready. Please try again.');
+      return;
+    }
+
+    setActiveChat(chatId);
+    setSelectedChatMessages([]);
+    if (isMobile) setShowSidebar(false);
+
+    socketRef.current.send(JSON.stringify({
+      type: 'chat.join',
+      user_id: chatId
+    }));
+  }, [isMobile]);
+
+  const handleSendMessage = useCallback(() => {
+    if (!activeChat || (!inputMessage && !selectedPhoto)) return;
+
+    if (socketRef.current?.readyState !== WebSocket.OPEN) {
+      antdMessage.error('Connection lost. Please try again.');
+      return;
+    }
+
+    const tempId = Date.now().toString();
+    const messageData = {
+      type: 'chat.message',
+      user_id: activeChat,
       message: inputMessage,
+      temp_id: tempId,
+      sender: userId,
+      sender_name: user?.firstName || 'Me',
+      recipient: activeChat,
+      recipient_name: chats.find(c => c.id === activeChat)?.name || 'User',
+      timestamp: new Date().toISOString()
     };
 
-    socketRef.current.send(JSON.stringify(message));
-    setInputMessage("");
-  };
+    // Add message to UI immediately
+    const tempMessage = {
+      id: tempId,
+      sender: userId,
+      recipient: activeChat,
+      message: inputMessage,
+      timestamp: new Date().toISOString(),
+      status: 'sent'
+    };
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chats]);
+    setSelectedChatMessages(prev => [...prev, tempMessage]);
+    socketRef.current.send(JSON.stringify(messageData));
+    
+    setInputMessage('');
+    if (selectedPhoto) setSelectedPhoto(null);
+    
+    // Scroll to bottom
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }, [activeChat, inputMessage, selectedPhoto, userId, user, chats]);
 
-  // Filter chats based on search text
-  const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const handleFileUpload = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  // Get current chat messages
-  const currentChat = chats.find((chat) => chat.id === activeChat);
-  const currentMessages = currentChat?.messages || [];
+    setSelectedPhoto(file);
+    setIsUploading(true);
+
+    // TODO: Implement file upload logic
+    setTimeout(() => {
+      setIsUploading(false);
+    }, 1000);
+  }, []);
+
+  const handleCancelPhoto = useCallback(() => {
+    setSelectedPhoto(null);
+  }, []);
 
   return (
-    <div className="whatsapp-container">
-      {/* Chat list sidebar */}
-      <div className="chat-list">
-        <div className="chat-list-header">
-          <Avatar size="large" className="bg-primary">
-            {user?.firstName?.charAt(0) || "ME"}
-          </Avatar>
-          <div className="chat-list-actions">
-            <Button type="text" icon={<SearchOutlined />} />
-            <Button type="text" icon={<MoreOutlined />} />
-          </div>
-        </div>
-
-        <div className="chat-search">
-          <Input
-            placeholder="Search or start new chat"
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-        </div>
-
-        <div className="chat-items">
-          <List
-            dataSource={filteredChats}
-            renderItem={(chat) => (
-              <List.Item
-                className={`chat-item ${
-                  activeChat === chat.id ? "active" : ""
-                }`}
-                onClick={() => setActiveChat(chat.id)}
-              >
-                <List.Item.Meta
-                  avatar={
-                    <Badge count={chat.unread} offset={[-10, 0]}>
-                      <Avatar size="large">{chat.avatar}</Avatar>
-                    </Badge>
-                  }
-                  title={<span>{chat.name}</span>}
-                  description={
-                    <div className="chat-description">
-                      <span>{chat.lastMessage || "No messages yet"}</span>
-                      {chat.unread > 0 && <span className="unread-badge" />}
-                    </div>
-                  }
-                />
-              </List.Item>
-            )}
-          />
-        </div>
-      </div>
-
-      {/* Main chat area */}
-      {activeChat ? (
-        <div className="chat-window">
-          <div className="chat-header">
-            <div className="chat-info">
-              <Avatar size="large">{currentChat?.name.charAt(0) || "U"}</Avatar>
-              <div>
-                <h3>{currentChat?.name || "User"}</h3>
-                <p>{connectionStatus === "connected" ? "Online" : "Offline"}</p>
-              </div>
+    <ChatLayout
+      sidebar={
+        <ChatSidebar
+          chats={chats}
+          activeChat={activeChat}
+          onChatSelect={handleChatSelect}
+          searchText={searchText}
+          onSearchChange={setSearchText}
+          currentUserId={userId}
+        />
+      }
+      mainContent={
+        <div className="flex flex-col h-full">
+          {activeChat ? (
+            <>
+              <ChatMessages
+                messages={selectedChatMessages}
+                currentUserId={userId}
+                messagesEndRef={messagesEndRef}
+                formatTime={formatTime}
+                activeChat={activeChat}
+              />
+              <ChatInput
+                inputMessage={inputMessage}
+                setInputMessage={setInputMessage}
+                handleSendMessage={handleSendMessage}
+                handleFileUpload={handleFileUpload}
+                selectedPhoto={selectedPhoto}
+                handleCancelPhoto={handleCancelPhoto}
+                isUploading={isUploading}
+                activeChat={activeChat}
+              />
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-gray-500">
+              Select a chat to start messaging
             </div>
-            <Button type="text" icon={<SearchOutlined />} />
-          </div>
-
-          <div className="chat-messages">
-            {currentMessages.map((message, index) => (
-              <div
-                key={index}
-                className={`message ${
-                  message.sender === userId ? "sent" : "received"
-                }`}
-              >
-                <div className="message-content">
-                  <div className="message-text text-sm">{message.message}</div>
-                  <div className="message-meta">
-                    <span className="message-time">
-                      {formatTime(message.timestamp)}
-                    </span>
-                    {message.sender === userId && (
-                      <span className="message-status">
-                        {message.status === "read" ? (
-                          <CheckCircleOutlined className="read-icon" />
-                        ) : (
-                          <CheckOutlined />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="chat-input">
-            <Button type="text" icon={<SmileOutlined />} />
-            <Button type="text" icon={<PaperClipOutlined />} />
-            <Input.TextArea
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onPressEnter={(e) => {
-                if (!e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              placeholder="Type a message"
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              disabled={connectionStatus !== "connected"}
-            />
-            <Button
-              type="primary"
-              icon={<SendOutlined />}
-              onClick={handleSendMessage}
-              disabled={
-                !inputMessage.trim() || connectionStatus !== "connected"
-              }
-            />
-          </div>
+          )}
         </div>
-      ) : (
-        <div className="empty-chat bg-input text-color">
-          <h2>No Chat Selected </h2>
-          <p>Please select a user to start chatting</p>
-        </div>
-      )}
-    </div>
+      }
+      isMobile={isMobile}
+      showSidebar={showSidebar}
+      onToggleSidebar={() => setShowSidebar(!showSidebar)}
+    />
   );
 };
 
-
-
 export default function BrandChatPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="p-4 text-center">Loading Brand chat...</div>
-      }
-    >
+    <Suspense fallback={
+      <div className="p-4 text-center">Loading Brand chat...</div>
+    }>
       <BrandChat />
     </Suspense>
   );
