@@ -384,15 +384,15 @@ const CampaignReport = () => {
                 </span>
               }
               className="shadow-sm"
-              extra={
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  className="bg-primary hover:bg-primary-dark"
-                >
-                  Invite Influencers
-                </Button>
-              }
+              // extra={
+              //   <Button
+              //     type="primary"
+              //     icon={<PlusOutlined />}
+              //     className="bg-primary hover:bg-primary-dark"
+              //   >
+              //     Invite Influencerss
+              //   </Button>
+              // }
             >
               {campaignDetails.collaborators?.length > 0 ? (
                 <Table

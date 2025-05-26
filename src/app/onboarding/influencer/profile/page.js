@@ -948,7 +948,7 @@ const InfluencerProfilePage = () => {
                       <div className="flex items-center">
                         <Avatar
                           size={64}
-                          src={influencerProfile.tiktok.avatarUrl}
+                          src={influencerProfile.tiktok?.avatarUrl}
                           className="mr-4"
                         />
                         <div>
