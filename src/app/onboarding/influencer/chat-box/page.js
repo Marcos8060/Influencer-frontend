@@ -410,8 +410,10 @@ const InfluencerChat = () => {
 
 export default function InfluencerChatPage() {
   return (
-    <div className="h-full bg-background">
+    <Suspense fallback={
+      <div className="p-4 text-center">Loading InfluencerChat chat...</div>
+    }>
       <InfluencerChat />
-    </div>
+    </Suspense>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback,Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { message as antdMessage } from 'antd';
 import { authContext } from '@/assets/context/use-context';
@@ -398,8 +398,10 @@ const BrandChat = () => {
 
 export default function BrandChatPage() {
   return (
-    <div className="h-full bg-background">
+    <Suspense fallback={
+      <div className="p-4 text-center">Loading Brand chat...</div>
+    }>
       <BrandChat />
-    </div>
+    </Suspense>
   );
 }
