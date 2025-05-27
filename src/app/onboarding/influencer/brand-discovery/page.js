@@ -21,6 +21,7 @@ import {
   Menu,
   Tabs,
   Rate,
+  Spin,
 } from "antd";
 import {
   SearchOutlined,
@@ -34,15 +35,107 @@ import {
   MoreOutlined,
   ArrowRightOutlined,
   PhoneOutlined,
+  InboxOutlined,
+  TeamOutlined,
+  DollarOutlined,
+  TrophyOutlined,
 } from "@ant-design/icons";
 import { getAllBrands } from "@/redux/features/influencer/filter";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactCountryFlag } from "react-country-flag";
+import { motion } from "framer-motion";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
+
+// Animations
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 }
+};
+
+const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
+  <motion.div {...fadeIn} className="h-full">
+    <Card
+      hoverable
+      className="brand-card transform transition-all duration-300 hover:shadow-xl h-full flex flex-col"
+      bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+      actions={[
+        <Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"}>
+          <Button
+            type="text"
+            icon={isFavorite ? <HeartFilled className="text-red-500" /> : <HeartOutlined />}
+            onClick={() => onFavoriteToggle(brand.id)}
+          />
+        </Tooltip>,
+        <Tooltip title="Contact brand">
+          <Button type="text" icon={<PhoneOutlined />} />
+        </Tooltip>,
+        <Dropdown overlay={menu} placement="bottomRight">
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
+      ]}
+    >
+      <div className="flex flex-col h-full">
+        <div className="flex items-start space-x-4">
+          <Avatar
+            size={64}
+            src={brand.logo}
+            className="flex-shrink-0"
+          >
+            {brand.name?.[0]?.toUpperCase()}
+          </Avatar>
+          <div className="flex-grow min-w-0">
+            <div className="flex items-center justify-between">
+              <Title level={4} className="m-0 truncate">
+                {brand.name}
+              </Title>
+              {brand.verified && (
+                <Tooltip title="Verified Brand">
+                  <Badge status="success" />
+                </Tooltip>
+              )}
+            </div>
+            
+            <Space className="mt-2" wrap>
+              {brand.industry?.split(',').map((industry, index) => (
+                <Tag key={index} color="blue" className="rounded-full">
+                  {industry.trim()}
+                </Tag>
+              ))}
+            </Space>
+          </div>
+        </div>
+
+        <Paragraph className="mt-4 text-gray-600 line-clamp-2 flex-grow">
+          {brand.description}
+        </Paragraph>
+
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+            <TeamOutlined className="text-blue-500" />
+            <Text className="text-sm">{brand.teamSize || 'Team size N/A'}</Text>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+            <DollarOutlined className="text-green-500" />
+            <Text className="text-sm">{brand.budget || 'Budget N/A'}</Text>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+            <TrophyOutlined className="text-yellow-500" />
+            <Text className="text-sm">{brand.campaignCount || '0'} Campaigns</Text>
+          </div>
+          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+            <GlobalOutlined className="text-purple-500" />
+            <Text className="text-sm">{brand.countryData?.name || 'Location N/A'}</Text>
+          </div>
+        </div>
+      </div>
+    </Card>
+  </motion.div>
+);
 
 const BrandDiscovery = () => {
   const [searchText, setSearchText] = useState("");
@@ -99,7 +192,9 @@ const BrandDiscovery = () => {
       selectedCountry === "" ||
       (brand.countryData && brand.countryData.name === selectedCountry);
   
-    const matchesTab = activeTab === "all";
+    const matchesTab =
+      activeTab === "all" ||
+      (activeTab === "favorites" && favorites.includes(brand.id));
   
     return matchesSearch && matchesIndustry && matchesCountry && matchesTab;
   });
@@ -109,20 +204,19 @@ const BrandDiscovery = () => {
     new Set(
       brands
         .flatMap((brand) =>
-          (brand?.industry || "") // Fallback to empty string if null/undefined
+          (brand?.industry || "")
             .split(",")
             .map((i) => i.trim())
             .filter(Boolean)
         )
-        .filter(Boolean) // Additional safety check
+        .filter(Boolean)
     )
-  ).filter(Boolean); // Final safety check
+  ).filter(Boolean);
 
   const countries = Array.from(
     new Set(brands.map((brand) => brand.countryData?.name).filter(Boolean))
   );
 
-  // Pagination logic
   const paginatedBrands = filteredBrands.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -139,7 +233,7 @@ const BrandDiscovery = () => {
     setSelectedIndustry("");
     setSelectedCountry("");
     setActiveTab("all");
-    setCurrentPage(1); // Also reset pagination
+    setCurrentPage(1);
   };
 
   const menu = (
@@ -154,72 +248,36 @@ const BrandDiscovery = () => {
   );
 
   return (
-    <div
-      className="brand-discovery-container"
-      style={{ maxWidth: "1400px", margin: "0 auto" }}
-    >
+    <div className="min-h-screen bg-white p-4">
       {/* Hero Section */}
-      <div
-        className="discovery-hero bg-gradient-to-r from-primary to-secondary"
-        style={{
-          color: "white",
-          padding: "60px 24px",
-          textAlign: "center",
-          borderRadius: "0 0 12px 12px",
-          marginBottom: "24px",
-        }}
-      >
-        <Title level={2} style={{ color: "white", marginBottom: "16px" }}>
-          Discover Brands That Match Your Vibe
-        </Title>
-        <Paragraph
-          style={{
-            color: "rgba(255, 255, 255, 0.85)",
-            maxWidth: "700px",
-            margin: "0 auto",
-          }}
-        >
-          Connect with premium brands looking for authentic voices like yours.
-          <br />
-          Filter by industry, location, and partnership opportunities.
-        </Paragraph>
-      </div>
+      
 
-      {/* Search and Filters */}
-      <Card
-        className="search-filters-card"
-        bordered={false}
-        style={{
-          margin: "0 auto 24px",
-          width: "calc(100% - 48px)",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-          padding: "24px",
-        }}
-      >
-        <div
-          className="search-container"
-          style={{ maxWidth: "1000px", margin: "0 auto" }}
+      {/* Search and Filters Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          className="bg-white rounded-lg shadow-lg p-6 border border-input"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <Input
-            placeholder="Search brands by name, description, or keywords..."
-            prefix={<SearchOutlined style={{ color: "#8c8c8c" }} />}
-            size="large"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            allowClear
-            style={{ marginBottom: "16px" }}
-          />
-
-          <div className="filter-controls">
-            <Space wrap>
+          <Space direction="vertical" className="w-full">
+            <Input
+              size="large"
+              placeholder="Search brands by name, industry, or keywords..."
+              prefix={<SearchOutlined className="text-gray-400" />}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="mb-4"
+            />
+            
+            <div className="flex flex-wrap gap-4 items-center">
               <Select
-                placeholder="Industry"
-                style={{ width: 180 }}
+                size="large"
+                placeholder="Select Industry"
+                style={{ minWidth: 200 }}
                 value={selectedIndustry}
                 onChange={setSelectedIndustry}
                 allowClear
-                suffixIcon={<FilterOutlined />}
               >
                 {industries.map((industry) => (
                   <Option key={industry} value={industry}>
@@ -229,8 +287,9 @@ const BrandDiscovery = () => {
               </Select>
 
               <Select
-                placeholder="Country"
-                style={{ width: 180 }}
+                size="large"
+                placeholder="Select Country"
+                style={{ minWidth: 200 }}
                 value={selectedCountry}
                 onChange={setSelectedCountry}
                 allowClear
@@ -242,34 +301,52 @@ const BrandDiscovery = () => {
                 ))}
               </Select>
 
-              <Button
-                type="text"
+              <Button 
+                type="default"
                 onClick={clearFilters}
+                icon={<FilterOutlined />}
               >
-                Clear all Filters
+                Clear Filters
               </Button>
-            </Space>
-          </div>
-        </div>
-      </Card>
+            </div>
+          </Space>
+        </motion.div>
+      </div>
 
-      {/* Results */}
-      <div className="results-container" style={{ padding: "0 24px" }}>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          className="mb-8"
+        >
+          <TabPane 
+            tab={
+              <span>
+                <GlobalOutlined /> All Brands
+              </span>
+            }
+            key="all"
+          />
+          <TabPane
+            tab={
+              <span>
+                <HeartOutlined /> Favorites ({favorites.length})
+              </span>
+            }
+            key="favorites"
+          />
+        </Tabs>
+
         {loading ? (
-          <Row gutter={[24, 24]}>
-            {[...Array(8)].map((_, i) => (
-              <Col xs={24} sm={12} md={12} lg={8} xl={6} key={i}>
-                <Card style={{ height: "100%", borderRadius: "8px" }}>
-                  <Skeleton active avatar paragraph={{ rows: 3 }} />
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        ) : filteredBrands.length > 0 ? (
+          <div className="text-center py-20">
+            <Spin size="large" />
+          </div>
+        ) : paginatedBrands.length > 0 ? (
           <>
             <Row gutter={[24, 24]}>
               {paginatedBrands.map((brand) => (
-                <Col xs={24} sm={12} md={12} lg={8} xl={6} key={brand.id}>
+                <Col xs={24} sm={24} md={12} lg={12} xl={12} key={brand.id}>
                   <BrandCard
                     brand={brand}
                     isFavorite={favorites.includes(brand.id)}
@@ -279,159 +356,33 @@ const BrandDiscovery = () => {
                 </Col>
               ))}
             </Row>
-
-            <div style={{ textAlign: "center", marginTop: "24px" }}>
+            
+            <div className="flex justify-center mt-8">
               <Pagination
                 current={currentPage}
                 total={filteredBrands.length}
                 pageSize={pageSize}
-                onChange={(page) => setCurrentPage(page)}
+                onChange={setCurrentPage}
                 showSizeChanger={false}
               />
             </div>
           </>
         ) : (
-          <Card style={{ borderRadius: "12px", padding: "48px 0" }}>
-            <Empty
-              description={
-                <span>
-                  No brands found matching your criteria. Try adjusting your
-                  filters.
-                </span>
-              }
-            >
-              <Button
-                type="primary"
-                className="bg-primary"
-                onClick={clearFilters}
-              >
-                Clear all filters
-              </Button>
-            </Empty>
-          </Card>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <Text className="text-gray-500">
+                No brands found matching your criteria
+              </Text>
+            }
+          >
+            <Button type="primary" onClick={clearFilters}>
+              Clear Filters
+            </Button>
+          </Empty>
         )}
       </div>
     </div>
-  );
-};
-
-const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => {
-  return (
-    <Card
-      hoverable
-      style={{
-        height: "100%",
-        borderRadius: "8px",
-        overflow: "hidden",
-      }}
-      cover={
-        <div
-          style={{
-            height: "120px",
-            backgroundColor: "#f0f2f5",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
-          <Avatar
-            size={64}
-            className="bg-gradient-to-r from-primary to-secondary"
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              color: "#fff",
-              border: "3px solid white",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {brand?.name ? brand.name.charAt(0) : "?"}
-          </Avatar>
-        </div>
-      }
-      actions={[
-        <Button className="bg-primary" type="primary" icon={<ArrowRightOutlined />}>
-          Connect
-        </Button>
-      ]}
-    >
-      <div >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "12px",
-          }}
-        >
-          <Title level={4} style={{ margin: 0 }}>
-            {brand.name}
-          </Title>
-        </div>
-
-        <Divider style={{ margin: "12px 0" }} />
-
-        <div style={{ marginBottom: "8px" }}>
-          <Space>
-            <GlobalOutlined />
-            <Text ellipsis style={{ maxWidth: "180px" }}>
-              {brand.website}
-            </Text>
-          </Space>
-        </div>
-
-        <div style={{ marginBottom: "8px" }}>
-          <Space>
-            <EnvironmentOutlined />
-            <Text>
-              {brand.city}
-              {brand.state ? `, ${brand.state}` : ""}
-              {brand.countryData ? `, ${brand.countryData.name}` : ""}
-            </Text>
-          </Space>
-        </div>
-
-        <div style={{ marginBottom: "8px" }}>
-          <Space>
-            <PhoneOutlined />
-            <Text>
-              {brand.brandPhoneNumber?.code} {brand.brandPhoneNumber?.number}
-            </Text>
-          </Space>
-        </div>
-
-        {brand.preferences?.preferredInfluencerCountries && (
-          <div style={{ marginTop: "12px" }}>
-            <Text strong style={{ display: "block", marginBottom: "4px" }}>
-              Target Countries:
-            </Text>
-            <Space size={[0, 8]} wrap>
-              {brand.preferences.preferredInfluencerCountries.map(
-                (country, index) => (
-                  <span
-                    key={index}
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <ReactCountryFlag
-                      countryCode={country.code}
-                      svg
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                        marginRight: "4px",
-                        borderRadius: "2px",
-                      }}
-                    />
-                    <Text>{country.name}</Text>
-                  </span>
-                )
-              )}
-            </Space>
-          </div>
-        )}
-      </div>
-    </Card>
   );
 };
 
