@@ -1,47 +1,30 @@
 export const testimonialData = [
     {
-        name: "John Smith",
-        img: '/images/sample1.png',
-        review: `While the copany wishes they had more time to work out the kinks
-            with the Teamollo, they are quite happy with the result of the
-            project. The resulting website that the teamdevoloped is fast and
-            the communication with the vender was very good. The company will
-            work with them again.`
+        name: "Lauren Contreras",
+        img: "/images/sample1.png",
+        rating: 4.9,
+        date: "29 Aug, 2023",
+        review: "They have awesome customer service. I wouldn't recommend going to anyone else. All of you guys are awesome. Definitely love the way the platform works!"
     },
     {
-        name: "John Smith",
-        img: '/images/sample1.png',
-        review: `While the copany wishes they had more time to work out the kinks
-            with the Teamollo, they are quite happy with the result of the
-            project. The resulting website that the teamdevoloped is fast and
-            the communication with the vender was very good. The company will
-            work with them again.`
+        name: "Edward Alexander",
+        img: "/images/sample1.png",
+        rating: 4.9,
+        date: "29 Aug, 2023",
+        review: "The brand matching algorithm is incredible! I've found partnerships that perfectly align with my content style. The platform makes collaboration seamless and professional."
     },
     {
-        name: "John Smith",
-        img: '/images/sample1.png',
-        review: `While the copany wishes they had more time to work out the kinks
-            with the Teamollo, they are quite happy with the result of the
-            project. The resulting website that the teamdevoloped is fast and
-            the communication with the vender was very good. The company will
-            work with them again.`
+        name: "Diana Johnston",
+        img: "/images/sample1.png",
+        rating: 4.9,
+        date: "29 Aug, 2023",
+        review: "As a content creator, this platform has transformed how I work with brands. The analytics tools and campaign management features are exactly what I needed."
     },
     {
-        name: "John Smith",
-        img: '/images/sample1.png',
-        review: `While the copany wishes they had more time to work out the kinks
-            with the Teamollo, they are quite happy with the result of the
-            project. The resulting website that the teamdevoloped is fast and
-            the communication with the vender was very good. The company will
-            work with them again.`
-    },
-    {
-        name: "John Smith",
-        img: '/images/sample1.png',
-        review: `While the copany wishes they had more time to work out the kinks
-            with the Teamollo, they are quite happy with the result of the
-            project. The resulting website that the teamdevoloped is fast and
-            the communication with the vender was very good. The company will
-            work with them again.`
-    },
-]
+        name: "Michael Chen",
+        img: "/images/sample1.png",
+        rating: 4.9,
+        date: "28 Aug, 2023",
+        review: "The verification process is thorough and gives brands confidence. I've seen a significant increase in collaboration requests since joining the platform."
+    }
+];

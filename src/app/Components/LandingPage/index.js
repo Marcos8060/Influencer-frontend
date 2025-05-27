@@ -11,7 +11,7 @@ import Footer from "../Footer";
 const LandingPage = () => {
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <HeroSection />
       <Achievements />
       <Highlights />
