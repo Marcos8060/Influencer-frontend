@@ -6,9 +6,19 @@ import Image from "next/image";
 
 const HeroSection = () => {
   return (
-    <div className="relative bg-gradient-to-br from-primary/10 to-secondary/5 min-h-screen">
+    <div className="relative bg-gradient-to-br from-primary/30 to-secondary/5 min-h-screen overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-20 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+      <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl opacity-30 mix-blend-multiply animate-pulse" />
+
       {/* Navigation */}
-      <nav className="flex justify-between items-center py-6 px-8">
+      <nav className="relative flex justify-between items-center py-6 px-8">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-white text-lg font-bold">B</span>
@@ -32,7 +42,7 @@ const HeroSection = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-8 pt-12">
+      <div className="container mx-auto px-8 pt-12 relative">
         <div className="flex flex-col lg:flex-row gap-16">
           {/* Left Section */}
           <div className="lg:w-1/2 space-y-8 pt-8">
@@ -60,15 +70,15 @@ const HeroSection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
-                href="/influencer"
-                className="bg-primary text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-primary/90 transition-transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 group"
+                href="/influencer/influencer-landing-page"
+                className="bg-primary text-white px-8 py-4 rounded-full font-light hover:bg-primary/90 transition-transform shadow-lg flex items-center justify-center gap-2 group"
               >
                 For Creators
                 <IoIosArrowForward className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="/brand"
-                className="bg-secondary text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-secondary/90 transition-transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 group"
+                className="bg-secondary text-white px-8 py-4 rounded-full font-light hover:bg-secondary/90 transition-transform shadow-lg flex items-center justify-center gap-2 group"
               >
                 For Brands
                 <IoIosArrowForward className="group-hover:translate-x-1 transition-transform" />
@@ -157,7 +167,7 @@ const HeroSection = () => {
             </div>
 
             {/* Small Creator Avatars */}
-            <div className="flex gap-4 absolute -bottom-8 right-4">
+            <div className="flex gap-4 absolute bottom-2 right-4">
               {[
                 "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2788&auto=format&fit=crop",
                 "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2787&auto=format&fit=crop",
@@ -179,6 +189,30 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating Elements */}
+      <div className="absolute top-20 left-10 animate-float">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm" />
+      </div>
+      <div className="absolute bottom-20 right-10 animate-pulse">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-secondary/10 to-primary/10 backdrop-blur-sm" />
+      </div>
+
+      {/* Custom Grid Pattern */}
+      <style jsx>{`
+        .bg-grid-primary\/5 {
+          background-size: 30px 30px;
+          background-image: linear-gradient(to right, rgba(54,128,161,0.05) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(54,128,161,0.05) 1px, transparent 1px);
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };

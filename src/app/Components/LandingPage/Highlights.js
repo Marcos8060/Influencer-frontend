@@ -67,14 +67,22 @@ const Highlights = () => {
     <div className="relative py-24 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 -z-10" />
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl -z-10 animate-pulse" />
+      
+      {/* Grid Pattern */}
+      <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-8">
+      {/* Gradient Orbs */}
+      <div className="absolute top-20 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10 opacity-50 mix-blend-multiply" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl -z-10 opacity-50 mix-blend-multiply" />
+      <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl opacity-30 mix-blend-multiply animate-pulse" />
+
+      <div className="max-w-7xl mx-auto px-8 relative">
         {/* Header Section */}
-        <div className="text-center space-y-4 mb-16">
+        <div className="text-center space-y-4 mb-16 relative">
           <span className="text-primary font-medium">PLATFORM FEATURES</span>
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-4xl font-bold">
             Powerful Tools for Growth
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
@@ -94,7 +102,7 @@ const Highlights = () => {
         </div>
 
         {/* Bottom Section - Call to Action */}
-        <div className="mt-20 text-center">
+        <div className="mt-20 text-center relative">
           <div className="inline-block bg-gradient-to-r from-primary to-secondary p-[1px] rounded-full hover:scale-105 transition-transform">
             <Link href="/register" className="block bg-gray-900 rounded-full px-8 py-4 hover:bg-gray-800/80 transition-colors">
               <div className="flex items-center gap-3 text-white">
@@ -108,16 +116,21 @@ const Highlights = () => {
         </div>
 
         {/* Floating Elements */}
-        <div className="absolute top-20 right-10 animate-float">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm" />
+        <div className="absolute top-20 left-10 animate-float">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm" />
         </div>
-        <div className="absolute bottom-20 left-10 animate-pulse">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm" />
+        <div className="absolute bottom-20 right-10 animate-pulse">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-secondary/10 to-primary/10 backdrop-blur-sm" />
         </div>
       </div>
 
-      {/* Custom Animation */}
+      {/* Custom Styles */}
       <style jsx>{`
+        .bg-grid-primary\/5 {
+          background-size: 30px 30px;
+          background-image: linear-gradient(to right, rgba(54,128,161,0.05) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(54,128,161,0.05) 1px, transparent 1px);
+        }
         @keyframes float {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-20px); }

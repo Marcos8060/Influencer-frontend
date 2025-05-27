@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Footer from "@/app/Components/Footer";
 
 const stats = [
   { value: "1M+", label: "Monthly Reach" },
@@ -144,9 +145,9 @@ export default function InfluencerLandingPage() {
                 Join our community of creators and turn your passion into a thriving career. Get the tools, insights, and support you need to grow.
               </p>
               <div className="flex items-center space-x-4">
-                <button className="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
+                <Link href="/auth/login/influencer" className="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
                   Start Creating
-                </button>
+                </Link>
                 <button className="px-8 py-3 text-primary hover:bg-primary/5 rounded-full transition-colors">
                   See How It Works
                 </button>
@@ -313,6 +314,7 @@ export default function InfluencerLandingPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

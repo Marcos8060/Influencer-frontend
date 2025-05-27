@@ -20,11 +20,11 @@ export const testimonialData = [
         date: "29 Aug, 2023",
         review: "As a content creator, this platform has transformed how I work with brands. The analytics tools and campaign management features are exactly what I needed."
     },
-    {
-        name: "Michael Chen",
-        img: "/images/b1.png",
-        rating: 4.9,
-        date: "28 Aug, 2023",
-        review: "The verification process is thorough and gives brands confidence. I've seen a significant increase in collaboration requests since joining the platform."
-    }
+    // {
+    //     name: "Michael Chen",
+    //     img: "/images/b1.png",
+    //     rating: 4.9,
+    //     date: "28 Aug, 2023",
+    //     review: "The verification process is thorough and gives brands confidence. I've seen a significant increase in collaboration requests since joining the platform."
+    // }
 ];
