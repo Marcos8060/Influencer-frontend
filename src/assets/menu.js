@@ -80,6 +80,12 @@ export const menu = [
     icon: <FaUserEdit />,
     role: ["Influencer"],
   },
+  {
+    label: "My Profile",
+    path: "/onboarding/brand/brand-profile",
+    icon: <FaUserEdit />,
+    role: ["Brand"],
+  },
   // {
   //   label: "Opportunities",
   //   path: "",
