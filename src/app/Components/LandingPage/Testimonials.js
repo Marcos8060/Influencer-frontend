@@ -19,59 +19,41 @@ const Testimonials = () => {
     <div className="relative py-24 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">
-            Customer Reviews
-          </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto" />
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-1 bg-primary"></div>
+            <h2 className="text-2xl font-bold">
+              What our Influencers say about us
+            </h2>
+          </div>
         </div>
 
         {/* Timeline Reviews */}
         <div className="max-w-4xl mx-auto">
-          <div className="relative flex">
-            {/* Profile Images Column */}
-            <div className="relative w-[180px] flex-shrink-0">
-              {/* Perfect Convex Curve */}
-              <svg
-                className="absolute left-0 top-0 h-full"
-                width="180"
-                viewBox="0 0 180 600"
-                fill="none"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M160 0 
-                     C160 150, 160 200, 160 250
-                     C160 300, 40 300, 40 300
-                     C40 300, 160 300, 160 350
-                     C160 400, 160 450, 160 600"
-                  stroke="url(#gradient)"
-                  strokeWidth="2"
-                  fill="none"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="var(--primary)" />
-                    <stop offset="50%" stopColor="var(--secondary)" />
-                    <stop offset="100%" stopColor="var(--primary)" />
-                  </linearGradient>
-                </defs>
-              </svg>
-
+          <div className="relative flex min-h-[350px]">
+            {/* Profile Images Column with Curved Path */}
+            <div className="relative w-[140px] flex-shrink-0">
               {/* Profile Images */}
               {testimonialData.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`absolute transition-all duration-700 ease-in-out ${
+                  className={`absolute left-0 transition-all duration-700 ease-in-out ${
                     getImagePosition(index, activeIndex, testimonialData.length)
                   }`}
+                  style={{
+                    transform: `translate(${getCurveOffset(
+                      index,
+                      activeIndex,
+                      testimonialData.length
+                    )}px, -50%)`
+                  }}
                 >
                   <div
                     className={`relative transition-all duration-700 ${
-                      index === activeIndex ? "scale-125" : "scale-75 opacity-50"
+                      index === activeIndex ? "scale-110" : "scale-90 opacity-50"
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                    <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-white/10">
                       <Image
                         src={testimonial.img}
                         alt={testimonial.name}
@@ -79,43 +61,40 @@ const Testimonials = () => {
                         className="object-cover"
                       />
                     </div>
-                    {index === activeIndex && (
-                      <div className="absolute -right-1 -top-1 w-3 h-3 rounded-full bg-gradient-to-r from-primary to-secondary" />
-                    )}
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Reviews Column */}
-            <div className="flex-grow">
+            <div className="flex-grow pl-8 relative">
               {testimonialData.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`transition-all duration-700 ${
+                  className={`absolute top-1/2 -translate-y-1/2 w-full transition-all duration-700 ${
                     index === activeIndex
                       ? "opacity-100 translate-x-0"
-                      : "opacity-0 translate-x-8 absolute"
+                      : "opacity-0 translate-x-8 pointer-events-none"
                   }`}
                 >
                   {index === activeIndex && (
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 relative">
-                      <div className="mb-4">
-                        <h3 className="text-lg font-medium">{testimonial.name}</h3>
-                        <div className="flex items-center gap-2">
-                          <div className="flex">
-                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                          </div>
-                          <span className="text-gray-400 text-sm">
+                    <div className="relative">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-base font-medium">{testimonial.name}</h3>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-primary fill-primary" />
+                          <span className="text-sm text-gray-400">
                             {testimonial.rating} on {testimonial.date}
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-300 text-sm leading-relaxed">
-                        {testimonial.review}
-                      </p>
-                      <div className="absolute top-6 right-6 text-4xl text-primary/20 font-serif">
-                        "
+                      <div className="relative">
+                        <div className="absolute -left-6 top-0 text-6xl text-gray-300/10 font-serif leading-none">
+                          "
+                        </div>
+                        <p className="text-gray-400 text-sm leading-relaxed pl-4">
+                          {testimonial.review}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -123,21 +102,6 @@ const Testimonials = () => {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Navigation Dots */}
-        <div className="flex justify-center gap-2 mt-12">
-          {testimonialData.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === activeIndex
-                  ? "bg-gradient-to-r from-primary to-secondary w-8"
-                  : "bg-gray-600"
-              }`}
-            />
-          ))}
         </div>
       </div>
     </div>
@@ -147,9 +111,9 @@ const Testimonials = () => {
 // Helper function to calculate image positions
 const getImagePosition = (index, activeIndex, total) => {
   const positions = {
-    top: "left-[160px] top-[20%] -translate-y-1/2",
-    middle: "left-[40px] top-[50%] -translate-y-1/2",
-    bottom: "left-[160px] top-[80%] -translate-y-1/2"
+    top: "top-[30%]",
+    middle: "top-[50%]",
+    bottom: "top-[70%]"
   };
 
   // Calculate relative position
@@ -158,6 +122,16 @@ const getImagePosition = (index, activeIndex, total) => {
   if (position === 0) return positions.middle;
   if (position === 1 || position === -3) return positions.bottom;
   return positions.top;
+};
+
+// Helper function to calculate horizontal offset for curve
+const getCurveOffset = (index, activeIndex, total) => {
+  let position = (index - activeIndex + total) % total;
+  
+  // Calculate horizontal offset based on position
+  if (position === 0) return 25; // Middle point - further reduced curve
+  if (position === 1 || position === -3) return 6; // Bottom point
+  return 6; // Top point
 };
 
 export default Testimonials;
