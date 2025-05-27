@@ -4,7 +4,12 @@ const webpack = require('webpack');
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['res.cloudinary.com', 'scontent-sof1-2.cdninstagram.com', 'p16-sign-sg.tiktokcdn.com','images.unsplash.com'],
+    domains: [
+      '1000logos.net',
+      'www.google.com',
+      'upload.wikimedia.org',
+      'images.unsplash.com'
+    ],
   },
   // Add this for development only (remove for production)
   async headers() {
