@@ -28,7 +28,7 @@ const BrandChat = () => {
   const { user } = useContext(authContext);
   const userId = user?.user_id;
   const auth = useAuth();
-  
+
   // Window size hook for responsive design
   const { width } = useWindowSize();
   const isMobile = width < 768;
@@ -143,25 +143,25 @@ const BrandChat = () => {
 
   // Message handlers
   const handleChatHistory = useCallback((data) => {
-    if (!data.messages?.length) return;
+      if (!data.messages?.length) return;
 
-    const sortedMessages = [...data.messages].sort(
-      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-    );
+      const sortedMessages = [...data.messages].sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      );
 
     setSelectedChatMessages(sortedMessages);
     
     // Update last message in chat list
-    const lastMessage = sortedMessages[sortedMessages.length - 1];
+            const lastMessage = sortedMessages[sortedMessages.length - 1];
     setChats(prev => prev.map(chat => {
       if (chat.id === activeChat) {
-        return {
-          ...chat,
+            return {
+              ...chat,
           lastMessage: lastMessage.message,
           time: formatTime(lastMessage.timestamp)
-        };
-      }
-      return chat;
+            };
+          }
+          return chat;
     }));
 
     // Scroll to bottom
@@ -226,14 +226,14 @@ const BrandChat = () => {
       // Existing chat
       return prev.map(chat => {
         if (chat.id === chatId) {
-          return {
-            ...chat,
-            lastMessage: messageData.message,
-            time: formatTime(messageData.timestamp),
+            return {
+              ...chat,
+              lastMessage: messageData.message,
+              time: formatTime(messageData.timestamp),
             unread: isMe || activeChat === chatId ? 0 : chat.unread + 1
-          };
-        }
-        return chat;
+            };
+          }
+          return chat;
       });
     });
 
@@ -248,27 +248,27 @@ const BrandChat = () => {
   const handleAllChats = useCallback((data) => {
     if (!data.messages?.length) {
       antdMessage.info('No chat history yet');
-      return;
-    }
+        return;
+      }
 
     const formattedChats = data.messages
       .map(chatGroup => {
         if (!chatGroup.user) return null;
 
-        return {
+          return {
           id: chatGroup.user.user_id,
           name: chatGroup.user.user_name,
           chatGroupId: chatGroup.chatGroupId,
           avatar: chatGroup.user.user_photo || chatGroup.user.user_name?.charAt(0) || 'U',
           lastMessage: '',
-          time: formatTime(chatGroup.created_at),
-          unread: 0,
+            time: formatTime(chatGroup.created_at),
+            unread: 0,
           messages: []
-        };
-      })
+          };
+        })
       .filter(chat => chat !== null);
 
-    setChats(formattedChats);
+      setChats(formattedChats);
   }, [formatTime]);
 
   // Chat actions
@@ -386,8 +386,8 @@ const BrandChat = () => {
             <div className="flex-1 flex items-center justify-center text-gray-500">
               Select a chat to start messaging
             </div>
-          )}
-        </div>
+                    )}
+                  </div>
       }
       isMobile={isMobile}
       showSidebar={showSidebar}
@@ -399,7 +399,7 @@ const BrandChat = () => {
 export default function BrandChatPage() {
   return (
     <Suspense fallback={
-      <div className="p-4 text-center">Loading Brand chat...</div>
+        <div className="p-4 text-center">Loading Brand chat...</div>
     }>
       <BrandChat />
     </Suspense>

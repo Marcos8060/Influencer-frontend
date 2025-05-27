@@ -321,8 +321,8 @@ const CampaignReporting = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-                  Summer Collection Campaign
-                </h1>
+              Summer Collection Campaign
+            </h1>
                 <Tag color="green" className="flex items-center gap-1">
                   <Clock size={14} /> Active
                 </Tag>
@@ -341,7 +341,7 @@ const CampaignReporting = () => {
                   <span>Beauty & Fashion</span>
                 </div>
               </div>
-            </div>
+          </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <Dropdown
@@ -366,12 +366,12 @@ const CampaignReporting = () => {
                 Export Report
               </Button>
 
-              <Button
-                type="primary"
+            <Button
+              type="primary"
                 icon={<BarChart3 size={16} />}
                 className="bg-primary hover:bg-primary-dark flex items-center gap-2"
-              >
-                Advanced Analytics
+            >
+              Advanced Analytics
               </Button>
 
               <Tooltip title="Refresh data">
@@ -401,7 +401,7 @@ const CampaignReporting = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-1">
                     <span className="text-sm text-gray-500 font-medium">
-                      {stat.title}
+                    {stat.title}
                     </span>
                     <div className="flex items-baseline gap-2">
                       <h3 className="text-2xl font-bold">{stat.value}</h3>
@@ -425,7 +425,7 @@ const CampaignReporting = () => {
                   className="mb-2"
                 />
                 <p className="text-xs text-gray-500">{stat.description}</p>
-              </Card>
+            </Card>
             </motion.div>
           ))}
         </div>
@@ -443,14 +443,14 @@ const CampaignReporting = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Button icon={<Filter size={16} />}>Filters</Button>
-                <Button
-                  type="primary"
+                  <Button
+                    type="primary"
                   icon={<Users size={16} />}
                   className="bg-primary hover:bg-primary-dark"
-                >
-                  Add Influencers
-                </Button>
-              </div>
+                  >
+                    Add Influencers
+                  </Button>
+                </div>
             </div>
           </div>
 
@@ -458,11 +458,11 @@ const CampaignReporting = () => {
             activeKey={activeTab}
             onChange={setActiveTab}
             className="px-6"
-            items={[
-              {
-                key: "1",
-                label: "All Influencers",
-                children: (
+              items={[
+                {
+                  key: "1",
+                  label: "All Influencers",
+                  children: (
                   <div className="space-y-6 py-4">
                     {loading ? (
                       Array(3).fill(null).map((_, i) => (
@@ -519,8 +519,8 @@ const CampaignReporting = () => {
                                         <Users size={16} />
                                         <span className="text-sm font-medium">
                                           Reach
-                                        </span>
-                                      </div>
+                                    </span>
+                                  </div>
                                       <p className="text-xl font-bold">
                                         {influencer.reach}
                                       </p>
@@ -529,7 +529,7 @@ const CampaignReporting = () => {
                                       <div className="flex items-center gap-2 text-gray-500 mb-1">
                                         <Zap size={16} />
                                         <span className="text-sm font-medium">
-                                          Engagement
+                                        Engagement
                                         </span>
                                       </div>
                                       <p className="text-xl font-bold">
@@ -540,22 +540,22 @@ const CampaignReporting = () => {
                                       <div className="flex items-center gap-2 text-gray-500 mb-1">
                                         <Award size={16} />
                                         <span className="text-sm font-medium">
-                                          Completion
+                                        Completion
                                         </span>
                                       </div>
                                       <div className="space-y-2">
-                                        <Progress
-                                          percent={influencer.completion}
+                                      <Progress
+                                        percent={influencer.completion}
                                           strokeColor={{
                                             '0%': '#3680A1',
                                             '100%': '#5373d4',
                                           }}
-                                          showInfo={false}
-                                          size="small"
-                                        />
+                                        showInfo={false}
+                                        size="small"
+                                      />
                                         <p className="text-sm font-semibold">
-                                          {influencer.completion}%
-                                        </p>
+                                        {influencer.completion}%
+                                      </p>
                                       </div>
                                     </div>
                                   </div>
@@ -580,8 +580,8 @@ const CampaignReporting = () => {
                                     key={post.id}
                                     className="relative group rounded-xl overflow-hidden"
                                   >
-                                    <img
-                                      src={post.image}
+                                        <img
+                                          src={post.image}
                                       alt=""
                                       className="w-full h-48 object-cover"
                                     />
@@ -590,16 +590,16 @@ const CampaignReporting = () => {
                                         <div className="flex justify-between text-white text-sm">
                                           <span className="flex items-center gap-1">
                                             <HeartFilled /> {post.likes}
-                                          </span>
+                                            </span>
                                           <span className="flex items-center gap-1">
                                             <MessageFilled /> {post.comments}
-                                          </span>
+                                            </span>
                                           <span className="flex items-center gap-1">
                                             <Share2 size={14} /> {post.shares}
-                                          </span>
+                                            </span>
                                         </div>
                                         <p className="text-white text-xs mt-2">
-                                          {post.date}
+                                        {post.date}
                                         </p>
                                       </div>
                                     </div>
@@ -611,11 +611,11 @@ const CampaignReporting = () => {
                         </motion.div>
                       ))
                     )}
-                  </div>
-                ),
-              },
-              {
-                key: "2",
+                    </div>
+                  ),
+                },
+                {
+                  key: "2",
                 label: "Top Performing",
                 children: <div className="p-6">Top performing content here</div>,
               },
@@ -623,9 +623,9 @@ const CampaignReporting = () => {
                 key: "3",
                 label: "Pending Review",
                 children: <div className="p-6">Content pending review here</div>,
-              },
-            ]}
-          />
+                },
+              ]}
+            />
         </Card>
 
         {/* Top Performing Media - Instagram Reels Style */}
@@ -635,7 +635,7 @@ const CampaignReporting = () => {
         >
           <div className="p-6 border-b border-input">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <div>
+            <div>
                 <h2 className="text-xl font-bold">Top Performing Content</h2>
                 <p className="text-gray-500">Highest engagement reels from your campaign</p>
               </div>
@@ -661,15 +661,15 @@ const CampaignReporting = () => {
             <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
               {topMedia.map((media, index) => (
                 <motion.div
-                  key={media.id}
+                key={media.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className="group snap-start"
-                >
+              >
                   <div className="relative w-[280px] aspect-[9/16] rounded-2xl overflow-hidden border border-input shadow-sm hover:shadow-lg transition-all duration-300 bg-black">
-                    <img
-                      src={media.image}
+                  <img
+                    src={media.image}
                       alt="Media content"
                       className="w-full h-full object-cover opacity-95 group-hover:opacity-100 transition-opacity duration-300"
                     />
@@ -703,9 +703,9 @@ const CampaignReporting = () => {
                           </div>
                           <Tag
                             className="flex items-center gap-1 bg-white/10 text-white border-0"
-                          >
-                            {getPlatformIcon(media.platform)}
-                          </Tag>
+                      >
+                        {getPlatformIcon(media.platform)}
+                      </Tag>
                         </div>
                       </div>
 
@@ -761,19 +761,19 @@ const CampaignReporting = () => {
                           <div className="flex items-center gap-2 text-white/80">
                             <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-pulse" />
                             <span className="text-xs">Original Audio - Summer Beats</span>
-                          </div>
-                        </div>
-                      </div>
                     </div>
+                  </div>
+                </div>
+                  </div>
 
                     {/* Rank indicator */}
                     <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-br-xl flex items-center justify-center">
                       <span className="text-white font-bold">{media.id}</span>
-                    </div>
+                </div>
                   </div>
                 </motion.div>
               ))}
-            </div>
+              </div>
           </div>
         </Card>
       </div>
