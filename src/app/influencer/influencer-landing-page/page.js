@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Footer from "@/app/Components/Footer";
 
 const stats = [
   { value: "1M+", label: "Monthly Reach" },
@@ -104,12 +105,12 @@ export default function InfluencerLandingPage() {
             <Link href="#faq" className="text-gray hover:text-primary transition-colors">
               FAQ
             </Link>
-            <button className="px-6 py-2 bg-[#18181B] text-white rounded-full flex items-center space-x-2 hover:bg-[#27272A] transition-colors">
+            <Link href="/auth/login/influencer" className="px-6 py-2 bg-[#18181B] text-white rounded-full flex items-center space-x-2 hover:bg-[#27272A] transition-colors">
               Join as Creator
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -144,9 +145,9 @@ export default function InfluencerLandingPage() {
                 Join our community of creators and turn your passion into a thriving career. Get the tools, insights, and support you need to grow.
               </p>
               <div className="flex items-center space-x-4">
-                <button className="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
+                <Link href="/auth/login/influencer" className="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
                   Start Creating
-                </button>
+                </Link>
                 <button className="px-8 py-3 text-primary hover:bg-primary/5 rounded-full transition-colors">
                   See How It Works
                 </button>
@@ -313,6 +314,7 @@ export default function InfluencerLandingPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

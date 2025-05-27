@@ -16,23 +16,33 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <div className="relative py-24 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="relative py-24 overflow-hidden bg-gradient-to-b from-gray/5 via-white to-primary/5">
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+      <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
+
+      <div className="max-w-6xl mx-auto px-4 relative">
         {/* Header */}
-        <div className="mb-16">
+        <div className="mb-16 relative">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-1 bg-primary"></div>
-            <h2 className="text-2xl font-bold">
-              What our Influencers say about us
+            <div className="w-8 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+            <h2 className="text-3xl font-bold">
+              What our Clients say about us
             </h2>
           </div>
         </div>
 
         {/* Timeline Reviews */}
-        <div className="max-w-4xl mx-auto">
-          <div className="relative flex min-h-[350px]">
+        <div className="max-w-4xl mx-auto relative">
+          <div className="relative flex min-h-[400px]">
             {/* Profile Images Column with Curved Path */}
-            <div className="relative w-[140px] flex-shrink-0">
+            <div className="relative w-[200px] flex-shrink-0">
               {/* Profile Images */}
               {testimonialData.map((testimonial, index) => (
                 <div
@@ -50,15 +60,17 @@ const Testimonials = () => {
                 >
                   <div
                     className={`relative transition-all duration-700 ${
-                      index === activeIndex ? "scale-110" : "scale-90 opacity-50"
+                      index === activeIndex 
+                        ? "scale-110" 
+                        : "scale-90 opacity-50 hover:opacity-75 hover:scale-95"
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-full overflow-hidden relative border-2 border-white/10">
+                    <div className="w-20 h-20 rounded-full overflow-hidden relative">
                       <Image
                         src={testimonial.img}
                         alt={testimonial.name}
                         fill
-                        className="object-cover"
+                        className="object-cover hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                   </div>
@@ -67,7 +79,7 @@ const Testimonials = () => {
             </div>
 
             {/* Reviews Column */}
-            <div className="flex-grow pl-8 relative">
+            <div className="flex-grow pl-12 relative">
               {testimonialData.map((testimonial, index) => (
                 <div
                   key={index}
@@ -79,22 +91,29 @@ const Testimonials = () => {
                 >
                   {index === activeIndex && (
                     <div className="relative">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-base font-medium">{testimonial.name}</h3>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-primary fill-primary" />
-                          <span className="text-sm text-gray-400">
+                      <div className="flex items-center gap-3 mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900">{testimonial.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <Star className="w-5 h-5 text-primary fill-primary" />
+                          <span className="text-sm text-gray-500">
                             {testimonial.rating} on {testimonial.date}
                           </span>
                         </div>
                       </div>
                       <div className="relative">
-                        <div className="absolute -left-6 top-0 text-6xl text-gray-300/10 font-serif leading-none">
+                        {/* Opening Quote */}
+                        <div className="absolute -left-8 -top-6 text-8xl text-primary/10 font-serif leading-none select-none">
                           "
                         </div>
-                        <p className="text-gray-400 text-sm leading-relaxed pl-4">
-                          {testimonial.review}
-                        </p>
+                        {/* Closing Quote */}
+                        <div className="absolute -right-4 bottom-0 text-8xl text-primary/10 font-serif leading-none select-none">
+                          "
+                        </div>
+                        <div className="relative z-10 bg-white/30 backdrop-blur-sm rounded-2xl p-6 shadow-[0_0_1px_rgba(0,0,0,0.05)]">
+                          <p className="text-gray-600 text-base leading-relaxed">
+                            {testimonial.review}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -104,6 +123,15 @@ const Testimonials = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Grid Pattern */}
+      <style jsx>{`
+        .bg-grid-primary\/5 {
+          background-size: 30px 30px;
+          background-image: linear-gradient(to right, rgba(54,128,161,0.05) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(54,128,161,0.05) 1px, transparent 1px);
+        }
+      `}</style>
     </div>
   );
 };
@@ -111,9 +139,9 @@ const Testimonials = () => {
 // Helper function to calculate image positions
 const getImagePosition = (index, activeIndex, total) => {
   const positions = {
-    top: "top-[30%]",
+    top: "top-[25%]",
     middle: "top-[50%]",
-    bottom: "top-[70%]"
+    bottom: "top-[75%]"
   };
 
   // Calculate relative position
@@ -129,9 +157,9 @@ const getCurveOffset = (index, activeIndex, total) => {
   let position = (index - activeIndex + total) % total;
   
   // Calculate horizontal offset based on position
-  if (position === 0) return 25; // Middle point - further reduced curve
-  if (position === 1 || position === -3) return 6; // Bottom point
-  return 6; // Top point
+  if (position === 0) return 40; // Middle point - increased offset for larger images
+  if (position === 1 || position === -3) return 10; // Bottom point
+  return 10; // Top point
 };
 
 export default Testimonials;
