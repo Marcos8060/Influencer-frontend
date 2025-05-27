@@ -12,13 +12,13 @@ const HeroSection = () => {
         <h1 className="text-2xl font-bold">Creators</h1>
         <div className="flex gap-4">
           <Link
-            href="/auth/login"
+            href="/auth/login/brand"
             className="px-6 py-2 hover:text-primary transition-colors"
           >
             Login
           </Link>
           <Link
-            href="/auth/register"
+            href="/auth/register/brand"
             className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
           >
             Register
