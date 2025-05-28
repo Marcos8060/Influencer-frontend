@@ -94,7 +94,7 @@ export const menu = [
   // },
   {
     label: "Collaboration",
-    path: "",
+    path: "/",
     icon: <FaUsers />,
     role: ["Influencer", "Brand"],
   },
@@ -112,7 +112,7 @@ export const menu = [
   },
   {
     label: "Settings",
-    path: "",
+    path: "/",
     icon: <IoMdSettings />,
     role: ["Influencer", "Brand"],
   },
