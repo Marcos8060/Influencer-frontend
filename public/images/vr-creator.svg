@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>Digital Creator</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="gradient">
+            <stop stop-color="#6366F1" offset="0%"/>
+            <stop stop-color="#818CF8" offset="100%"/>
+        </linearGradient>
+    </defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <!-- VR Headset -->
+        <path d="M300,250 L500,250 C550,250 580,280 580,330 L580,370 C580,420 550,450 500,450 L300,450 C250,450 220,420 220,370 L220,330 C220,280 250,250 300,250 Z" fill="#2A2A2A"/>
+        <path d="M280,270 L320,270 L320,430 L280,430 C260,430 240,410 240,390 L240,310 C240,290 260,270 280,270 Z" fill="#1A1A1A"/>
+        <path d="M480,270 L520,270 C540,270 560,290 560,310 L560,390 C560,410 540,430 520,430 L480,430 L480,270 Z" fill="#1A1A1A"/>
+        
+        <!-- Glowing Elements -->
+        <circle cx="400" cy="350" r="30" fill="url(#gradient)" opacity="0.8"/>
+        <path d="M360,350 C360,328 378,310 400,310 C422,310 440,328 440,350 C440,372 422,390 400,390 C378,390 360,372 360,350 Z" stroke="url(#gradient)" stroke-width="4" opacity="0.6"/>
+        
+        <!-- Decorative Lines -->
+        <path d="M220,340 L200,340 L180,360 L180,380" stroke="url(#gradient)" stroke-width="2" opacity="0.4"/>
+        <path d="M580,340 L600,340 L620,360 L620,380" stroke="url(#gradient)" stroke-width="2" opacity="0.4"/>
+        
+        <!-- Abstract Background Elements -->
+        <circle cx="200" cy="200" r="5" fill="url(#gradient)" opacity="0.3"/>
+        <circle cx="600" cy="200" r="5" fill="url(#gradient)" opacity="0.3"/>
+        <circle cx="400" cy="150" r="3" fill="url(#gradient)" opacity="0.3"/>
+        <circle cx="300" cy="500" r="4" fill="url(#gradient)" opacity="0.3"/>
+        <circle cx="500" cy="500" r="4" fill="url(#gradient)" opacity="0.3"/>
+    </g>
+</svg> 

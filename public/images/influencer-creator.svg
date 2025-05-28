@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>Content Creator</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="gradient">
+            <stop stop-color="#FF6B6B" offset="0%"/>
+            <stop stop-color="#FF8E8E" offset="100%"/>
+        </linearGradient>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="gradient2">
+            <stop stop-color="#4A90E2" offset="0%"/>
+            <stop stop-color="#67B8F7" offset="100%"/>
+        </linearGradient>
+    </defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <!-- Smartphone -->
+        <rect x="350" y="200" width="100" height="180" rx="10" fill="#2A2A2A"/>
+        <rect x="355" y="205" width="90" height="170" rx="8" fill="#FFFFFF"/>
+        
+        <!-- Camera Lens -->
+        <circle cx="400" cy="220" r="5" fill="#2A2A2A"/>
+        
+        <!-- Social Media Icons -->
+        <g transform="translate(365, 240)">
+            <!-- Instagram-style Icon -->
+            <rect x="0" y="0" width="25" height="25" rx="6" fill="url(#gradient)"/>
+            <rect x="5" y="5" width="15" height="15" rx="4" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+            <circle cx="12.5" cy="12.5" r="3" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+            <circle cx="19" cy="6" r="1.5" fill="#FFFFFF"/>
+        </g>
+        
+        <!-- Like, Comment, Share Icons -->
+        <g transform="translate(365, 280)">
+            <path d="M10,20 L0,10 L10,0 L20,10 L10,20" fill="url(#gradient)" opacity="0.9"/>
+            <rect x="30" y="5" width="20" height="15" rx="2" fill="url(#gradient2)" opacity="0.9"/>
+            <path d="M65,5 L75,12.5 L65,20" stroke="url(#gradient2)" stroke-width="2" opacity="0.9"/>
+        </g>
+        
+        <!-- Floating Elements -->
+        <!-- Camera -->
+        <g transform="translate(480, 250)">
+            <rect x="0" y="0" width="40" height="30" rx="4" fill="#2A2A2A"/>
+            <circle cx="20" cy="15" r="10" fill="#4A4A4A"/>
+            <circle cx="20" cy="15" r="8" fill="#2A2A2A"/>
+            <rect x="30" y="5" width="15" height="8" rx="2" fill="#4A4A4A"/>
+        </g>
+        
+        <!-- Ring Light -->
+        <circle cx="300" cy="300" r="40" stroke="url(#gradient2)" stroke-width="4" opacity="0.6"/>
+        <circle cx="300" cy="300" r="35" stroke="url(#gradient2)" stroke-width="2" opacity="0.4"/>
+        
+        <!-- Decorative Elements -->
+        <!-- Followers -->
+        <g transform="translate(500, 350)">
+            <circle cx="0" cy="0" r="8" fill="url(#gradient)" opacity="0.8"/>
+            <circle cx="15" cy="0" r="8" fill="url(#gradient2)" opacity="0.8"/>
+            <circle cx="30" cy="0" r="8" fill="url(#gradient)" opacity="0.8"/>
+            <text x="45" y="5" font-family="Arial" font-size="12" fill="#2A2A2A">10K+</text>
+        </g>
+        
+        <!-- Floating Hearts and Comments -->
+        <g>
+            <path d="M280,200 L270,190 L280,180 L290,190 L280,200" fill="url(#gradient)" opacity="0.6"/>
+            <path d="M500,200 L490,190 L500,180 L510,190 L500,200" fill="url(#gradient)" opacity="0.6"/>
+            <path d="M450,400 L440,390 L450,380 L460,390 L450,400" fill="url(#gradient)" opacity="0.6"/>
+        </g>
+        
+        <!-- Hashtag Cloud -->
+        <g transform="translate(250, 150)">
+            <text font-family="Arial" font-size="14" fill="#2A2A2A" opacity="0.6">#content</text>
+            <text x="30" y="20" font-family="Arial" font-size="14" fill="#2A2A2A" opacity="0.6">#creator</text>
+            <text x="-20" y="40" font-family="Arial" font-size="14" fill="#2A2A2A" opacity="0.6">#lifestyle</text>
+        </g>
+    </g>
+</svg> 
