@@ -103,249 +103,323 @@ const BrandRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-secondary/5">
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-lg"
-        >
-          {/* Card Container */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden text-color">
-            {/* Decorative Header */}
-            <div className="bg-gradient-to-r from-primary to-secondary h-2"></div>
+    <div className="min-h-screen flex">
+      {/* Left Section */}
+      <div className="hidden lg:flex lg:w-1/2 relative">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2670&auto=format&fit=crop"
+            alt="Brand Marketing Team"
+            className="w-full h-full object-cover"
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/80 to-secondary/90 backdrop-blur-[2px]"></div>
+        </div>
 
-            {/* Content */}
-            <div className="px-8 py-10">
-              {/* Logo/Branding Area */}
-              <div className="flex justify-center mb-6">
-                <div className="bg-gradient-to-r from-primary to-secondary p-3 rounded-full">
-                  <FaBuilding className="h-10 w-10 text-white" />
+        {/* Content */}
+        <div className="relative w-full p-12 flex flex-col justify-between text-white z-10">
+          <div className="w-12 h-12">
+            <FaBuilding className="w-full h-full opacity-80" />
+          </div>
+
+          <div className="space-y-8 max-w-lg">
+            <div className="space-y-6">
+              <h1 className="text-6xl font-bold leading-tight">
+                Connect with <br />
+                Top Creators
+              </h1>
+              <p className="text-xl leading-relaxed opacity-90">
+                Join leading brands leveraging authentic creator partnerships to drive growth and engagement.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 max-w-sm">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold">20K+</div>
+                <div className="text-sm opacity-80">Creators</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold">500+</div>
+                <div className="text-sm opacity-80">Brands</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold">95%</div>
+                <div className="text-sm opacity-80">Success Rate</div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </span>
+                <p>Access to verified, high-quality creators</p>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                  </svg>
+                </span>
+                <p>Real-time campaign analytics & ROI tracking</p>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                  </svg>
+                </span>
+                <p>Smart creator matching technology</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <div className="flex -space-x-2">
+              <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Brand" />
+              <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Brand" />
+              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Brand" />
+            </div>
+            <p className="text-sm opacity-80">Join leading brands already on our platform</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Section - Registration Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900">Register Your Brand</h2>
+            <p className="mt-2 text-gray-600">Connect with creators who align with your brand</p>
+          </div>
+
+          <form onSubmit={handleRegister} className="mt-8 space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  First Name
+                </label>
+                <div className="mt-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiUser className="text-gray-400" />
+                  </div>
+                  <InputComponent
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    className="pl-10 block w-full rounded-lg border-gray-300"
+                    placeholder="First Name"
+                  />
                 </div>
               </div>
 
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-                Brand Registration
-              </h1>
-              <p className="text-gray-500 text-center mb-6">
-                Create your brand account to connect with influencers
-              </p>
-
-              {/* Form */}
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      First Name*
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FiUser className="text-gray-400" />
-                      </div>
-                      <InputComponent
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        placeholder="John"
-                      />
-                    </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Last Name
+                </label>
+                <div className="mt-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiUser className="text-gray-400" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Last Name*
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FiUser className="text-gray-400" />
-                      </div>
-                      <InputComponent
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        placeholder="Doe"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email*
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiMail className="text-gray-400" />
-                    </div>
-                    <InputComponent
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      placeholder="brand@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number*
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiPhone className="text-gray-400" />
-                    </div>
-                    <InputComponent
-                      type="tel"
-                      name="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password*
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiLock className="text-gray-400" />
-                    </div>
-                    <InputComponent
-                      type={passwordVisible ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 pr-10 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={togglePasswordVisibility}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                      {passwordVisible ? (
-                        <IoEyeOffOutline className="text-lg" />
-                      ) : (
-                        <IoEyeOutline className="text-lg" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password*
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiLock className="text-gray-400" />
-                    </div>
-                    <InputComponent
-                      type={confirmPasswordVisible ? "text" : "password"}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      className="pl-10 pr-10 py-3 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={toggleConfirmPasswordVisibility}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    >
-                      {confirmPasswordVisible ? (
-                        <IoEyeOffOutline className="text-lg" />
-                      ) : (
-                        <IoEyeOutline className="text-lg" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                  <ButtonComponent
-                    type="submit"
-                    label={
-                      loading ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Creating account...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          Register Your Brand
-                        </span>
-                      )
-                    }
-                    disabled={loading}
-                    className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                      loading
-                        ? "bg-primary/70 cursor-not-allowed"
-                        : "bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark shadow-md"
-                    }`}
+                  <InputComponent
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="pl-10 block w-full rounded-lg border-gray-300"
+                    placeholder="Last Name"
                   />
-                </motion.div>
-              </form>
+                </div>
+              </div>
+            </div>
 
-              {/* Footer */}
-              <div className="mt-6 text-center text-sm text-gray-500">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Business Email
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiMail className="text-gray-400" />
+                </div>
+                <InputComponent
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="pl-10 block w-full rounded-lg border-gray-300"
+                  placeholder="company@example.com"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiPhone className="text-gray-400" />
+                </div>
+                <InputComponent
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  className="pl-10 block w-full rounded-lg border-gray-300"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className="text-gray-400" />
+                </div>
+                <InputComponent
+                  type={passwordVisible ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="pl-10 pr-10 block w-full rounded-lg border-gray-300"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {passwordVisible ? (
+                    <IoEyeOffOutline className="text-gray-400" />
+                  ) : (
+                    <IoEyeOutline className="text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className="text-gray-400" />
+                </div>
+                <InputComponent
+                  type={confirmPasswordVisible ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="pl-10 pr-10 block w-full rounded-lg border-gray-300"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {confirmPasswordVisible ? (
+                    <IoEyeOffOutline className="text-gray-400" />
+                  ) : (
+                    <IoEyeOutline className="text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                required
+                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              />
+              <label className="ml-2 block text-sm text-gray-700">
+                I agree to the Terms of Service and Privacy Policy
+              </label>
+            </div>
+
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+            >
+              <ButtonComponent
+                type="submit"
+                label={
+                  loading ? (
+                    <span className="flex items-center justify-center">
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Creating account...
+                    </span>
+                  ) : (
+                    "Start Collaborating"
+                  )
+                }
+                disabled={loading}
+                className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
+                  loading
+                    ? "bg-primary/70 cursor-not-allowed"
+                    : "bg-primary hover:bg-primary-dark"
+                }`}
+              />
+            </motion.div>
+
+            <div className="text-center text-sm">
+              <p className="text-gray-600">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login/brand"
                   className="font-medium text-primary hover:text-primary-dark"
                 >
-                  Login here
+                  Sign in
                 </Link>
-              </div>
-              <div className="mt-2 text-center text-xs text-gray-400">
-                Are you an influencer?{" "}
+              </p>
+              <p className="mt-2 text-gray-500">
+                Are you a creator?{" "}
                 <Link
                   href="/auth/register/influencer"
-                  className="text-primary hover:underline"
+                  className="text-primary hover:text-primary-dark"
                 >
-                  Register as influencer instead
+                  Register as creator instead
                 </Link>
-              </div>
+              </p>
             </div>
-          </div>
-
-          
-        </motion.div>
+          </form>
+        </div>
       </div>
     </div>
   );

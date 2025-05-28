@@ -8,7 +8,8 @@ const nextConfig = {
       '1000logos.net',
       'www.google.com',
       'upload.wikimedia.org',
-      'images.unsplash.com'
+      'images.unsplash.com',
+      'res.cloudinary.com'
     ],
   },
   // Add this for development only (remove for production)

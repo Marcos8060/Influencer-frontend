@@ -42,7 +42,7 @@ const BrandMenuChildren = ({ collapse }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {filteredMenus.map((item, index) => {
         const isParentOpen = openIndex === index;
         const hasActiveChild = item.children?.some(child => child.path === currentPath);
@@ -50,48 +50,105 @@ const BrandMenuChildren = ({ collapse }) => {
         const Icon = showChildren ? IoChevronDownOutline : IoChevronForward;
 
         return (
-          <div key={index} className="space-y-2">
+          <div key={index} className="relative">
             {!item.children ? (
               <Link
                 href={item.path}
-                className={`flex items-center ${collapse ? "justify-center" : "gap-4"} ${
+                className={`group flex items-center ${
+                  collapse ? "justify-center px-2" : "px-4"
+                } py-3 rounded-xl transition-all duration-200 ${
                   currentPath === item.path
-                    ? "bg-gradient-to-r from-primary to-secondary rounded-3xl px-3 py-3 text-background"
-                    : "text-color hover:bg-gray-100 rounded-3xl px-3 py-3"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-gray hover:bg-gray-50"
                 }`}
               >
-                <span>{item.icon}</span>
-                {!collapse && <span className="text-sm">{item.label}</span>}
+                <span className={`text-xl ${
+                  currentPath === item.path
+                    ? "text-white"
+                    : "text-gray group-hover:text-primary"
+                }`}>
+                  {item.icon}
+                </span>
+                {!collapse && (
+                  <span className={`ml-3 text-sm font-medium ${
+                    currentPath === item.path
+                      ? "text-white"
+                      : "text-gray group-hover:text-primary"
+                  }`}>
+                    {item.label}
+                  </span>
+                )}
+                {currentPath === item.path && !collapse && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                )}
               </Link>
             ) : (
               <>
-                <div
+                <button
                   onClick={() => handleMenuToggle(index)}
-                  className={`flex items-center justify-between cursor-pointer p-3 rounded-3xl ${
-                    hasActiveChild ? "bg-gray-100" : "hover:bg-gray-100"
+                  className={`group w-full flex items-center justify-between ${
+                    collapse ? "px-2" : "px-4"
+                  } py-3 rounded-xl transition-all duration-200 ${
+                    hasActiveChild
+                      ? "bg-gray-50"
+                      : "hover:bg-gray-50"
                   }`}
                 >
-                  <div className="flex items-center gap-4 text-color">
-                    <span>{item.icon}</span>
-                    {!collapse && <span className="text-sm">{item.label}</span>}
+                  <div className="flex items-center">
+                    <span className={`text-xl ${
+                      hasActiveChild
+                        ? "text-primary"
+                        : "text-gray group-hover:text-primary"
+                    }`}>
+                      {item.icon}
+                    </span>
+                    {!collapse && (
+                      <span className={`ml-3 text-sm font-medium ${
+                        hasActiveChild
+                          ? "text-primary"
+                          : "text-gray group-hover:text-primary"
+                      }`}>
+                        {item.label}
+                      </span>
+                    )}
                   </div>
-                  {!collapse && <Icon className="text-color" />}
-                </div>
+                  {!collapse && (
+                    <Icon className={`text-sm transition-transform duration-200 ${
+                      showChildren ? "rotate-180" : ""
+                    } ${
+                      hasActiveChild
+                        ? "text-primary"
+                        : "text-gray group-hover:text-primary"
+                    }`} />
+                  )}
+                </button>
 
-                {showChildren && (
-                  <div className="pl-8 space-y-2">
+                {showChildren && !collapse && (
+                  <div className="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
                     {item.children.map((child, childIndex) => (
                       <Link
                         key={childIndex}
                         href={child.path}
-                        className={`flex items-center gap-2 p-2 rounded-3xl ${
+                        className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                           currentPath === child.path
-                            ? "bg-primary text-white"
-                            : "text-color hover:bg-gray-100"
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray hover:bg-gray-50"
                         }`}
                       >
-                        <span>{child.icon}</span>
-                        <span className="text-sm">{child.label}</span>
+                        <span className={`text-sm ${
+                          currentPath === child.path
+                            ? "text-primary"
+                            : "text-gray group-hover:text-primary"
+                        }`}>
+                          {child.icon}
+                        </span>
+                        <span className={`ml-3 text-sm ${
+                          currentPath === child.path
+                            ? "font-medium text-primary"
+                            : "text-gray group-hover:text-primary"
+                        }`}>
+                          {child.label}
+                        </span>
                       </Link>
                     ))}
                   </div>
