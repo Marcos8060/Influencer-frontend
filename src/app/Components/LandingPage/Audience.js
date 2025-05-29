@@ -105,21 +105,21 @@ const Audience = () => {
                 className="object-cover transition-transform group-hover:scale-105"
               />
               
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20" />
+              {/* Base Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50" />
               
               {/* Content */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="text-2xl font-medium mb-2">{category.name}</h3>
+              <div className="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-[-60px]">
+                <h3 className="text-2xl font-medium mb-2 text-white">{category.name}</h3>
                 <p className="text-white/90 font-light">{category.count} Creators</p>
               </div>
 
               {/* Hover State */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/20 to-primary/40 opacity-0 group-hover:opacity-100 transition-all">
-                <div className="absolute bottom-6 left-6">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/20 to-primary/60 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute bottom-6 left-6 transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                   <Link
                     href={`/creators/${category.name.toLowerCase()}`}
-                    className="inline-flex items-center gap-2 text-white group/link"
+                    className="inline-flex items-center gap-2 text-white hover:text-white/90 group/link"
                   >
                     <span className="font-light">View Creators</span>
                     <ArrowRight className="w-5 h-5 group-hover/link:translate-x-1 transition-transform" />
