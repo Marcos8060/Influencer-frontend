@@ -23,14 +23,14 @@ const HeroSection = () => {
         </div>
         <div className="flex gap-4">
           <Link
-            href="/auth/login"
+            href="/auth/login/brand"
             className="px-6 py-2 text-gray hover:text-color transition-colors"
           >
             Login
           </Link>
           <Link
-            href="/auth/register"
-            className="px-8 py-3 bg-[#1A1A1A] text-white rounded-full hover:bg-black transition-all"
+            href="/auth/register/brand"
+            className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:bg-black transition-all"
           >
             Register
           </Link>
@@ -57,7 +57,7 @@ const HeroSection = () => {
             <div className="flex items-center gap-2">
               <Link
                 href="/influencer/influencer-landing-page"
-                className="inline-block bg-primary text-white px-8 py-4 rounded-full font-light "
+                className="inline-block bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-light "
               >
                 For Infuencers
               </Link>
