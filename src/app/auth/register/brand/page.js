@@ -117,11 +117,11 @@ const BrandRegister = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-primary/80 to-secondary/90 backdrop-blur-[2px]"></div>
         </div>
 
-        {/* Content */}
+            {/* Content */}
         <div className="relative w-full p-12 flex flex-col justify-between text-white z-10">
           <div className="w-12 h-12">
             <FaBuilding className="w-full h-full opacity-80" />
-          </div>
+              </div>
 
           <div className="space-y-8 max-w-lg">
             <div className="space-y-6">
@@ -199,149 +199,149 @@ const BrandRegister = () => {
           </div>
 
           <form onSubmit={handleRegister} className="mt-8 space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
                 <label className="block text-sm font-medium text-gray-700">
                   First Name
-                </label>
+                    </label>
                 <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiUser className="text-gray-400" />
-                  </div>
-                  <InputComponent
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FiUser className="text-gray-400" />
+                      </div>
+                      <InputComponent
+                        type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
                     className="pl-10 block w-full rounded-lg border-gray-300"
                     placeholder="First Name"
-                  />
-                </div>
-              </div>
+                      />
+                    </div>
+                  </div>
 
-              <div>
+                  <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Last Name
-                </label>
+                    </label>
                 <div className="mt-1 relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiUser className="text-gray-400" />
-                  </div>
-                  <InputComponent
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <FiUser className="text-gray-400" />
+                      </div>
+                      <InputComponent
+                        type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
                     className="pl-10 block w-full rounded-lg border-gray-300"
                     placeholder="Last Name"
-                  />
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div>
+                <div>
               <label className="block text-sm font-medium text-gray-700">
                 Business Email
-              </label>
+                  </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiMail className="text-gray-400" />
-                </div>
-                <InputComponent
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiMail className="text-gray-400" />
+                    </div>
+                    <InputComponent
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                   className="pl-10 block w-full rounded-lg border-gray-300"
                   placeholder="company@example.com"
-                />
-              </div>
-            </div>
+                    />
+                  </div>
+                </div>
 
-            <div>
+                <div>
               <label className="block text-sm font-medium text-gray-700">
                 Phone Number
-              </label>
+                  </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiPhone className="text-gray-400" />
-                </div>
-                <InputComponent
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  required
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiPhone className="text-gray-400" />
+                    </div>
+                    <InputComponent
+                      type="tel"
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={handleChange}
+                      required
                   className="pl-10 block w-full rounded-lg border-gray-300"
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-            </div>
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+                </div>
 
-            <div>
+                <div>
               <label className="block text-sm font-medium text-gray-700">
                 Password
-              </label>
+                  </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="text-gray-400" />
-                </div>
-                <InputComponent
-                  type={passwordVisible ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiLock className="text-gray-400" />
+                    </div>
+                    <InputComponent
+                      type={passwordVisible ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
                   className="pl-10 pr-10 block w-full rounded-lg border-gray-300"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  {passwordVisible ? (
+                    >
+                      {passwordVisible ? (
                     <IoEyeOffOutline className="text-gray-400" />
-                  ) : (
+                      ) : (
                     <IoEyeOutline className="text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
+                      )}
+                    </button>
+                  </div>
+                </div>
 
-            <div>
+                <div>
               <label className="block text-sm font-medium text-gray-700">
                 Confirm Password
-              </label>
+                  </label>
               <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className="text-gray-400" />
-                </div>
-                <InputComponent
-                  type={confirmPasswordVisible ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiLock className="text-gray-400" />
+                    </div>
+                    <InputComponent
+                      type={confirmPasswordVisible ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
                   className="pl-10 pr-10 block w-full rounded-lg border-gray-300"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={toggleConfirmPasswordVisibility}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={toggleConfirmPasswordVisibility}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  {confirmPasswordVisible ? (
+                    >
+                      {confirmPasswordVisible ? (
                     <IoEyeOffOutline className="text-gray-400" />
-                  ) : (
+                      ) : (
                     <IoEyeOutline className="text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
+                      )}
+                    </button>
+                  </div>
+                </div>
 
             <div className="flex items-center">
               <input
@@ -358,45 +358,45 @@ const BrandRegister = () => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
-              <ButtonComponent
-                type="submit"
-                label={
-                  loading ? (
-                    <span className="flex items-center justify-center">
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Creating account...
-                    </span>
-                  ) : (
+                  <ButtonComponent
+                    type="submit"
+                    label={
+                      loading ? (
+                        <span className="flex items-center justify-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Creating account...
+                        </span>
+                      ) : (
                     "Start Collaborating"
-                  )
-                }
-                disabled={loading}
-                className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                  loading
-                    ? "bg-primary/70 cursor-not-allowed"
+                      )
+                    }
+                    disabled={loading}
+                    className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
+                      loading
+                        ? "bg-primary/70 cursor-not-allowed"
                     : "bg-primary hover:bg-primary-dark"
-                }`}
-              />
-            </motion.div>
+                    }`}
+                  />
+                </motion.div>
 
             <div className="text-center text-sm">
               <p className="text-gray-600">
@@ -419,7 +419,7 @@ const BrandRegister = () => {
               </p>
             </div>
           </form>
-        </div>
+          </div>
       </div>
     </div>
   );
