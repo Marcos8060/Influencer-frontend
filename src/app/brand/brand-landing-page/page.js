@@ -122,14 +122,14 @@ const BrandLandingPage = () => {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/brand/signup"
+                  href="/auth/register/brand"
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-light hover:opacity-90 transition-all"
                 >
                   Start Your First Campaign
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
-                  href="/brand/demo"
+                  href="/brand/brand-landing-page"
                   className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-8 py-4 rounded-full font-light hover:bg-slate-50 transition-all border border-primary/10"
                 >
                   Book a Demo
@@ -444,14 +444,14 @@ const BrandLandingPage = () => {
             </h2>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link
-                href="/brand/signup"
+                href="/auth/register/brand"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-light hover:opacity-90 transition-all"
               >
                 Start Your First Campaign
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
-                href="/brand/features"
+                href="/influencer/dynamic-pages"
                 className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-8 py-4 rounded-full font-light hover:bg-slate-50 transition-all border border-primary/10"
               >
                 See Platform Features
