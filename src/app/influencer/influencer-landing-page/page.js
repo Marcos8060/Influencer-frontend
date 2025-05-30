@@ -1,7 +1,9 @@
 "use client";
+import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight, Gift, DollarSign, Camera, Users, MessageSquare, TrendingUp, Instagram, Play, CheckCircle, Star } from 'lucide-react';
 import Footer from "@/app/Components/Footer";
 
 const stats = [
@@ -25,6 +27,30 @@ const features = [
     description: "Connect and collaborate with other creators",
     icon: "🤝",
   },
+];
+
+const successStories = [
+  {
+    name: "Sarah Chen",
+    handle: "@sarahlifestyle",
+    achievement: "Made £5K in first month",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    category: "Lifestyle & Fashion"
+  },
+  {
+    name: "Alex Rivera",
+    handle: "@alexcooks",
+    achievement: "100K followers in 3 months",
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+    category: "Food & Cooking"
+  },
+  {
+    name: "Mia Zhang",
+    handle: "@miabeauty",
+    achievement: "Collab with luxury brands",
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+    category: "Beauty & Wellness"
+  }
 ];
 
 const faqs = [
@@ -83,238 +109,533 @@ const portfolioItems = [
   },
 ];
 
-export default function InfluencerLandingPage() {
+const benefits = [
+  {
+    icon: "🎁",
+    title: "Free Products",
+    description: "Get products delivered to review and promote"
+  },
+  {
+    icon: "💸",
+    title: "Paid Campaigns",
+    description: "Access paid campaigns and affiliate collabs"
+  },
+  {
+    icon: "🧠",
+    title: "Brand Briefs",
+    description: "Get feedback and detailed brand briefs"
+  },
+  {
+    icon: "🛍️",
+    title: "Live Campaigns",
+    description: "Access campaigns you can apply to"
+  },
+  {
+    icon: "💬",
+    title: "Direct Chat",
+    description: "Chat with brands directly (no middlemen)"
+  },
+  {
+    icon: "📈",
+    title: "Portfolio Building",
+    description: "Build your portfolio and content resume"
+  },
+  {
+    icon: "📥",
+    title: "Easy Submission",
+    description: "Submit content straight from dashboard"
+  },
+  {
+    icon: "📲",
+    title: "Multi-Platform",
+    description: "Work across Instagram, TikTok, Facebook"
+  }
+];
+
+const steps = [
+  {
+    number: "1️⃣",
+    title: "Create Your Account",
+    description: "Join as an influencer or UGC creator. No agency needed. Just your socials and your sparkle."
+  },
+  {
+    number: "2️⃣",
+    title: "Complete Your Profile",
+    description: "Add your platforms, content types, and niche. Connect your Instagram or TikTok. This is your creator card — let it shine."
+  },
+  {
+    number: "3️⃣",
+    title: "Apply to Campaigns",
+    description: "Browse a feed of live campaigns. See who's gifting, paying, or partnering. Click apply. That's it."
+  },
+  {
+    number: "4️⃣",
+    title: "Get Invited to Exclusive Collabs",
+    description: "Once you're active, brands can invite you to join private campaigns. Like being picked first in PE, but better."
+  },
+  {
+    number: "5️⃣",
+    title: "Submit Your Content",
+    description: "Upload content directly, link your live posts, and let the magic begin. Everything's tracked and stored."
+  },
+  {
+    number: "6️⃣",
+    title: "Get Paid. Get Gifted. Get Seen.",
+    description: "Track your performance. Download your UGC. Grow your reputation as a content creator."
+  }
+];
+
+const problems = [
+  "How do I get influencer jobs without 100K followers?",
+  "Where are the brands that actually pay or gift stuff?",
+  "I've DMed 10 brands and got ignored.",
+  "My content deserves more. Where do I start?"
+];
+
+const testimonials = [
+  {
+    name: "Sarah Chen",
+    handle: "@sarahlifestyle",
+    achievement: "Made £5K in first month",
+    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+    category: "Lifestyle & Fashion",
+    rating: "4.9",
+    date: "March 2024",
+    review: "I was skeptical at first, but Grace Belgravia changed everything. Made £5K in my first month through brand collaborations, and the platform made it so easy to manage everything. The automated contracts and direct brand communication are game-changers!"
+  },
+  {
+    name: "Alex Rivera",
+    handle: "@alexcooks",
+    achievement: "100K followers in 3 months",
+    img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6",
+    category: "Food & Cooking",
+    rating: "5.0",
+    date: "February 2024",
+    review: "The platform's analytics helped me understand what content works best. Grew my following to 100K in just 3 months while working with amazing brands. The campaign matching is spot-on - every collaboration feels authentic to my niche."
+  },
+  {
+    name: "Mia Zhang",
+    handle: "@miabeauty",
+    achievement: "Collab with luxury brands",
+    img: "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+    category: "Beauty & Wellness",
+    rating: "4.8",
+    date: "January 2024",
+    review: "As a beauty creator, authenticity is everything. Grace Belgravia connects me with brands that truly align with my values. The UGC campaigns are well-paid, and the platform handles all the paperwork. It's a dream come true for creators!"
+  }
+];
+
+const InfluencerLandingPage = () => {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white text-xl font-bold">B</span>
-            </div>
-            <span className="text-xl font-semibold">Grace Belgravia</span>
-          </div>
-          <div className="flex items-center space-x-8">
-            <Link href="#how" className="text-gray hover:text-primary transition-colors">
-              How it works
-            </Link>
-            <Link href="#features" className="text-gray hover:text-primary transition-colors">
-              Features
-            </Link>
-            <Link href="#faq" className="text-gray hover:text-primary transition-colors">
-              FAQ
-            </Link>
-            <Link href="/auth/login/influencer" className="px-6 py-2 bg-[#18181B] text-white rounded-full flex items-center space-x-2 hover:bg-[#27272A] transition-colors">
-              Join as Creator
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
+    <div className="relative">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-white to-[#F0FFFF]">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+        
+        {/* Gradient Orbs */}
+        <div className="absolute top-20 right-0 w-[800px] h-[800px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30 mix-blend-multiply animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-r from-secondary/20 to-primary/20 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <motion.div
+              className="text-left"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-md mb-8">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-sm text-gray font-light">Join 10K+ Growing Creators</span>
+              </div>
+
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-light text-[#1A1A1A] leading-[1.1] mb-6">
+                Your All-in-One
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent block mt-2">
+                  UGC Creator
+                </span>
+                <span className="block mt-2">Platform</span>
+              </h1>
+
+              <p className="text-xl text-gray mb-8 font-light max-w-xl">
+                Tired of cold-pitching brands? Done with gifting collabs that go nowhere? Welcome to Grace Belgravia — the UGC creator platform built to connect you with campaigns, content opportunities and brand deals that actually pay.
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href="/auth/register/influencer"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-light hover:opacity-90 transition-all"
+                >
+                  Join as Creator
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  href="/auth/login/influencer"
+                  className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-8 py-4 rounded-full font-light hover:bg-slate-50 transition-all border border-primary/10"
+                >
+                  Apply to Campaigns
+                  <Play className="w-5 h-5" />
+                </Link>
+              </div>
+
+              {/* Creator Types */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div className="bg-white shadow-sm p-4 rounded-2xl text-center">
+                  <p className="font-medium text-[#1A1A1A]">UGC Creators</p>
+                  <p className="text-sm text-gray">No following needed!</p>
+                </div>
+                <div className="bg-white shadow-sm p-4 rounded-2xl text-center">
+                  <p className="font-medium text-[#1A1A1A]">Nano & Micro</p>
+                  <p className="text-sm text-gray">Influencers</p>
+                </div>
+                <div className="bg-white shadow-sm p-4 rounded-2xl text-center">
+                  <p className="font-medium text-[#1A1A1A]">Content Creators</p>
+                  <p className="text-sm text-gray">All platforms</p>
+                </div>
+                <div className="bg-white shadow-sm p-4 rounded-2xl text-center">
+                  <p className="font-medium text-[#1A1A1A]">Lifestyle & More</p>
+                  <p className="text-sm text-gray">All niches</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right Content - Problems Grid */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="relative h-[600px] hidden lg:block"
+            >
+              {/* Main Image */}
+              <div className="absolute top-0 right-0 w-[80%] h-[400px] rounded-[40px] overflow-hidden shadow-2xl">
+                <Image
+                  src="https://images.unsplash.com/photo-1574279606130-09958dc756f7?q=80&w=2670&auto=format&fit=crop"
+                  alt="Fashion Influencer in Action"
+                  fill
+                  className="object-cover object-top"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              </div>
+
+              {/* Floating Success Card */}
+              <div className="absolute bottom-20 left-0 w-[300px] bg-white rounded-[30px] p-6 shadow-xl">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                    <Image
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+                      alt="Creator"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="text-[#1A1A1A] font-medium">Ana M.</h4>
+                    <p className="text-sm text-gray">UGC Creator</p>
+                  </div>
+                </div>
+                <p className="text-gray font-light text-sm">
+                  "I got 3 collabs in my first week. One gifted, two paid. Easy application, zero chasing."
+                </p>
+              </div>
+
+              {/* Floating Campaign Card */}
+              <div className="absolute top-20 left-10 bg-white rounded-[20px] p-4 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                    <Gift className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-[#1A1A1A]">New Campaign</div>
+                    <div className="text-xs text-gray">£2,000 Budget</div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </nav>
+      </section>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+      {/* Benefits Section */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Notebook Pattern Background */}
+        <div className="absolute inset-0 bg-[#F8F9FA]" style={{
+          backgroundImage: `
+            linear-gradient(90deg, transparent 39px, #E8E8E8 39px, #E8E8E8 41px, transparent 41px),
+            linear-gradient(180deg, transparent 39px, #E8E8E8 39px, #E8E8E8 41px, transparent 41px)
+          `,
+          backgroundSize: '40px 40px',
+          opacity: 0.4
+        }} />
+        
+        <div className="container mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-light text-[#1A1A1A] mb-6">
+              What's In It for You 💡
+            </h2>
+            <p className="text-xl text-gray font-light">
+              Everything you need to succeed as a creator, all in one place.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {benefits.map((benefit, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white/90 backdrop-blur-sm p-6 rounded-[30px] shadow-sm hover:shadow-lg transition-all group"
+              >
+                <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform">
+                  {benefit.icon}
+                </div>
+                <h3 className="text-xl text-[#1A1A1A] font-medium mb-2">{benefit.title}</h3>
+                <p className="text-gray font-light">{benefit.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-24 bg-gradient-to-br from-white via-white to-[#F0FFFF] relative overflow-hidden">
+        {/* Notebook Pattern Background */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(90deg, transparent 39px, rgba(216,180,254,0.1) 39px, rgba(216,180,254,0.1) 41px, transparent 41px),
+            linear-gradient(180deg, transparent 39px, rgba(216,180,254,0.1) 39px, rgba(216,180,254,0.1) 41px, transparent 41px)
+          `,
+          backgroundSize: '40px 40px',
+          opacity: 0.5
+        }} />
+        
+        <div className="container mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-light text-[#1A1A1A] mb-6">
+              How It Works 🔧
+            </h2>
+            <p className="text-xl text-gray font-light">
+              Your journey from creator to paid influencer starts here.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="relative p-8 bg-white/90 backdrop-blur-sm rounded-[30px] shadow-sm hover:shadow-lg transition-all"
+              >
+                <div className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center text-white text-xl font-light">
+                  {step.number}
+                </div>
+                <h3 className="text-xl text-[#1A1A1A] font-medium mb-4 mt-4">{step.title}</h3>
+                <p className="text-gray font-light">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="relative py-12 md:py-24 overflow-hidden bg-gradient-to-b from-gray/5 via-white to-primary/5">
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 bg-grid-primary/5 [mask-image:linear-gradient(0deg,transparent,black,transparent)]" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        
+        {/* Gradient Orbs - Responsive sizes */}
+        <div className="absolute top-1/4 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+        <div className="absolute bottom-1/4 left-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-secondary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[800px] md:h-[800px] bg-gradient-to-r from-primary/5 to-secondary/5 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+          {/* Header */}
+          <div className="mb-2 relative text-center md:text-left">
+            <div className="flex items-center gap-3 justify-center">
+              <div className="w-8 h-1 bg-gradient-to-r from-primary to-secondary"></div>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1A1A1A]">
+                What Creators Say About Us
+              </h2>
             </div>
-            <span className="text-lg text-gray">Create, Grow, Succeed</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8"
-            >
-              <h1 className="text-6xl font-bold leading-tight">
-                Elevate Your
-                <br />
-                Creator
-                <br />
-                Journey
-              </h1>
-              <p className="text-xl text-gray max-w-md">
-                Join our community of creators and turn your passion into a thriving career. Get the tools, insights, and support you need to grow.
-              </p>
-              <div className="flex items-center space-x-4">
-                <Link href="/auth/login/influencer" className="px-8 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
-                  Start Creating
-                </Link>
-                <button className="px-8 py-3 text-primary hover:bg-primary/5 rounded-full transition-colors">
-                  See How It Works
-                </button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
-              <div className="relative aspect-square">
-                <div className="absolute inset-0 grid grid-cols-2 gap-4">
-                  <div className="space-y-4">
-                    <div className="relative h-full rounded-3xl overflow-hidden bg-primary/5">
-                      <Image
-                        src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=2574&auto=format&fit=crop"
-                        alt="Creator 1"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-4 pt-12">
-                    <div className="relative h-full rounded-3xl overflow-hidden bg-secondary/5">
-                      <Image
-                        src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=2574&auto=format&fit=crop"
-                        alt="Creator 2"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Floating Elements */}
-                <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                  <div className="w-16 h-16 bg-[#FEF3C7] rounded-full flex items-center justify-center">
-                    <span className="text-2xl">✨</span>
-                  </div>
-                </div>
-                <div className="absolute left-1/2 -bottom-8 transform -translate-x-1/2">
-                  <div className="w-16 h-16 bg-[#DBEAFE] rounded-full flex items-center justify-center">
-                    <span className="text-2xl">🎥</span>
-                  </div>
+          {/* Timeline Reviews */}
+          <div className="max-w-4xl mx-auto relative">
+            <div className="relative flex flex-col md:flex-row min-h-[200px] md:min-h-[250px]">
+              {/* Profile Images Column */}
+              <div className="relative md:w-[200px] flex-shrink-0 h-[60px] md:h-auto mb-2 md:mb-0">
+                <div className="flex md:block justify-center">
+                  {testimonials.map((testimonial, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`${
+                        index === 0 ? "z-10" : "z-0"
+                      } transition-all duration-700 ease-in-out
+                      ${getMobilePosition(index, 0)}
+                      ${getDesktopPosition(index, 0, testimonials.length)}`}
+                    >
+                      <div className={`relative transition-all duration-700 cursor-pointer ${
+                        index === 0 ? "scale-110" : "scale-90 opacity-50 hover:opacity-75 hover:scale-95"
+                      }`}>
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden relative">
+                          <Image
+                            src={testimonial.img}
+                            alt={testimonial.name}
+                            fill
+                            className="object-cover hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          </div>
 
-          {/* Stats Section */}
-          <div className="mt-20 py-12 px-8 bg-white rounded-3xl shadow-xl">
-            <div className="grid grid-cols-2 gap-8">
-              {stats.map((stat, index) => (
-                <motion.div
+              {/* Reviews Column */}
+              <div className="flex-grow md:pl-8 relative py-8 md:py-0">
+                {testimonials.map((testimonial, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className={`${
+                      index === 0
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 translate-x-8 pointer-events-none"
+                    } md:absolute md:top-1/2 md:-translate-y-1/2 w-full transition-all duration-700`}
+                  >
+                    {index === 0 && (
+                      <div className="relative">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">{testimonial.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <Star className="w-4 h-4 text-primary fill-primary" />
+                            <span className="text-xs text-gray-500">
+                              {testimonial.rating} • {testimonial.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="relative">
+                          <div className="relative z-10 bg-white/30 backdrop-blur-sm rounded-xl p-4 shadow-[0_0_1px_rgba(0,0,0,0.05)]">
+                            <p className="text-gray-600 text-sm leading-relaxed">
+                              {testimonial.review}
+                            </p>
+                            <div className="mt-2 text-sm text-gray-500">
+                              {testimonial.handle} • {testimonial.achievement}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Navigation Dots */}
+            <div className="flex justify-center gap-2 mt-4 md:hidden">
+              {testimonials.map((_, index) => (
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div className="text-5xl font-bold text-primary mb-2">{stat.value}</div>
-                  <div className="text-gray">{stat.label}</div>
-                </motion.div>
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === 0 
+                      ? "bg-primary w-4" 
+                      : "bg-gray-300"
+                  }`}
+                />
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-4 bg-primary/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold mb-4">Everything You Need to Grow</h2>
-            <p className="text-gray text-lg max-w-2xl mx-auto">
-              Tools and features designed specifically for content creators like you.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="p-8 bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
-                  <span className="text-2xl">{feature.icon}</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-gray">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section id="faq" className="py-20 px-4">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
-            <p className="text-gray text-lg">
-              Everything you need to know about becoming a successful creator
-            </p>
-          </motion.div>
-
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-2xl p-6 shadow-sm"
-              >
-                <h3 className="text-xl font-semibold mb-3">{faq.question}</h3>
-                <p className="text-gray">{faq.answer}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-primary rounded-3xl p-12 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="max-w-2xl mx-auto"
-            >
-              <h2 className="text-4xl font-bold text-white mb-6">
-                Ready to Start Your Creator Journey?
-              </h2>
-              <p className="text-white/90 text-lg mb-8">
-                Join our community of creators and start growing your influence today.
-              </p>
-              <button className="px-8 py-3 bg-white text-primary font-semibold rounded-full hover:bg-white/90 transition-colors">
+      <section className="py-24 bg-gradient-to-br from-white via-white to-[#F0FFFF]">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto"
+          >
+            <h2 className="text-4xl md:text-5xl font-light text-[#1A1A1A] mb-6">
+              Time to Monetise Your Influence 🎯
+            </h2>
+            <p className="text-xl text-gray font-light mb-8">
+              Stop waiting for brand DMs. Start working with real companies that need your content now.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Link
+                href="/auth/register/influencer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-light hover:opacity-90 transition-all"
+              >
                 Join as Creator
-              </button>
-            </motion.div>
-          </div>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
+
       <Footer />
+
+      {/* Custom Grid Pattern */}
+      <style jsx>{`
+        .bg-grid-primary\/5 {
+          background-size: 20px 20px;
+          @media (min-width: 768px) {
+            background-size: 30px 30px;
+          }
+          background-image: linear-gradient(to right, rgba(54,128,161,0.05) 1px, transparent 1px),
+                          linear-gradient(to bottom, rgba(54,128,161,0.05) 1px, transparent 1px);
+        }
+      `}</style>
     </div>
   );
-}
+};
+
+export default InfluencerLandingPage;
+
+// Add these helper functions at the bottom of the file
+const getMobilePosition = (index, activeIndex) => {
+  return `md:hidden absolute left-1/2 transform -translate-x-1/2 
+    ${index === activeIndex ? "opacity-100" : "opacity-50"}`;
+};
+
+const getDesktopPosition = (index, activeIndex, total) => {
+  const positions = {
+    top: "md:top-[25%]",
+    middle: "md:top-[50%]",
+    bottom: "md:top-[75%]"
+  };
+
+  let position = (index - activeIndex + total) % total;
+  
+  if (position === 0) return `hidden ${positions.middle} md:block md:absolute`;
+  if (position === 1 || position === -3) return `hidden ${positions.bottom} md:block md:absolute`;
+  return `hidden ${positions.top} md:block md:absolute`;
+};
