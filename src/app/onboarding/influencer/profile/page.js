@@ -12,7 +12,6 @@ import {
   Select,
   Space,
   Statistic,
-  DatePicker,
   Tag,
   Typography,
   Upload,
@@ -49,9 +48,27 @@ import { Dropdown } from "primereact/dropdown";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import toast from "react-hot-toast";
+// MUI Components
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
+
+const formatPhoneNumber = (value) => {
+  if (!value) return '';
+  const cleaned = value.replace(/\D/g, '');
+  let formatted = cleaned;
+  
+  if (cleaned.length > 0) {
+    if (cleaned.length <= 3) {
+      formatted = cleaned;
+    } else if (cleaned.length <= 6) {
+      formatted = `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`;
+    } else {
+      formatted = `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 10)}`;
+    }
+  }
+  return formatted;
+};
 
 const InfluencerProfilePage = () => {
   const isAuthorized = useProtectedRoute();
@@ -172,6 +189,13 @@ const InfluencerProfilePage = () => {
       setLoading(false);
     }
   };
+  const fetchUpdateProfile = async () => {
+    try {
+      await dispatch(getInfluencerProfile(auth));
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   useEffect(() => {
     fetchInfluencerProfile();
@@ -179,75 +203,84 @@ const InfluencerProfilePage = () => {
 
   const handleEdit = () => {
     if (influencerProfile) {
-      const editPayload = createEditPayload(influencerProfile);
+      let phoneCode = "+1";
+      let phoneNum = "";
+      
+      // Handle phone number parsing
+      if (influencerProfile.phoneNumber) {
+        if (typeof influencerProfile.phoneNumber === 'string') {
+          // Parse format like "(+254)071 675 1302"
+          const phoneStr = influencerProfile.phoneNumber.trim();
+          const match = phoneStr.match(/^\(([^)]+)\)(.+)$/);
+          
+          if (match) {
+            phoneCode = match[1]; // This will be "+254"
+            phoneNum = match[2].trim(); // This will be "071 675 1302"
+          }
+        } else if (typeof influencerProfile.phoneNumber === 'object') {
+          // Handle object format if it exists
+          phoneCode = influencerProfile.phoneNumber.code?.replace(/[()]/g, '') || "+1";
+          phoneNum = influencerProfile.phoneNumber.number || "";
+        }
+      }
+
+      let birthDate = null;
+      if (influencerProfile.dateOfBirth) {
+        birthDate = moment(influencerProfile.dateOfBirth).toDate();
+        if (isNaN(birthDate.getTime())) {
+          birthDate = null;
+        }
+      }
+
+      const editPayload = {
+        ...createEditPayload(influencerProfile),
+        countryCode: phoneCode,
+        phoneNumber: phoneNum,
+        dateOfBirth: birthDate
+      };
       form.setFieldsValue(editPayload);
+      setCountryCode(phoneCode);
+      setPhoneNumber(phoneNum);
+      setDateOfBirth(birthDate);
       setIsEditing(true);
     }
   };
 
-  // Update the handleSave function to correctly format the phone number for the API
+  // Update the handleSave function
   const handleSave = async () => {
     setSubmitting(true);
-    const values = await form.validateFields();
-
-    const transformPaymentOptions = (options) => {
-      if (!options) return [];
-
-      if (options[0]?.label && options[0]?.description) {
-        return options;
-      }
-
-      if (typeof options[0] === "string") {
-        return options.map((option) => ({
-          label: option,
-          description: option,
-        }));
-      }
-
-      return [];
-    };
-
-    // Make sure phone number is properly formatted for the API
-    // The API expects: { code: "+254", number: "(070) 285-4204" }
-    const payload = {
-      ...values,
-      dateOfBirth: dateOfBirth
-        ? moment(dateOfBirth).format("YYYY-MM-DD")
-        : null,
-      phoneNumber: {
-        code: countryCode || "+1", // Make sure this is just the country code like "+254"
-        number: phoneNumber || "", // This should be in format "(070) 285-4204"
-      },
-      country: {
-        name: values.country?.name || "",
-        code: values.country?.code || "",
-        flag: values.country?.flag || "",
-      },
-      influencerPreference: {
-        ...values.influencerPreference,
-        preferredPaymentOption: transformPaymentOptions(
-          values.influencerPreference?.preferredPaymentOption
-        ),
-      },
-    };
-
     try {
-      console.log("Saving profile with payload:", payload);
-      const response = await updateInfluencerProfile(auth, payload);
-      console.log("UPDATE_RESPONSE ", response);
+      const values = await form.validateFields();
+      
+      const formattedPayload = {
+        ...values,
+        dateOfBirth: values.dateOfBirth ? moment(values.dateOfBirth).format("YYYY-MM-DD") : null,
+        phoneNumber: {
+          code: `(${values.countryCode})`,
+          number: values.phoneNumber
+        },
+        country: {
+          name: values.country?.name || "",
+          code: values.country?.code || "",
+          flag: values.country?.flag || "",
+        },
+        influencerPreference: {
+          ...values.influencerPreference,
+          preferredPaymentOption: values.influencerPreference?.preferredPaymentOption || []
+        }
+      };
+
+      console.log("Saving profile with payload:", formattedPayload);
+      const response = await updateInfluencerProfile(auth, formattedPayload);
+      
       if (response.status === 200) {
-        toast("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
         setIsEditing(false);
-        // Refresh the profile data to show the updated values
-        fetchInfluencerProfile();
-      } else {
-        // toast.error(response.data.errorMessage)
+        fetchUpdateProfile()
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      message.error(
-        error.response?.data?.message || "Failed to update profile"
-      );
+      message.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       setSubmitting(false);
     }
@@ -348,14 +381,34 @@ const InfluencerProfilePage = () => {
     return { code: "+1", number: phoneString };
   };
 
+  // Update the useEffect for phone number initialization
   useEffect(() => {
     if (influencerProfile?.phoneNumber) {
-      const { code, number } = parsePhoneNumber(influencerProfile.phoneNumber);
-      setCountryCode(code);
-      setPhoneNumber(number);
-      console.log("Initialized phone with:", { code, number });
+      let phoneData = influencerProfile.phoneNumber;
+      
+      // Handle when phoneNumber is a string (e.g. "+44(070) 285-4204")
+      if (typeof phoneData === 'string') {
+        const match = phoneData.match(/^\+(\d+)\((.+)\)(.+)$/);
+        if (match) {
+          const countryCode = '+' + match[1];
+          const number = `(${match[2]})${match[3]}`;
+          setCountryCode(countryCode);
+          setPhoneNumber(number);
+          // Set initial form values
+          form.setFieldValue('countryCode', countryCode);
+          form.setFieldValue('phoneNumber', number);
+        }
+      }
+      // Handle when phoneNumber is an object
+      else if (typeof phoneData === 'object' && phoneData.code && phoneData.number) {
+        setCountryCode(phoneData.code);
+        setPhoneNumber(phoneData.number);
+        // Set initial form values
+        form.setFieldValue('countryCode', phoneData.code);
+        form.setFieldValue('phoneNumber', phoneData.number);
+      }
     }
-  }, [influencerProfile]);
+  }, [influencerProfile, form]);
 
   if (loading && !influencerProfile) {
     return (
@@ -381,411 +434,497 @@ const InfluencerProfilePage = () => {
         <>
           {isEditing ? (
             <Card
-              title="Edit Profile"
+              title={
+                <div className="flex items-center gap-2">
+                  <EditOutlined className="text-primary" />
+                  <span className="text-xl font-semibold">Edit Profile</span>
+                </div>
+              }
               extra={
                 <Space>
                   <button
                     type="button"
-                    className="border border-primary rounded px-6 py-3 text-xs text-color"
+                    className="px-6 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     onClick={handleCancel}
                   >
                     Cancel
                   </button>
-                  <SuccessButtonComponent
+                  <button
                     onClick={handleSave}
-                    type="submit"
-                    label={
-                      submitting ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Saving...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          Save Changes
-                          <CheckCircleFilled className="ml-2" />
-                        </span>
-                      )
-                    }
                     disabled={submitting}
-                    className={`w-full py-3 px-4 rounded-lg font-medium bg-green/80 text-white transition-all`}
-                  />
+                    className="px-6 py-2 bg-gradient-to-r from-primary to-secondary text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Saving Changes...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        Save Changes
+                        <CheckCircleOutlined />
+                      </span>
+                    )}
+                  </button>
                 </Space>
               }
-              className="mb-6"
+              className="mb-6 shadow-sm"
             >
-              <Form form={form} layout="vertical" onFinish={handleSave}>
-                <Row gutter={24}>
-                  <Col span={24}>
-                    <Form.Item label="Profile Picture">
-                      <Upload
-                        {...uploadProps}
-                        listType="picture-card"
-                        showUploadList={false}
-                      >
-                        {fileList.length >= 1 ? null : (
-                          <Avatar
-                            size={68}
-                            src={influencerProfile.profilePicture}
-                            className="cursor-pointer"
-                          />
-                        )}
-                      </Upload>
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="First Name"
-                      name="firstName"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your first name",
-                        },
-                      ]}
+              <Form 
+                form={form} 
+                layout="vertical" 
+                onFinish={handleSave}
+                className="max-w-5xl mx-auto"
+                requiredMark={false}
+              >
+                {/* Profile Picture Section */}
+                <div className="flex justify-center mb-8">
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+                    <Upload
+                      {...uploadProps}
+                      className="relative"
                     >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item label="Middle Name" name="middleName">
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Last Name"
-                      name="lastName"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your last name",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item label="Date of Birth" name="dateOfBirth">
-                      <div className="w-full">
-                        <Calendar
-                          value={dateOfBirth}
-                          onChange={(e) => setDateOfBirth(e.value)}
-                          dateFormat="yy-mm-dd"
-                          showIcon
-                          maxDate={new Date()}
-                          className="w-full border border-input text-sm rounded p-1"
-                          touchUI
+                      <div className="relative cursor-pointer group">
+                        <Avatar
+                          size={120}
+                          src={fileList[0]?.url || influencerProfile.profilePicture}
+                          className="border-4 border-white shadow-xl"
                         />
-                      </div>
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Gender"
-                      name="gender"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select your gender",
-                        },
-                      ]}
-                    >
-                      <Select>
-                        <Option value="Male">Male</Option>
-                        <Option value="Female">Female</Option>
-                        <Option value="Non-binary">Non-binary</Option>
-                        <Option value="Other">Other</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-
-                  <Col span={24}>
-                    <Form.Item
-                      label="Bio"
-                      name="bio"
-                      rules={[
-                        { required: true, message: "Please input your bio" },
-                      ]}
-                    >
-                      <Input.TextArea rows={4} />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item label="Phone Number" required>
-                      <div className="flex">
-                        <div className="w-1/3 mr-2">
-                          <Dropdown
-                            value={countryCode}
-                            options={countryOptions}
-                            onChange={(e) => setCountryCode(e.value)}
-                            placeholder="Code"
-                            className="w-full border border-input text-xs"
-                          />
-                        </div>
-                        <div className="w-2/3">
-                          <InputMask
-                            mask="(999) 999-9999"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            placeholder="(555) 555-5555"
-                            className="w-full p-2 border border-input rounded"
-                          />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 rounded-full transition-colors duration-200">
+                          <EditOutlined className="text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                         </div>
                       </div>
-                      {/* Add debug display to see current values */}
-                      <div className="text-xs text-primary font-semibold mt-1">
-                        Current: {countryCode} {phoneNumber}
-                      </div>
-                    </Form.Item>
-                  </Col>
+                    </Upload>
+                  </div>
+                </div>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Country"
-                      name={["country", "name"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select your country",
-                        },
-                      ]}
-                    >
-                      <Select showSearch>
-                        <Option value="Kenya">Kenya</Option>
-                        <Option value="United States">United States</Option>
-                        <Option value="United Kingdom">United Kingdom</Option>
-                      </Select>
-                    </Form.Item>
+                {/* Form Sections */}
+                <div className="space-y-8">
+                  {/* Personal Information */}
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                    <h3 className="text-lg font-semibold mb-6">Personal Information</h3>
+                    <Row gutter={24}>
+                      <Col xs={24} md={8}>
+                        <Form.Item
+                          label="First Name"
+                          name="firstName"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your first name",
+                            },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                    {/* Add hidden fields for country code and flag if needed */}
-                    <Form.Item name={["country", "code"]} noStyle hidden>
-                      <Input />
-                    </Form.Item>
-                    <Form.Item name={["country", "flag"]} noStyle hidden>
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={8}>
+                        <Form.Item label="Middle Name" name="middleName">
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Address Line 1"
-                      name="addressLine1"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your address",
-                        },
-                      ]}
-                    >
-                      <Input prefix={<EnvironmentOutlined />} />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={8}>
+                        <Form.Item
+                          label="Last Name"
+                          name="lastName"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your last name",
+                            },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item label="Address Line 2" name="addressLine2">
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Date of Birth"
+                          name="dateOfBirth"
+                          rules={[
+                            { required: true, message: 'Please select your date of birth!' }
+                          ]}
+                        >
+                          <div className="w-full">
+                            <Calendar
+                              value={dateOfBirth}
+                              onChange={(e) => {
+                                setDateOfBirth(e.value);
+                                form.setFieldValue('dateOfBirth', moment(e.value));
+                              }}
+                              dateFormat="MM dd, yy"
+                              showIcon
+                              monthNavigator
+                              yearNavigator
+                              yearRange={`${moment().subtract(100, 'years').year()}:${moment().subtract(13, 'years').year()}`}
+                              maxDate={moment().subtract(13, 'years').toDate()}
+                              minDate={moment().subtract(100, 'years').toDate()}
+                              className="w-full"
+                              placeholder="Select Date of Birth"
+                              readOnlyInput
+                              touchUI
+                              style={{ width: '100%' }}
+                              inputClassName="w-full p-2 border border-gray-300 rounded-md"
+                              panelClassName="date-picker-panel"
+                            />
+                            {dateOfBirth && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Age: {moment().diff(moment(dateOfBirth), 'years')} years old
+                              </div>
+                            )}
+                          </div>
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="City"
-                      name="city"
-                      rules={[
-                        { required: true, message: "Please input your city" },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Gender"
+                          name="gender"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please select your gender",
+                            },
+                          ]}
+                        >
+                          <Select>
+                            <Option value="Male">Male</Option>
+                            <Option value="Female">Female</Option>
+                            <Option value="Non-binary">Non-binary</Option>
+                            <Option value="Other">Other</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Zip Code"
-                      name="zipCode"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your zip code",
-                        },
-                      ]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          label="Bio"
+                          name="bio"
+                          rules={[
+                            { required: true, message: "Please input your bio" },
+                          ]}
+                        >
+                          <Input.TextArea rows={4} />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
 
-                  <Col span={24}>
-                    <Form.Item
-                      label="Ethnic Background"
-                      name="ethnicBackground"
-                    >
-                      <Select mode="multiple">
-                        <Option value="Asian">Asian</Option>
-                        <Option value="Black">Black</Option>
-                        <Option value="Hispanic">Hispanic</Option>
-                        <Option value="White">White</Option>
-                        <Option value="Native American">Native American</Option>
-                        <Option value="Other">Other</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                  {/* Contact Information */}
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                    <h3 className="text-lg font-semibold mb-6">Contact Information</h3>
+                    <Row gutter={24}>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Phone Number"
+                          required
+                          className="mb-6"
+                        >
+                          <div className="space-y-2">
+                            <Form.Item
+                              name="countryCode"
+                              noStyle
+                              rules={[{ required: true, message: 'Please select country code!' }]}
+                            >
+                              <Select
+                                style={{ width: '100%' }}
+                                options={countryOptions}
+                                onChange={(value) => setCountryCode(value)}
+                                placeholder="Select country"
+                                showSearch
+                                filterOption={(input, option) =>
+                                  option?.label.toLowerCase().includes(input.toLowerCase())
+                                }
+                              />
+                            </Form.Item>
+                            
+                            <Form.Item
+                              name="phoneNumber"
+                              noStyle
+                              rules={[
+                                { required: true, message: 'Please input your phone number!' },
+                                {
+                                  pattern: /^\d{3}\s\d{3}\s\d{4}$/,
+                                  message: 'Please enter a valid phone number'
+                                }
+                              ]}
+                            >
+                              <Input
+                                prefix={<PhoneOutlined className="text-gray-400" />}
+                                placeholder="123 456 7890"
+                                className="w-full"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const formatted = formatPhoneNumber(value);
+                                  setPhoneNumber(formatted);
+                                  form.setFieldValue('phoneNumber', formatted);
+                                }}
+                                maxLength={12}
+                              />
+                            </Form.Item>
+                            
+                            {phoneNumber && countryCode && (
+                              <div className="text-xs text-gray-500">
+                                Your phone number: <span className="font-medium">{countryCode} {phoneNumber}</span>
+                              </div>
+                            )}
+                          </div>
+                        </Form.Item>
+                      </Col>
 
-                  <Col span={24}>
-                    <Form.Item label="Languages" name="languages">
-                      <Select mode="tags" tokenSeparators={[","]} />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Country"
+                          name={["country", "name"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please select your country",
+                            },
+                          ]}
+                        >
+                          <Select showSearch>
+                            <Option value="Kenya">Kenya</Option>
+                            <Option value="United States">United States</Option>
+                            <Option value="United Kingdom">United Kingdom</Option>
+                          </Select>
+                        </Form.Item>
 
-                  <Col span={24}>
-                    <Form.Item
-                      label="Content Categories"
-                      name="contentCategories"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select at least one category",
-                        },
-                      ]}
-                    >
-                      <Select mode="multiple">
-                        <Option value="Technology">Technology</Option>
-                        <Option value="Fitness">Fitness</Option>
-                        <Option value="Travel">Travel</Option>
-                        <Option value="Fashion">Fashion</Option>
-                        <Option value="Food">Food</Option>
-                        <Option value="Lifestyle">Lifestyle</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                        {/* Add hidden fields for country code and flag if needed */}
+                        <Form.Item name={["country", "code"]} noStyle hidden>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item name={["country", "flag"]} noStyle hidden>
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                  <Col span={24}>
-                    <Form.Item label="Keywords" name="keywords">
-                      <Select mode="tags" tokenSeparators={[","]} />
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Address Line 1"
+                          name="addressLine1"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your address",
+                            },
+                          ]}
+                        >
+                          <Input prefix={<EnvironmentOutlined />} />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Available for Collaboration"
-                      name="isAvailableForCollaboration"
-                    >
-                      <Select>
-                        <Option value={true}>Yes</Option>
-                        <Option value={false}>No</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item label="Address Line 2" name="addressLine2">
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                  <Col span={24}>
-                    <Divider orientation="left">Influencer Preferences</Divider>
-                  </Col>
+                      <Col xs={24} md={8}>
+                        <Form.Item
+                          label="City"
+                          name="city"
+                          rules={[
+                            { required: true, message: "Please input your city" },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Preferred Brands"
-                      name={["influencerPreference", "preferredBrands"]}
-                    >
-                      <Select mode="multiple">
-                        <Option value="Technology">Technology</Option>
-                        <Option value="Fitness Equipment">
-                          Fitness Equipment
-                        </Option>
-                        <Option value="Travel Gear">Travel Gear</Option>
-                        <Option value="Fashion">Fashion</Option>
-                        <Option value="Beauty">Beauty</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                      <Col xs={24} md={8}>
+                        <Form.Item
+                          label="Zip Code"
+                          name="zipCode"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please input your zip code",
+                            },
+                          ]}
+                        >
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Preferred Collaboration Format"
-                      name={[
-                        "influencerPreference",
-                        "preferredCollaborationContentFormat",
-                      ]}
-                    >
-                      <Select mode="multiple">
-                        <Option value="Stories">Stories</Option>
-                        <Option value="Posts">Posts</Option>
-                        <Option value="Reels">Reels</Option>
-                        <Option value="Videos">Videos</Option>
-                        <Option value="Live">Live</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
+                  {/* Professional Information */}
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                    <h3 className="text-lg font-semibold mb-6">Professional Information</h3>
+                    <Row gutter={24}>
+                      <Col span={24}>
+                        <Form.Item
+                          label="Ethnic Background"
+                          name="ethnicBackground"
+                        >
+                          <Select mode="multiple">
+                            <Option value="Asian">Asian</Option>
+                            <Option value="Black">Black</Option>
+                            <Option value="Hispanic">Hispanic</Option>
+                            <Option value="White">White</Option>
+                            <Option value="Native American">Native American</Option>
+                            <Option value="Other">Other</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Minimum Pay ($)"
-                      name={["influencerPreference", "preferredPaidMinimumPay"]}
-                    >
-                      <Input type="number" />
-                    </Form.Item>
-                  </Col>
+                      <Col span={24}>
+                        <Form.Item label="Languages" name="languages">
+                          <Select mode="tags" tokenSeparators={[","]} />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Maximum Pay ($)"
-                      name={["influencerPreference", "preferredPaidMaximumPay"]}
-                    >
-                      <Input type="number" />
-                    </Form.Item>
-                  </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          label="Content Categories"
+                          name="contentCategories"
+                          rules={[
+                            {
+                              required: true,
+                              message: "Please select at least one category",
+                            },
+                          ]}
+                        >
+                          <Select mode="multiple">
+                            <Option value="Technology">Technology</Option>
+                            <Option value="Fitness">Fitness</Option>
+                            <Option value="Travel">Travel</Option>
+                            <Option value="Fashion">Fashion</Option>
+                            <Option value="Food">Food</Option>
+                            <Option value="Lifestyle">Lifestyle</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Lead Time (Days)"
-                      name={[
-                        "influencerPreference",
-                        "preferredLeadTimeForProjectDays",
-                      ]}
-                    >
-                      <Input type="number" min={0} />
-                    </Form.Item>
-                  </Col>
+                      <Col span={24}>
+                        <Form.Item label="Keywords" name="keywords">
+                          <Select mode="tags" tokenSeparators={[","]} />
+                        </Form.Item>
+                      </Col>
 
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Preferred Payment Options"
-                      name={["influencerPreference", "preferredPaymentOption"]}
-                    >
-                      <Select mode="multiple">
-                        <Option value="Bank Transfer">Bank Transfer</Option>
-                        <Option value="PayPal">PayPal</Option>
-                        <Option value="Cash">Cash</Option>
-                        <Option value="Crypto">Crypto</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Available for Collaboration"
+                          name="isAvailableForCollaboration"
+                        >
+                          <Select>
+                            <Option value={true}>Yes</Option>
+                            <Option value={false}>No</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+
+                  {/* Preferences */}
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                    <h3 className="text-lg font-semibold mb-6">Collaboration Preferences</h3>
+                    <Row gutter={24}>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Preferred Brands"
+                          name={["influencerPreference", "preferredBrands"]}
+                        >
+                          <Select mode="multiple">
+                            <Option value="Technology">Technology</Option>
+                            <Option value="Fitness Equipment">
+                              Fitness Equipment
+                            </Option>
+                            <Option value="Travel Gear">Travel Gear</Option>
+                            <Option value="Fashion">Fashion</Option>
+                            <Option value="Beauty">Beauty</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Preferred Collaboration Format"
+                          name={[
+                            "influencerPreference",
+                            "preferredCollaborationContentFormat",
+                          ]}
+                        >
+                          <Select mode="multiple">
+                            <Option value="Stories">Stories</Option>
+                            <Option value="Posts">Posts</Option>
+                            <Option value="Reels">Reels</Option>
+                            <Option value="Videos">Videos</Option>
+                            <Option value="Live">Live</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Minimum Pay ($)"
+                          name={["influencerPreference", "preferredPaidMinimumPay"]}
+                        >
+                          <Input type="number" />
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Maximum Pay ($)"
+                          name={["influencerPreference", "preferredPaidMaximumPay"]}
+                        >
+                          <Input type="number" />
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Lead Time (Days)"
+                          name={[
+                            "influencerPreference",
+                            "preferredLeadTimeForProjectDays",
+                          ]}
+                        >
+                          <Input type="number" min={0} />
+                        </Form.Item>
+                      </Col>
+
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Preferred Payment Options"
+                          name={["influencerPreference", "preferredPaymentOption"]}
+                        >
+                          <Select mode="multiple">
+                            <Option value="Bank Transfer">Bank Transfer</Option>
+                            <Option value="PayPal">PayPal</Option>
+                            <Option value="Cash">Cash</Option>
+                            <Option value="Crypto">Crypto</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
               </Form>
             </Card>
           ) : (
