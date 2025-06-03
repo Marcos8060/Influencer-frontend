@@ -444,7 +444,7 @@ const InfluencerProfilePage = () => {
                 <Space>
                   <button
                     type="button"
-                    className="px-6 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+                    className="px-6 py-2 border border-input rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors duration-200"
                     onClick={handleCancel}
                   >
                     Cancel
@@ -521,7 +521,7 @@ const InfluencerProfilePage = () => {
                 {/* Form Sections */}
                 <div className="space-y-8">
                   {/* Personal Information */}
-                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-input">
                     <h3 className="text-lg font-semibold mb-6">Personal Information</h3>
                     <Row gutter={24}>
                       <Col xs={24} md={8}>
@@ -591,7 +591,7 @@ const InfluencerProfilePage = () => {
                               panelClassName="date-picker-panel"
                             />
                             {dateOfBirth && (
-                              <div className="text-xs text-gray-500 mt-1">
+                              <div className="text-xs text-primary mt-1">
                                 Age: {moment().diff(moment(dateOfBirth), 'years')} years old
                               </div>
                             )}
@@ -634,7 +634,7 @@ const InfluencerProfilePage = () => {
                   </div>
 
                   {/* Contact Information */}
-                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-input">
                     <h3 className="text-lg font-semibold mb-6">Contact Information</h3>
                     <Row gutter={24}>
                       <Col xs={24} md={12}>
@@ -687,7 +687,7 @@ const InfluencerProfilePage = () => {
                             </Form.Item>
                             
                             {phoneNumber && countryCode && (
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-primary">
                                 Your phone number: <span className="font-medium">{countryCode} {phoneNumber}</span>
                               </div>
                             )}
@@ -773,7 +773,7 @@ const InfluencerProfilePage = () => {
                   </div>
 
                   {/* Professional Information */}
-                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-input">
                     <h3 className="text-lg font-semibold mb-6">Professional Information</h3>
                     <Row gutter={24}>
                       <Col span={24}>
@@ -841,7 +841,7 @@ const InfluencerProfilePage = () => {
                   </div>
 
                   {/* Preferences */}
-                  <div className="bg-gray-50/50 p-6 rounded-xl border border-gray-100">
+                  <div className="bg-gray-50/50 p-6 rounded-xl border border-input">
                     <h3 className="text-lg font-semibold mb-6">Collaboration Preferences</h3>
                     <Row gutter={24}>
                       <Col xs={24} md={12}>
