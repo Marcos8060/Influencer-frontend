@@ -1,9 +1,9 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Gift, DollarSign, Camera, Users, MessageSquare, TrendingUp, Instagram, Play, CheckCircle, Star } from 'lucide-react';
+import { ArrowRight, Gift, DollarSign, Camera, Users, MessageSquare, TrendingUp, Instagram, Play, CheckCircle, Star, X } from 'lucide-react';
 import Footer from "@/app/Components/Footer";
 
 const stats = [
@@ -225,7 +225,40 @@ const testimonials = [
   }
 ];
 
+const creatorVideos = [
+  {
+    title: "Fashion & Style Tips",
+    creator: "@fashionista_sarah",
+    views: "1.2M views",
+    thumbnail: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2570&auto=format&fit=crop",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+  },
+  {
+    title: "Healthy Living Guide",
+    creator: "@wellness_with_mia",
+    views: "850K views",
+    thumbnail: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=2670&auto=format&fit=crop",
+    videoUrl: "https://www.youtube.com/embed/M7lc1UVf-VE"
+  },
+  {
+    title: "Tech Review Series",
+    creator: "@tech_alex",
+    views: "2.1M views",
+    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop",
+    videoUrl: "https://www.youtube.com/embed/8jLOx1hD3_o"
+  },
+  {
+    title: "Travel Adventures",
+    creator: "@wanderlust_emma",
+    views: "1.5M views",
+    thumbnail: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2608&auto=format&fit=crop",
+    videoUrl: "https://www.youtube.com/embed/hVvEISFw9w0"
+  }
+];
+
 const InfluencerLandingPage = () => {
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
   return (
     <div className="relative">
       {/* Hero Section */}
@@ -356,6 +389,113 @@ const InfluencerLandingPage = () => {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* Creator Videos Section */}
+      <section className="py-24 bg-gradient-to-br from-white via-[#F0FFFF] to-white relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(90deg, transparent 39px, rgba(54,128,161,0.05) 39px, rgba(54,128,161,0.05) 41px, transparent 41px),
+            linear-gradient(180deg, transparent 39px, rgba(54,128,161,0.05) 39px, rgba(54,128,161,0.05) 41px, transparent 41px)
+          `,
+          backgroundSize: '40px 40px',
+          opacity: 0.5
+        }} />
+        
+        {/* Gradient Orbs */}
+        <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
+        <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
+
+        <div className="container mx-auto px-6 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-light text-[#1A1A1A] mb-6">
+              Featured Creator Content 🎥
+            </h2>
+            <p className="text-xl text-gray font-light">
+              Get inspired by our top creators and their amazing content.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            {creatorVideos.map((video, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative cursor-pointer"
+                onClick={() => setSelectedVideo(video)}
+              >
+                {/* Video Card */}
+                <div className="relative aspect-[9/16] rounded-[30px] overflow-hidden shadow-lg">
+                  {/* Thumbnail */}
+                  <Image
+                    src={video.thumbnail}
+                    alt={video.title}
+                    fill
+                    className="object-cover transition-transform group-hover:scale-105"
+                  />
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                  
+                  {/* Play Button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                      <Play className="w-5 h-5 text-[#1A1A1A] ml-1" />
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-white font-medium mb-2">{video.title}</h3>
+                    <div className="flex items-center justify-between text-white/80 text-sm">
+                      <span>{video.creator}</span>
+                      <span>{video.views}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Video Modal */}
+        {selectedVideo && (
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+            <div className="relative w-full max-w-4xl mx-auto">
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedVideo(null)}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+              >
+                <X className="w-8 h-8" />
+              </button>
+              
+              {/* Video Player */}
+              <div className="relative pt-[56.25%] rounded-2xl overflow-hidden bg-black">
+                <iframe
+                  src={selectedVideo.videoUrl}
+                  className="absolute inset-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              
+              {/* Video Info */}
+              <div className="mt-4 text-white">
+                <h3 className="text-xl font-medium mb-2">{selectedVideo.title}</h3>
+                <p className="text-gray-300">{selectedVideo.creator} • {selectedVideo.views}</p>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Benefits Section */}
