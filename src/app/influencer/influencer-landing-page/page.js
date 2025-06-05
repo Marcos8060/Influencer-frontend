@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Gift, DollarSign, Camera, Users, MessageSquare, TrendingUp, Instagram, Play, CheckCircle, Star, X } from 'lucide-react';
+import { ArrowRight, Gift, DollarSign, Camera, Users, MessageSquare, TrendingUp, Instagram, Play, CheckCircle, Star, X, Volume2, VolumeX } from 'lucide-react';
 import Footer from "@/app/Components/Footer";
 
 const stats = [
@@ -231,34 +231,163 @@ const creatorVideos = [
     creator: "@fashionista_sarah",
     views: "1.2M views",
     thumbnail: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2570&auto=format&fit=crop",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-fashion-model-walking-in-the-city-1235-large.mp4"
   },
   {
     title: "Healthy Living Guide",
     creator: "@wellness_with_mia",
     views: "850K views",
     thumbnail: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=2670&auto=format&fit=crop",
-    videoUrl: "https://www.youtube.com/embed/M7lc1UVf-VE"
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-yoga-at-sunset-1235-large.mp4"
   },
   {
     title: "Tech Review Series",
     creator: "@tech_alex",
     views: "2.1M views",
     thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop",
-    videoUrl: "https://www.youtube.com/embed/8jLOx1hD3_o"
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-his-laptop-308-large.mp4"
   },
   {
     title: "Travel Adventures",
     creator: "@wanderlust_emma",
     views: "1.5M views",
     thumbnail: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2608&auto=format&fit=crop",
-    videoUrl: "https://www.youtube.com/embed/hVvEISFw9w0"
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-traveling-through-a-mountain-road-4220-large.mp4"
   }
 ];
 
-const InfluencerLandingPage = () => {
-  const [selectedVideo, setSelectedVideo] = useState(null);
+const VideoCard = ({ video, index }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const videoRef = useRef(null);
 
+  const togglePlay = async () => {
+    if (videoRef.current) {
+      try {
+        if (isPlaying) {
+          await videoRef.current.pause();
+        } else {
+          await videoRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+      } catch (err) {
+        setError("Failed to play video. Please try again.");
+        console.error("Video playback error:", err);
+      }
+    }
+  };
+
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleVideoLoaded = () => {
+    setIsLoading(false);
+    setError(null);
+  };
+
+  const handleVideoError = () => {
+    setIsLoading(false);
+    setError("Failed to load video");
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="group relative"
+    >
+      <div className="relative aspect-[9/16] rounded-[30px] overflow-hidden shadow-lg bg-gray-900">
+        {/* Video Element */}
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          loop
+          playsInline
+          muted={isMuted}
+          poster={video.thumbnail}
+          onClick={togglePlay}
+          onLoadedData={handleVideoLoaded}
+          onError={handleVideoError}
+          preload="metadata"
+        >
+          <source src={video.videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <div className="text-white text-center p-4">
+              <p>{error}</p>
+              <button 
+                onClick={() => {
+                  setError(null);
+                  setIsLoading(true);
+                  if (videoRef.current) {
+                    videoRef.current.load();
+                  }
+                }}
+                className="mt-2 px-4 py-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Play/Pause Overlay - Only visible when not playing */}
+        {!isPlaying && !isLoading && !error && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                <Play className="w-6 h-6 text-[#1A1A1A] ml-1" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Controls - Always visible */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
+          <h3 className="text-white font-medium mb-2">{video.title}</h3>
+          <div className="flex items-center justify-between text-white/80 text-sm">
+            <span>{video.creator}</span>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={toggleMute}
+                className="p-2 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 transition-colors"
+              >
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4 text-white" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-white" />
+                )}
+              </button>
+              <span>{video.views}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const InfluencerLandingPage = () => {
   return (
     <div className="relative">
       {/* Hero Section */}
@@ -424,78 +553,10 @@ const InfluencerLandingPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {creatorVideos.map((video, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative cursor-pointer"
-                onClick={() => setSelectedVideo(video)}
-              >
-                {/* Video Card */}
-                <div className="relative aspect-[9/16] rounded-[30px] overflow-hidden shadow-lg">
-                  {/* Thumbnail */}
-                  <Image
-                    src={video.thumbnail}
-                    alt={video.title}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                  
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                      <Play className="w-5 h-5 text-[#1A1A1A] ml-1" />
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-white font-medium mb-2">{video.title}</h3>
-                    <div className="flex items-center justify-between text-white/80 text-sm">
-                      <span>{video.creator}</span>
-                      <span>{video.views}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <VideoCard key={index} video={video} index={index} />
             ))}
           </div>
         </div>
-
-        {/* Video Modal */}
-        {selectedVideo && (
-          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-            <div className="relative w-full max-w-4xl mx-auto">
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedVideo(null)}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
-              >
-                <X className="w-8 h-8" />
-              </button>
-              
-              {/* Video Player */}
-              <div className="relative pt-[56.25%] rounded-2xl overflow-hidden bg-black">
-                <iframe
-                  src={selectedVideo.videoUrl}
-                  className="absolute inset-0 w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-              
-              {/* Video Info */}
-              <div className="mt-4 text-white">
-                <h3 className="text-xl font-medium mb-2">{selectedVideo.title}</h3>
-                <p className="text-gray-300">{selectedVideo.creator} • {selectedVideo.views}</p>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* Benefits Section */}
