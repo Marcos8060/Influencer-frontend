@@ -316,32 +316,32 @@ const CampaignReporting = () => {
     <motion.div {...fadeIn} className="min-h-screen bg-gray-50/50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-input p-6 mb-8">
+        <div className="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.05)]  p-8 mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-              Summer Collection Campaign
-            </h1>
-                <Tag color="green" className="flex items-center gap-1">
+                  Summer Collection Campaign
+                </h1>
+                <Tag color="green" className="flex items-center gap-1 rounded-full px-3 py-1">
                   <Clock size={14} /> Active
                 </Tag>
               </div>
-              <div className="flex items-center gap-4 text-gray-500">
-                <div className="flex items-center gap-1">
-                  <Calendar size={16} />
+              <div className="flex items-center gap-6 text-gray-500">
+                <div className="flex items-center gap-2">
+                  <Calendar size={16} className="text-primary" />
                   <span>Jun 15 - Aug 15, 2024</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Users size={16} />
+                <div className="flex items-center gap-2">
+                  <Users size={16} className="text-primary" />
                   <span>{influencers.length} Influencers</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Target size={16} />
+                <div className="flex items-center gap-2">
+                  <Target size={16} className="text-primary" />
                   <span>Beauty & Fashion</span>
                 </div>
               </div>
-          </div>
+            </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <Dropdown
@@ -353,7 +353,7 @@ const CampaignReporting = () => {
                   onClick: ({ key }) => setSelectedPeriod(key),
                 }}
               >
-                <Button className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all">
                   {periodOptions.find(o => o.value === selectedPeriod)?.label}
                   <ChevronDown size={16} />
                 </Button>
@@ -361,17 +361,17 @@ const CampaignReporting = () => {
 
               <Button
                 icon={<Download size={16} />}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all"
               >
                 Export Report
               </Button>
 
-            <Button
-              type="primary"
+              <Button
+                type="primary"
                 icon={<BarChart3 size={16} />}
-                className="bg-primary hover:bg-primary-dark flex items-center gap-2"
-            >
-              Advanced Analytics
+                className="bg-primary hover:bg-primary-dark flex items-center gap-2 shadow-lg shadow-primary/20"
+              >
+                Advanced Analytics
               </Button>
 
               <Tooltip title="Refresh data">
@@ -379,6 +379,7 @@ const CampaignReporting = () => {
                   icon={<RefreshCw size={16} className={loading ? 'animate-spin' : ''} />}
                   onClick={handleRefresh}
                   disabled={loading}
+                  className="border-input hover:border-primary/50 hover:text-primary transition-all"
                 />
               </Tooltip>
             </div>
@@ -395,13 +396,13 @@ const CampaignReporting = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Card
-                className="rounded-xl border border-input hover:shadow-lg transition-all duration-300"
+                className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300"
                 bodyStyle={{ padding: "24px" }}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-1">
                     <span className="text-sm text-gray-500 font-medium">
-                    {stat.title}
+                      {stat.title}
                     </span>
                     <div className="flex items-baseline gap-2">
                       <h3 className="text-2xl font-bold">{stat.value}</h3>
@@ -410,7 +411,7 @@ const CampaignReporting = () => {
                       </span>
                     </div>
                   </div>
-                  <div className={`p-2 rounded-lg bg-${stat.color || 'primary'}/10`}>
+                  <div className={`p-3 rounded-xl bg-${stat.color || 'primary'}/10`}>
                     {stat.icon}
                   </div>
                 </div>
@@ -425,14 +426,163 @@ const CampaignReporting = () => {
                   className="mb-2"
                 />
                 <p className="text-xs text-gray-500">{stat.description}</p>
-            </Card>
+              </Card>
             </motion.div>
           ))}
         </div>
 
+        {/* Top Performing Media - Instagram Reels Style */}
+        <Card
+          className="rounded-3xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] mb-8"
+          bodyStyle={{ padding: 0 }}
+        >
+          <div className="p-8 border-b border-input">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+              <div>
+                <h2 className="text-xl font-bold">Top Performing Content</h2>
+                <p className="text-gray-500">Highest engagement reels from your campaign</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  icon={<Filter size={16} />}
+                  className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all"
+                >
+                  Filter
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<Download size={16} />}
+                  className="bg-primary hover:bg-primary-dark flex items-center gap-2 shadow-lg shadow-primary/20"
+                >
+                  Export Media
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-8">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+              {topMedia.map((media, index) => (
+                <motion.div
+                  key={media.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group snap-start"
+                >
+                  <div className="relative w-[280px] aspect-[9/16] rounded-3xl overflow-hidden border-0 shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 bg-black">
+                    <img
+                      src={media.image}
+                      alt="Media content"
+                      className="w-full h-full object-cover opacity-95 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+                    
+                    {/* Reels-style overlay - always visible */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/30">
+                      {/* Top section - Username and platform */}
+                      <div className="absolute top-4 left-4 right-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Avatar
+                              size={32}
+                              src={media.user.avatar}
+                              className="border-2 border-white ring-2 ring-primary/30"
+                            />
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-medium">
+                                  {media.user.username}
+                                </span>
+                                <div className="h-1 w-1 rounded-full bg-white/50" />
+                                <Button
+                                  size="small"
+                                  className="bg-white/10 border border-white/20 text-white hover:bg-white/20 px-3 py-0 h-6 flex items-center rounded-full"
+                                >
+                                  Follow
+                                </Button>
+                              </div>
+                              <span className="text-xs text-white/80">2h ago</span>
+                            </div>
+                          </div>
+                          <Tag
+                            className="flex items-center gap-1 bg-white/10 text-white border-0 rounded-full"
+                          >
+                            {getPlatformIcon(media.platform)}
+                          </Tag>
+                        </div>
+                      </div>
+
+                      {/* Right side engagement buttons */}
+                      <div className="absolute right-4 bottom-20 flex flex-col gap-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <Button
+                            type="text"
+                            shape="circle"
+                            icon={<HeartFilled className="text-xl" />}
+                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 hover:text-pink-500 transition-colors rounded-full"
+                          />
+                          <span className="text-white text-xs font-medium">{media.likes}</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <Button
+                            type="text"
+                            shape="circle"
+                            icon={<MessageFilled className="text-xl" />}
+                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors rounded-full"
+                          />
+                          <span className="text-white text-xs font-medium">1.2K</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <Button
+                            type="text"
+                            shape="circle"
+                            icon={<Share2 className="text-xl" />}
+                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors rounded-full"
+                          />
+                          <span className="text-white text-xs font-medium">Share</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <Button
+                            type="text"
+                            shape="circle"
+                            icon={<MoreOutlined className="text-xl" />}
+                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors rounded-full"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Bottom section - Description and music */}
+                      <div className="absolute bottom-4 left-4 right-20">
+                        <div className="space-y-2">
+                          <div className="bg-white/10 text-white text-sm px-3 py-1.5 rounded-full inline-flex items-center gap-1">
+                            <TrendingUp size={14} />
+                            <span className="font-medium">{media.engagementRate} Engagement</span>
+                          </div>
+                          <p className="text-white text-sm line-clamp-2">
+                            Check out our latest summer collection! 🌞 #FashionCampaign #SummerVibes
+                          </p>
+                          <div className="flex items-center gap-2 text-white/80">
+                            <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-pulse" />
+                            <span className="text-xs">Original Audio - Summer Beats</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rank indicator */}
+                    <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-br-2xl flex items-center justify-center">
+                      <span className="text-white font-bold">{media.id}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
         {/* Influencers Section */}
         <Card
-          className="rounded-xl border border-input shadow-sm mb-8"
+          className="rounded-xl border border-input shadow-sm"
           bodyStyle={{ padding: 0 }}
         >
           <div className="p-6 border-b border-input">
@@ -443,14 +593,14 @@ const CampaignReporting = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Button icon={<Filter size={16} />}>Filters</Button>
-                  <Button
-                    type="primary"
+                <Button
+                  type="primary"
                   icon={<Users size={16} />}
                   className="bg-primary hover:bg-primary-dark"
-                  >
-                    Add Influencers
-                  </Button>
-                </div>
+                >
+                  Add Influencers
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -458,11 +608,11 @@ const CampaignReporting = () => {
             activeKey={activeTab}
             onChange={setActiveTab}
             className="px-6"
-              items={[
-                {
-                  key: "1",
-                  label: "All Influencers",
-                  children: (
+            items={[
+              {
+                key: "1",
+                label: "All Influencers",
+                children: (
                   <div className="space-y-6 py-4">
                     {loading ? (
                       Array(3).fill(null).map((_, i) => (
@@ -519,8 +669,8 @@ const CampaignReporting = () => {
                                         <Users size={16} />
                                         <span className="text-sm font-medium">
                                           Reach
-                                    </span>
-                                  </div>
+                                        </span>
+                                      </div>
                                       <p className="text-xl font-bold">
                                         {influencer.reach}
                                       </p>
@@ -529,7 +679,7 @@ const CampaignReporting = () => {
                                       <div className="flex items-center gap-2 text-gray-500 mb-1">
                                         <Zap size={16} />
                                         <span className="text-sm font-medium">
-                                        Engagement
+                                          Engagement
                                         </span>
                                       </div>
                                       <p className="text-xl font-bold">
@@ -540,22 +690,22 @@ const CampaignReporting = () => {
                                       <div className="flex items-center gap-2 text-gray-500 mb-1">
                                         <Award size={16} />
                                         <span className="text-sm font-medium">
-                                        Completion
+                                          Completion
                                         </span>
                                       </div>
                                       <div className="space-y-2">
-                                      <Progress
-                                        percent={influencer.completion}
+                                        <Progress
+                                          percent={influencer.completion}
                                           strokeColor={{
                                             '0%': '#3680A1',
                                             '100%': '#5373d4',
                                           }}
-                                        showInfo={false}
-                                        size="small"
-                                      />
+                                          showInfo={false}
+                                          size="small"
+                                        />
                                         <p className="text-sm font-semibold">
-                                        {influencer.completion}%
-                                      </p>
+                                          {influencer.completion}%
+                                        </p>
                                       </div>
                                     </div>
                                   </div>
@@ -580,8 +730,8 @@ const CampaignReporting = () => {
                                     key={post.id}
                                     className="relative group rounded-xl overflow-hidden"
                                   >
-                                        <img
-                                          src={post.image}
+                                    <img
+                                      src={post.image}
                                       alt=""
                                       className="w-full h-48 object-cover"
                                     />
@@ -590,16 +740,16 @@ const CampaignReporting = () => {
                                         <div className="flex justify-between text-white text-sm">
                                           <span className="flex items-center gap-1">
                                             <HeartFilled /> {post.likes}
-                                            </span>
+                                          </span>
                                           <span className="flex items-center gap-1">
                                             <MessageFilled /> {post.comments}
-                                            </span>
+                                          </span>
                                           <span className="flex items-center gap-1">
                                             <Share2 size={14} /> {post.shares}
-                                            </span>
+                                          </span>
                                         </div>
                                         <p className="text-white text-xs mt-2">
-                                        {post.date}
+                                          {post.date}
                                         </p>
                                       </div>
                                     </div>
@@ -611,11 +761,11 @@ const CampaignReporting = () => {
                         </motion.div>
                       ))
                     )}
-                    </div>
-                  ),
-                },
-                {
-                  key: "2",
+                  </div>
+                ),
+              },
+              {
+                key: "2",
                 label: "Top Performing",
                 children: <div className="p-6">Top performing content here</div>,
               },
@@ -623,158 +773,9 @@ const CampaignReporting = () => {
                 key: "3",
                 label: "Pending Review",
                 children: <div className="p-6">Content pending review here</div>,
-                },
-              ]}
-            />
-        </Card>
-
-        {/* Top Performing Media - Instagram Reels Style */}
-        <Card
-          className="rounded-xl border border-input shadow-sm"
-          bodyStyle={{ padding: 0 }}
-        >
-          <div className="p-6 border-b border-input">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div>
-                <h2 className="text-xl font-bold">Top Performing Content</h2>
-                <p className="text-gray-500">Highest engagement reels from your campaign</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  icon={<Filter size={16} />}
-                  className="flex items-center gap-2"
-                >
-                  Filter
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<Download size={16} />}
-                  className="bg-primary hover:bg-primary-dark flex items-center gap-2"
-                >
-                  Export Media
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6">
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-              {topMedia.map((media, index) => (
-                <motion.div
-                key={media.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group snap-start"
-              >
-                  <div className="relative w-[280px] aspect-[9/16] rounded-2xl overflow-hidden border border-input shadow-sm hover:shadow-lg transition-all duration-300 bg-black">
-                  <img
-                    src={media.image}
-                      alt="Media content"
-                      className="w-full h-full object-cover opacity-95 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                    
-                    {/* Reels-style overlay - always visible */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/30">
-                      {/* Top section - Username and platform */}
-                      <div className="absolute top-4 left-4 right-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar
-                              size={32}
-                              src={media.user.avatar}
-                              className="border-2 border-white ring-2 ring-primary/30"
-                            />
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-white font-medium">
-                                  {media.user.username}
-                                </span>
-                                <div className="h-1 w-1 rounded-full bg-white/50" />
-                                <Button
-                                  size="small"
-                                  className="bg-white/10 border border-white/20 text-white hover:bg-white/20 px-3 py-0 h-6 flex items-center"
-                                >
-                                  Follow
-                                </Button>
-                              </div>
-                              <span className="text-xs text-white/80">2h ago</span>
-                            </div>
-                          </div>
-                          <Tag
-                            className="flex items-center gap-1 bg-white/10 text-white border-0"
-                      >
-                        {getPlatformIcon(media.platform)}
-                      </Tag>
-                        </div>
-                      </div>
-
-                      {/* Right side engagement buttons */}
-                      <div className="absolute right-4 bottom-20 flex flex-col gap-4">
-                        <div className="flex flex-col items-center gap-1">
-                          <Button
-                            type="text"
-                            shape="circle"
-                            icon={<HeartFilled className="text-xl" />}
-                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 hover:text-pink-500 transition-colors"
-                          />
-                          <span className="text-white text-xs font-medium">{media.likes}</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <Button
-                            type="text"
-                            shape="circle"
-                            icon={<MessageFilled className="text-xl" />}
-                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors"
-                          />
-                          <span className="text-white text-xs font-medium">1.2K</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <Button
-                            type="text"
-                            shape="circle"
-                            icon={<Share2 className="text-xl" />}
-                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors"
-                          />
-                          <span className="text-white text-xs font-medium">Share</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <Button
-                            type="text"
-                            shape="circle"
-                            icon={<MoreOutlined className="text-xl" />}
-                            className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Bottom section - Description and music */}
-                      <div className="absolute bottom-4 left-4 right-20">
-                        <div className="space-y-2">
-                          <div className="bg-white/10 text-white text-sm px-3 py-1.5 rounded-lg inline-flex items-center gap-1">
-                            <TrendingUp size={14} />
-                            <span className="font-medium">{media.engagementRate} Engagement</span>
-                          </div>
-                          <p className="text-white text-sm line-clamp-2">
-                            Check out our latest summer collection! 🌞 #FashionCampaign #SummerVibes
-                          </p>
-                          <div className="flex items-center gap-2 text-white/80">
-                            <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-pulse" />
-                            <span className="text-xs">Original Audio - Summer Beats</span>
-                    </div>
-                  </div>
-                </div>
-                  </div>
-
-                    {/* Rank indicator */}
-                    <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-br-xl flex items-center justify-center">
-                      <span className="text-white font-bold">{media.id}</span>
-                </div>
-                  </div>
-                </motion.div>
-              ))}
-              </div>
-          </div>
+              },
+            ]}
+          />
         </Card>
       </div>
     </motion.div>

@@ -175,23 +175,45 @@ const CampaignReport = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header with back button and report button */}
-        <div className="flex justify-between items-center mb-8">
-          <Link href="/brand/view-campaigns">
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined />}
-              className="flex items-center"
-            >
-              Back to Campaigns
-            </Button>
-          </Link>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <Link href="/brand/view-campaigns">
+              <Button
+                type="text"
+                icon={<ArrowLeftOutlined />}
+                className="flex items-center hover:text-primary"
+              >
+                Back to Campaigns
+              </Button>
+            </Link>
+            <Divider type="vertical" className="mx-4" />
+            <Title level={4} className="m-0">Campaign Details</Title>
+          </div>
 
-          <Link
-           href="/brand/campaign-report/report"
-            className="bg-primary text-white rounded text-sm px-4 py-2 hover:bg-primary-dark"
-          >
-            Campaign Report
-          </Link>
+          <div className="flex items-center gap-3">
+            <Dropdown
+              menu={{
+                items: exportMenu,
+                onClick: ({ key }) => {
+                  // Handle export actions
+                  if (key === "1") {
+                    // Handle PDF export
+                  } else if (key === "2") {
+                    // Handle CSV export
+                  }
+                },
+              }}
+            >
+              <Button icon={<FilePdfOutlined />}>Export</Button>
+            </Dropdown>
+            <Link
+              href="/brand/campaign-report/report"
+              className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
+            >
+              <EyeOutlined />
+              View Full Report
+            </Link>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -200,13 +222,14 @@ const CampaignReport = () => {
             stats.map((stat, index) => (
               <Card
                 key={index}
-                className="shadow-sm hover:shadow-md transition-all"
+                className="shadow-sm hover:shadow-md transition-all border-0"
+                bodyStyle={{ padding: '20px' }}
               >
                 <Statistic
-                  title={<span className="text-gray-600">{stat.title}</span>}
+                  title={<span className="text-gray-600 font-medium">{stat.title}</span>}
                   value={stat.value}
                   prefix={stat.icon}
-                  valueStyle={{ fontSize: "24px", fontWeight: 600 }}
+                  valueStyle={{ fontSize: "28px", fontWeight: 600, color: '#1a1a1a' }}
                   suffix={
                     <span className="text-gray-500 text-xs block mt-1">
                       {stat.suffix}
@@ -226,9 +249,13 @@ const CampaignReport = () => {
             {/* Campaign Overview */}
             <Card
               title={
-                <span className="text-lg font-semibold">Campaign Overview</span>
+                <span className="text-lg font-semibold flex items-center gap-2">
+                  <ShoppingOutlined className="text-primary" />
+                  Campaign Overview
+                </span>
               }
-              className="shadow-sm"
+              className="shadow-sm border-0"
+              bodyStyle={{ padding: '24px' }}
             >
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={8}>
@@ -279,9 +306,13 @@ const CampaignReport = () => {
             {/* Products Section */}
             <Card
               title={
-                <span className="text-lg font-semibold">Featured Products</span>
+                <span className="text-lg font-semibold flex items-center gap-2">
+                  <ShoppingOutlined className="text-primary" />
+                  Featured Products
+                </span>
               }
-              className="shadow-sm"
+              className="shadow-sm border-0"
+              bodyStyle={{ padding: '24px' }}
             >
               {campaignDetails.products?.length > 0 ? (
                 <Row gutter={[16, 16]}>
@@ -327,9 +358,13 @@ const CampaignReport = () => {
             {/* Campaign Brief */}
             <Card
               title={
-                <span className="text-lg font-semibold">Campaign Brief</span>
+                <span className="text-lg font-semibold flex items-center gap-2">
+                  <FilePdfOutlined className="text-primary" />
+                  Campaign Brief
+                </span>
               }
-              className="shadow-sm"
+              className="shadow-sm border-0"
+              bodyStyle={{ padding: '24px' }}
             >
               <Descriptions column={1} title={campaignDetails.briefTitle}>
                 <Descriptions.Item>
@@ -379,20 +414,13 @@ const CampaignReport = () => {
             {/* Collaborators */}
             <Card
               title={
-                <span className="text-lg font-semibold">
+                <span className="text-lg font-semibold flex items-center gap-2">
+                  <TeamOutlined className="text-primary" />
                   Collaboration Requests
                 </span>
               }
-              className="shadow-sm"
-              // extra={
-              //   <Button
-              //     type="primary"
-              //     icon={<PlusOutlined />}
-              //     className="bg-primary hover:bg-primary-dark"
-              //   >
-              //     Invite Influencerss
-              //   </Button>
-              // }
+              className="shadow-sm border-0"
+              bodyStyle={{ padding: '24px' }}
             >
               {campaignDetails.collaborators?.length > 0 ? (
                 <Table
