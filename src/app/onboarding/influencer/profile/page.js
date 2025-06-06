@@ -1078,7 +1078,7 @@ const InfluencerProfilePage = () => {
                         />
                         <div>
                           <Text strong>
-                            @{influencerProfile.tiktok.username}
+                            @{influencerProfile.tiktok?.username}
                           </Text>
                           <div className="flex items-center">
                             {influencerProfile.isTiktokConnected ? (
