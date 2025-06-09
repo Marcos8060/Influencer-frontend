@@ -461,8 +461,8 @@ const InfluencerLandingPage = () => {
                   href="/auth/login/influencer"
                   className="inline-flex items-center gap-2 bg-white text-[#1A1A1A] px-8 py-4 rounded-full font-light hover:bg-slate-50 transition-all border border-primary/10"
                 >
-                  Apply to Campaigns
-                  <Play className="w-5 h-5" />
+                  Login
+                  <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
 
