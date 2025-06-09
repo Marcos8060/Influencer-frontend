@@ -23,6 +23,7 @@ import {
   CloseCircleFilled,
   ArrowLeftOutlined,
   MessageOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +53,9 @@ const InfluencerProfile = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [buttonState, setButtonState] = useState({
     approveDisabled: false,
-    rejectDisabled: false
+    rejectDisabled: false,
+    approveLoading: false,
+    rejectLoading: false
   });
   const pathname = usePathname();
   const segments = pathname.split("/");
@@ -68,23 +71,24 @@ const InfluencerProfile = () => {
   const collaboratorStatus = brandInfluencerProfile?.collaborator?.status;
 
   useEffect(() => {
-    // Set initial button states based on collaborator status
     if (collaboratorStatus === "approved") {
-      setButtonState({
+      setButtonState(prev => ({
+        ...prev,
         approveDisabled: true,
         rejectDisabled: false
-      });
+      }));
     } else if (collaboratorStatus === "rejected") {
-      setButtonState({
+      setButtonState(prev => ({
+        ...prev,
         approveDisabled: false,
         rejectDisabled: true
-      });
+      }));
     } else {
-      // If status is pending or undefined
-      setButtonState({
+      setButtonState(prev => ({
+        ...prev,
         approveDisabled: false,
         rejectDisabled: false
-      });
+      }));
     }
   }, [collaboratorStatus]);
 
@@ -119,17 +123,21 @@ const InfluencerProfile = () => {
       status: "approved",
     };
     try {
-      setLoadApproval(true);
+      setButtonState(prev => ({
+        ...prev,
+        approveLoading: true
+      }));
       const res = await approveCampaignApplication(auth, payload);
       if (res.status === 404) {
         toast.error(res.response.data.errorMessage[0]);
       } else {
-        toast.success("Approval Successful");
-        // Update button states
-        setButtonState({
+        toast.success("Application approved successfully");
+        setButtonState(prev => ({
+          ...prev,
           approveDisabled: true,
-          rejectDisabled: false
-        });
+          rejectDisabled: false,
+          approveLoading: false
+        }));
         
         dispatch(
           updateCollaboratorStatus({
@@ -139,10 +147,13 @@ const InfluencerProfile = () => {
           })
         );
         setShowAnimation(true);
-        setTimeout(() => setShowAnimation(false), 6000);
+        setTimeout(() => setShowAnimation(false), 3000);
       }
     } catch (error) {} finally {
-      setLoadApproval(false);
+      setButtonState(prev => ({
+        ...prev,
+        approveLoading: false
+      }));
     }
   };
 
@@ -153,17 +164,21 @@ const InfluencerProfile = () => {
       status: "rejected",
     };
     try {
-      setLoadRejection(true);
+      setButtonState(prev => ({
+        ...prev,
+        rejectLoading: true
+      }));
       const res = await approveCampaignApplication(auth, payload);
       if (res.status === 404) {
         toast.error(res.response.data.errorMessage[0]);
       } else {
-        toast.success("Rejection Successful");
-        // Update button states
-        setButtonState({
+        toast.success("Application rejected successfully");
+        setButtonState(prev => ({
+          ...prev,
           approveDisabled: false,
-          rejectDisabled: true
-        });
+          rejectDisabled: true,
+          rejectLoading: false
+        }));
         
         dispatch(
           updateCollaboratorStatus({
@@ -174,7 +189,10 @@ const InfluencerProfile = () => {
         );
       }
     } catch (error) {} finally {
-      setLoadRejection(false);
+      setButtonState(prev => ({
+        ...prev,
+        rejectLoading: false
+      }));
     }
   };
 
@@ -195,14 +213,34 @@ const InfluencerProfile = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 text-color">
       {showAnimation && <ChristmasAnimation />}
-      {/* Profile Header */}
-      <Space style={{ marginBottom: 24 }}>
+      
+      {/* Navigation Header with Chat Button */}
+      <div className="flex items-center justify-between mb-8">
         <Link href={`/brand/campaign-report/${campaignId}`}>
-          <Button type="text" icon={<ArrowLeftOutlined />}>
-            Back to Campaigns Details
+          <Button 
+            type="text" 
+            icon={<ArrowLeftOutlined />}
+            className="hover:bg-gray-50 transition-colors text-gray-600"
+          >
+            Back to Campaign Details
           </Button>
         </Link>
-      </Space>
+        
+        {/* Prominent Chat Button */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <button
+            className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
+            onClick={handleStartChat}
+          >
+            <MessageOutlined />
+            Start Conversation
+          </button>
+        </motion.div>
+      </div>
+
       {loading ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 8 }).map((_, idx) => (
@@ -216,6 +254,7 @@ const InfluencerProfile = () => {
         </section>
       ) : (
         <div className="flex flex-col md:flex-row gap-8 mb-8">
+          {/* Profile Section */}
           <div className="flex-shrink-0">
             <div className="relative">
               <Avatar
@@ -235,40 +274,113 @@ const InfluencerProfile = () => {
           </div>
 
           <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {brandInfluencerProfile.fullName}
                   <span className="text-gray-500 text-xl ml-2">
                     ({brandInfluencerProfile.age})
                   </span>
                 </h1>
-                <div className="flex flex-wrap items-center gap-2 mt-2">
-                  <Tag color="geekblue" className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Tag color="geekblue" className="flex items-center gap-1 px-3 py-1">
                     <GlobalOutlined /> {brandInfluencerProfile.country}
                   </Tag>
                   {brandInfluencerProfile.ethnicBackground?.map((ethnicity) => (
-                    <Tag key={ethnicity} color="purple">
+                    <Tag key={ethnicity} color="purple" className="px-3 py-1">
                       {ethnicity}
                     </Tag>
                   ))}
-                  <Tag color="gold">{brandInfluencerProfile.gender}</Tag>
+                  <Tag color="gold" className="px-3 py-1">{brandInfluencerProfile.gender}</Tag>
                 </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 mt-4 md:mt-0">
+                {/* Approve Button */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <button
+                    onClick={approveApplication}
+                    disabled={buttonState.approveDisabled || buttonState.approveLoading || buttonState.rejectLoading}
+                    className={`
+                      px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all shadow-sm
+                      ${buttonState.approveDisabled 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : buttonState.approveLoading
+                          ? 'border border-input text-gray-600 cursor-wait'
+                          : 'text-green bg-white'
+                      }
+                    `}
+                  >
+                    {buttonState.approveLoading ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        {buttonState.approveDisabled ? 'Approved' : 'Approve'}
+                        <CheckCircleFilled className={buttonState.approveDisabled ? 'text-green' : 'text-green'} />
+                      </>
+                    )}
+                  </button>
+                </motion.div>
+
+                {/* Reject Button */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <button
+                    onClick={rejectApplication}
+                    disabled={buttonState.rejectDisabled || buttonState.rejectLoading || buttonState.approveLoading}
+                    className={`
+                      px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all shadow-sm
+                      ${buttonState.rejectDisabled 
+                        ? 'bg-gray-200 text-red cursor-not-allowed' 
+                        : buttonState.rejectLoading
+                          ? 'bg-white text-gray-600 cursor-wait'
+                          : 'text-red bg-white'
+                      }
+                    `}
+                  >
+                    {buttonState.rejectLoading ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        {buttonState.rejectDisabled ? 'Rejected' : 'Reject'}
+                        <CloseCircleFilled className={buttonState.rejectDisabled ? 'text-red' : 'text-red'} />
+                      </div>
+                    )}
+                  </button>
+                </motion.div>
               </div>
             </div>
 
-            <p className="text-gray-700 text-md mb-4">
+            <p className="text-gray-700 text-md mb-6 leading-relaxed">
               {brandInfluencerProfile.bio}
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-4">
+            <div className="flex flex-wrap gap-2 mb-6">
               {brandInfluencerProfile.contentCategories?.map((category) => (
-                <Tag key={category} color="blue">
+                <Tag key={category} color="blue" className="px-3 py-1">
                   {category}
                 </Tag>
               ))}
               {brandInfluencerProfile.keywords?.map((keyword) => (
-                <Tag key={keyword} color="cyan">
+                <Tag key={keyword} color="cyan" className="px-3 py-1">
                   {keyword}
                 </Tag>
               ))}
@@ -281,6 +393,7 @@ const InfluencerProfile = () => {
                     shape="circle"
                     icon={<InstagramOutlined />}
                     size="large"
+                    className="hover:bg-pink-50 transition-colors"
                   />
                 </Tooltip>
               )}
@@ -289,6 +402,7 @@ const InfluencerProfile = () => {
                   shape="circle"
                   icon={<FacebookOutlined />}
                   size="large"
+                  className="hover:bg-blue-50 transition-colors"
                 />
               )}
               {brandInfluencerProfile.isTwitterAccountConnected && (
@@ -296,6 +410,7 @@ const InfluencerProfile = () => {
                   shape="circle"
                   icon={<TwitterOutlined />}
                   size="large"
+                  className="hover:bg-sky-50 transition-colors"
                 />
               )}
               {brandInfluencerProfile.isTiktokConnected && (
@@ -304,132 +419,18 @@ const InfluencerProfile = () => {
                     shape="circle"
                     icon={<TikTokOutlined />}
                     size="large"
+                    className="hover:bg-gray-50 transition-colors"
                   />
                 </Tooltip>
               )}
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="flex gap-3">{/* Social media icons */}</div>
-
-              <div className="flex gap-3">
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <button
-                    className="bg-secondary rounded-sm text-white px-4 py-3 text-xs flex items-center gap-2"
-                    onClick={handleStartChat}
-                  >
-                    Chat with this Influencer
-                    <MessageOutlined />
-                  </button>
-                </motion.div>
-
-                {/* Approve Button */}
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <SuccessButtonComponent
-                    onClick={approveApplication}
-                    type="submit"
-                    label={
-                      loadApproval ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Approving...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          {buttonState.approveDisabled ? "Approved" : "Approve"}
-                          <CheckCircleFilled className="ml-2" />
-                        </span>
-                      )
-                    }
-                    disabled={buttonState.approveDisabled || loadApproval || loadRejection}
-                    className={`w-full py-3 px-4 rounded-lg font-medium ${
-                      buttonState.approveDisabled
-                        ? "bg-green-300 cursor-not-allowed"
-                        : "bg-green-500 hover:bg-green-600"
-                    } text-white transition-all`}
-                  />
-                </motion.div>
-
-                {/* Reject Button */}
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <ErrorButtonComponent
-                    onClick={rejectApplication}
-                    type="submit"
-                    label={
-                      loadRejection ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Rejecting...
-                        </span>
-                      ) : (
-                        <span className="flex items-center justify-center">
-                          {buttonState.rejectDisabled ? "Rejected" : "Reject"}
-                          <CloseCircleFilled className="ml-2" />
-                        </span>
-                      )
-                    }
-                    disabled={buttonState.rejectDisabled || loadRejection || loadApproval}
-                    className={`w-full py-3 px-4 rounded-lg font-medium ${
-                      buttonState.rejectDisabled
-                        ? "bg-red-300 cursor-not-allowed"
-                        : "bg-red-500 hover:bg-red-600"
-                    } text-white transition-all`}
-                  />
-                </motion.div>
-              </div>
             </div>
           </div>
         </div>
       )}
 
-      <Divider />
+      <Divider className="my-8" />
 
+      {/* Stats Cards */}
       {loading ? (
         <section className="grid grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 8 }).map((_, idx) => (
@@ -443,10 +444,10 @@ const InfluencerProfile = () => {
         </section>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-0">
             <div className="flex items-center gap-4">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <InstagramOutlined className="text-blue-600 text-xl" />
+              <div className="bg-gradient-to-br from-pink-500 to-purple-600 p-3 rounded-xl">
+                <InstagramOutlined className="text-white text-xl" />
               </div>
               <div>
                 <h3 className="text-gray-500 font-medium">Instagram</h3>
@@ -467,10 +468,10 @@ const InfluencerProfile = () => {
             </div>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-0">
             <div className="flex items-center gap-4">
-              <div className="bg-pink-100 p-3 rounded-full">
-                <TikTokOutlined className="text-pink-600 text-xl" />
+              <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-xl">
+                <TikTokOutlined className="text-white text-xl" />
               </div>
               <div>
                 <h3 className="text-gray-500 font-medium">TikTok</h3>
@@ -490,10 +491,10 @@ const InfluencerProfile = () => {
             </div>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border-0">
             <div className="flex items-center gap-4">
-              <div className="bg-green-100 p-3 rounded-full">
-                <CheckCircleFilled className="text-green-600 text-xl" />
+              <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-3 rounded-xl">
+                <CheckCircleFilled className="text-white text-xl" />
               </div>
               <div>
                 <h3 className="text-gray-500 font-medium">Engagement</h3>
@@ -509,6 +510,7 @@ const InfluencerProfile = () => {
                         ? "green"
                         : "red"
                     }
+                    className="px-2"
                   >
                     {brandInfluencerProfile.isAvailableForCollaboration
                       ? "Available"
@@ -535,24 +537,24 @@ const InfluencerProfile = () => {
         </section>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <Card title="About" className="hover:shadow-lg transition-shadow">
+          <Card title="About" className="hover:shadow-lg transition-shadow border-0">
             <div className="space-y-4">
-              <p className="text-gray-700">
+              <p className="text-gray-700 leading-relaxed">
                 {brandInfluencerProfile.instagramBiography ||
                   brandInfluencerProfile.bio}
               </p>
               <Divider className="my-4" />
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <MailOutlined className="text-gray-500" />
+                <div className="flex items-center gap-3 text-gray-600">
+                  <MailOutlined className="text-gray-400" />
                   <span>{brandInfluencerProfile.email}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <PhoneOutlined className="text-gray-500" />
+                <div className="flex items-center gap-3 text-gray-600">
+                  <PhoneOutlined className="text-gray-400" />
                   <span>{brandInfluencerProfile.phoneNumber}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <EnvironmentOutlined className="text-gray-500" />
+                <div className="flex items-center gap-3 text-gray-600">
+                  <EnvironmentOutlined className="text-gray-400" />
                   <span>
                     {brandInfluencerProfile.addressLine1},{" "}
                     {brandInfluencerProfile.addressLine2 &&
@@ -568,12 +570,12 @@ const InfluencerProfile = () => {
 
           <Card
             title="Platform Introduction"
-            className="hover:shadow-lg transition-shadow"
+            className="hover:shadow-lg transition-shadow border-0"
           >
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <span className="font-medium">Primary Platform:</span>
-                <Tag color="blue">
+                <span className="font-medium text-gray-700">Primary Platform:</span>
+                <Tag color="blue" className="px-3 py-1">
                   {brandInfluencerProfile.platformIntroductionSource}
                 </Tag>
               </div>
@@ -581,8 +583,8 @@ const InfluencerProfile = () => {
               <Divider className="my-4" />
 
               <div>
-                <h4 className="font-medium mb-2">TikTok Bio:</h4>
-                <p className="text-gray-700 whitespace-pre-line">
+                <h4 className="font-medium mb-2 text-gray-700">TikTok Bio:</h4>
+                <p className="text-gray-600 whitespace-pre-line leading-relaxed">
                   {brandInfluencerProfile.tiktokBioDescription ||
                     "No bio available"}
                 </p>
@@ -607,7 +609,7 @@ const InfluencerProfile = () => {
       ) : (
         <Card
           title="Media Highlights"
-          className="mb-8 hover:shadow-lg transition-shadow"
+          className="mb-8 hover:shadow-lg transition-shadow border-0"
         >
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {posts?.[0]?.mediaUrls?.slice(0, 5).map((url, index) => (
@@ -620,7 +622,6 @@ const InfluencerProfile = () => {
                   alt={`Instagram post ${index + 1}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
-                    // Use a working placeholder image URL
                     e.currentTarget.src =
                       'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"%3E%3Crect fill="%23f0f0f0" width="300" height="300"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="16" dy=".5em" text-anchor="middle" x="150" y="150"%3EImage Not Available%3C/text%3E%3C/svg%3E';
                     e.currentTarget.className =
@@ -637,9 +638,10 @@ const InfluencerProfile = () => {
                 href={posts[0].permalink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
+                className="text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
               >
-                View on Instagram →
+                View on Instagram
+                <ArrowRightOutlined className="text-sm" />
               </a>
             </div>
           )}

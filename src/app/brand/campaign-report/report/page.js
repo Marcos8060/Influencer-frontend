@@ -442,26 +442,11 @@ const CampaignReporting = () => {
                 <h2 className="text-xl font-bold">Top Performing Content</h2>
                 <p className="text-gray-500">Highest engagement reels from your campaign</p>
               </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  icon={<Filter size={16} />}
-                  className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all"
-                >
-                  Filter
-                </Button>
-                <Button
-                  type="primary"
-                  icon={<Download size={16} />}
-                  className="bg-primary hover:bg-primary-dark flex items-center gap-2 shadow-lg shadow-primary/20"
-                >
-                  Export Media
-                </Button>
-              </div>
             </div>
           </div>
 
           <div className="p-8">
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {topMedia.map((media, index) => (
                 <motion.div
                   key={media.id}

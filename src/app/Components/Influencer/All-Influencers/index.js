@@ -101,10 +101,6 @@ const AllInfluencers = () => {
       key: "name",
       render: (text, record) => (
         <Space>
-          <Checkbox
-            checked={selectedInfluencers.some((item) => item.id === record.id)}
-            onChange={(e) => handleCheckboxChange(record, e.target.checked)}
-          />
           <Avatar
             size="large"
             src={record.profilePicture}
@@ -173,7 +169,6 @@ const AllInfluencers = () => {
           Influencer Discovery
         </Title>
       }
-      extra={<FiltersDrawer />}
       styles={{ body: { padding: 0 } }} // Updated to use styles.body instead of bodyStyle
     >
       <div style={{ padding: 24 }}>

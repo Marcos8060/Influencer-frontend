@@ -191,21 +191,6 @@ const CampaignReport = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Dropdown
-              menu={{
-                items: exportMenu,
-                onClick: ({ key }) => {
-                  // Handle export actions
-                  if (key === "1") {
-                    // Handle PDF export
-                  } else if (key === "2") {
-                    // Handle CSV export
-                  }
-                },
-              }}
-            >
-              <Button icon={<FilePdfOutlined />}>Export</Button>
-            </Dropdown>
             <Link
               href="/brand/campaign-report/report"
               className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
