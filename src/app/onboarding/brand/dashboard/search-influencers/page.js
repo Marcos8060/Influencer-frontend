@@ -21,7 +21,8 @@ import {
   Badge,
   Tooltip,
   Skeleton,
-  Collapse
+  Collapse,
+  Drawer
 } from "antd";
 import {
   SearchOutlined,
@@ -68,6 +69,8 @@ const SearchInfluencers = () => {
   const auth = useAuth();
   const pageSize = 12;
   const { influencers } = useSelector((store) => store.filterResults);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState('instagram');
   console.log(influencers)
 
   // Age ranges for filtering
@@ -301,47 +304,13 @@ const SearchInfluencers = () => {
                       label: city,
                     }))}
                   />
-                </div>
-              </div>
-
-              {/* Follower Quick Filters */}
-              <div>
-                <Text strong className="block mb-2 text-secondary">Follower Demographics</Text>
-                <div className="flex flex-wrap gap-3">
-                  <Select
-                    mode="multiple"
-                    placeholder="Follower Gender"
-                    value={selectedFollowerGenders}
-                    onChange={setSelectedFollowerGenders}
-                    style={{ minWidth: '150px' }}
-                    options={genders.map((gender) => ({
-                      value: gender,
-                      label: gender,
-                    }))}
-                  />
-                  <Select
-                    mode="multiple"
-                    placeholder="Follower Age Range"
-                    value={selectedFollowerAgeRanges}
-                    onChange={setSelectedFollowerAgeRanges}
-                    style={{ minWidth: '150px' }}
-                    options={ageRanges.map((range) => ({
-                      value: range.value,
-                      label: range.label,
-                    }))}
-                  />
-                  <Select
-                    mode="multiple"
-                    placeholder="Top Follower Countries"
-                    value={selectedFollowerCountries}
-                    onChange={setSelectedFollowerCountries}
-                    style={{ minWidth: '150px' }}
-                    maxTagCount={1}
-                    options={countries.map((country) => ({
-                      value: country,
-                      label: country,
-                    }))}
-                  />
+                  <button
+                    className="bg-gradient-to-r rounded px-4 py-2 text-sm from-primary to-secondary text-white" 
+                    // icon={<TeamOutlined />}
+                    onClick={() => setDrawerVisible(true)}
+                  >
+                    Follower Demographics
+                  </button>
                 </div>
               </div>
             </div>
@@ -349,166 +318,148 @@ const SearchInfluencers = () => {
         </div>
       </div>
 
-      <div className="search-content flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar */}
-        <div className="filters-sidebar w-full lg:w-80 flex-shrink-0">
-          <Card
-            title={
-              <Space>
-                <FilterOutlined />
-                <span>Advanced Filters</span>
-              </Space>
-            }
-            extra={
-              <Button type="text" size="small" onClick={clearFilters}>
-                Clear all
-              </Button>
-            }
-            className="mb-6"
+      {/* Follower Demographics Drawer */}
+      <Drawer
+        title="Follower Demographics"
+        placement="right"
+        onClose={() => setDrawerVisible(false)}
+        open={drawerVisible}
+        width={400}
+        extra={
+          <Space>
+            <Button onClick={() => {
+              setSelectedFollowerGenders([]);
+              setSelectedFollowerAgeRanges([]);
+              setSelectedFollowerCountries([]);
+            }}>
+              Clear
+            </Button>
+            <Button type="primary" onClick={() => setDrawerVisible(false)}>
+              Apply
+            </Button>
+          </Space>
+        }
+      >
+        <div className="mb-6">
+          <Text strong className="block mb-3">Select Platform</Text>
+          <Radio.Group 
+            value={selectedPlatform} 
+            onChange={(e) => setSelectedPlatform(e.target.value)}
+            className="w-full"
           >
-            <Collapse
-              activeKey={expandedFilters}
-              onChange={setExpandedFilters}
-              ghost
-              className="filter-collapse"
-            >
-              {/* Influencer Demographics Section */}
-              <Panel 
-                header={
-                  <div className="flex items-center gap-2">
-                    <UserOutlined className="text-primary" />
-                    <span>Influencer Demographics</span>
-                  </div>
-                } 
-                key="influencer-demographics"
-              >
-                <div className="mb-4">
-                  <Title level={5} className="mb-2 text-muted">Age Range</Title>
-                  <Checkbox.Group
-                    options={ageRanges}
-                    value={selectedAgeRanges}
-                    onChange={setSelectedAgeRanges}
-                    className="flex flex-col gap-2"
-                  />
-                </div>
-                <div>
-                  <Title level={5} className="mb-2 text-muted">Gender</Title>
-                  <Checkbox.Group
-                    options={genders}
-                    value={selectedGenders}
-                    onChange={setSelectedGenders}
-                    className="flex flex-col gap-2"
-                  />
-                </div>
-              </Panel>
-
-              {/* Follower Demographics Section */}
-              <Panel 
-                header={
-                  <div className="flex items-center gap-2">
-                    <TeamOutlined className="text-secondary" />
-                    <span>Follower Demographics</span>
-                  </div>
-                } 
-                key="follower-demographics"
-              >
-                <div className="mb-4">
-                  <Title level={5} className="mb-2 text-muted">Age Range</Title>
-                  <Checkbox.Group
-                    options={ageRanges}
-                    value={selectedFollowerAgeRanges}
-                    onChange={setSelectedFollowerAgeRanges}
-                    className="flex flex-col gap-2"
-                  />
-                </div>
-                <div className="mb-4">
-                  <Title level={5} className="mb-2 text-muted">Gender</Title>
-                  <Checkbox.Group
-                    options={genders}
-                    value={selectedFollowerGenders}
-                    onChange={setSelectedFollowerGenders}
-                    className="flex flex-col gap-2"
-                  />
-                </div>
-                <div>
-                  <Title level={5} className="mb-2 text-muted">Top Countries</Title>
-                  <Select
-                    mode="multiple"
-                    placeholder="Select countries"
-                    value={selectedFollowerCountries}
-                    onChange={setSelectedFollowerCountries}
-                    className="w-full"
-                    options={countries.map((country) => ({
-                      value: country,
-                      label: country,
-                    }))}
-                  />
-                </div>
-              </Panel>
-            </Collapse>
-          </Card>
+            <Space direction="vertical" className="w-full">
+              <Radio.Button value="instagram" className="w-full flex items-center justify-center gap-2">
+                <InstagramOutlined style={{ color: '#E1306C' }} />
+                Instagram
+              </Radio.Button>
+              <Radio.Button value="tiktok" className="w-full flex items-center justify-center gap-2">
+                <TikTokOutlined />
+                TikTok
+              </Radio.Button>
+              <Radio.Button value="facebook" className="w-full flex items-center justify-center gap-2">
+                <FacebookOutlined style={{ color: '#4267B2' }} />
+                Facebook
+              </Radio.Button>
+            </Space>
+          </Radio.Group>
         </div>
 
-        {/* Results Section */}
-        <div className="results-section flex-1">
-          {loading ? (
-            <Row gutter={[24, 24]}>
-              {[...Array(6)].map((_, i) => (
-                <Col xs={24} sm={12} lg={8} key={i}>
-                  <Card className="h-full">
-                    <Skeleton active avatar paragraph={{ rows: 3 }} />
-                  </Card>
+        <Divider />
+
+        <div className="mb-6">
+          <Title level={5} className="mb-3">Age Range</Title>
+          <Checkbox.Group
+            options={ageRanges}
+            value={selectedFollowerAgeRanges}
+            onChange={setSelectedFollowerAgeRanges}
+            className="flex flex-col gap-2"
+          />
+        </div>
+
+        <div className="mb-6">
+          <Title level={5} className="mb-3">Gender</Title>
+          <Checkbox.Group
+            options={genders}
+            value={selectedFollowerGenders}
+            onChange={setSelectedFollowerGenders}
+            className="flex flex-col gap-2"
+          />
+        </div>
+
+        <div>
+          <Title level={5} className="mb-3">Top Countries</Title>
+          <Select
+            mode="multiple"
+            placeholder="Select countries"
+            value={selectedFollowerCountries}
+            onChange={setSelectedFollowerCountries}
+            className="w-full"
+            options={countries.map((country) => ({
+              value: country,
+              label: country,
+            }))}
+          />
+        </div>
+      </Drawer>
+
+      {/* Results Section */}
+      <div className="results-section">
+        {loading ? (
+          <Row gutter={[24, 24]}>
+            {[...Array(6)].map((_, i) => (
+              <Col xs={24} sm={12} lg={8} key={i}>
+                <Card className="h-full">
+                  <Skeleton active avatar paragraph={{ rows: 3 }} />
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : filteredInfluencers.length > 0 ? (
+          <>
+            <div className="results-header mb-4">
+              <Text strong>
+                Showing {filteredInfluencers.length} influencers
+              </Text>
+            </div>
+
+            <Row gutter={[20, 20]}>
+              {paginatedInfluencers.map((influencer) => (
+                <Col xs={24} sm={12} lg={8} key={influencer.id}>
+                  <InfluencerCard influencer={influencer} />
                 </Col>
               ))}
             </Row>
-          ) : filteredInfluencers.length > 0 ? (
-            <>
-              <div className="results-header mb-4 flex justify-between items-center">
-                <Text strong>
-                  Showing {filteredInfluencers.length} influencers
-                </Text>
-              
-              </div>
 
-              <Row gutter={[20, 20]}>
-                {paginatedInfluencers.map((influencer) => (
-                  <Col xs={24} sm={12} lg={8} key={influencer.id}>
-                    <InfluencerCard influencer={influencer} />
-                  </Col>
-                ))}
-              </Row>
-
-              <div className="text-center mt-6">
-                <Pagination
-                  current={currentPage}
-                  total={filteredInfluencers.length}
-                  pageSize={pageSize}
-                  onChange={setCurrentPage}
-                  showSizeChanger={false}
-                />
-              </div>
-            </>
-          ) : (
-            <Card>
-              <Empty
-                description={
-                  <span>
-                    No influencers found matching your criteria. Try adjusting
-                    your filters.
-                  </span>
-                }
+            <div className="text-center mt-6">
+              <Pagination
+                current={currentPage}
+                total={filteredInfluencers.length}
+                pageSize={pageSize}
+                onChange={setCurrentPage}
+                showSizeChanger={false}
+              />
+            </div>
+          </>
+        ) : (
+          <Card>
+            <Empty
+              description={
+                <span>
+                  No influencers found matching your criteria. Try adjusting
+                  your filters.
+                </span>
+              }
+            >
+              <Button
+                type="primary"
+                onClick={clearFilters}
+                className="mt-4"
               >
-                <Button
-                  type="primary"
-                  onClick={clearFilters}
-                  className="mt-4"
-                >
-                  Clear all filters
-                </Button>
-              </Empty>
-            </Card>
-          )}
-        </div>
+                Clear all filters
+              </Button>
+            </Empty>
+          </Card>
+        )}
       </div>
     </div>
   );
