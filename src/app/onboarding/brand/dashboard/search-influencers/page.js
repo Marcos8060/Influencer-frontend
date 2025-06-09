@@ -36,7 +36,9 @@ import {
   WomanOutlined,
   ManOutlined,
   DownOutlined,
-  UpOutlined
+  UpOutlined,
+  UserOutlined,
+  TeamOutlined
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
@@ -54,11 +56,14 @@ const SearchInfluencers = () => {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedCities, setSelectedCities] = useState([]);
   const [selectedAgeRanges, setSelectedAgeRanges] = useState([]);
+  const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
+  const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState([]);
+  const [selectedFollowerCountries, setSelectedFollowerCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [expandedFilters, setExpandedFilters] = useState(['categories', 'demographics', 'location']);
+  const [expandedFilters, setExpandedFilters] = useState(['categories', 'influencer-demographics', 'follower-demographics', 'location']);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pageSize = 12;
@@ -172,6 +177,11 @@ const SearchInfluencers = () => {
         return influencer.age >= min && influencer.age <= (max || 100);
       });
 
+    // Follower demographics filters (to be implemented with backend)
+    const matchesFollowerGenders = true; // Placeholder
+    const matchesFollowerAgeRanges = true; // Placeholder
+    const matchesFollowerCountries = true; // Placeholder
+
     const matchesTab =
       activeTab === "all" ||
       (activeTab === "verified" && influencer.accountStatus === "Verified") ||
@@ -185,6 +195,9 @@ const SearchInfluencers = () => {
       matchesCountries &&
       matchesCities &&
       matchesAgeRanges &&
+      matchesFollowerGenders &&
+      matchesFollowerAgeRanges &&
+      matchesFollowerCountries &&
       matchesTab
     );
   });
@@ -202,13 +215,16 @@ const SearchInfluencers = () => {
     setSelectedCountries([]);
     setSelectedCities([]);
     setSelectedAgeRanges([]);
+    setSelectedFollowerGenders([]);
+    setSelectedFollowerAgeRanges([]);
+    setSelectedFollowerCountries([]);
     setActiveTab("all");
   };
 
   return (
     <div className="w-full text-color p-4 md:p-6">
       {/* Header Section */}
-      <div className="search-header mb-8">
+      <div className="search-header mb-6">
         <Title level={2} className="mb-2">
           Discover Influencers
         </Title>
@@ -217,17 +233,119 @@ const SearchInfluencers = () => {
           category, audience demographics, and more.
         </Text>
 
-        {/* Search Bar */}
-        <div className="max-w-3xl">
-          <Input
-            placeholder="Search influencers by name, bio, category, or location..."
-            prefix={<SearchOutlined />}
-            size="large"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            allowClear
-            className="mb-6"
-          />
+        {/* Search and Quick Filters Bar */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex flex-col gap-4">
+            {/* Search Bar */}
+            <div className="flex-1">
+              <Input
+                placeholder="Search influencers by name, bio, category, or location..."
+                prefix={<SearchOutlined />}
+                size="large"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+              />
+            </div>
+
+            {/* Quick Filters */}
+            <div className="flex flex-col gap-4">
+              {/* Influencer Quick Filters */}
+              <div>
+                <Text strong className="block mb-2 text-primary">Influencer Filters</Text>
+                <div className="flex flex-wrap gap-3">
+                  <Select
+                    mode="multiple"
+                    placeholder="Content Categories"
+                    value={selectedCategories}
+                    onChange={setSelectedCategories}
+                    style={{ minWidth: '200px' }}
+                    maxTagCount={2}
+                    options={categories.map((category) => ({
+                      value: category,
+                      label: category,
+                    }))}
+                  />
+                  <Select
+                    mode="multiple"
+                    placeholder="Gender"
+                    value={selectedGenders}
+                    onChange={setSelectedGenders}
+                    style={{ minWidth: '150px' }}
+                    options={genders.map((gender) => ({
+                      value: gender,
+                      label: gender,
+                    }))}
+                  />
+                  <Select
+                    mode="multiple"
+                    placeholder="Country"
+                    value={selectedCountries}
+                    onChange={setSelectedCountries}
+                    style={{ minWidth: '150px' }}
+                    maxTagCount={1}
+                    options={countries.map((country) => ({
+                      value: country,
+                      label: country,
+                    }))}
+                  />
+                  <Select
+                    mode="multiple"
+                    placeholder="City"
+                    value={selectedCities}
+                    onChange={setSelectedCities}
+                    style={{ minWidth: '150px' }}
+                    maxTagCount={1}
+                    options={cities.map((city) => ({
+                      value: city,
+                      label: city,
+                    }))}
+                  />
+                </div>
+              </div>
+
+              {/* Follower Quick Filters */}
+              <div>
+                <Text strong className="block mb-2 text-secondary">Follower Demographics</Text>
+                <div className="flex flex-wrap gap-3">
+                  <Select
+                    mode="multiple"
+                    placeholder="Follower Gender"
+                    value={selectedFollowerGenders}
+                    onChange={setSelectedFollowerGenders}
+                    style={{ minWidth: '150px' }}
+                    options={genders.map((gender) => ({
+                      value: gender,
+                      label: gender,
+                    }))}
+                  />
+                  <Select
+                    mode="multiple"
+                    placeholder="Follower Age Range"
+                    value={selectedFollowerAgeRanges}
+                    onChange={setSelectedFollowerAgeRanges}
+                    style={{ minWidth: '150px' }}
+                    options={ageRanges.map((range) => ({
+                      value: range.value,
+                      label: range.label,
+                    }))}
+                  />
+                  <Select
+                    mode="multiple"
+                    placeholder="Top Follower Countries"
+                    value={selectedFollowerCountries}
+                    onChange={setSelectedFollowerCountries}
+                    style={{ minWidth: '150px' }}
+                    maxTagCount={1}
+                    options={countries.map((country) => ({
+                      value: country,
+                      label: country,
+                    }))}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -238,7 +356,7 @@ const SearchInfluencers = () => {
             title={
               <Space>
                 <FilterOutlined />
-                <span>Filters</span>
+                <span>Advanced Filters</span>
               </Space>
             }
             extra={
@@ -254,31 +372,18 @@ const SearchInfluencers = () => {
               ghost
               className="filter-collapse"
             >
-              {/* Categories Section */}
-              <Panel header="Categories" key="categories">
-                <Checkbox.Group
-                  options={visibleCategories}
-                  value={selectedCategories}
-                  onChange={setSelectedCategories}
-                  className="flex flex-col gap-2"
-                />
-                {categories.length > 5 && (
-                  <Button
-                    type="link"
-                    size="small"
-                    onClick={() => setShowAllCategories(!showAllCategories)}
-                    className="pl-0 mt-2"
-                    icon={showAllCategories ? <UpOutlined /> : <DownOutlined />}
-                  >
-                    {showAllCategories ? "Show less" : "Show more"}
-                  </Button>
-                )}
-              </Panel>
-
-              {/* Demographics Section */}
-              <Panel header="Demographics" key="demographics">
+              {/* Influencer Demographics Section */}
+              <Panel 
+                header={
+                  <div className="flex items-center gap-2">
+                    <UserOutlined className="text-primary" />
+                    <span>Influencer Demographics</span>
+                  </div>
+                } 
+                key="influencer-demographics"
+              >
                 <div className="mb-4">
-                  <Title level={5} className="mb-2">Age Range</Title>
+                  <Title level={5} className="mb-2 text-muted">Age Range</Title>
                   <Checkbox.Group
                     options={ageRanges}
                     value={selectedAgeRanges}
@@ -287,7 +392,7 @@ const SearchInfluencers = () => {
                   />
                 </div>
                 <div>
-                  <Title level={5} className="mb-2">Gender</Title>
+                  <Title level={5} className="mb-2 text-muted">Gender</Title>
                   <Checkbox.Group
                     options={genders}
                     value={selectedGenders}
@@ -297,33 +402,45 @@ const SearchInfluencers = () => {
                 </div>
               </Panel>
 
-              {/* Location Section */}
-              <Panel header="Location" key="location">
+              {/* Follower Demographics Section */}
+              <Panel 
+                header={
+                  <div className="flex items-center gap-2">
+                    <TeamOutlined className="text-secondary" />
+                    <span>Follower Demographics</span>
+                  </div>
+                } 
+                key="follower-demographics"
+              >
                 <div className="mb-4">
-                  <Title level={5} className="mb-2">Country</Title>
+                  <Title level={5} className="mb-2 text-muted">Age Range</Title>
+                  <Checkbox.Group
+                    options={ageRanges}
+                    value={selectedFollowerAgeRanges}
+                    onChange={setSelectedFollowerAgeRanges}
+                    className="flex flex-col gap-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <Title level={5} className="mb-2 text-muted">Gender</Title>
+                  <Checkbox.Group
+                    options={genders}
+                    value={selectedFollowerGenders}
+                    onChange={setSelectedFollowerGenders}
+                    className="flex flex-col gap-2"
+                  />
+                </div>
+                <div>
+                  <Title level={5} className="mb-2 text-muted">Top Countries</Title>
                   <Select
                     mode="multiple"
                     placeholder="Select countries"
-                    value={selectedCountries}
-                    onChange={setSelectedCountries}
+                    value={selectedFollowerCountries}
+                    onChange={setSelectedFollowerCountries}
                     className="w-full"
                     options={countries.map((country) => ({
                       value: country,
                       label: country,
-                    }))}
-                  />
-                </div>
-                <div>
-                  <Title level={5} className="mb-2">City</Title>
-                  <Select
-                    mode="multiple"
-                    placeholder="Select cities"
-                    value={selectedCities}
-                    onChange={setSelectedCities}
-                    className="w-full"
-                    options={cities.map((city) => ({
-                      value: city,
-                      label: city,
                     }))}
                   />
                 </div>
@@ -346,10 +463,11 @@ const SearchInfluencers = () => {
             </Row>
           ) : filteredInfluencers.length > 0 ? (
             <>
-              <div className="results-header mb-4">
+              <div className="results-header mb-4 flex justify-between items-center">
                 <Text strong>
                   Showing {filteredInfluencers.length} influencers
                 </Text>
+              
               </div>
 
               <Row gutter={[20, 20]}>
