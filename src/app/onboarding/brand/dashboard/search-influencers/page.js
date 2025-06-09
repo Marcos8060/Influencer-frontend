@@ -52,17 +52,27 @@ const SearchInfluencers = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
-  const [minFollowers, setMinFollowers] = useState(0);
-  const [maxFollowers, setMaxFollowers] = useState(10000000);
-  const [minRating, setMinRating] = useState(0);
+  const [selectedCities, setSelectedCities] = useState([]);
+  const [selectedAgeRanges, setSelectedAgeRanges] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [expandedFilters, setExpandedFilters] = useState(['categories', 'demographics', 'location']);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pageSize = 12;
   const { influencers } = useSelector((store) => store.filterResults);
+  console.log(influencers)
+
+  // Age ranges for filtering
+  const ageRanges = [
+    { label: '18-24', value: '18-24' },
+    { label: '25-34', value: '25-34' },
+    { label: '35-44', value: '35-44' },
+    { label: '45-54', value: '45-54' },
+    { label: '55+', value: '55+' }
+  ];
 
   // Available filters
   const categories = [
@@ -105,6 +115,9 @@ const SearchInfluencers = () => {
   const genders = ["Male", "Female", "Non-binary"];
   const countries = Array.from(new Set(influencers.map((i) => i.country)));
 
+  // Get unique cities from influencers
+  const cities = Array.from(new Set(influencers.map((i) => i.city))).filter(Boolean);
+
   useEffect(() => {
     if (auth) {
       setLoading(true);
@@ -130,7 +143,8 @@ const SearchInfluencers = () => {
       influencer.contentCategories?.some((cat) =>
         cat.toLowerCase().includes(searchText.toLowerCase())
       ) ||
-      influencer.city.toLowerCase().includes(searchText.toLowerCase());
+      influencer.city.toLowerCase().includes(searchText.toLowerCase()) ||
+      influencer.bio?.toLowerCase().includes(searchText.toLowerCase());
 
     const matchesCategories =
       selectedCategories.length === 0 ||
@@ -147,11 +161,16 @@ const SearchInfluencers = () => {
       selectedCountries.length === 0 ||
       selectedCountries.includes(influencer.country);
 
-    const matchesFollowers =
-      (influencer.igFollowersCount || 0) >= minFollowers &&
-      (influencer.igFollowersCount || 0) <= maxFollowers;
+    const matchesCities =
+      selectedCities.length === 0 ||
+      selectedCities.includes(influencer.city);
 
-    const matchesRating = parseFloat(influencer.overallRate) >= minRating;
+    const matchesAgeRanges =
+      selectedAgeRanges.length === 0 ||
+      selectedAgeRanges.some(range => {
+        const [min, max] = range.split('-').map(Number);
+        return influencer.age >= min && influencer.age <= (max || 100);
+      });
 
     const matchesTab =
       activeTab === "all" ||
@@ -164,8 +183,8 @@ const SearchInfluencers = () => {
       matchesCategories &&
       matchesGenders &&
       matchesCountries &&
-      matchesFollowers &&
-      matchesRating &&
+      matchesCities &&
+      matchesAgeRanges &&
       matchesTab
     );
   });
@@ -181,45 +200,40 @@ const SearchInfluencers = () => {
     setSelectedCategories([]);
     setSelectedGenders([]);
     setSelectedCountries([]);
-    setMinFollowers(0);
-    setMaxFollowers(10000000);
-    setMinRating(0);
+    setSelectedCities([]);
+    setSelectedAgeRanges([]);
     setActiveTab("all");
   };
 
   return (
-    <div className="w-full text-color">
+    <div className="w-full text-color p-4 md:p-6">
       {/* Header Section */}
-      <div className="search-header" style={{ marginBottom: "32px" }}>
-        <Title level={2} style={{ marginBottom: "8px" }}>
+      <div className="search-header mb-8">
+        <Title level={2} className="mb-2">
           Discover Influencers
         </Title>
-        <Text
-          type="secondary"
-          style={{ display: "block", marginBottom: "24px" }}
-        >
+        <Text type="secondary" className="block mb-6">
           Find the perfect influencers for your brand campaigns. Filter by
-          category, audience, and more.
+          category, audience demographics, and more.
         </Text>
 
         {/* Search Bar */}
-        <Input
-          placeholder="Search influencers by name, bio, or category..."
-          prefix={<SearchOutlined />}
-          size="large"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          allowClear
-          style={{ maxWidth: "800px", marginBottom: "24px" }}
-        />
+        <div className="max-w-3xl">
+          <Input
+            placeholder="Search influencers by name, bio, category, or location..."
+            prefix={<SearchOutlined />}
+            size="large"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            className="mb-6"
+          />
+        </div>
       </div>
 
-      <div className="search-content" style={{ display: "flex", gap: "24px" }}>
+      <div className="search-content flex flex-col lg:flex-row gap-6">
         {/* Filters Sidebar */}
-        <div
-          className="filters-sidebar"
-          style={{ width: "240px", flexShrink: 0 }}
-        >
+        <div className="filters-sidebar w-full lg:w-80 flex-shrink-0">
           <Card
             title={
               <Space>
@@ -232,98 +246,99 @@ const SearchInfluencers = () => {
                 Clear all
               </Button>
             }
-            style={{ marginBottom: "24px" }}
+            className="mb-6"
           >
-            {/* Categories Section with Collapse */}
-            <div className="filter-section" style={{ marginBottom: "20px" }}>
-              <Title level={5} style={{ marginBottom: "8px" }}>
-                Categories
-              </Title>
-              <Checkbox.Group
-                options={visibleCategories}
-                value={selectedCategories}
-                onChange={setSelectedCategories}
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              />
-              {categories.length > 5 && (
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  style={{ paddingLeft: 0, marginTop: "8px" }}
-                  icon={showAllCategories ? <UpOutlined /> : <DownOutlined />}
-                >
-                  {showAllCategories ? "Show less" : "Show more"}
-                </Button>
-              )}
-            </div>
+            <Collapse
+              activeKey={expandedFilters}
+              onChange={setExpandedFilters}
+              ghost
+              className="filter-collapse"
+            >
+              {/* Categories Section */}
+              <Panel header="Categories" key="categories">
+                <Checkbox.Group
+                  options={visibleCategories}
+                  value={selectedCategories}
+                  onChange={setSelectedCategories}
+                  className="flex flex-col gap-2"
+                />
+                {categories.length > 5 && (
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => setShowAllCategories(!showAllCategories)}
+                    className="pl-0 mt-2"
+                    icon={showAllCategories ? <UpOutlined /> : <DownOutlined />}
+                  >
+                    {showAllCategories ? "Show less" : "Show more"}
+                  </Button>
+                )}
+              </Panel>
 
-            <div className="filter-section" style={{ marginBottom: "20px" }}>
-              <Title level={5} style={{ marginBottom: "12px" }}>
-                Gender
-              </Title>
-              <Checkbox.Group
-                options={genders}
-                value={selectedGenders}
-                onChange={setSelectedGenders}
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              />
-            </div>
+              {/* Demographics Section */}
+              <Panel header="Demographics" key="demographics">
+                <div className="mb-4">
+                  <Title level={5} className="mb-2">Age Range</Title>
+                  <Checkbox.Group
+                    options={ageRanges}
+                    value={selectedAgeRanges}
+                    onChange={setSelectedAgeRanges}
+                    className="flex flex-col gap-2"
+                  />
+                </div>
+                <div>
+                  <Title level={5} className="mb-2">Gender</Title>
+                  <Checkbox.Group
+                    options={genders}
+                    value={selectedGenders}
+                    onChange={setSelectedGenders}
+                    className="flex flex-col gap-2"
+                  />
+                </div>
+              </Panel>
 
-            <div className="filter-section" style={{ marginBottom: "24px" }}>
-              <Title level={5} style={{ marginBottom: "12px" }}>
-                Location
-              </Title>
-              <Select
-                mode="multiple"
-                placeholder="Select countries"
-                value={selectedCountries}
-                onChange={setSelectedCountries}
-                style={{ width: "100%" }}
-                options={countries.map((country) => ({
-                  value: country,
-                  label: country,
-                }))}
-              />
-            </div>
-
-            <div className="filter-section" style={{ marginBottom: "24px" }}>
-              <Title level={5} style={{ marginBottom: "12px" }}>
-                Instagram Followers
-              </Title>
-              <Slider
-                range
-                min={0}
-                max={1000000}
-                step={10000}
-                value={[minFollowers, maxFollowers]}
-                onChange={(value) => {
-                  setMinFollowers(value[0]);
-                  setMaxFollowers(value[1]);
-                }}
-                tooltip={{
-                  formatter: (value) => `${(value / 1000).toFixed(0)}k`,
-                }}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Text type="secondary">
-                  {(minFollowers / 1000).toFixed(0)}k
-                </Text>
-                <Text type="secondary">
-                  {(maxFollowers / 1000).toFixed(0)}k
-                </Text>
-              </div>
-            </div>
+              {/* Location Section */}
+              <Panel header="Location" key="location">
+                <div className="mb-4">
+                  <Title level={5} className="mb-2">Country</Title>
+                  <Select
+                    mode="multiple"
+                    placeholder="Select countries"
+                    value={selectedCountries}
+                    onChange={setSelectedCountries}
+                    className="w-full"
+                    options={countries.map((country) => ({
+                      value: country,
+                      label: country,
+                    }))}
+                  />
+                </div>
+                <div>
+                  <Title level={5} className="mb-2">City</Title>
+                  <Select
+                    mode="multiple"
+                    placeholder="Select cities"
+                    value={selectedCities}
+                    onChange={setSelectedCities}
+                    className="w-full"
+                    options={cities.map((city) => ({
+                      value: city,
+                      label: city,
+                    }))}
+                  />
+                </div>
+              </Panel>
+            </Collapse>
           </Card>
         </div>
 
         {/* Results Section */}
-        <div className="results-section" style={{ flex: 1 }}>
+        <div className="results-section flex-1">
           {loading ? (
             <Row gutter={[24, 24]}>
               {[...Array(6)].map((_, i) => (
                 <Col xs={24} sm={12} lg={8} key={i}>
-                  <Card style={{ height: "100%" }}>
+                  <Card className="h-full">
                     <Skeleton active avatar paragraph={{ rows: 3 }} />
                   </Card>
                 </Col>
@@ -331,7 +346,7 @@ const SearchInfluencers = () => {
             </Row>
           ) : filteredInfluencers.length > 0 ? (
             <>
-              <div className="results-header" style={{ marginBottom: "16px" }}>
+              <div className="results-header mb-4">
                 <Text strong>
                   Showing {filteredInfluencers.length} influencers
                 </Text>
@@ -345,7 +360,7 @@ const SearchInfluencers = () => {
                 ))}
               </Row>
 
-              <div style={{ textAlign: "center", marginTop: "24px" }}>
+              <div className="text-center mt-6">
                 <Pagination
                   current={currentPage}
                   total={filteredInfluencers.length}
@@ -365,12 +380,13 @@ const SearchInfluencers = () => {
                   </span>
                 }
               >
-                <button
-                  className="bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-light text-white rounded-sm"
+                <Button
+                  type="primary"
                   onClick={clearFilters}
+                  className="mt-4"
                 >
                   Clear all filters
-                </button>
+                </Button>
               </Empty>
             </Card>
           )}
@@ -388,23 +404,27 @@ const InfluencerCard = ({ influencer }) => {
       icon: <InstagramOutlined />,
       username: influencer.igUsername,
       count: influencer.igFollowersCount,
+      color: "#E1306C",
     },
     {
       platform: "tiktok",
       icon: <TikTokOutlined />,
       username: influencer.tkUsername,
       count: influencer.tkFollowersCount,
+      color: "#000000",
     },
     {
       platform: "twitter",
       icon: <TwitterOutlined />,
       username: influencer.twUsername,
       count: influencer.twFollowersCount,
+      color: "#1DA1F2",
     },
     {
       platform: "facebook",
       icon: <FacebookOutlined />,
       username: influencer.fbUserId ? "Connected" : null,
+      color: "#4267B2",
     },
   ].filter((social) => social.username);
 
@@ -418,65 +438,86 @@ const InfluencerCard = ({ influencer }) => {
     >
       <Card
         hoverable
-        className="h-full rounded-md p-2"
+        className="h-full overflow-hidden"
         cover={
-          <div className="flex items-center justify-center relative h-[55px] bg-[#f0f2f5]">
+          <div className="relative h-[70px] bg-gradient-to-r from-primary via-secondary to-primary">
+            <div className="absolute inset-0 bg-black/10"></div>
             <Avatar
-              size={60}
+              size={56}
               src={influencer.profilePicture}
-              style={{
-                border: "3px solid #fff",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                position: "absolute",
-                bottom: "-10px",
-                left: "24px",
-              }}
+              className="absolute -bottom-6 left-5 border-2 border-white shadow-lg"
             />
           </div>
         }
         actions={[
           <Link
             href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`}
+            key="view"
+            className="px-4"
           >
-            <button
-              className="bg-primary text-xs text-white rounded-sm px-4 py-2 w-full"
-              type="primary"
-              block
+            <Button 
+              type="primary" 
+              block 
+              className="bg-primary hover:bg-secondary transition-colors duration-200"
             >
               View Profile
-            </button>
+            </Button>
           </Link>,
         ]}
       >
-        <div>
-          <p className="text-lg font-semibold ">{influencer.fullName}</p>
-          <div className="border-b border-input my-2"></div>
-
-          <div>
-            <Space className="grid grid-cols-1">
-              <div className="flex gap-2">
-                {influencer.gender === "Female" ? (
-                  <WomanOutlined />
-                ) : (
-                  <ManOutlined />
-                )}
-                <Text>{influencer.gender}</Text>
-              </div>
-
-              <div className="flex gap-2">
-                <EnvironmentOutlined />
-                <Text>
-                  {influencer.city}, {influencer.country}
-                </Text>
-              </div>
-            </Space>
+        <div className="pt-6">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1 pr-4">
+              <Title level={5} className="mb-1 text-color font-semibold !text-base">
+                {influencer.fullName}
+              </Title>
+              <Text type="secondary" className="text-xs text-muted block">
+                {influencer.age} years • {influencer.gender}
+              </Text>
+            </div>
+            <div className="flex gap-3">
+              {socialIcons.map((social) => (
+                <Tooltip
+                  key={social.platform}
+                  title={`${social.platform}: ${social.count ? `${(social.count / 1000).toFixed(1)}k followers` : 'Connected'}`}
+                >
+                  <div
+                    className="flex items-center gap-1 hover:opacity-80 transition-opacity"
+                    style={{ color: social.color }}
+                  >
+                    {social.icon}
+                    <Text className="text-xs font-medium">
+                      {social.count ? `${(social.count / 1000).toFixed(1)}k` : '✓'}
+                    </Text>
+                  </div>
+                </Tooltip>
+              ))}
+            </div>
           </div>
 
-          <div>
-            <Space>
-              <PhoneOutlined />
-              <Text>{influencer.phoneNumber}</Text>
-            </Space>
+          <div className="flex items-center gap-2 mb-3">
+            <EnvironmentOutlined className="text-primary text-sm" />
+            <Text className="text-xs text-muted font-medium">
+              {influencer.city}, {influencer.country}
+            </Text>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {influencer.contentCategories?.slice(0, 2).map((category) => (
+              <Tag 
+                key={category} 
+                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
+              >
+                {category}
+              </Tag>
+            ))}
+            {influencer.contentCategories?.length > 2 && (
+              <Tag 
+                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
+              >
+                +{influencer.contentCategories.length - 2}
+              </Tag>
+            )}
           </div>
         </div>
       </Card>
