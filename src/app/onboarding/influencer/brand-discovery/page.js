@@ -48,7 +48,6 @@ import { motion } from "framer-motion";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
-const { TabPane } = Tabs;
 
 // Animations
 const fadeIn = {
@@ -74,7 +73,7 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
         <Tooltip title="Contact brand">
           <Button type="text" icon={<PhoneOutlined />} />
         </Tooltip>,
-        <Dropdown overlay={menu} placement="bottomRight">
+        <Dropdown menu={menu} placement="bottomRight">
           <Button type="text" icon={<MoreOutlined />} />
         </Dropdown>
       ]}
@@ -139,8 +138,8 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
 
 const BrandDiscovery = () => {
   const [searchText, setSearchText] = useState("");
-  const [selectedIndustry, setSelectedIndustry] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedIndustry, setSelectedIndustry] = useState(undefined);
+  const [selectedCountry, setSelectedCountry] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
@@ -182,14 +181,14 @@ const BrandDiscovery = () => {
       brandIndustry.toLowerCase().includes(searchTerm);
   
     const matchesIndustry =
-      selectedIndustry === "" ||
+      selectedIndustry === undefined ||
       (brandIndustry &&
         brandIndustry
           .split(",")
           .some((ind) => ind.trim() === selectedIndustry));
   
     const matchesCountry =
-      selectedCountry === "" ||
+      selectedCountry === undefined ||
       (brand.countryData && brand.countryData.name === selectedCountry);
   
     const matchesTab =
@@ -230,8 +229,8 @@ const BrandDiscovery = () => {
 
   const clearFilters = () => {
     setSearchText("");
-    setSelectedIndustry("");
-    setSelectedCountry("");
+    setSelectedIndustry(undefined);
+    setSelectedCountry(undefined);
     setActiveTab("all");
     setCurrentPage(1);
   };
@@ -255,7 +254,7 @@ const BrandDiscovery = () => {
       {/* Search and Filters Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="bg-white rounded-lg shadow-lg p-6 border border-input"
+          className="bg-white rounded-lg border border-input p-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -319,24 +318,25 @@ const BrandDiscovery = () => {
           activeKey={activeTab}
           onChange={setActiveTab}
           className="mb-8"
-        >
-          <TabPane 
-            tab={
-              <span>
-                <GlobalOutlined /> All Brands
-              </span>
-            }
-            key="all"
-          />
-          <TabPane
-            tab={
-              <span>
-                <HeartOutlined /> Favorites ({favorites.length})
-              </span>
-            }
-            key="favorites"
-          />
-        </Tabs>
+          items={[
+            {
+              key: "all",
+              label: (
+                <span>
+                  <GlobalOutlined /> All Brands
+                </span>
+              ),
+            },
+            {
+              key: "favorites",
+              label: (
+                <span>
+                  <HeartOutlined /> Favorites ({favorites.length})
+                </span>
+              ),
+            },
+          ]}
+        />
 
         {loading ? (
           <div className="text-center py-20">
