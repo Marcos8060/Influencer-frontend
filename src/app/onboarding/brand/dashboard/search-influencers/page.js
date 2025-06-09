@@ -438,13 +438,14 @@ const InfluencerCard = ({ influencer }) => {
     >
       <Card
         hoverable
-        className="h-full"
+        className="h-full overflow-hidden"
         cover={
-          <div className="relative h-[120px] bg-gradient-to-r from-primary to-secondary">
+          <div className="relative h-[70px] bg-gradient-to-r from-primary via-secondary to-primary">
+            <div className="absolute inset-0 bg-black/10"></div>
             <Avatar
-              size={80}
+              size={56}
               src={influencer.profilePicture}
-              className="absolute -bottom-10 left-6 border-4 border-white shadow-lg"
+              className="absolute -bottom-6 left-5 border-2 border-white shadow-lg"
             />
           </div>
         }
@@ -452,67 +453,71 @@ const InfluencerCard = ({ influencer }) => {
           <Link
             href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`}
             key="view"
+            className="px-4"
           >
-            <Button type="primary" block>
+            <Button 
+              type="primary" 
+              block 
+              className="bg-primary hover:bg-secondary transition-colors duration-200"
+            >
               View Profile
             </Button>
           </Link>,
         ]}
       >
-        <div className="pt-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <Title level={4} className="mb-1">{influencer.fullName}</Title>
-              <Text type="secondary" className="block">
+        <div className="pt-6">
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex-1 pr-4">
+              <Title level={5} className="mb-1 text-color font-semibold !text-base">
+                {influencer.fullName}
+              </Title>
+              <Text type="secondary" className="text-xs text-muted block">
                 {influencer.age} years • {influencer.gender}
               </Text>
             </div>
-          </div>
-
-          <Paragraph ellipsis={{ rows: 2 }} className="mb-4">
-            {influencer.bio}
-          </Paragraph>
-
-          <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2">
-              <EnvironmentOutlined />
-              <Text>{influencer.city}, {influencer.country}</Text>
-            </div>
-            <div className="flex items-center gap-2">
-              <MailOutlined />
-              <Text>{influencer.email}</Text>
-            </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <Title level={5} className="mb-2">Social Media</Title>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex gap-3">
               {socialIcons.map((social) => (
                 <Tooltip
                   key={social.platform}
                   title={`${social.platform}: ${social.count ? `${(social.count / 1000).toFixed(1)}k followers` : 'Connected'}`}
                 >
                   <div
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 hover:opacity-80 transition-opacity"
                     style={{ color: social.color }}
                   >
                     {social.icon}
-                    <Text>{social.count ? `${(social.count / 1000).toFixed(1)}k` : '✓'}</Text>
+                    <Text className="text-xs font-medium">
+                      {social.count ? `${(social.count / 1000).toFixed(1)}k` : '✓'}
+                    </Text>
                   </div>
                 </Tooltip>
               ))}
             </div>
           </div>
 
-          <div className="mt-4">
-            <Title level={5} className="mb-2">Categories</Title>
-            <div className="flex flex-wrap gap-2">
-              {influencer.contentCategories?.map((category) => (
-                <Tag key={category} color="blue">
-                  {category}
-                </Tag>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 mb-3">
+            <EnvironmentOutlined className="text-primary text-sm" />
+            <Text className="text-xs text-muted font-medium">
+              {influencer.city}, {influencer.country}
+            </Text>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {influencer.contentCategories?.slice(0, 2).map((category) => (
+              <Tag 
+                key={category} 
+                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
+              >
+                {category}
+              </Tag>
+            ))}
+            {influencer.contentCategories?.length > 2 && (
+              <Tag 
+                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
+              >
+                +{influencer.contentCategories.length - 2}
+              </Tag>
+            )}
           </div>
         </div>
       </Card>

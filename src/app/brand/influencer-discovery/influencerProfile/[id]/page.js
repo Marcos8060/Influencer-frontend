@@ -80,7 +80,7 @@ export default function InfluencerProfile() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Space style={{ marginBottom: 24 }}>
-        <Link href={`/brand/influencer-discovery`}>
+        <Link href={`/onboarding/brand/dashboard/search-influencers`}>
           <Button type="text" icon={<ArrowLeftOutlined />}>
             Back to Influencers
           </Button>
