@@ -124,7 +124,7 @@ const BrandMenuChildren = ({ collapse }) => {
                 </button>
 
                 {showChildren && !collapse && (
-                  <div className="mt-1 ml-4 pl-4 border-l border-gray-100 space-y-1">
+                  <div className="mt-1 ml-4 pl-4 border-l border-input space-y-1">
                     {item.children.map((child, childIndex) => (
                       <Link
                         key={childIndex}
