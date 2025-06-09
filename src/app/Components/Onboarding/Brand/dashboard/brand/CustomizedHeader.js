@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const BrandCustomizedHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { logoutBrand, user } = useContext(authContext);
+  const { logoutBrand, logoutInfluencer, user } = useContext(authContext);
 
   const open = Boolean(anchorEl);
 
@@ -18,6 +18,18 @@ const BrandCustomizedHeader = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    const brandToken = localStorage.getItem("brand_token");
+    const influencerToken = localStorage.getItem("influencer_token");
+
+    if (brandToken) {
+      logoutBrand();
+    } else if (influencerToken) {
+      logoutInfluencer();
+    }
+    handleClose();
   };
 
   return (
@@ -50,7 +62,7 @@ const BrandCustomizedHeader = () => {
           {/* <MenuItem>
             <Link className="text-sm" href="/profile">Profile</Link>
           </MenuItem> */}
-          <MenuItem onClick={logoutBrand}>
+          <MenuItem onClick={handleLogout}>
             <p className="text-sm">Logout</p>
           </MenuItem>
         </Menu>
