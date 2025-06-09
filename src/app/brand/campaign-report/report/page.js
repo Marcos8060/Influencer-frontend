@@ -446,7 +446,7 @@ const CampaignReporting = () => {
           </div>
 
           <div className="p-8">
-            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+            <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {topMedia.map((media, index) => (
                 <motion.div
                   key={media.id}
