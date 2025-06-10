@@ -27,6 +27,7 @@ export const API_URL = {
   SEARCH_BRANDS: `${baseUrl}/brands/search/`,
   FETCH_BRANDS: `${baseUrl}/brands/`,
   FETCH_INFLUENCERS_IN_BUCKET: `${baseUrl}/search/bucketList/list/influencers/`,
+  SEARCH_INFLUENCERS: `${baseUrl}/influencers/search/`,
 
   /***************** BUCKET LIST APIS **********************/
   ADD_BUCKETLIST: `${baseUrl}/brands/bucketList/create/`,
@@ -95,7 +96,7 @@ export const APP_API_URL = {
   SEARCH_BRANDS: "/api/influencer/search-brands",
   FETCH_BRANDS: "/api/influencer/fetch-brands",
   FETCH_INFLUENCERS_IN_BUCKET: '/api/bucketList/fetch-influencers-in-bucket',
-
+  SEARCH_INFLUENCERS: '/api/influencer/search-influencers',
 
     /***************** CAMPAIGN APIS **********************/
   CREATE_CAMPAIGN: '/api/campaign/create-campaign',

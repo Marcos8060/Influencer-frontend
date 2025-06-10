@@ -11,14 +11,10 @@ import {
   Space,
   Typography,
   Divider,
-  Avatar,
   Pagination,
   Empty,
-  Slider,
   Checkbox,
   Radio,
-  Rate,
-  Badge,
   Tooltip,
   Skeleton,
   Collapse,
@@ -26,31 +22,98 @@ import {
 } from "antd";
 import {
   SearchOutlined,
-  FilterOutlined,
   InstagramOutlined,
   TwitterOutlined,
   FacebookOutlined,
   TikTokOutlined,
-  EnvironmentOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  WomanOutlined,
-  ManOutlined,
-  DownOutlined,
-  UpOutlined,
-  UserOutlined,
-  TeamOutlined
+  MailOutlined
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
-import { getAllInfluencers } from "@/redux/features/influencer/filter";
+import { fetchAllSearchResults, getAllInfluencers } from "@/redux/features/influencer/filter";
 
-const { Title, Text, Paragraph } = Typography;
-const { Panel } = Collapse;
+const { Title, Text } = Typography;
+
+// Define categories array
+const categories = [
+  "Adult & 18+",
+  "Apparel & Fashion",
+  "Arts & Culture",
+  "Beauty & Skincare",
+  "Business & Finance",
+  "Crypto & Web3",
+  "Dating & Relationships",
+  "Education & Learning",
+  "E-commerce & Startups",
+  "Entertainment & Pop Culture",
+  "Fitness & Sports",
+  "Food & Drink",
+  "Gaming & Esports",
+  "Health & Wellness",
+  "Home & Lifestyle",
+  "Lifestyle & Self-Development",
+  "Luxury & Aspirational Living",
+  "Men's Interests",
+  "Music & Audio",
+  "Other / Miscellaneous",
+  "Parenting & Family",
+  "Pets & Animals",
+  "Photography & Visual Media",
+  "Politics & Society",
+  "Spirituality & Mindfulness",
+  "Sustainability & Green Living",
+  "Tech & Gadgets",
+  "Toys, Crafts & Hobbies",
+  "Travel & Leisure",
+  "Vegan & Plant-Based",
+  "Women's Interests",
+];
+
+// Define genders array
+const genders = ["Male", "Female", "Non-binary"];
+
+// Define ageRanges constant
+const ageRanges = [
+  { label: '18-24', value: '18-24' },
+  { label: '25-34', value: '25-34' },
+  { label: '35-44', value: '35-44' },
+  { label: '45-54', value: '45-54' },
+  { label: '55+', value: '55+' }
+];
+
+// Helper to get display name from string or object
+const getDisplayName = (val) => {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val.name) return val.name;
+  return '';
+};
 
 const SearchInfluencers = () => {
+  const [filters, setFilters] = useState({
+    bio: "",
+    platform_verified: null,
+    race: "",
+    country: "",
+    city: "",
+    categories: [],
+    age_start: null,
+    age_end: null,
+    gender: "",
+    keywords: "",
+    page_size: 20,
+  });
+  const [cursor, setCursor] = useState(null);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [prevCursor, setPrevCursor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState('instagram');
+  const dispatch = useDispatch();
+  const auth = useAuth();
+  const { searchResults } = useSelector((store) => store.filterResults);
   const [searchText, setSearchText] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedGenders, setSelectedGenders] = useState([]);
@@ -60,170 +123,66 @@ const SearchInfluencers = () => {
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState([]);
   const [selectedFollowerCountries, setSelectedFollowerCountries] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
-  const [showAllCategories, setShowAllCategories] = useState(false);
-  const [expandedFilters, setExpandedFilters] = useState(['categories', 'influencer-demographics', 'follower-demographics', 'location']);
-  const dispatch = useDispatch();
-  const auth = useAuth();
-  const pageSize = 12;
-  const { influencers } = useSelector((store) => store.filterResults);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState('instagram');
-  console.log(influencers)
 
-  // Age ranges for filtering
-  const ageRanges = [
-    { label: '18-24', value: '18-24' },
-    { label: '25-34', value: '25-34' },
-    { label: '35-44', value: '35-44' },
-    { label: '45-54', value: '45-54' },
-    { label: '55+', value: '55+' }
-  ];
-
-  // Available filters
-  const categories = [
-    "Adult & 18+",
-    "Apparel & Fashion",
-    "Arts & Culture",
-    "Beauty & Skincare",
-    "Business & Finance",
-    "Crypto & Web3",
-    "Dating & Relationships",
-    "Education & Learning",
-    "E-commerce & Startups",
-    "Entertainment & Pop Culture",
-    "Fitness & Sports",
-    "Food & Drink",
-    "Gaming & Esports",
-    "Health & Wellness",
-    "Home & Lifestyle",
-    "Lifestyle & Self-Development",
-    "Luxury & Aspirational Living",
-    "Men's Interests",
-    "Music & Audio",
-    "Other / Miscellaneous",
-    "Parenting & Family",
-    "Pets & Animals",
-    "Photography & Visual Media",
-    "Politics & Society",
-    "Spirituality & Mindfulness",
-    "Sustainability & Green Living",
-    "Tech & Gadgets",
-    "Toys, Crafts & Hobbies",
-    "Travel & Leisure",
-    "Vegan & Plant-Based",
-    "Women's Interests",
-  ];
-
-  // Show only first 5 categories initially
-  const visibleCategories = showAllCategories ? categories : categories.slice(0, 5);
-
-  const genders = ["Male", "Female", "Non-binary"];
-  const countries = Array.from(new Set(influencers.map((i) => i.country)));
-
-  // Get unique cities from influencers
-  const cities = Array.from(new Set(influencers.map((i) => i.city))).filter(Boolean);
-
-  useEffect(() => {
-    if (auth) {
-      setLoading(true);
-      dispatch(getAllInfluencers(auth))
-        .then((response) => {
-          if (response.error) {
-            throw new Error(response.error.message);
-          }
-        })
-        .catch((error) => {
-          toast.error(error.message);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [auth, dispatch]);
-
-  // Filter influencers based on search criteria
-  const filteredInfluencers = influencers.filter((influencer) => {
-    const matchesSearch =
-      influencer.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
-      influencer.contentCategories?.some((cat) =>
-        cat.toLowerCase().includes(searchText.toLowerCase())
-      ) ||
-      influencer.city.toLowerCase().includes(searchText.toLowerCase()) ||
-      influencer.bio?.toLowerCase().includes(searchText.toLowerCase());
-
-    const matchesCategories =
-      selectedCategories.length === 0 ||
-      (influencer.contentCategories &&
-        influencer.contentCategories.some((cat) =>
-          selectedCategories.includes(cat)
-        ));
-
-    const matchesGenders =
-      selectedGenders.length === 0 ||
-      selectedGenders.includes(influencer.gender);
-
-    const matchesCountries =
-      selectedCountries.length === 0 ||
-      selectedCountries.includes(influencer.country);
-
-    const matchesCities =
-      selectedCities.length === 0 ||
-      selectedCities.includes(influencer.city);
-
-    const matchesAgeRanges =
-      selectedAgeRanges.length === 0 ||
-      selectedAgeRanges.some(range => {
-        const [min, max] = range.split('-').map(Number);
-        return influencer.age >= min && influencer.age <= (max || 100);
-      });
-
-    // Follower demographics filters (to be implemented with backend)
-    const matchesFollowerGenders = true; // Placeholder
-    const matchesFollowerAgeRanges = true; // Placeholder
-    const matchesFollowerCountries = true; // Placeholder
-
-    const matchesTab =
-      activeTab === "all" ||
-      (activeTab === "verified" && influencer.accountStatus === "Verified") ||
-      (activeTab === "instagram" && influencer.igUsername) ||
-      (activeTab === "tiktok" && influencer.tkUsername);
-
-    return (
-      matchesSearch &&
-      matchesCategories &&
-      matchesGenders &&
-      matchesCountries &&
-      matchesCities &&
-      matchesAgeRanges &&
-      matchesFollowerGenders &&
-      matchesFollowerAgeRanges &&
-      matchesFollowerCountries &&
-      matchesTab
-    );
-  });
-
-  // Pagination logic
-  const paginatedInfluencers = filteredInfluencers.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const clearFilters = () => {
-    setSearchText("");
-    setSelectedCategories([]);
-    setSelectedGenders([]);
-    setSelectedCountries([]);
-    setSelectedCities([]);
-    setSelectedAgeRanges([]);
-    setSelectedFollowerGenders([]);
-    setSelectedFollowerAgeRanges([]);
-    setSelectedFollowerCountries([]);
-    setActiveTab("all");
+  // Fetch results from backend
+  const fetchResults = (customCursor = null) => {
+    setLoading(true);
+    const payload = {
+      ...filters,
+      cursor: customCursor || cursor,
+      page_size: filters.page_size,
+    };
+    // Remove empty values
+    Object.keys(payload).forEach(key => {
+      if (
+        payload[key] === "" ||
+        payload[key] === null ||
+        (Array.isArray(payload[key]) && payload[key].length === 0)
+      ) {
+        delete payload[key];
+      }
+    });
+    dispatch(fetchAllSearchResults(auth, payload)).then(response => {
+      const getCursorParam = (url) => {
+        try {
+          return url ? new URL(url).searchParams.get("cursor") : null;
+        } catch (e) {
+          return null;
+        }
+      };
+    
+      setNextCursor(getCursorParam(response?.next));
+      setPrevCursor(getCursorParam(response?.previous));
+      setCursor(customCursor || null);
+      setLoading(false);
+    });
+    ;
   };
 
+  // On filter change
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setCursor(null); // Reset to first page
+  };
+
+  // Fetch on filters or auth change
+  useEffect(() => {
+    if (auth) fetchResults();
+    // eslint-disable-next-line
+  }, [filters, auth]);
+
+  // Get unique countries and cities for Selects
+  const countries = Array.from(new Set(
+    searchResults?.results?.map((i) => getDisplayName(i.country))
+  )).filter(Boolean);
+  const cities = Array.from(new Set(
+    searchResults?.results?.map((i) => getDisplayName(i.city))
+  )).filter(Boolean);
+
+  // Results to display
+  const results = searchResults?.results || [];
+
+  // Render
   return (
     <div className="w-full text-color p-4 md:p-6">
       {/* Header Section */}
@@ -245,8 +204,8 @@ const SearchInfluencers = () => {
                 placeholder="Search influencers by name, bio, category, or location..."
                 prefix={<SearchOutlined />}
                 size="large"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
+                value={filters.keywords}
+                onChange={(e) => handleFilterChange('keywords', e.target.value)}
                 allowClear
               />
             </div>
@@ -260,8 +219,8 @@ const SearchInfluencers = () => {
                   <Select
                     mode="multiple"
                     placeholder="Content Categories"
-                    value={selectedCategories}
-                    onChange={setSelectedCategories}
+                    value={filters.categories}
+                    onChange={(val) => handleFilterChange('categories', val)}
                     style={{ minWidth: '200px' }}
                     maxTagCount={2}
                     options={categories.map((category) => ({
@@ -272,8 +231,8 @@ const SearchInfluencers = () => {
                   <Select
                     mode="multiple"
                     placeholder="Gender"
-                    value={selectedGenders}
-                    onChange={setSelectedGenders}
+                    value={filters.gender ? [filters.gender] : []}
+                    onChange={(val) => handleFilterChange('gender', val[0] || "")}
                     style={{ minWidth: '150px' }}
                     options={genders.map((gender) => ({
                       value: gender,
@@ -283,8 +242,8 @@ const SearchInfluencers = () => {
                   <Select
                     mode="multiple"
                     placeholder="Country"
-                    value={selectedCountries}
-                    onChange={setSelectedCountries}
+                    value={filters.country ? [filters.country] : []}
+                    onChange={(val) => handleFilterChange('country', val[0] || "")}
                     style={{ minWidth: '150px' }}
                     maxTagCount={1}
                     options={countries.map((country) => ({
@@ -295,8 +254,8 @@ const SearchInfluencers = () => {
                   <Select
                     mode="multiple"
                     placeholder="City"
-                    value={selectedCities}
-                    onChange={setSelectedCities}
+                    value={filters.city ? [filters.city] : []}
+                    onChange={(val) => handleFilterChange('city', val[0] || "")}
                     style={{ minWidth: '150px' }}
                     maxTagCount={1}
                     options={cities.map((city) => ({
@@ -414,30 +373,27 @@ const SearchInfluencers = () => {
               </Col>
             ))}
           </Row>
-        ) : filteredInfluencers.length > 0 ? (
+        ) : results.length > 0 ? (
           <>
             <div className="results-header mb-4">
               <Text strong>
-                Showing {filteredInfluencers.length} influencers
+                Showing {results.length} influencers
               </Text>
             </div>
-
             <Row gutter={[24, 24]}>
-              {paginatedInfluencers.map((influencer) => (
+              {results.map((influencer) => (
                 <Col xs={24} sm={12} md={8} lg={6} key={influencer.id}>
                   <InfluencerCard influencer={influencer} />
                 </Col>
               ))}
             </Row>
-
-            <div className="text-center mt-6">
-              <Pagination
-                current={currentPage}
-                total={filteredInfluencers.length}
-                pageSize={pageSize}
-                onChange={setCurrentPage}
-                showSizeChanger={false}
-              />
+            <div className="text-center mt-6 flex justify-center gap-4">
+              <Button onClick={() => fetchResults(prevCursor)} disabled={!prevCursor}>
+                Previous
+              </Button>
+              <Button onClick={() => fetchResults(nextCursor)} disabled={!nextCursor}>
+                Next
+              </Button>
             </div>
           </>
         ) : (
@@ -452,7 +408,19 @@ const SearchInfluencers = () => {
             >
               <Button
                 type="primary"
-                onClick={clearFilters}
+                onClick={() => setFilters({
+                  bio: "",
+                  platform_verified: null,
+                  race: "",
+                  country: "",
+                  city: "",
+                  categories: [],
+                  age_start: null,
+                  age_end: null,
+                  gender: "",
+                  keywords: "",
+                  page_size: 20,
+                })}
                 className="mt-4"
               >
                 Clear all filters
@@ -467,84 +435,91 @@ const SearchInfluencers = () => {
 
 // Influencer Card Component
 const InfluencerCard = ({ influencer }) => {
+  // Social icons based on connection flags
   const socialIcons = [
-    {
+    influencer.isInstagramConnected && {
       platform: "instagram",
-      icon: <InstagramOutlined />,
-      username: influencer.igUsername,
-      count: influencer.igFollowersCount,
-      color: "#E1306C",
+      icon: <InstagramOutlined style={{ color: '#E1306C', fontSize: 20 }} />,
     },
-    {
+    influencer.isTiktokConnected && {
       platform: "tiktok",
-      icon: <TikTokOutlined />,
-      username: influencer.tkUsername,
-      count: influencer.tkFollowersCount,
-      color: "#000000",
+      icon: <TikTokOutlined style={{ color: '#000', fontSize: 20 }} />,
     },
-    {
-      platform: "twitter",
-      icon: <TwitterOutlined />,
-      username: influencer.twUsername,
-      count: influencer.twFollowersCount,
-      color: "#1DA1F2",
-    },
-    {
-      platform: "facebook",
-      icon: <FacebookOutlined />,
-      username: influencer.fbUserId ? "Connected" : null,
-      color: "#4267B2",
-    },
-  ].filter((social) => social.username);
+  ].filter(Boolean);
 
-  // Pick the main platform (first with followers)
-  const mainPlatform = socialIcons.find(s => s.count) || socialIcons[0];
-  const followerCount = mainPlatform?.count ? `${mainPlatform.count >= 1000000 ? (mainPlatform.count/1000000).toFixed(1) + 'm' : (mainPlatform.count/1000).toFixed(0) + 'k'}` : '';
-
-  // Category color mapping (example)
+  // Category color mapping (customize as needed)
   const categoryColors = {
-    "Entertainment": "bg-secondary text-white",
-    "Fashion": "bg-primary text-white",
+    "Beauty & Skincare": "bg-primary text-white",
+    "Fashion": "bg-secondary text-white",
     "Lifestyle": "bg-yellow text-gray-900",
-    "Business": "bg-green text-white",
-    "Tech": "bg-tertiary text-white",
-    "Other": "bg-muted text-white",
+    // Add more as needed
   };
-  const mainCategory = influencer.contentCategories?.[0] || "Other";
-  const categoryColor = categoryColors[mainCategory] || "#e5e7eb";
+
+  // Gradient color pairs using only theme colors
+  const gradients = [
+    'from-primary to-secondary',
+    'from-secondary to-tertiary',
+    'from-primary to-yellow',
+    'from-green to-primary',
+    'from-tertiary to-primary',
+    'from-yellow to-secondary',
+    'from-red to-primary',
+  ];
+  // Get initials (first two letters of name)
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  };
+  const initials = getInitials(influencer.fullName);
+  const gradientIdx = initials.charCodeAt(0) % gradients.length;
+  const gradientClass = `bg-gradient-to-br ${gradients[gradientIdx]}`;
 
   return (
-    <div className="bg-gradient-to-b from-background to-white rounded-2xl shadow-md flex flex-col items-center p-0 overflow-hidden transition-all duration-300 hover:shadow-lg border border-input">
-      {/* Profile Image */}
+    <div className="bg-gradient-to-b from-background to-white rounded-2xl shadow-md flex flex-col items-center p-0 overflow-hidden transition-all duration-300 hover:shadow-lg border border-input min-h-[500px]">
+      {/* Profile Image (placeholder if missing) */}
       <div className="w-full flex justify-center bg-white px-2" style={{paddingTop: '10px', paddingBottom: '0'}}>
-        <img
-          src={influencer.profilePicture}
-          alt={influencer.fullName}
-          className="rounded-2xl w-full h-[220px] object-cover shadow-lg border-2 border-white"
-          style={{marginTop: 0, marginBottom: 0}}
-        />
+        {influencer.profilePicture ? (
+          <img
+            src={influencer.profilePicture}
+            alt={influencer.fullName || 'Influencer'}
+            className="rounded-2xl w-full h-[220px] object-cover shadow-md border-2 border-white"
+            style={{marginTop: 0, marginBottom: 0}}
+          />
+        ) : (
+          <div
+            className={`rounded-2xl w-full h-[220px] flex items-center justify-center border-2 border-white shadow-md ${gradientClass}`}
+            style={{marginTop: 0, marginBottom: 0}}
+          >
+            <span className="text-white font-extrabold text-6xl drop-shadow-lg">
+              {initials}
+            </span>
+          </div>
+        )}
       </div>
-      {/* Name, Verified, Followers */}
+      {/* Name */}
       <div className="w-full flex flex-col items-center mt-4 px-4">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-lg text-color">{influencer.fullName}</span>
-          {influencer.accountStatus === "Verified" && <span className="ml-1 text-green" title="Verified">✔️</span>}
+          <span className="font-semibold text-lg text-color">{influencer.fullName || 'Unknown Name'}</span>
         </div>
+        {/* Age & Gender */}
         <div className="flex items-center gap-2 text-muted text-sm mb-1">
-          <span>{influencer.city}, {influencer.country}</span>
+          <span>
+            {influencer.influencerAge ? `${influencer.influencerAge} years` : ''}
+            {influencer.influencerGender ? ` • ${influencer.influencerGender}` : ''}
+          </span>
         </div>
-        <div className="flex items-center gap-2 text-gray text-sm mb-2">
-          <span className="font-semibold text-color">{followerCount}</span>
-          <span>Followers</span>
+        {/* Location */}
+        <div className="flex items-center gap-2 text-muted text-sm mb-2">
+          <span>{getDisplayName(influencer.city) || 'Unknown City'}, {getDisplayName(influencer.country) || 'Unknown Country'}</span>
         </div>
       </div>
       {/* Social Icons */}
       <div className="flex justify-center gap-3 mb-2">
-        {socialIcons.map((social, idx) => (
-          <span key={social.platform} style={{color: social.color, fontSize: 20}}>
-            {social.icon}
-          </span>
-        ))}
+        {socialIcons.length > 0 ? socialIcons.map((social, idx) => (
+          <span key={social.platform}>{social.icon}</span>
+        )) : <span className="text-muted text-xs">No social connected</span>}
       </div>
       {/* Category Tags Polished */}
       <div className="mb-4 flex flex-wrap justify-center gap-2">
@@ -565,11 +540,11 @@ const InfluencerCard = ({ influencer }) => {
       {/* Action Buttons */}
       <div className="w-full flex justify-between items-center px-6 pb-4 gap-2">
         <Tooltip title="Chat with this influencer">
-          <Link href={`/brand/chat/${influencer.influencerId}`}>
+          <Link href={`/brand/chat/${influencer.id}`}>
             <Button shape="circle" icon={<MailOutlined />} className="text-primary border-primary" />
           </Link>
         </Tooltip>
-        <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`} className="flex-1 ml-2">
+        <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.id}`} className="flex-1 ml-2">
           <Button block className="bg-primary text-white font-semibold border-0 hover:bg-secondary transition-colors duration-200">View Profile</Button>
         </Link>
       </div>
