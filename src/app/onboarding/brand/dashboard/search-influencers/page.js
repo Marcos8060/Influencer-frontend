@@ -422,9 +422,9 @@ const SearchInfluencers = () => {
               </Text>
             </div>
 
-            <Row gutter={[20, 20]}>
+            <Row gutter={[24, 24]}>
               {paginatedInfluencers.map((influencer) => (
-                <Col xs={24} sm={12} lg={8} key={influencer.id}>
+                <Col xs={24} sm={12} md={8} lg={6} key={influencer.id}>
                   <InfluencerCard influencer={influencer} />
                 </Col>
               ))}
@@ -497,101 +497,91 @@ const InfluencerCard = ({ influencer }) => {
     },
   ].filter((social) => social.username);
 
+  // Pick the main platform (first with followers)
+  const mainPlatform = socialIcons.find(s => s.count) || socialIcons[0];
+  const followerCount = mainPlatform?.count ? `${mainPlatform.count >= 1000000 ? (mainPlatform.count/1000000).toFixed(1) + 'm' : (mainPlatform.count/1000).toFixed(0) + 'k'}` : '';
+
+  // Category color mapping (example)
+  const categoryColors = {
+    "Entertainment": "bg-secondary text-white",
+    "Fashion": "bg-primary text-white",
+    "Lifestyle": "bg-yellow text-gray-900",
+    "Business": "bg-green text-white",
+    "Tech": "bg-tertiary text-white",
+    "Other": "bg-muted text-white",
+  };
+  const mainCategory = influencer.contentCategories?.[0] || "Other";
+  const categoryColor = categoryColors[mainCategory] || "#e5e7eb";
+
   return (
-    <Badge.Ribbon
-      text="Verified"
-      color="green"
-      style={{
-        display: influencer.accountStatus === "Verified" ? "block" : "none",
-      }}
-    >
-      <Card
-        hoverable
-        className="h-full overflow-hidden"
-        cover={
-          <div className="relative h-[70px] bg-gradient-to-r from-primary via-secondary to-primary">
-            <div className="absolute inset-0 bg-black/10"></div>
-            <Avatar
-              size={56}
-              src={influencer.profilePicture}
-              className="absolute -bottom-6 left-5 border-2 border-white shadow-lg"
-            />
-          </div>
-        }
-        actions={[
-          <Link
-            href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`}
-            key="view"
-            className="px-4"
-          >
-            <Button 
-              type="primary" 
-              block 
-              className="bg-primary hover:bg-secondary transition-colors duration-200"
-            >
-              View Profile
-            </Button>
-          </Link>,
-        ]}
-      >
-        <div className="pt-6">
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex-1 pr-4">
-              <Title level={5} className="mb-1 text-color font-semibold !text-base">
-                {influencer.fullName}
-              </Title>
-              <Text type="secondary" className="text-xs text-muted block">
-                {influencer.age} years • {influencer.gender}
-              </Text>
-            </div>
-            <div className="flex gap-3">
-              {socialIcons.map((social) => (
-                <Tooltip
-                  key={social.platform}
-                  title={`${social.platform}: ${social.count ? `${(social.count / 1000).toFixed(1)}k followers` : 'Connected'}`}
-                >
-                  <div
-                    className="flex items-center gap-1 hover:opacity-80 transition-opacity"
-                    style={{ color: social.color }}
-                  >
-                    {social.icon}
-                    <Text className="text-xs font-medium">
-                      {social.count ? `${(social.count / 1000).toFixed(1)}k` : '✓'}
-                    </Text>
-                  </div>
-                </Tooltip>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 mb-3">
-            <EnvironmentOutlined className="text-primary text-sm" />
-            <Text className="text-xs text-muted font-medium">
-              {influencer.city}, {influencer.country}
-            </Text>
-          </div>
-
-          <div className="flex flex-wrap gap-1.5">
-            {influencer.contentCategories?.slice(0, 2).map((category) => (
-              <Tag 
-                key={category} 
-                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
-              >
-                {category}
-              </Tag>
-            ))}
-            {influencer.contentCategories?.length > 2 && (
-              <Tag 
-                className="text-xs px-2 py-0.5 rounded-full bg-primary/5 text-primary border-primary/10 font-medium"
-              >
-                +{influencer.contentCategories.length - 2}
-              </Tag>
-            )}
-          </div>
+    <div className="bg-gradient-to-b from-background to-white rounded-2xl shadow-md flex flex-col items-center p-0 overflow-hidden transition-all duration-300 hover:shadow-lg border border-input">
+      {/* Profile Image */}
+      <div className="w-full flex justify-center bg-white px-2" style={{paddingTop: '10px', paddingBottom: '0'}}>
+        <img
+          src={influencer.profilePicture}
+          alt={influencer.fullName}
+          className="rounded-2xl w-full h-[220px] object-cover shadow-lg border-2 border-white"
+          style={{marginTop: 0, marginBottom: 0}}
+        />
+      </div>
+      {/* Name, Verified, Followers */}
+      <div className="w-full flex flex-col items-center mt-4 px-4">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-semibold text-lg text-color">{influencer.fullName}</span>
+          {influencer.accountStatus === "Verified" && <span className="ml-1 text-green" title="Verified">✔️</span>}
         </div>
-      </Card>
-    </Badge.Ribbon>
+        <div className="flex items-center gap-2 text-muted text-sm mb-1">
+          <span>{influencer.city}, {influencer.country}</span>
+        </div>
+        <div className="flex items-center gap-2 text-gray text-sm mb-2">
+          <span className="font-semibold text-color">{followerCount}</span>
+          <span>Followers</span>
+        </div>
+      </div>
+      {/* Social Icons */}
+      <div className="flex justify-center gap-3 mb-2">
+        {socialIcons.map((social, idx) => (
+          <span key={social.platform} style={{color: social.color, fontSize: 20}}>
+            {social.icon}
+          </span>
+        ))}
+      </div>
+      {/* Category Tags Polished */}
+      <div className="mb-4 flex flex-wrap justify-center gap-2">
+        {influencer.contentCategories?.slice(0, 2).map((category) => (
+          <span
+            key={category}
+            className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-input ${categoryColors[category] || 'bg-muted text-white'}`}
+          >
+            {category}
+          </span>
+        ))}
+        {influencer.contentCategories?.length > 2 && (
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-input text-gray-700 border border-input shadow-sm">
+            +{influencer.contentCategories.length - 2}
+          </span>
+        )}
+      </div>
+      {/* Action Buttons */}
+      <div className="w-full flex justify-between items-center px-6 pb-4 gap-2">
+        <Tooltip title="Chat with this influencer">
+          <Link href={`/brand/chat/${influencer.influencerId}`}>
+            <Button shape="circle" icon={<MailOutlined />} className="text-primary border-primary" />
+          </Link>
+        </Tooltip>
+        <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`} className="flex-1 ml-2">
+          <Button block className="bg-primary text-white font-semibold border-0 hover:bg-secondary transition-colors duration-200">View Profile</Button>
+        </Link>
+      </div>
+    </div>
   );
 };
+
+// Heart icon SVG
+const HeartIcon = () => (
+  <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
+    <path d="M10 17.5l-1.45-1.32C4.4 12.36 2 10.28 2 7.5 2 5.5 3.5 4 5.5 4c1.04 0 2.09.54 2.7 1.44C8.41 5.54 9.46 5 10.5 5 12.5 5 14 6.5 14 8.5c0 2.78-2.4 4.86-6.55 8.68L10 17.5z" fill="#f472b6" stroke="#f472b6" strokeWidth="1.2"/>
+  </svg>
+);
 
 export default SearchInfluencers;
