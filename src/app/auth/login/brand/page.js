@@ -59,7 +59,7 @@ const BrandLogin = () => {
 
           <div className="space-y-8 max-w-lg">
             <div className="space-y-6">
-              <h1 className="text-6xl font-bold leading-tight">
+              <h1 className="text-5xl font-bold leading-tight">
                 Welcome Back <br />
                 to Growth
               </h1>
@@ -68,7 +68,7 @@ const BrandLogin = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 max-w-sm">
+            {/* <div className="grid grid-cols-3 gap-4 max-w-sm">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold">1M+</div>
                 <div className="text-sm opacity-80">Reach</div>
@@ -81,7 +81,7 @@ const BrandLogin = () => {
                 <div className="text-2xl font-bold">24/7</div>
                 <div className="text-sm opacity-80">Support</div>
               </div>
-            </div>
+            </div> */}
 
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
