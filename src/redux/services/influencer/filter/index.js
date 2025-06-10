@@ -20,3 +20,22 @@ export const filterInfluencer = async (auth, payload) => {
     }
 };
 
+export const searchInfluencers = async (auth, payload) => {
+    try {
+        // Convert filter object to query string
+        const queryString = new URLSearchParams(payload).toString();
+        const url = `${APP_API_URL.SEARCH_INFLUENCERS}?${queryString}`; // Append query params
+
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+        });
+
+        return response.data; // Ensure data is returned
+    } catch (error) {
+        console.error("Error searching influencers:", error);
+        return error.response?.data || error.message;
+    }
+};
+

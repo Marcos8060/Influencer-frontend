@@ -1,10 +1,11 @@
 import { fetchBrands, fetchInfluencers, searchBrands } from "@/redux/services/influencer";
-import { filterInfluencer } from "@/redux/services/influencer/filter";
+import { filterInfluencer, searchInfluencers } from "@/redux/services/influencer/filter";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   filterResults: [],
   influencers: [],
+  searchResults: [],
   brandResults:[],
   brands: []
 };
@@ -19,6 +20,9 @@ const FilterInfluencerSlice = createSlice({
     setInfluencers: (state, action) => {
       state.influencers = action.payload;
     },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
     setBrandResults: (state, action) => {
       state.brandResults = action.payload;
     },
@@ -32,7 +36,8 @@ export const {
   setResults,
   setInfluencers,
   setBrandResults,
-  setBrands
+  setBrands,
+  setSearchResults
 } = FilterInfluencerSlice.actions;
 
 
@@ -40,6 +45,15 @@ export const fetchAllFilterResults = (auth,payload) => async (dispatch) => {
   try {
     const data = await filterInfluencer(auth,payload);
     dispatch(setResults(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const fetchAllSearchResults = (auth,payload) => async (dispatch) => {
+  try {
+    const data = await searchInfluencers(auth,payload);
+    dispatch(setSearchResults(data));
     return data;
   } catch (error) {
     console.log(error);
