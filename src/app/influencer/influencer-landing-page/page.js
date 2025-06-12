@@ -230,115 +230,69 @@ const creatorVideos = [
     title: "Melo Drink",
     creator: "@sarah",
     views: "1.2M views",
-    thumbnail: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2570&auto=format&fit=crop",
     videoUrl: "/vid1.mp4"
   },
   {
     title: "Melo Pineaple",
     creator: "@wellness_with_mia",
     views: "850K views",
-    thumbnail: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=2670&auto=format&fit=crop",
     videoUrl: "/vid2.mp4"
   },
   {
     title: "Seltzers",
     creator: "@foodie",
     views: "2.1M views",
-    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2670&auto=format&fit=crop",
     videoUrl: "/vid3.mp4"
   },
   {
     title: "Drink Melo",
     creator: "@wanderlust_emma",
     views: "1.5M views",
-    thumbnail: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2608&auto=format&fit=crop",
     videoUrl: "/vid4.mp4"
   }
 ];
 
-const VideoModal = ({ video, isOpen, onClose }) => {
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen && videoRef.current) {
-      videoRef.current.play().catch(console.error);
-    }
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-4xl mx-auto">
-        <button
-          onClick={onClose}
-          className="absolute -right-2 -top-2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
-        >
-          <X className="w-6 h-6" />
-        </button>
-
-        <div className="relative max-h-[90vh] rounded-[30px] overflow-hidden bg-gray-900">
-          <video
-            ref={videoRef}
-            className="w-full h-full object-contain"
-            loop
-            playsInline
-            muted={isMuted}
-            controls
-            autoPlay
-          >
-            <source src={video.videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-            <h3 className="text-white font-medium mb-2">{video.title}</h3>
-            <div className="flex items-center justify-between text-white/80 text-sm">
-              <span>{video.creator}</span>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="p-2 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 transition-colors"
-                >
-                  {isMuted ? (
-                    <VolumeX className="w-4 h-4 text-white" />
-                  ) : (
-                    <Volume2 className="w-4 h-4 text-white" />
-                  )}
-                </button>
-                <span>{video.views}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const VideoCard = ({ video, index }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
-  const handleVideoLoaded = () => {
-    setIsLoading(false);
-    setError(null);
-  };
+  useEffect(() => {
+    // Create a video element to capture the thumbnail
+    const videoElement = document.createElement('video');
+    videoElement.src = video.videoUrl;
+    videoElement.crossOrigin = 'anonymous';
+    videoElement.currentTime = 0.5; // Seek to a small time to ensure frame is available
+    
+    videoElement.addEventListener('loadeddata', () => {
+      // Create canvas to capture the frame
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      
+      // Convert canvas to data URL for thumbnail
+      setThumbnail(canvas.toDataURL());
+      setIsLoading(false);
+    });
 
-  const handleVideoError = (e) => {
-    console.error("Video error:", e);
-    setIsLoading(false);
-    setError("Failed to load video. Please try again.");
-  };
+    videoElement.addEventListener('error', (e) => {
+      console.error("Thumbnail generation error:", e);
+      setIsLoading(false);
+      setError("Failed to load video thumbnail");
+    });
+
+    return () => {
+      videoElement.removeEventListener('loadeddata', () => {});
+      videoElement.removeEventListener('error', () => {});
+    };
+  }, [video.videoUrl]);
 
   const togglePlay = () => {
     if (isPlaying) {
@@ -361,15 +315,14 @@ const VideoCard = ({ video, index }) => {
         className="relative aspect-[9/16] rounded-[30px] overflow-hidden shadow-lg bg-gray-900 cursor-pointer"
         onClick={togglePlay}
       >
-        {!isPlaying && (
-          <Image
-            src={video.thumbnail}
-            alt={video.title}
-            fill
-            className="object-cover"
-            onLoad={handleVideoLoaded}
-            onError={handleVideoError}
-          />
+        {!isPlaying && thumbnail && (
+          <div className="absolute inset-0">
+            <img
+              src={thumbnail}
+              alt={video.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
         )}
 
         {isLoading && (
@@ -402,8 +355,10 @@ const VideoCard = ({ video, index }) => {
           loop
           playsInline
           muted={isMuted}
-          onLoadedData={handleVideoLoaded}
-          onError={handleVideoError}
+          onError={(e) => {
+            console.error("Video playback error:", e);
+            setError("Failed to play video");
+          }}
         >
           <source src={video.videoUrl} type="video/mp4" />
           Your browser does not support the video tag.
