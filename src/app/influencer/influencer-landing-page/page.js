@@ -323,9 +323,11 @@ const VideoModal = ({ video, isOpen, onClose }) => {
 };
 
 const VideoCard = ({ video, index }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const videoRef = useRef(null);
 
   const handleVideoLoaded = () => {
     setIsLoading(false);
@@ -338,6 +340,15 @@ const VideoCard = ({ video, index }) => {
     setError("Failed to load video. Please try again.");
   };
 
+  const togglePlay = () => {
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play().catch(console.error);
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -348,16 +359,18 @@ const VideoCard = ({ video, index }) => {
     >
       <div 
         className="relative aspect-[9/16] rounded-[30px] overflow-hidden shadow-lg bg-gray-900 cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
+        onClick={togglePlay}
       >
-        <Image
-          src={video.thumbnail}
-          alt={video.title}
-          fill
-          className="object-cover"
-          onLoad={handleVideoLoaded}
-          onError={handleVideoError}
-        />
+        {!isPlaying && (
+          <Image
+            src={video.thumbnail}
+            alt={video.title}
+            fill
+            className="object-cover"
+            onLoad={handleVideoLoaded}
+            onError={handleVideoError}
+          />
+        )}
 
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -383,7 +396,20 @@ const VideoCard = ({ video, index }) => {
           </div>
         )}
 
-        {!isLoading && !error && (
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover ${isPlaying ? 'block' : 'hidden'}`}
+          loop
+          playsInline
+          muted={isMuted}
+          onLoadedData={handleVideoLoaded}
+          onError={handleVideoError}
+        >
+          <source src={video.videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {!isPlaying && !isLoading && !error && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
@@ -397,16 +423,25 @@ const VideoCard = ({ video, index }) => {
           <h3 className="text-white font-medium mb-2">{video.title}</h3>
           <div className="flex items-center justify-between text-white/80 text-sm">
             <span>{video.creator}</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMuted(!isMuted);
+                }}
+                className="p-1 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/40 transition-colors"
+              >
+                {isMuted ? (
+                  <VolumeX className="w-3 h-3 text-white" />
+                ) : (
+                  <Volume2 className="w-3 h-3 text-white" />
+                )}
+              </button>
               <span>{video.views}</span>
             </div>
           </div>
         </div>
-
-      <VideoModal
-        video={video}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      </div>
     </motion.div>
   );
 };
