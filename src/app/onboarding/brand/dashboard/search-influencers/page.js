@@ -114,12 +114,6 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
-  const [searchText, setSearchText] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedGenders, setSelectedGenders] = useState([]);
-  const [selectedCountries, setSelectedCountries] = useState([]);
-  const [selectedCities, setSelectedCities] = useState([]);
-  const [selectedAgeRanges, setSelectedAgeRanges] = useState([]);
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState([]);
   const [selectedFollowerCountries, setSelectedFollowerCountries] = useState([]);

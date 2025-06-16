@@ -73,7 +73,6 @@ const AppliedCampaignsTable = () => {
                     {/* <th className="w-[150px] p-3">No. of Influencers</th> */}
                     <th className="w-[150px] p-3 text-center">Start Date</th>
                     <th className="w-[150px] p-3 text-center">End Date</th>
-                    <th className="w-[150px] p-3 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -94,11 +93,7 @@ const AppliedCampaignsTable = () => {
                       {/* <td className="p-3">{data?.numberOfInfluencers}</td> */}
                       <td className="p-3">{data.startDate}</td>
                       <td className="p-3">{data.endDate}</td>
-                      <td className="p-3 flex items-center justify-center">
-                        <Link href={`/onboarding/influencer/dashboard/campaigns/${data.id}`}>
-                          <TiEye className="text-lg text-green" />
-                        </Link>
-                      </td>
+                      
                     </tr>
                   ))}
                 </tbody>
