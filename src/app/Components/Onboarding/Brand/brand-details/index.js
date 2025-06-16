@@ -21,7 +21,7 @@ const BrandDetails = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    brandWebsite: formData.brandWebsite || "https://",
+    brandWebsite: formData.brandWebsite || "",
     legalCompanyName: formData.legalCompanyName || "",
     country: formData.country || { name: "", code: "" },
     phoneNumber: formData.phoneNumber || { code: "+1", number: "" },
@@ -37,7 +37,8 @@ const BrandDetails = () => {
   const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
   const [filteredCountries, setFilteredCountries] = useState(countryData);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [filteredPhoneCodes, setFilteredPhoneCodes] = useState(countryPhoneData);
+  const [filteredPhoneCodes, setFilteredPhoneCodes] =
+    useState(countryPhoneData);
 
   const countryDropdownRef = useRef(null);
   const phoneCodeDropdownRef = useRef(null);
@@ -48,10 +49,16 @@ const BrandDetails = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target)
+      ) {
         setIsCountryOpen(false);
       }
-      if (phoneCodeDropdownRef.current && !phoneCodeDropdownRef.current.contains(event.target)) {
+      if (
+        phoneCodeDropdownRef.current &&
+        !phoneCodeDropdownRef.current.contains(event.target)
+      ) {
         setIsPhoneCodeOpen(false);
       }
     };
@@ -62,18 +69,23 @@ const BrandDetails = () => {
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    setFilteredCountries(countryData.filter(country => 
-      country.name.toLowerCase().includes(searchTerm)
-    ));
+    setFilteredCountries(
+      countryData.filter((country) =>
+        country.name.toLowerCase().includes(searchTerm)
+      )
+    );
   };
 
   const handlePhoneCodeSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
-    setFilteredPhoneCodes(countryPhoneData.filter(item =>
-      item.name.toLowerCase().includes(searchTerm) ||
-      item.code.toLowerCase().includes(searchTerm) ||
-      item.dial_code.toLowerCase().includes(searchTerm)
-    ));
+    setFilteredPhoneCodes(
+      countryPhoneData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm) ||
+          item.code.toLowerCase().includes(searchTerm) ||
+          item.dial_code.toLowerCase().includes(searchTerm)
+      )
+    );
   };
 
   const fetchLocationData = async (countryCode) => {
@@ -140,15 +152,20 @@ const BrandDetails = () => {
   };
 
   const handleCountrySelect = async (country) => {
-    const phoneData = countryPhoneData.find(item => item.code === country.code);
-    
+    const phoneData = countryPhoneData.find(
+      (item) => item.code === country.code
+    );
+
     setIsLoadingLocation(true);
     toast.loading("Detecting location details...", { id: "location-loading" });
 
     setDetails({
       ...details,
       country: { name: country.name, code: country.code },
-      phoneNumber: { ...details.phoneNumber, code: phoneData?.dial_code || "+1" }
+      phoneNumber: {
+        ...details.phoneNumber,
+        code: phoneData?.dial_code || "+1",
+      },
     });
     setIsCountryOpen(false);
 
@@ -161,7 +178,7 @@ const BrandDetails = () => {
 
   const handleNext = (e) => {
     e.preventDefault();
-    
+
     const requiredFields = [
       !details.brandWebsite || details.brandWebsite === "https://",
       !details.legalCompanyName,
@@ -171,7 +188,7 @@ const BrandDetails = () => {
       !details.city,
       !details.address,
       !details.zipCode,
-      !details.brandDescription
+      !details.brandDescription,
     ];
 
     if (requiredFields.some(Boolean)) {
@@ -209,7 +226,7 @@ const BrandDetails = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-input">
               Brand Information
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -218,21 +235,13 @@ const BrandDetails = () => {
                 <InputComponent
                   value={details.brandWebsite}
                   onChange={(e) => {
-                    let url = e.target.value;
-                    if (!url.startsWith("https://")) {
-                      url = `https://${url.replace(/^https?:\/\//, "")}`;
-                    }
+                    const url = e.target.value;
                     setDetails({ ...details, brandWebsite: url });
-                  }}
-                  onFocus={(e) => {
-                    if (e.target.value === "https://") {
-                      e.target.setSelectionRange(8, 8);
-                    }
                   }}
                   className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Legal Company Name <span className="text-red-500">*</span>
@@ -245,7 +254,7 @@ const BrandDetails = () => {
                   className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Brand Name <span className="text-red-500">*</span>
@@ -266,7 +275,7 @@ const BrandDetails = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-input">
               Company Details
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Country Select */}
               <div className="relative">
@@ -290,7 +299,7 @@ const BrandDetails = () => {
                     <span className="text-gray-400">Select country</span>
                   )}
                 </div>
-                
+
                 <AnimatePresence>
                   {isCountryOpen && (
                     <motion.div
@@ -330,13 +339,15 @@ const BrandDetails = () => {
                   )}
                 </AnimatePresence>
               </div>
-              
+
               {/* State */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   State <span className="text-red-500">*</span>
                   {isLoadingLocation && (
-                    <span className="ml-2 text-xs text-gray-500">(Auto-detecting...)</span>
+                    <span className="ml-2 text-xs text-gray-500">
+                      (Auto-detecting...)
+                    </span>
                   )}
                 </label>
                 <InputComponent
@@ -347,7 +358,7 @@ const BrandDetails = () => {
                   className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              
+
               {/* City */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -361,7 +372,7 @@ const BrandDetails = () => {
                   className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              
+
               {/* Phone Number */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -386,7 +397,7 @@ const BrandDetails = () => {
                         <span className="text-gray-400">Code</span>
                       )}
                     </div>
-                    
+
                     <AnimatePresence>
                       {isPhoneCodeOpen && (
                         <motion.div
@@ -414,8 +425,14 @@ const BrandDetails = () => {
                                 onClick={() => {
                                   setDetails({
                                     ...details,
-                                    phoneNumber: { ...details.phoneNumber, code: item.dial_code },
-                                    country: { name: item.name, code: item.code }
+                                    phoneNumber: {
+                                      ...details.phoneNumber,
+                                      code: item.dial_code,
+                                    },
+                                    country: {
+                                      name: item.name,
+                                      code: item.code,
+                                    },
                                   });
                                   setIsPhoneCodeOpen(false);
                                 }}
@@ -437,10 +454,15 @@ const BrandDetails = () => {
                     <InputComponent
                       value={details.phoneNumber.number}
                       onChange={(e) => {
-                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+                        const digitsOnly = e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 15);
                         setDetails({
                           ...details,
-                          phoneNumber: { ...details.phoneNumber, number: digitsOnly }
+                          phoneNumber: {
+                            ...details.phoneNumber,
+                            number: digitsOnly,
+                          },
                         });
                       }}
                       placeholder="Phone number"
@@ -449,7 +471,7 @@ const BrandDetails = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Address */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -463,7 +485,7 @@ const BrandDetails = () => {
                   className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
-              
+
               {/* Zip Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -483,7 +505,8 @@ const BrandDetails = () => {
           {/* Brand Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              What does your brand offer? (Please keep it brief) <span className="text-red-500">*</span>
+              What does your brand offer? (Please keep it brief){" "}
+              <span className="text-red-500">*</span>
             </label>
             <TextAreaComponent
               value={details.brandDescription}
@@ -492,21 +515,27 @@ const BrandDetails = () => {
               }
               className="w-full min-h-[120px] focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             />
-            
+
             {details.brandDescription && (
               <div className="mt-2">
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
-                      descriptionLength < 30 ? "bg-red" :
-                      descriptionLength < 60 ? "bg-yellow" : "bg-green"
+                      descriptionLength < 30
+                        ? "bg-red"
+                        : descriptionLength < 60
+                        ? "bg-yellow"
+                        : "bg-green"
                     }`}
                     style={{ width: `${Math.min(descriptionLength, 100)}%` }}
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {descriptionLength < 30 ? "Too brief" :
-                   descriptionLength < 60 ? "Good start" : "Excellent description"}
+                  {descriptionLength < 30
+                    ? "Too brief"
+                    : descriptionLength < 60
+                    ? "Good start"
+                    : "Excellent description"}
                 </p>
               </div>
             )}
