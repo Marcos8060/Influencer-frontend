@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Progress,
@@ -47,6 +47,9 @@ import {
   Zap,
   RefreshCw,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
+import { useAuth } from "@/assets/hooks/use-auth";
 
 // Removed deprecated TabPane import
 // Fix: Import Meta directly from Card
@@ -56,52 +59,94 @@ const fadeIn = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -20 },
-  transition: { duration: 0.3 }
+  transition: { duration: 0.3 },
 };
 
 const CampaignReporting = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
+  const { campaignDetails,campaignReport } = useSelector((store) => store.campaign);
+  const dispatch = useDispatch();
+  const auth = useAuth();
 
-  // Custom colors from your theme
-  const primaryColor = "#3680A1";
-  const secondaryColor = "#5373d4";
+  console.log("CAMPAIGN_DETAILS ",campaignDetails)
+  console.log("CAMPAIGN_REPORT ",campaignReport)
+
+  const getCampaignReport = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getAllCampaignReport(auth, campaignDetails?.id));
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (auth && campaignDetails?.id) {
+      getCampaignReport();
+    }
+  }, [useAuth]);
 
   // Mock data - replace with your actual data
   const campaignStats = [
     {
-      title: "Total Reach",
-      value: "1.2M",
-      change: "+12%",
-      icon: <ArrowUpOutlined className="text-green-500" />,
-      progress: 72,
-      description: "Audience reached across all platforms",
+      title: "Total Engagement",
+      value: `${campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares || 0}`,
+      change: `${campaignReport?.engagementRate || 0}%`,
+      icon: <Users className="text-primary" />,
+      progress: ((campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares) / 1000) * 100 || 0,
+      description: "Total interactions across all platforms",
+      color: "primary",
+      details: [
+        { label: "Likes", value: campaignReport?.totalLikes || 0 },
+        { label: "Comments", value: campaignReport?.totalComments || 0 },
+        { label: "Shares", value: campaignReport?.totalShares || 0 }
+      ]
     },
     {
-      title: "Engagement Rate",
-      value: "8.5%",
-      change: "+3.2%",
-      icon: <LineChartOutlined className="text-purple-500" />,
-      progress: 85,
-      description: "Likes, comments & shares per impression",
-    },
-    {
-      title: "Content Pieces",
-      value: "248",
-      change: "+48",
+      title: "Content Performance",
+      value: `${campaignReport?.totalPosts || 0}`,
+      change: `${campaignReport?.averageLikesPerPost || 0} avg likes`,
       icon: <FireFilled className="text-orange-500" />,
-      progress: 65,
-      description: "Posts created for this campaign",
+      progress: ((campaignReport?.totalPosts || 0) / 10) * 100,
+      description: "Total posts created for this campaign",
+      color: "orange",
+      details: [
+        { label: "Avg Views/Post", value: campaignReport?.averageViewsPerPost || 0 },
+        { label: "Avg Likes/Post", value: campaignReport?.averageLikesPerPost || 0 },
+        { label: "Avg Comments/Post", value: campaignReport?.averageCommentsPerPost || 0 },
+        { label: "Avg Shares/Post", value: campaignReport?.averageSharesPerPost || 0 }
+      ]
     },
     {
-      title: "Estimated ROI",
-      value: "4.8x",
-      change: "+1.2x",
-      icon: <DollarOutlined className="text-green-600" />,
-      progress: 48,
-      description: "Return on investment estimate",
+      title: "Platform Reach",
+      value: `${Object.keys(campaignReport?.platformBreakdown || {}).length}`,
+      change: `${campaignReport?.platformBreakdown?.Instagram?.totalViews || 0} views`,
+      icon: <InstagramOutlined className="text-pink-500" />,
+      progress: ((campaignReport?.platformBreakdown?.Instagram?.totalViews || 0) / 1000) * 100,
+      description: "Active platforms and their performance",
+      color: "pink",
+      details: campaignReport?.platformBreakdown ? Object.entries(campaignReport.platformBreakdown).map(([platform, data]) => ({
+        label: platform,
+        value: `${data.totalPosts} posts, ${data.totalLikes} likes`
+      })) : []
     },
+    {
+      title: "Influencer Network",
+      value: `${campaignReport?.totalInfluencers || 0}`,
+      change: `${campaignReport?.topInfluencers?.length || 0} top performers`,
+      icon: <StarFilled className="text-yellow-500" />,
+      progress: ((campaignReport?.totalInfluencers || 0) / 10) * 100,
+      description: "Active influencers in the campaign",
+      color: "yellow",
+      details: campaignReport?.topInfluencers?.map(influencer => ({
+        label: "Influencer",
+        value: `${influencer.totalViews} views`
+      })) || []
+    }
   ];
 
   const influencers = [
@@ -271,32 +316,32 @@ const CampaignReporting = () => {
   };
 
   const menuItems = [
-    { 
-      key: '1', 
-      label: 'View Profile',
-      icon: <UserOutlined /> 
+    {
+      key: "1",
+      label: "View Profile",
+      icon: <UserOutlined />,
     },
-    { 
-      key: '2', 
-      label: 'Message Influencer',
-      icon: <MessageFilled /> 
+    {
+      key: "2",
+      label: "Message Influencer",
+      icon: <MessageFilled />,
     },
-    { 
-      key: '3', 
-      label: 'Performance Analytics',
-      icon: <LineChartOutlined /> 
+    {
+      key: "3",
+      label: "Performance Analytics",
+      icon: <LineChartOutlined />,
     },
-    { 
-      type: 'divider' 
+    {
+      type: "divider",
     },
-    { 
-      key: '4', 
-      label: 'Remove from Campaign',
+    {
+      key: "4",
+      label: "Remove from Campaign",
       icon: <DeleteOutlined />,
-      danger: true 
+      danger: true,
     },
   ];
-  
+
   const menu = <Menu items={menuItems} />;
 
   const handleRefresh = async () => {
@@ -321,16 +366,19 @@ const CampaignReporting = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-                  Summer Collection Campaign
+                  {campaignDetails?.title}
                 </h1>
-                <Tag color="green" className="flex items-center gap-1 rounded-full px-3 py-1">
+                <Tag
+                  color="green"
+                  className="flex items-center gap-1 rounded-full px-3 py-1"
+                >
                   <Clock size={14} /> Active
                 </Tag>
               </div>
               <div className="flex items-center gap-6 text-gray-500">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} className="text-primary" />
-                  <span>Jun 15 - Aug 15, 2024</span>
+                  <span>{campaignDetails?.startDate} - {campaignDetails?.endDate}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={16} className="text-primary" />
@@ -346,7 +394,7 @@ const CampaignReporting = () => {
             <div className="flex flex-wrap items-center gap-3">
               <Dropdown
                 menu={{
-                  items: periodOptions.map(option => ({
+                  items: periodOptions.map((option) => ({
                     key: option.value,
                     label: option.label,
                   })),
@@ -354,7 +402,7 @@ const CampaignReporting = () => {
                 }}
               >
                 <Button className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all">
-                  {periodOptions.find(o => o.value === selectedPeriod)?.label}
+                  {periodOptions.find((o) => o.value === selectedPeriod)?.label}
                   <ChevronDown size={16} />
                 </Button>
               </Dropdown>
@@ -376,7 +424,12 @@ const CampaignReporting = () => {
 
               <Tooltip title="Refresh data">
                 <Button
-                  icon={<RefreshCw size={16} className={loading ? 'animate-spin' : ''} />}
+                  icon={
+                    <RefreshCw
+                      size={16}
+                      className={loading ? "animate-spin" : ""}
+                    />
+                  }
                   onClick={handleRefresh}
                   disabled={loading}
                   className="border-input hover:border-primary/50 hover:text-primary transition-all"
@@ -394,10 +447,11 @@ const CampaignReporting = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="h-full"
             >
               <Card
-                className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300"
-                bodyStyle={{ padding: "24px" }}
+                className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full"
+                bodyStyle={{ padding: "24px", height: "100%", display: "flex", flexDirection: "column" }}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="space-y-1">
@@ -411,25 +465,90 @@ const CampaignReporting = () => {
                       </span>
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl bg-${stat.color || 'primary'}/10`}>
+                  <div className={`p-3 rounded-xl bg-${stat.color}-500/10`}>
                     {stat.icon}
                   </div>
                 </div>
                 <Progress
                   percent={stat.progress}
                   strokeColor={{
-                    '0%': '#3680A1',
-                    '100%': '#5373d4',
+                    "0%": "#3680A1",
+                    "100%": "#5373d4",
                   }}
                   showInfo={false}
                   strokeWidth={4}
                   className="mb-2"
                 />
-                <p className="text-xs text-gray-500">{stat.description}</p>
+                <p className="text-xs text-gray-500 mb-4">{stat.description}</p>
+                
+                {/* Detailed Metrics */}
+                <div className="space-y-2 mt-auto pt-4 border-t border-input">
+                  {stat.details.map((detail, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500">{detail.label}</span>
+                      <span className="font-medium">{detail.value}</span>
+                    </div>
+                  ))}
+                </div>
               </Card>
             </motion.div>
           ))}
         </div>
+
+        {/* Top Posts Section */}
+        <Card
+          className="rounded-3xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] mb-8"
+          bodyStyle={{ padding: "24px" }}
+        >
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-xl font-bold">Top Performing Posts</h2>
+              <p className="text-gray-500">Best performing content from your campaign</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {campaignReport?.topPosts?.map((post, index) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-xl p-4 border border-input hover:shadow-md transition-all h-full"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="space-y-1">
+                    <span className="text-sm text-gray-500">Post #{index + 1}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold">{post.likeCount} likes</span>
+                      <span className="text-xs text-gray-500">•</span>
+                      <span className="text-sm text-gray-500">{post.commentCount} comments</span>
+                    </div>
+                  </div>
+                  <Tag color="blue" className="flex items-center gap-1">
+                    <InstagramOutlined /> Instagram
+                  </Tag>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-gray-50 p-2 rounded-lg">
+                    <div className="text-sm text-gray-500">Views</div>
+                    <div className="font-semibold">{post.viewCount}</div>
+                  </div>
+                  <div className="bg-gray-50 p-2 rounded-lg">
+                    <div className="text-sm text-gray-500">Shares</div>
+                    <div className="font-semibold">{post.shareCount}</div>
+                  </div>
+                  <div className="bg-gray-50 p-2 rounded-lg">
+                    <div className="text-sm text-gray-500">Engagement</div>
+                    <div className="font-semibold">
+                      {((post.likeCount + post.commentCount + post.shareCount) / (post.viewCount || 1) * 100).toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Card>
 
         {/* Top Performing Media - Instagram Reels Style */}
         <Card
@@ -440,7 +559,9 @@ const CampaignReporting = () => {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <h2 className="text-xl font-bold">Top Performing Content</h2>
-                <p className="text-gray-500">Highest engagement reels from your campaign</p>
+                <p className="text-gray-500">
+                  Highest engagement reels from your campaign
+                </p>
               </div>
             </div>
           </div>
@@ -461,7 +582,7 @@ const CampaignReporting = () => {
                       alt="Media content"
                       className="w-full h-full object-cover opacity-95 group-hover:opacity-100 transition-opacity duration-300"
                     />
-                    
+
                     {/* Reels-style overlay - always visible */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/30">
                       {/* Top section - Username and platform */}
@@ -486,12 +607,12 @@ const CampaignReporting = () => {
                                   Follow
                                 </Button>
                               </div>
-                              <span className="text-xs text-white/80">2h ago</span>
+                              <span className="text-xs text-white/80">
+                                2h ago
+                              </span>
                             </div>
                           </div>
-                          <Tag
-                            className="flex items-center gap-1 bg-white/10 text-white border-0 rounded-full"
-                          >
+                          <Tag className="flex items-center gap-1 bg-white/10 text-white border-0 rounded-full">
                             {getPlatformIcon(media.platform)}
                           </Tag>
                         </div>
@@ -506,7 +627,9 @@ const CampaignReporting = () => {
                             icon={<HeartFilled className="text-xl" />}
                             className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 hover:text-pink-500 transition-colors rounded-full"
                           />
-                          <span className="text-white text-xs font-medium">{media.likes}</span>
+                          <span className="text-white text-xs font-medium">
+                            {media.likes}
+                          </span>
                         </div>
                         <div className="flex flex-col items-center gap-1">
                           <Button
@@ -515,7 +638,9 @@ const CampaignReporting = () => {
                             icon={<MessageFilled className="text-xl" />}
                             className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors rounded-full"
                           />
-                          <span className="text-white text-xs font-medium">1.2K</span>
+                          <span className="text-white text-xs font-medium">
+                            1.2K
+                          </span>
                         </div>
                         <div className="flex flex-col items-center gap-1">
                           <Button
@@ -524,7 +649,9 @@ const CampaignReporting = () => {
                             icon={<Share2 className="text-xl" />}
                             className="flex items-center justify-center w-12 h-12 bg-white/10 text-white hover:bg-white/20 transition-colors rounded-full"
                           />
-                          <span className="text-white text-xs font-medium">Share</span>
+                          <span className="text-white text-xs font-medium">
+                            Share
+                          </span>
                         </div>
                         <div className="flex flex-col items-center gap-1">
                           <Button
@@ -541,14 +668,19 @@ const CampaignReporting = () => {
                         <div className="space-y-2">
                           <div className="bg-white/10 text-white text-sm px-3 py-1.5 rounded-full inline-flex items-center gap-1">
                             <TrendingUp size={14} />
-                            <span className="font-medium">{media.engagementRate} Engagement</span>
+                            <span className="font-medium">
+                              {media.engagementRate} Engagement
+                            </span>
                           </div>
                           <p className="text-white text-sm line-clamp-2">
-                            Check out our latest summer collection! 🌞 #FashionCampaign #SummerVibes
+                            Check out our latest summer collection! 🌞
+                            #FashionCampaign #SummerVibes
                           </p>
                           <div className="flex items-center gap-2 text-white/80">
                             <div className="w-3 h-3 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-pulse" />
-                            <span className="text-xs">Original Audio - Summer Beats</span>
+                            <span className="text-xs">
+                              Original Audio - Summer Beats
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -574,7 +706,9 @@ const CampaignReporting = () => {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <h2 className="text-xl font-bold">Influencer Performance</h2>
-                <p className="text-gray-500">Track metrics and content from your campaign influencers</p>
+                <p className="text-gray-500">
+                  Track metrics and content from your campaign influencers
+                </p>
               </div>
               <div className="flex items-center gap-3">
                 <Button icon={<Filter size={16} />}>Filters</Button>
@@ -599,165 +733,174 @@ const CampaignReporting = () => {
                 label: "All Influencers",
                 children: (
                   <div className="space-y-6 py-4">
-                    {loading ? (
-                      Array(3).fill(null).map((_, i) => (
-                        <div key={i} className="border rounded-xl p-6">
-                          <Skeleton avatar paragraph={{ rows: 4 }} active />
-                        </div>
-                      ))
-                    ) : (
-                      influencers.map((influencer) => (
-                        <motion.div
-                          key={influencer.id}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="border border-input rounded-xl p-6 hover:shadow-md transition-all bg-white"
-                        >
-                          <div className="flex flex-col lg:flex-row gap-8">
-                            {/* Influencer Info */}
-                            <div className="flex-1">
-                              <div className="flex items-start gap-4">
-                                <Avatar
-                                  size={80}
-                                  src={influencer.avatar}
-                                  className="rounded-xl"
-                                />
-                                <div className="flex-1">
-                                  <div className="flex justify-between items-start">
-                                    <div>
-                                      <h3 className="text-lg font-semibold">
-                                        {influencer.name}
-                                      </h3>
-                                      <p className="text-gray-500">
-                                        {influencer.username}
-                                      </p>
-                                      <div className="flex items-center gap-2 mt-2">
-                                        {getPlatformIcon(influencer.platform)}
-                                        <span className="text-sm capitalize">
-                                          {influencer.platform}
-                                        </span>
-                                        {getTierTag(influencer.tier)}
-                                      </div>
-                                    </div>
-                                    <Dropdown menu={menu} placement="bottomRight">
-                                      <Button
-                                        type="text"
-                                        icon={<MoreOutlined />}
-                                        className="hover:bg-gray-100"
-                                      />
-                                    </Dropdown>
-                                  </div>
-
-                                  <div className="grid grid-cols-3 gap-4 mt-6">
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                      <div className="flex items-center gap-2 text-gray-500 mb-1">
-                                        <Users size={16} />
-                                        <span className="text-sm font-medium">
-                                          Reach
-                                        </span>
-                                      </div>
-                                      <p className="text-xl font-bold">
-                                        {influencer.reach}
-                                      </p>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                      <div className="flex items-center gap-2 text-gray-500 mb-1">
-                                        <Zap size={16} />
-                                        <span className="text-sm font-medium">
-                                          Engagement
-                                        </span>
-                                      </div>
-                                      <p className="text-xl font-bold">
-                                        {influencer.engagement}
-                                      </p>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                      <div className="flex items-center gap-2 text-gray-500 mb-1">
-                                        <Award size={16} />
-                                        <span className="text-sm font-medium">
-                                          Completion
-                                        </span>
-                                      </div>
-                                      <div className="space-y-2">
-                                        <Progress
-                                          percent={influencer.completion}
-                                          strokeColor={{
-                                            '0%': '#3680A1',
-                                            '100%': '#5373d4',
-                                          }}
-                                          showInfo={false}
-                                          size="small"
-                                        />
-                                        <p className="text-sm font-semibold">
-                                          {influencer.completion}%
+                    {loading
+                      ? Array(3)
+                          .fill(null)
+                          .map((_, i) => (
+                            <div key={i} className="border rounded-xl p-6">
+                              <Skeleton avatar paragraph={{ rows: 4 }} active />
+                            </div>
+                          ))
+                      : influencers.map((influencer) => (
+                          <motion.div
+                            key={influencer.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="border border-input rounded-xl p-6 hover:shadow-md transition-all bg-white"
+                          >
+                            <div className="flex flex-col lg:flex-row gap-8">
+                              {/* Influencer Info */}
+                              <div className="flex-1">
+                                <div className="flex items-start gap-4">
+                                  <Avatar
+                                    size={80}
+                                    src={influencer.avatar}
+                                    className="rounded-xl"
+                                  />
+                                  <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                      <div>
+                                        <h3 className="text-lg font-semibold">
+                                          {influencer.name}
+                                        </h3>
+                                        <p className="text-gray-500">
+                                          {influencer.username}
                                         </p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          {getPlatformIcon(influencer.platform)}
+                                          <span className="text-sm capitalize">
+                                            {influencer.platform}
+                                          </span>
+                                          {getTierTag(influencer.tier)}
+                                        </div>
+                                      </div>
+                                      <Dropdown
+                                        menu={menu}
+                                        placement="bottomRight"
+                                      >
+                                        <Button
+                                          type="text"
+                                          icon={<MoreOutlined />}
+                                          className="hover:bg-gray-100"
+                                        />
+                                      </Dropdown>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-4 mt-6">
+                                      <div className="bg-gray-50 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                          <Users size={16} />
+                                          <span className="text-sm font-medium">
+                                            Reach
+                                          </span>
+                                        </div>
+                                        <p className="text-xl font-bold">
+                                          {influencer.reach}
+                                        </p>
+                                      </div>
+                                      <div className="bg-gray-50 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                          <Zap size={16} />
+                                          <span className="text-sm font-medium">
+                                            Engagement
+                                          </span>
+                                        </div>
+                                        <p className="text-xl font-bold">
+                                          {influencer.engagement}
+                                        </p>
+                                      </div>
+                                      <div className="bg-gray-50 p-4 rounded-xl">
+                                        <div className="flex items-center gap-2 text-gray-500 mb-1">
+                                          <Award size={16} />
+                                          <span className="text-sm font-medium">
+                                            Completion
+                                          </span>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Progress
+                                            percent={influencer.completion}
+                                            strokeColor={{
+                                              "0%": "#3680A1",
+                                              "100%": "#5373d4",
+                                            }}
+                                            showInfo={false}
+                                            size="small"
+                                          />
+                                          <p className="text-sm font-semibold">
+                                            {influencer.completion}%
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
 
-                            {/* Recent Content */}
-                            <div className="flex-1">
-                              <div className="flex justify-between items-center mb-4">
-                                <h4 className="font-semibold">Recent Content</h4>
-                                <Button
-                                  type="link"
-                                  className="text-primary hover:text-primary-dark"
-                                >
-                                  View All
-                                </Button>
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                {influencer.posts.map((post) => (
-                                  <div
-                                    key={post.id}
-                                    className="relative group rounded-xl overflow-hidden"
+                              {/* Recent Content */}
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center mb-4">
+                                  <h4 className="font-semibold">
+                                    Recent Content
+                                  </h4>
+                                  <Button
+                                    type="link"
+                                    className="text-primary hover:text-primary-dark"
                                   >
-                                    <img
-                                      src={post.image}
-                                      alt=""
-                                      className="w-full h-48 object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                                        <div className="flex justify-between text-white text-sm">
-                                          <span className="flex items-center gap-1">
-                                            <HeartFilled /> {post.likes}
-                                          </span>
-                                          <span className="flex items-center gap-1">
-                                            <MessageFilled /> {post.comments}
-                                          </span>
-                                          <span className="flex items-center gap-1">
-                                            <Share2 size={14} /> {post.shares}
-                                          </span>
+                                    View All
+                                  </Button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                  {influencer.posts.map((post) => (
+                                    <div
+                                      key={post.id}
+                                      className="relative group rounded-xl overflow-hidden"
+                                    >
+                                      <img
+                                        src={post.image}
+                                        alt=""
+                                        className="w-full h-48 object-cover"
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                                          <div className="flex justify-between text-white text-sm">
+                                            <span className="flex items-center gap-1">
+                                              <HeartFilled /> {post.likes}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                              <MessageFilled /> {post.comments}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                              <Share2 size={14} /> {post.shares}
+                                            </span>
+                                          </div>
+                                          <p className="text-white text-xs mt-2">
+                                            {post.date}
+                                          </p>
                                         </div>
-                                        <p className="text-white text-xs mt-2">
-                                          {post.date}
-                                        </p>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      ))
-                    )}
+                          </motion.div>
+                        ))}
                   </div>
                 ),
               },
               {
                 key: "2",
                 label: "Top Performing",
-                children: <div className="p-6">Top performing content here</div>,
+                children: (
+                  <div className="p-6">Top performing content here</div>
+                ),
               },
               {
                 key: "3",
                 label: "Pending Review",
-                children: <div className="p-6">Content pending review here</div>,
+                children: (
+                  <div className="p-6">Content pending review here</div>
+                ),
               },
             ]}
           />

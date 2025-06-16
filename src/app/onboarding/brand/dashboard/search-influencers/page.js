@@ -591,46 +591,12 @@ const SearchInfluencers = () => {
               ))}
             </Row>
             <div className="text-center mt-6 flex justify-center gap-4">
-              <button 
-                onClick={() => fetchResults(prevCursor)} 
-                disabled={!prevCursor}
-                className="flex items-center gap-2 px-6 h-10 border border-primary text-primary hover:bg-primary rounded hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary"
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                >
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
+              <Button onClick={() => fetchResults(prevCursor)} disabled={!prevCursor}>
                 Previous
-              </button>
-              <button 
-                onClick={() => fetchResults(nextCursor)} 
-                disabled={!nextCursor}
-                className="flex items-center gap-2 px-6 h-10 border border-primary text-primary hover:bg-primary rounded hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary"
-              >
+              </Button>
+              <Button onClick={() => fetchResults(nextCursor)} disabled={!nextCursor}>
                 Next
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                >
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
-              </button>
+              </Button>
             </div>
           </>
         ) : (

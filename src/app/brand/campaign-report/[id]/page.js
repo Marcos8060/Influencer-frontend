@@ -7,7 +7,6 @@ import {
   HistoryOutlined,
   EyeOutlined,
   FilePdfOutlined,
-  PlusOutlined,
   CheckOutlined,
 } from "@ant-design/icons";
 import {
@@ -28,19 +27,17 @@ import {
   List,
   Descriptions,
   Badge,
-  Dropdown,
-  Menu,
 } from "antd";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { getAllCampaignDetails } from "@/redux/features/stepper/campaign-stepper";
+import { getAllCampaignDetails, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
 
 const { Title, Text, Paragraph } = Typography;
 
-const CampaignReport = () => {
+const CampaignDetails = () => {
   const { campaignDetails } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
@@ -451,4 +448,4 @@ const CampaignReport = () => {
   );
 };
 
-export default CampaignReport;
+export default CampaignDetails;
