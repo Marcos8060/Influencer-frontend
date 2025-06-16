@@ -33,6 +33,7 @@ import Link from "next/link";
 import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
 import { fetchAllSearchResults, getAllInfluencers } from "@/redux/features/influencer/filter";
+import { country_names } from "@/app/Components/country-names";
 
 const { Title, Text } = Typography;
 
@@ -72,7 +73,13 @@ const categories = [
 ];
 
 // Define genders array
-const genders = ["Male", "Female", "Non-binary"];
+const genders = ["Male", "Female"];
+
+// Define gender mapping for backend
+const genderMapping = {
+  'Male': 'M',
+  'Female': 'F'
+};
 
 // Define ageRanges constant
 const ageRanges = [
@@ -104,13 +111,23 @@ const SearchInfluencers = () => {
     gender: "",
     keywords: "",
     page_size: 20,
+    // Add new follower demographics filters with empty defaults
+    social_media_followers_age: null,
+    social_media_followers_age_percentage: null,
+    social_media_followers_city: null,
+    social_media_followers_city_percentage: null,
+    social_media_followers_country: null,
+    social_media_followers_country_percentage: null,
+    social_media_followers_gender: null,
+    social_media_followers_gender_percentage: null,
+    social_media_platform_name: null
   });
   const [cursor, setCursor] = useState(null);
   const [nextCursor, setNextCursor] = useState(null);
   const [prevCursor, setPrevCursor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState('instagram');
+  const [selectedPlatform, setSelectedPlatform] = useState(null);
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
@@ -126,12 +143,13 @@ const SearchInfluencers = () => {
       cursor: customCursor || cursor,
       page_size: filters.page_size,
     };
-    // Remove empty values
+    // Remove empty values and null values
     Object.keys(payload).forEach(key => {
       if (
         payload[key] === "" ||
         payload[key] === null ||
-        (Array.isArray(payload[key]) && payload[key].length === 0)
+        (Array.isArray(payload[key]) && payload[key].length === 0) ||
+        (typeof payload[key] === 'object' && payload[key] !== null && Object.keys(payload[key]).length === 0)
       ) {
         delete payload[key];
       }
@@ -150,7 +168,6 @@ const SearchInfluencers = () => {
       setCursor(customCursor || null);
       setLoading(false);
     });
-    ;
   };
 
   // On filter change
@@ -166,7 +183,7 @@ const SearchInfluencers = () => {
   }, [filters, auth]);
 
   // Get unique countries and cities for Selects
-  const countries = Array.from(new Set(
+  const availableCountries = Array.from(new Set(
     searchResults?.results?.map((i) => getDisplayName(i.country))
   )).filter(Boolean);
   const cities = Array.from(new Set(
@@ -240,7 +257,7 @@ const SearchInfluencers = () => {
                     onChange={(val) => handleFilterChange('country', val[0] || "")}
                     style={{ minWidth: '150px' }}
                     maxTagCount={1}
-                    options={countries.map((country) => ({
+                    options={availableCountries.map((country) => ({
                       value: country,
                       label: country,
                     }))}
@@ -277,17 +294,64 @@ const SearchInfluencers = () => {
         placement="right"
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
-        width={400}
+        width={450}
         extra={
           <Space>
             <Button onClick={() => {
               setSelectedFollowerGenders([]);
               setSelectedFollowerAgeRanges([]);
               setSelectedFollowerCountries([]);
+              setSelectedPlatform(null);
+              // Reset follower demographics filters to null
+              handleFilterChange('social_media_followers_gender', null);
+              handleFilterChange('social_media_followers_gender_percentage', null);
+              handleFilterChange('social_media_followers_age', null);
+              handleFilterChange('social_media_followers_age_percentage', null);
+              handleFilterChange('social_media_followers_country', null);
+              handleFilterChange('social_media_followers_country_percentage', null);
+              handleFilterChange('social_media_platform_name', null);
             }}>
               Clear
             </Button>
-            <Button type="primary" onClick={() => setDrawerVisible(false)}>
+            <Button 
+              type="primary" 
+              onClick={() => {
+                if (!selectedPlatform) {
+                  toast.error('Please select a platform first');
+                  return;
+                }
+
+                // Validate that if a filter is selected, its percentage is also set
+                if (selectedFollowerAgeRanges.length > 0 && !filters.social_media_followers_age_percentage) {
+                  toast.error('Please enter a percentage for the selected age range');
+                  return;
+                }
+                if (selectedFollowerGenders.length > 0 && !filters.social_media_followers_gender_percentage) {
+                  toast.error('Please enter a percentage for the selected gender');
+                  return;
+                }
+                if (selectedFollowerCountries && !filters.social_media_followers_country_percentage) {
+                  toast.error('Please enter a percentage for the selected country');
+                  return;
+                }
+
+                // Always set the platform first
+                handleFilterChange('social_media_platform_name', selectedPlatform);
+                
+                // Then set other filters if they exist
+                if (selectedFollowerGenders.length > 0) {
+                  const selectedGender = selectedFollowerGenders[0];
+                  handleFilterChange('social_media_followers_gender', genderMapping[selectedGender]);
+                }
+                if (selectedFollowerAgeRanges.length > 0) {
+                  handleFilterChange('social_media_followers_age', selectedFollowerAgeRanges[0]);
+                }
+                if (selectedFollowerCountries) {
+                  handleFilterChange('social_media_followers_country', selectedFollowerCountries);
+                }
+                setDrawerVisible(false);
+              }}
+            >
               Apply
             </Button>
           </Space>
@@ -297,7 +361,22 @@ const SearchInfluencers = () => {
           <Text strong className="block mb-3">Select Platform</Text>
           <Radio.Group 
             value={selectedPlatform} 
-            onChange={(e) => setSelectedPlatform(e.target.value)}
+            onChange={(e) => {
+              const platform = e.target.value;
+              setSelectedPlatform(platform);
+              // Set the platform immediately when selected
+              handleFilterChange('social_media_platform_name', platform);
+              // Reset other filters when platform changes
+              setSelectedFollowerGenders([]);
+              setSelectedFollowerAgeRanges([]);
+              setSelectedFollowerCountries([]);
+              handleFilterChange('social_media_followers_gender', null);
+              handleFilterChange('social_media_followers_gender_percentage', null);
+              handleFilterChange('social_media_followers_age', null);
+              handleFilterChange('social_media_followers_age_percentage', null);
+              handleFilterChange('social_media_followers_country', null);
+              handleFilterChange('social_media_followers_country_percentage', null);
+            }}
             className="w-full"
           >
             <Space direction="vertical" className="w-full">
@@ -320,38 +399,168 @@ const SearchInfluencers = () => {
         <Divider />
 
         <div className="mb-6">
-          <Title level={5} className="mb-3">Age Range</Title>
-          <Checkbox.Group
-            options={ageRanges}
-            value={selectedFollowerAgeRanges}
-            onChange={setSelectedFollowerAgeRanges}
-            className="flex flex-col gap-2"
-          />
+          <Title level={5} className="mb-3">Follower Age Range</Title>
+          <Text type="secondary" className="block mb-3 text-sm">
+            Select an age range and specify the percentage of followers in that range
+          </Text>
+          <div className="space-y-4">
+            {ageRanges.map((range) => (
+              <div key={range.value} className="flex items-center justify-between">
+                <Checkbox
+                  checked={selectedFollowerAgeRanges.includes(range.value)}
+                  onChange={(e) => {
+                    if (!selectedPlatform) {
+                      toast.error('Please select a platform first');
+                      return;
+                    }
+                    const newRanges = e.target.checked
+                      ? [range.value]
+                      : [];
+                    setSelectedFollowerAgeRanges(newRanges);
+                    if (e.target.checked) {
+                      handleFilterChange('social_media_followers_age', range.value);
+                    } else {
+                      handleFilterChange('social_media_followers_age', null);
+                      handleFilterChange('social_media_followers_age_percentage', null);
+                    }
+                  }}
+                  disabled={!selectedPlatform}
+                >
+                  {range.label}
+                </Checkbox>
+                <Tooltip title="Enter the minimum percentage of followers in this age range">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="%"
+                    style={{ width: '100px' }}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error('Please select a platform first');
+                        return;
+                      }
+                      const percentage = e.target.value;
+                      handleFilterChange('social_media_followers_age_percentage', percentage);
+                    }}
+                    disabled={!selectedPlatform || !selectedFollowerAgeRanges.includes(range.value)}
+                  />
+                </Tooltip>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mb-6">
-          <Title level={5} className="mb-3">Gender</Title>
-          <Checkbox.Group
-            options={genders}
-            value={selectedFollowerGenders}
-            onChange={setSelectedFollowerGenders}
-            className="flex flex-col gap-2"
-          />
+          <Title level={5} className="mb-3">Follower Gender</Title>
+          <Text type="secondary" className="block mb-3 text-sm">
+            Select a gender and specify the percentage of followers of that gender
+          </Text>
+          <div className="space-y-4">
+            {genders.map((gender) => (
+              <div key={gender} className="flex items-center justify-between">
+                <Checkbox
+                  checked={selectedFollowerGenders.includes(gender)}
+                  onChange={(e) => {
+                    if (!selectedPlatform) {
+                      toast.error('Please select a platform first');
+                      return;
+                    }
+                    const newGenders = e.target.checked
+                      ? [gender]
+                      : [];
+                    setSelectedFollowerGenders(newGenders);
+                    if (e.target.checked) {
+                      handleFilterChange('social_media_followers_gender', genderMapping[gender]);
+                    } else {
+                      handleFilterChange('social_media_followers_gender', null);
+                      handleFilterChange('social_media_followers_gender_percentage', null);
+                    }
+                  }}
+                  disabled={!selectedPlatform}
+                >
+                  {gender}
+                </Checkbox>
+                <Tooltip title="Enter the minimum percentage of followers of this gender">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="%"
+                    style={{ width: '100px' }}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error('Please select a platform first');
+                        return;
+                      }
+                      const percentage = e.target.value;
+                      handleFilterChange('social_media_followers_gender_percentage', percentage);
+                    }}
+                    disabled={!selectedPlatform || !selectedFollowerGenders.includes(gender)}
+                  />
+                </Tooltip>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div>
-          <Title level={5} className="mb-3">Top Countries</Title>
-          <Select
-            mode="multiple"
-            placeholder="Select countries"
-            value={selectedFollowerCountries}
-            onChange={setSelectedFollowerCountries}
-            className="w-full"
-            options={countries.map((country) => ({
-              value: country,
-              label: country,
-            }))}
-          />
+          <Title level={5} className="mb-3">Top Follower Countries</Title>
+          <Text type="secondary" className="block mb-3 text-sm">
+            Select a country and specify the percentage of followers from that country
+          </Text>
+          <div className="space-y-4">
+            <Select
+              showSearch
+              placeholder="Search and select a country"
+              value={selectedFollowerCountries}
+              onChange={(value) => {
+                if (!selectedPlatform) {
+                  toast.error('Please select a platform first');
+                  return;
+                }
+                setSelectedFollowerCountries(value);
+                if (value) {
+                  handleFilterChange('social_media_followers_country', value);
+                } else {
+                  handleFilterChange('social_media_followers_country', null);
+                  handleFilterChange('social_media_followers_country_percentage', null);
+                }
+              }}
+              className="w-full mb-4"
+              options={country_names.map((country) => ({
+                value: country.name,
+                label: country.name,
+              }))}
+              disabled={!selectedPlatform}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+            />
+            {selectedFollowerCountries && (
+              <div className="flex items-center justify-between gap-4">
+                <Text className="flex-1">{selectedFollowerCountries}</Text>
+                <Tooltip title="Enter the minimum percentage of followers from this country">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="%"
+                    style={{ width: '100px' }}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error('Please select a platform first');
+                        return;
+                      }
+                      const percentage = e.target.value;
+                      handleFilterChange('social_media_followers_country_percentage', percentage);
+                    }}
+                    disabled={!selectedPlatform}
+                  />
+                </Tooltip>
+              </div>
+            )}
+          </div>
         </div>
       </Drawer>
 
@@ -382,12 +591,46 @@ const SearchInfluencers = () => {
               ))}
             </Row>
             <div className="text-center mt-6 flex justify-center gap-4">
-              <Button onClick={() => fetchResults(prevCursor)} disabled={!prevCursor}>
+              <button 
+                onClick={() => fetchResults(prevCursor)} 
+                disabled={!prevCursor}
+                className="flex items-center gap-2 px-6 h-10 border border-primary text-primary hover:bg-primary rounded hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
                 Previous
-              </Button>
-              <Button onClick={() => fetchResults(nextCursor)} disabled={!nextCursor}>
+              </button>
+              <button 
+                onClick={() => fetchResults(nextCursor)} 
+                disabled={!nextCursor}
+                className="flex items-center gap-2 px-6 h-10 border border-primary text-primary hover:bg-primary rounded hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary"
+              >
                 Next
-              </Button>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
             </div>
           </>
         ) : (
@@ -545,12 +788,5 @@ const InfluencerCard = ({ influencer }) => {
     </div>
   );
 };
-
-// Heart icon SVG
-const HeartIcon = () => (
-  <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
-    <path d="M10 17.5l-1.45-1.32C4.4 12.36 2 10.28 2 7.5 2 5.5 3.5 4 5.5 4c1.04 0 2.09.54 2.7 1.44C8.41 5.54 9.46 5 10.5 5 12.5 5 14 6.5 14 8.5c0 2.78-2.4 4.86-6.55 8.68L10 17.5z" fill="#f472b6" stroke="#f472b6" strokeWidth="1.2"/>
-  </svg>
-);
 
 export default SearchInfluencers;
