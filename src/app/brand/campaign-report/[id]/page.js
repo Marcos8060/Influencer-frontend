@@ -187,7 +187,9 @@ const CampaignReport = () => {
               </Button>
             </Link>
             <Divider type="vertical" className="mx-4" />
-            <Title level={4} className="m-0">Campaign Details</Title>
+            <Title level={4} className="m-0">
+              Campaign Details
+            </Title>
           </div>
 
           <div className="flex items-center gap-3">
@@ -208,13 +210,21 @@ const CampaignReport = () => {
               <Card
                 key={index}
                 className="shadow-sm hover:shadow-md transition-all border-0"
-                bodyStyle={{ padding: '20px' }}
+                bodyStyle={{ padding: "20px" }}
               >
                 <Statistic
-                  title={<span className="text-gray-600 font-medium">{stat.title}</span>}
+                  title={
+                    <span className="text-gray-600 font-medium">
+                      {stat.title}
+                    </span>
+                  }
                   value={stat.value}
                   prefix={stat.icon}
-                  valueStyle={{ fontSize: "28px", fontWeight: 600, color: '#1a1a1a' }}
+                  valueStyle={{
+                    fontSize: "28px",
+                    fontWeight: 600,
+                    color: "#1a1a1a",
+                  }}
                   suffix={
                     <span className="text-gray-500 text-xs block mt-1">
                       {stat.suffix}
@@ -240,7 +250,7 @@ const CampaignReport = () => {
                 </span>
               }
               className="shadow-sm border-0"
-              bodyStyle={{ padding: '24px' }}
+              bodyStyle={{ padding: "24px" }}
             >
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={8}>
@@ -297,7 +307,7 @@ const CampaignReport = () => {
                 </span>
               }
               className="shadow-sm border-0"
-              bodyStyle={{ padding: '24px' }}
+              bodyStyle={{ padding: "24px" }}
             >
               {campaignDetails.products?.length > 0 ? (
                 <Row gutter={[16, 16]}>
@@ -349,7 +359,7 @@ const CampaignReport = () => {
                 </span>
               }
               className="shadow-sm border-0"
-              bodyStyle={{ padding: '24px' }}
+              bodyStyle={{ padding: "24px" }}
             >
               <Descriptions column={1} title={campaignDetails.briefTitle}>
                 <Descriptions.Item>
@@ -404,8 +414,16 @@ const CampaignReport = () => {
                   Collaboration Requests
                 </span>
               }
+              extra={
+                <button
+                  className="text-primary text-md hover:underline font-semibold"
+                  
+                >
+                  Invite Applicants
+                </button>
+              }
               className="shadow-sm border-0"
-              bodyStyle={{ padding: '24px' }}
+              bodyStyle={{ padding: "24px" }}
             >
               {campaignDetails.collaborators?.length > 0 ? (
                 <Table

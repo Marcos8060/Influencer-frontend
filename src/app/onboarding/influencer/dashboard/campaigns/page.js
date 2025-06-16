@@ -89,7 +89,7 @@ const Campaigns = () => {
   if (!isAuthorized) return null;
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto text-color">
+    <div className="p-4 md:p-6 lg:p-8 mx-auto text-color">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">Campaign Dashboard</h1>

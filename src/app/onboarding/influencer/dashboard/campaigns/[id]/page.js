@@ -42,7 +42,7 @@ const CampaignDetails = () => {
             {campaignDetails.startDate} - {campaignDetails.endDate}
           </p>
           <p className="bg-green rounded-3xl text-white px-4 py-2 text-xs w-16 flex items-center justify-center">
-            {campaignDetails.collaborators?.[0].status}
+            {campaignDetails.collaborators?.[0]?.status}
           </p>
         </div>
         <div className="bg-background rounded-lg p-4 text-color text-xs space-y-2">
