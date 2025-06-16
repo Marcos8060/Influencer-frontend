@@ -1114,7 +1114,7 @@ const InfluencerProfilePage = () => {
                         <Avatar
                           size={64}
                           icon={<FaFacebook />}
-                          className="mr-4 bg-blue-500"
+                          className="mr-4 bg-blue-500 flex items-center justify-center"
                         />
                         <div>
                           <Text strong>Facebook</Text>
