@@ -211,7 +211,7 @@ const InfluencerProfile = () => {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 text-color">
+    <div className="mx-auto p-4 md:p-8 text-color">
       {showAnimation && <ChristmasAnimation />}
       
       {/* Navigation Header with Chat Button */}
@@ -452,16 +452,16 @@ const InfluencerProfile = () => {
               <div>
                 <h3 className="text-gray-500 font-medium">Instagram</h3>
                 <p className="text-2xl font-bold">
-                  {brandInfluencerProfile.instagramFollowersCount?.toLocaleString() ||
+                  {brandInfluencerProfile.instagram?.followersCount?.toLocaleString() ||
                     "N/A"}
                   <span className="text-gray-500 text-sm ml-1">followers</span>
                 </p>
                 <div className="flex gap-4 text-sm text-gray-500">
                   <span>
-                    {brandInfluencerProfile.instagramMediaCount} posts
+                    {brandInfluencerProfile.instagram.mediaCount} posts
                   </span>
                   <span>
-                    {brandInfluencerProfile.instagramFollowsCount} following
+                    {brandInfluencerProfile.instagram.followsCount} following
                   </span>
                 </div>
               </div>
@@ -476,16 +476,16 @@ const InfluencerProfile = () => {
               <div>
                 <h3 className="text-gray-500 font-medium">TikTok</h3>
                 <p className="text-2xl font-bold">
-                  {brandInfluencerProfile.tiktokFollowerCount?.toLocaleString() ||
+                  {brandInfluencerProfile.tiktok.followerCount?.toLocaleString() ||
                     "N/A"}
                   <span className="text-gray-500 text-sm ml-1">followers</span>
                 </p>
                 <div className="flex gap-4 text-sm text-gray-500">
-                  <span>{brandInfluencerProfile.tiktokVideoCount} videos</span>
+                  <span>{brandInfluencerProfile.tiktok.videoCount} videos</span>
                   <span>
-                    {brandInfluencerProfile.tiktokFollowingCount} following
+                    {brandInfluencerProfile.tiktok.followingCount} following
                   </span>
-                  <span>{brandInfluencerProfile.tiktokLikesCount} likes</span>
+                  <span>{brandInfluencerProfile.tiktok.likesCount} likes</span>
                 </div>
               </div>
             </div>
@@ -499,11 +499,11 @@ const InfluencerProfile = () => {
               <div>
                 <h3 className="text-gray-500 font-medium">Engagement</h3>
                 <p className="text-2xl font-bold">
-                  5.0
+                  {brandInfluencerProfile?.overallRate}
                   <span className="text-gray-500 text-sm ml-1">rating</span>
                 </p>
                 <div className="flex gap-4 text-sm text-gray-500">
-                  <span>{brandInfluencerProfile.totalRates} reviews</span>
+                  {/* <span>{brandInfluencerProfile.totalRates} reviews</span> */}
                   <Tag
                     color={
                       brandInfluencerProfile.isAvailableForCollaboration
