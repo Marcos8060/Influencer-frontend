@@ -33,7 +33,6 @@ import {
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BarChart3,
   TrendingUp,
   Users,
   Calendar,
@@ -48,7 +47,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
+import { getAllCampaignPosts, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
 import { useAuth } from "@/assets/hooks/use-auth";
 
 // Removed deprecated TabPane import
@@ -66,12 +65,10 @@ const CampaignReporting = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
-  const { campaignDetails,campaignReport } = useSelector((store) => store.campaign);
+  const { campaignDetails,campaignReport,campaignPosts } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const auth = useAuth();
 
-  console.log("CAMPAIGN_DETAILS ",campaignDetails)
-  console.log("CAMPAIGN_REPORT ",campaignReport)
 
   const getCampaignReport = async () => {
     try {
@@ -84,11 +81,23 @@ const CampaignReporting = () => {
     }
   };
 
+  const getCampaignPosts = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getAllCampaignPosts(auth, campaignDetails?.id));
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (auth && campaignDetails?.id) {
       getCampaignReport();
+      getCampaignPosts();
     }
-  }, [useAuth]);
+  }, [auth]);
 
   // Mock data - replace with your actual data
   const campaignStats = [
@@ -416,7 +425,7 @@ const CampaignReporting = () => {
 
               <Button
                 type="primary"
-                icon={<BarChart3 size={16} />}
+                icon={<LineChartOutlined />}
                 className="bg-primary hover:bg-primary-dark flex items-center gap-2 shadow-lg shadow-primary/20"
               >
                 Advanced Analytics
@@ -441,59 +450,170 @@ const CampaignReporting = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {campaignStats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="h-full"
-            >
-              <Card
-                className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full"
-                bodyStyle={{ padding: "24px", height: "100%", display: "flex", flexDirection: "column" }}
+          {loading ? (
+            // Skeleton loaders for stats grid
+            Array.from({ length: 4 }).map((_, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="h-full"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="space-y-1">
-                    <span className="text-sm text-gray-500 font-medium">
-                      {stat.title}
-                    </span>
-                    <div className="flex items-baseline gap-2">
-                      <h3 className="text-2xl font-bold">{stat.value}</h3>
-                      <span className="text-xs font-medium text-green-500 flex items-center">
-                        {stat.icon} {stat.change}
+                <Card
+                  className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full"
+                  bodyStyle={{ padding: "24px", height: "100%", display: "flex", flexDirection: "column" }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="space-y-3 flex-1">
+                      <Skeleton.Input active size="small" style={{ width: 120 }} />
+                      <div className="flex items-baseline gap-2">
+                        <Skeleton.Input active size="large" style={{ width: 80 }} />
+                        <Skeleton.Input active size="small" style={{ width: 60 }} />
+                      </div>
+                    </div>
+                    <Skeleton.Avatar active size={48} shape="square" />
+                  </div>
+                  <Skeleton.Input active size="small" style={{ width: "100%" }} className="mb-2" />
+                  <Skeleton.Input active size="small" style={{ width: "80%" }} className="mb-4" />
+                  
+                  {/* Skeleton for detailed metrics */}
+                  <div className="space-y-2 mt-auto pt-4 border-t border-input">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                      <div key={idx} className="flex justify-between items-center">
+                        <Skeleton.Input active size="small" style={{ width: 60 }} />
+                        <Skeleton.Input active size="small" style={{ width: 40 }} />
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </motion.div>
+            ))
+          ) : (
+            campaignStats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="h-full"
+              >
+                <Card
+                  className="rounded-2xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 h-full"
+                  bodyStyle={{ padding: "24px", height: "100%", display: "flex", flexDirection: "column" }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="space-y-1">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {stat.title}
                       </span>
+                      <div className="flex items-baseline gap-2">
+                        <h3 className="text-2xl font-bold">{stat.value}</h3>
+                        <span className="text-xs font-medium text-green-500 flex items-center">
+                          {stat.icon} {stat.change}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-xl bg-${stat.color}-500/10`}>
+                      {stat.icon}
                     </div>
                   </div>
-                  <div className={`p-3 rounded-xl bg-${stat.color}-500/10`}>
-                    {stat.icon}
+                  <Progress
+                    percent={stat.progress}
+                    strokeColor={{
+                      "0%": "#3680A1",
+                      "100%": "#5373d4",
+                    }}
+                    showInfo={false}
+                    size={[null, 4]}
+                    className="mb-2"
+                  />
+                  <p className="text-xs text-gray-500 mb-4">{stat.description}</p>
+                  
+                  {/* Detailed Metrics */}
+                  <div className="space-y-2 mt-auto pt-4 border-t border-input">
+                    {stat.details.map((detail, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500">{detail.label}</span>
+                        <span className="font-medium">{detail.value}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <Progress
-                  percent={stat.progress}
-                  strokeColor={{
-                    "0%": "#3680A1",
-                    "100%": "#5373d4",
-                  }}
-                  showInfo={false}
-                  strokeWidth={4}
-                  className="mb-2"
-                />
-                <p className="text-xs text-gray-500 mb-4">{stat.description}</p>
-                
-                {/* Detailed Metrics */}
-                <div className="space-y-2 mt-auto pt-4 border-t border-input">
-                  {stat.details.map((detail, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500">{detail.label}</span>
-                      <span className="font-medium">{detail.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
+
+        {/* Platform Metrics */}
+        <Card
+          className="rounded-3xl border-0 shadow-[0_4px_20px_rgba(0,0,0,0.05)] mb-8"
+          bodyStyle={{ padding: "24px" }}
+        >
+          <div className="mb-6">
+            <h2 className="text-xl font-bold">Platform Performance</h2>
+            <p className="text-gray-500">Detailed metrics by platform</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              // Skeleton loaders for platform metrics
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-xl p-6 border border-input">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Skeleton.Avatar active size={48} shape="square" />
+                    <div className="flex-1">
+                      <Skeleton.Input active size="small" style={{ width: 100 }} className="mb-2" />
+                      <Skeleton.Input active size="small" style={{ width: 80 }} />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    {Array.from({ length: 4 }).map((_, idx) => (
+                      <div key={idx} className="bg-gray-50 p-3 rounded-lg">
+                        <Skeleton.Input active size="small" style={{ width: 50 }} className="mb-2" />
+                        <Skeleton.Input active size="small" style={{ width: 60 }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              campaignReport?.platformBreakdown && Object.entries(campaignReport.platformBreakdown).map(([platform, data]) => (
+                <div key={platform} className="bg-white rounded-xl p-6 border border-input">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`p-3 rounded-xl bg-primary/10`}>
+                      <InstagramOutlined className="text-primary text-xl" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{platform}</h3>
+                      <p className="text-sm text-gray-500">{data.totalPosts} posts</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="text-sm text-gray-500">Likes</div>
+                      <div className="text-lg font-bold">{data.totalLikes}</div>
+                    </div>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="text-sm text-gray-500">Comments</div>
+                      <div className="text-lg font-bold">{data.totalComments}</div>
+                    </div>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="text-sm text-gray-500">Shares</div>
+                      <div className="text-lg font-bold">{data.totalShares}</div>
+                    </div>
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="text-sm text-gray-500">Views</div>
+                      <div className="text-lg font-bold">{data.totalViews}</div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
 
         {/* Top Posts Section */}
         <Card
@@ -502,51 +622,120 @@ const CampaignReporting = () => {
         >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-bold">Top Performing Posts</h2>
-              <p className="text-gray-500">Best performing content from your campaign</p>
+              <h2 className="text-xl font-bold">Campaign Posts</h2>
+              <p className="text-gray-500">Content created by influencers for this campaign</p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {campaignReport?.topPosts?.map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl p-4 border border-input hover:shadow-md transition-all h-full"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="space-y-1">
-                    <span className="text-sm text-gray-500">Post #{index + 1}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold">{post.likeCount} likes</span>
-                      <span className="text-xs text-gray-500">•</span>
-                      <span className="text-sm text-gray-500">{post.commentCount} comments</span>
+            {loading ? (
+              // Skeleton loaders for campaign posts
+              Array.from({ length: 6 }).map((_, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-xl p-4 border border-input h-full"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton.Avatar active size={40} />
+                      <div>
+                        <Skeleton.Input active size="small" style={{ width: 100 }} className="mb-1" />
+                        <Skeleton.Input active size="small" style={{ width: 80 }} />
+                      </div>
+                    </div>
+                    <Skeleton.Input active size="small" style={{ width: 60 }} />
+                  </div>
+
+                  <div className="mb-4">
+                    <Skeleton.Input active size="small" style={{ width: "100%" }} className="mb-2" />
+                    <Skeleton.Input active size="small" style={{ width: "80%" }} className="mb-2" />
+                    <Skeleton.Input active size="small" style={{ width: 60 }} />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-center mb-4">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                      <div key={idx} className="bg-gray-50 p-2 rounded-lg">
+                        <Skeleton.Input active size="small" style={{ width: 40 }} className="mb-1" />
+                        <Skeleton.Input active size="small" style={{ width: 30 }} />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between items-center pt-4 border-t border-input">
+                    <Skeleton.Input active size="small" style={{ width: 80 }} />
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              campaignPosts?.map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-xl p-4 border border-input hover:shadow-md transition-all h-full"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <Avatar 
+                        src={post.ownerProfilePicture} 
+                        size={40}
+                        className="rounded-lg"
+                      />
+                      <div>
+                        <div className="font-medium">{post.ownerName}</div>
+                        <div className="text-xs text-gray-500">
+                          {new Date(post.timestamp).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                    <Tag color="blue" className="flex items-center gap-1">
+                      <InstagramOutlined /> {post.platformName}
+                    </Tag>
+                  </div>
+
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 line-clamp-3 mb-2">
+                      {post.caption}
+                    </p>
+                    {post.mediaProductType && (
+                      <Tag color="purple" className="text-xs">
+                        {post.mediaProductType}
+                      </Tag>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-center mb-4">
+                    <div className="bg-gray-50 p-2 rounded-lg">
+                      <div className="text-sm text-gray-500">Likes</div>
+                      <div className="font-semibold">{post.likeCount}</div>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg">
+                      <div className="text-sm text-gray-500">Comments</div>
+                      <div className="font-semibold">{post.commentCount}</div>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg">
+                      <div className="text-sm text-gray-500">Shares</div>
+                      <div className="font-semibold">{post.shareCount}</div>
                     </div>
                   </div>
-                  <Tag color="blue" className="flex items-center gap-1">
-                    <InstagramOutlined /> Instagram
-                  </Tag>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-gray-50 p-2 rounded-lg">
-                    <div className="text-sm text-gray-500">Views</div>
-                    <div className="font-semibold">{post.viewCount}</div>
+
+                  <div className="flex justify-between items-center pt-4 border-t border-input">
+                    <Button 
+                      type="link" 
+                      href={post.permalink}
+                      target="_blank"
+                      className="text-primary hover:text-primary-dark p-0"
+                    >
+                      View Post
+                    </Button>
                   </div>
-                  <div className="bg-gray-50 p-2 rounded-lg">
-                    <div className="text-sm text-gray-500">Shares</div>
-                    <div className="font-semibold">{post.shareCount}</div>
-                  </div>
-                  <div className="bg-gray-50 p-2 rounded-lg">
-                    <div className="text-sm text-gray-500">Engagement</div>
-                    <div className="font-semibold">
-                      {((post.likeCount + post.commentCount + post.shareCount) / (post.viewCount || 1) * 100).toFixed(1)}%
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </div>
         </Card>
 
@@ -911,3 +1100,5 @@ const CampaignReporting = () => {
 };
 
 export default CampaignReporting;
+
+
