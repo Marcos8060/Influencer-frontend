@@ -199,6 +199,23 @@ export const fetchCampaignReport = async (auth, campaign_id) => {
         return error.response?.data || error.message;
     }
 };
+export const fetchCampaignPosts = async (auth, campaign_id) => {
+    try {
+        const url = `${APP_API_URL.CAMPAIGN_POST}`;
+        
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            },
+            params: { campaign_id: campaign_id },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching campaign details:", error);
+        return error.response?.data || error.message;
+    }
+};
 
 
 export const fetchPostInsights = async (auth, payload) => {

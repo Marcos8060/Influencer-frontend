@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllCampaigns, fetchAppliedCampaigns, fetchApprovedCampaigns, fetchBrandCampaigns, fetchCampaignDetails, fetchCampaignReport, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
+import { fetchAllCampaigns, fetchAppliedCampaigns, fetchApprovedCampaigns, fetchBrandCampaigns, fetchCampaignDetails, fetchCampaignPosts, fetchCampaignReport, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
@@ -12,6 +12,7 @@ const initialState = {
   posts: [],
   campaignDetails: {},
   campaignReport: {},
+  campaignPosts: [],
   campaignData: {
     title: null,
     description: null,
@@ -89,6 +90,9 @@ const CampaignSlice = createSlice({
     setCampaignReport: (state,action) => {
       state.campaignReport = action.payload;
     },
+    setCampaignPosts: (state,action) => {
+      state.campaignPosts = action.payload;
+    },
     updateCollaboratorStatus: (state, action) => {
       const { influencerId, campaignId, status } = action.payload;
       
@@ -137,7 +141,8 @@ export const {
   setApprovedCampaigns,
   setCampaignDetails,
   setCampaignReport,
-  updateCollaboratorStatus
+  updateCollaboratorStatus,
+  setCampaignPosts
 } = CampaignSlice.actions;
 
 export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
@@ -224,6 +229,16 @@ export const getAllCampaignReport = (auth,campaign_id) => async (dispatch) => {
   try {
     const data = await fetchCampaignReport(auth,campaign_id);
     dispatch(setCampaignReport(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getAllCampaignPosts = (auth,campaign_id) => async (dispatch) => {
+  try {
+    const data = await fetchCampaignPosts(auth,campaign_id);
+    dispatch(setCampaignPosts(data));
     return data;
   } catch (error) {
     console.log(error);
