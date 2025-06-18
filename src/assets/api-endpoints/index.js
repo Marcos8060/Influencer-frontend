@@ -51,6 +51,7 @@ export const API_URL = {
   MOVE_TO_CAMPAIGN: `${baseUrl}/campaigns/influencers/add/`,
   CAMPAIGN_REPORT: `${baseUrl}/campaigns/report/get/`,
   CAMPAIGN_POST: `${baseUrl}/campaigns/posts/list/`,
+  CAMPAIGN_COLLABORATOR_POSTS: `${baseUrl}/campaigns/report/collaborators/`,
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
@@ -116,6 +117,7 @@ export const APP_API_URL = {
   MOVE_TO_CAMPAIGN: '/api/campaign/move-to-campaign',
   CAMPAIGN_REPORT: '/api/campaign/campaign-report',
   CAMPAIGN_POST: '/api/campaign/campaign-posts',
+  CAMPAIGN_COLLABORATOR_POSTS: '/api/campaign/campaign-collaborator-posts',
 
 
   /***************** BUCKET LIST APIs **********************/
