@@ -48,6 +48,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllCampaignCollaboratorPosts, getAllCampaignDetails, getAllCampaignPosts, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useSearchParams } from "next/navigation";
+import dynamic from 'next/dynamic';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -59,19 +60,29 @@ const fadeIn = {
 const CampaignReporting = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [selectedPeriod, setSelectedPeriod] = useState("7d");
+  const [isClient, setIsClient] = useState(false);
   const { campaignDetails,campaignReport,campaignPosts,campaignCollaboratorPosts } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const campaignId = searchParams.get('id');
+  const campaignId = searchParams?.get('id');
   const auth = useAuth();
+
+  // Ensure component only runs on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Safety check for required dependencies
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
   const getCampaignDetails = async () => {
     try {
       setLoading(true);
       await dispatch(getAllCampaignDetails(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign details:", error);
     } finally {
       setLoading(false);
     }
@@ -82,7 +93,7 @@ const CampaignReporting = () => {
       setLoading(true);
       await dispatch(getAllCampaignReport(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign report:", error);
     } finally {
       setLoading(false);
     }
@@ -93,39 +104,65 @@ const CampaignReporting = () => {
       setLoading(true);
       await dispatch(getAllCampaignPosts(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign posts:", error);
     } finally {
       setLoading(false);
     }
   };
+  
   const getCampaignCollaboratorPosts = async () => {
     try {
       setLoading(true);
       await dispatch(getAllCampaignCollaboratorPosts(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign collaborator posts:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (auth) {
+    if (auth && campaignId && isClient) {
       getCampaignDetails();
       getCampaignReport();
       getCampaignPosts();
       getCampaignCollaboratorPosts();
     }
-  }, [auth]);
+  }, [auth, campaignId, isClient]);
+
+  // Show loading state if not client-side yet
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading campaign report...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no campaign ID
+  if (!campaignId) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl text-gray-300 mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Campaign Not Found</h2>
+          <p className="text-gray-500">Please provide a valid campaign ID in the URL.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Mock data - replace with your actual data
   const campaignStats = [
     {
       title: "Total Engagement",
-      value: `${campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares || 0}`,
+      value: `${(campaignReport?.totalLikes || 0) + (campaignReport?.totalComments || 0) + (campaignReport?.totalShares || 0)}`,
       change: `${campaignReport?.engagementRate || 0}%`,
       icon: <Users className="text-primary" />,
-      progress: ((campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares) / 1000) * 100 || 0,
+      progress: (((campaignReport?.totalLikes || 0) + (campaignReport?.totalComments || 0) + (campaignReport?.totalShares || 0)) / 1000) * 100 || 0,
       description: "Total interactions across all platforms",
       color: "primary",
       details: [
@@ -408,11 +445,15 @@ const CampaignReporting = () => {
 
   const handleRefresh = async () => {
     setLoading(true);
-    // Simulate data refresh
+    try {
       await getCampaignReport();
       await getCampaignPosts();
       await getCampaignCollaboratorPosts();
-    setTimeout(() => setLoading(false), 1500);
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -424,7 +465,7 @@ const CampaignReporting = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-                  {campaignDetails?.title}
+                  {campaignDetails?.title || "Campaign Report"}
                 </h1>
                 <Tag
                   color="green"
@@ -436,11 +477,11 @@ const CampaignReporting = () => {
               <div className="flex items-center gap-6 text-gray-500">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} className="text-primary" />
-                  <span>{campaignDetails?.startDate} - {campaignDetails?.endDate}</span>
+                  <span>{campaignDetails?.startDate || "N/A"} - {campaignDetails?.endDate || "N/A"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={16} className="text-primary" />
-                  <span>{influencers.length} Influencers</span>
+                  <span>{Array.isArray(campaignCollaboratorPosts) ? campaignCollaboratorPosts.length : 0} Influencers</span>
                 </div>
               </div>
             </div>
@@ -598,30 +639,38 @@ const CampaignReporting = () => {
                 <div key={platform} className="bg-white rounded-xl p-6 border border-input">
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`p-3 rounded-xl bg-primary/10`}>
-                      <InstagramOutlined className="text-primary text-xl" />
+                      {platform === "Instagram" ? (
+                        <InstagramOutlined className="text-primary text-xl" />
+                      ) : platform === "TikTok" ? (
+                        <TikTokOutlined className="text-primary text-xl" />
+                      ) : platform === "YouTube" ? (
+                        <YoutubeOutlined className="text-primary text-xl" />
+                      ) : (
+                        <InstagramOutlined className="text-primary text-xl" />
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold">{platform}</h3>
-                      <p className="text-sm text-gray-500">{data.totalPosts} posts</p>
+                      <p className="text-sm text-gray-500">{data?.totalPosts || 0} posts</p>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Likes</div>
-                      <div className="text-lg font-bold">{data.totalLikes}</div>
+                      <div className="text-lg font-bold">{data?.totalLikes || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Comments</div>
-                      <div className="text-lg font-bold">{data.totalComments}</div>
+                      <div className="text-lg font-bold">{data?.totalComments || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Shares</div>
-                      <div className="text-lg font-bold">{data.totalShares}</div>
+                      <div className="text-lg font-bold">{data?.totalShares || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Views</div>
-                      <div className="text-lg font-bold">{data.totalViews}</div>
+                      <div className="text-lg font-bold">{data?.totalViews || 0}</div>
                     </div>
                   </div>
                 </div>
@@ -685,7 +734,7 @@ const CampaignReporting = () => {
                 </motion.div>
               ))
             ) : (
-              campaignPosts?.map((post, index) => (
+              Array.isArray(campaignPosts) && campaignPosts?.map((post, index) => (
                 <motion.div
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -708,7 +757,7 @@ const CampaignReporting = () => {
                       </div>
                     </div>
                     <Tag color="blue" className="flex items-center gap-1">
-                      <InstagramOutlined /> {post.platformName}
+                      {post.platformName}
                     </Tag>
                   </div>
 
@@ -1262,6 +1311,16 @@ const CampaignReporting = () => {
   );
 };
 
-export default CampaignReporting;
+export default dynamic(() => Promise.resolve(CampaignReporting), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-gray-500">Loading campaign report...</p>
+      </div>
+    </div>
+  ),
+});
 
 
