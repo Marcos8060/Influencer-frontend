@@ -964,14 +964,14 @@ const CampaignReporting = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Button icon={<Filter size={16} />}>Filters</Button>
-                <Button
+                {/* <Button icon={<Filter size={16} />}>Filters</Button> */}
+                {/* <Button
                   type="primary"
                   icon={<Users size={16} />}
                   className="bg-primary hover:bg-primary-dark"
                 >
                   Add Influencers
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
@@ -1118,12 +1118,12 @@ const CampaignReporting = () => {
                                   <h4 className="font-semibold">
                                     Recent Content
                                   </h4>
-                                  <Button
+                                  {/* <Button
                                     type="link"
                                     className="text-primary hover:text-primary-dark"
                                   >
                                     View All
-                                  </Button>
+                                  </Button> */}
                                 </div>
                                 
                                 {collaborator.posts && collaborator.posts.length > 0 ? (
