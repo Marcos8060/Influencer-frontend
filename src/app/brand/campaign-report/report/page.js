@@ -409,7 +409,6 @@ const CampaignReporting = () => {
   const handleRefresh = async () => {
     setLoading(true);
     // Simulate data refresh
-      await getCampaignDetails();
       await getCampaignReport();
       await getCampaignPosts();
       await getCampaignCollaboratorPosts();
