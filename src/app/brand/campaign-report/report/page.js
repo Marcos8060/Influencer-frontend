@@ -11,11 +11,9 @@ import {
   Tooltip,
   Dropdown,
   Menu,
-  Empty,
   Skeleton,
 } from "antd";
 import {
-  ArrowUpOutlined,
   UserOutlined,
   InstagramOutlined,
   YoutubeOutlined,
@@ -47,12 +45,10 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCampaignPosts, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
+import { getAllCampaignCollaboratorPosts, getAllCampaignDetails, getAllCampaignPosts, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
 import { useAuth } from "@/assets/hooks/use-auth";
-
-// Removed deprecated TabPane import
-// Fix: Import Meta directly from Card
-const { Meta } = Card;
+import { useSearchParams } from "next/navigation";
+import dynamic from 'next/dynamic';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -64,18 +60,40 @@ const fadeIn = {
 const CampaignReporting = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [selectedPeriod, setSelectedPeriod] = useState("7d");
-  const { campaignDetails,campaignReport,campaignPosts } = useSelector((store) => store.campaign);
+  const [isClient, setIsClient] = useState(false);
+  const { campaignDetails,campaignReport,campaignPosts,campaignCollaboratorPosts } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const campaignId = searchParams?.get('id');
   const auth = useAuth();
 
+  // Ensure component only runs on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Safety check for required dependencies
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const getCampaignDetails = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getAllCampaignDetails(auth, campaignId));
+    } catch (error) {
+      console.error("Error fetching campaign details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getCampaignReport = async () => {
     try {
       setLoading(true);
-      await dispatch(getAllCampaignReport(auth, campaignDetails?.id));
+      await dispatch(getAllCampaignReport(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign report:", error);
     } finally {
       setLoading(false);
     }
@@ -84,29 +102,67 @@ const CampaignReporting = () => {
   const getCampaignPosts = async () => {
     try {
       setLoading(true);
-      await dispatch(getAllCampaignPosts(auth, campaignDetails?.id));
+      await dispatch(getAllCampaignPosts(auth, campaignId));
     } catch (error) {
-      toast.error("Something went wrong");
+      console.error("Error fetching campaign posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const getCampaignCollaboratorPosts = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getAllCampaignCollaboratorPosts(auth, campaignId));
+    } catch (error) {
+      console.error("Error fetching campaign collaborator posts:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (auth && campaignDetails?.id) {
+    if (auth && campaignId && isClient) {
+      getCampaignDetails();
       getCampaignReport();
       getCampaignPosts();
+      getCampaignCollaboratorPosts();
     }
-  }, [auth]);
+  }, [auth, campaignId, isClient]);
+
+  // Show loading state if not client-side yet
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading campaign report...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no campaign ID
+  if (!campaignId) {
+    return (
+      <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl text-gray-300 mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Campaign Not Found</h2>
+          <p className="text-gray-500">Please provide a valid campaign ID in the URL.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Mock data - replace with your actual data
   const campaignStats = [
     {
       title: "Total Engagement",
-      value: `${campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares || 0}`,
+      value: `${(campaignReport?.totalLikes || 0) + (campaignReport?.totalComments || 0) + (campaignReport?.totalShares || 0)}`,
       change: `${campaignReport?.engagementRate || 0}%`,
       icon: <Users className="text-primary" />,
-      progress: ((campaignReport?.totalLikes + campaignReport?.totalComments + campaignReport?.totalShares) / 1000) * 100 || 0,
+      progress: (((campaignReport?.totalLikes || 0) + (campaignReport?.totalComments || 0) + (campaignReport?.totalShares || 0)) / 1000) * 100 || 0,
       description: "Total interactions across all platforms",
       color: "primary",
       details: [
@@ -305,23 +361,57 @@ const CampaignReporting = () => {
     }
   };
 
-  const getTierTag = (tier) => {
-    switch (tier) {
-      case "elite":
+  const getStatusTag = (status) => {
+    switch (status) {
+      case "approved":
         return (
-          <Tag color="gold" className="flex items-center">
-            <StarFilled className="mr-1" /> Elite
+          <Tag color="green" className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            Approved
           </Tag>
         );
-      case "premium":
+      case "pending":
         return (
-          <Tag color="blue" className="flex items-center">
-            <StarFilled className="mr-1" /> Premium
+          <Tag color="orange" className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+            Pending
+          </Tag>
+        );
+      case "rejected":
+        return (
+          <Tag color="red" className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+            Rejected
           </Tag>
         );
       default:
-        return <Tag color="default">Standard</Tag>;
+        return (
+          <Tag color="default" className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+            Unknown
+          </Tag>
+        );
     }
+  };
+
+  const getConnectionStatus = (isInstagramConnected, isTiktokConnected) => {
+    const platforms = [];
+    if (isInstagramConnected) platforms.push("Instagram");
+    if (isTiktokConnected) platforms.push("TikTok");
+    
+    if (platforms.length === 0) {
+      return <Tag color="red" className="text-xs">No platforms connected</Tag>;
+    }
+    
+    return (
+      <div className="flex gap-1">
+        {platforms.map(platform => (
+          <Tag key={platform} color="green" className="text-xs">
+            {platform}
+          </Tag>
+        ))}
+      </div>
+    );
   };
 
   const menuItems = [
@@ -355,16 +445,16 @@ const CampaignReporting = () => {
 
   const handleRefresh = async () => {
     setLoading(true);
-    // Simulate data refresh
-    setTimeout(() => setLoading(false), 1500);
+    try {
+      await getCampaignReport();
+      await getCampaignPosts();
+      await getCampaignCollaboratorPosts();
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const periodOptions = [
-    { label: "Last 7 days", value: "7d" },
-    { label: "Last 30 days", value: "30d" },
-    { label: "Last 3 months", value: "3m" },
-    { label: "Custom range", value: "custom" },
-  ];
 
   return (
     <motion.div {...fadeIn} className="min-h-screen bg-gray-50/50">
@@ -375,7 +465,7 @@ const CampaignReporting = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-                  {campaignDetails?.title}
+                  {campaignDetails?.title || "Campaign Report"}
                 </h1>
                 <Tag
                   color="green"
@@ -387,50 +477,16 @@ const CampaignReporting = () => {
               <div className="flex items-center gap-6 text-gray-500">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} className="text-primary" />
-                  <span>{campaignDetails?.startDate} - {campaignDetails?.endDate}</span>
+                  <span>{campaignDetails?.startDate || "N/A"} - {campaignDetails?.endDate || "N/A"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={16} className="text-primary" />
-                  <span>{influencers.length} Influencers</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Target size={16} className="text-primary" />
-                  <span>Beauty & Fashion</span>
+                  <span>{Array.isArray(campaignCollaboratorPosts) ? campaignCollaboratorPosts.length : 0} Influencers</span>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Dropdown
-                menu={{
-                  items: periodOptions.map((option) => ({
-                    key: option.value,
-                    label: option.label,
-                  })),
-                  onClick: ({ key }) => setSelectedPeriod(key),
-                }}
-              >
-                <Button className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all">
-                  {periodOptions.find((o) => o.value === selectedPeriod)?.label}
-                  <ChevronDown size={16} />
-                </Button>
-              </Dropdown>
-
-              <Button
-                icon={<Download size={16} />}
-                className="flex items-center gap-2 border-input hover:border-primary/50 hover:text-primary transition-all"
-              >
-                Export Report
-              </Button>
-
-              <Button
-                type="primary"
-                icon={<LineChartOutlined />}
-                className="bg-primary hover:bg-primary-dark flex items-center gap-2 shadow-lg shadow-primary/20"
-              >
-                Advanced Analytics
-              </Button>
-
               <Tooltip title="Refresh data">
                 <Button
                   icon={
@@ -583,30 +639,38 @@ const CampaignReporting = () => {
                 <div key={platform} className="bg-white rounded-xl p-6 border border-input">
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`p-3 rounded-xl bg-primary/10`}>
-                      <InstagramOutlined className="text-primary text-xl" />
+                      {platform === "Instagram" ? (
+                        <InstagramOutlined className="text-primary text-xl" />
+                      ) : platform === "TikTok" ? (
+                        <TikTokOutlined className="text-primary text-xl" />
+                      ) : platform === "YouTube" ? (
+                        <YoutubeOutlined className="text-primary text-xl" />
+                      ) : (
+                        <InstagramOutlined className="text-primary text-xl" />
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold">{platform}</h3>
-                      <p className="text-sm text-gray-500">{data.totalPosts} posts</p>
+                      <p className="text-sm text-gray-500">{data?.totalPosts || 0} posts</p>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Likes</div>
-                      <div className="text-lg font-bold">{data.totalLikes}</div>
+                      <div className="text-lg font-bold">{data?.totalLikes || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Comments</div>
-                      <div className="text-lg font-bold">{data.totalComments}</div>
+                      <div className="text-lg font-bold">{data?.totalComments || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Shares</div>
-                      <div className="text-lg font-bold">{data.totalShares}</div>
+                      <div className="text-lg font-bold">{data?.totalShares || 0}</div>
                     </div>
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <div className="text-sm text-gray-500">Views</div>
-                      <div className="text-lg font-bold">{data.totalViews}</div>
+                      <div className="text-lg font-bold">{data?.totalViews || 0}</div>
                     </div>
                   </div>
                 </div>
@@ -670,7 +734,7 @@ const CampaignReporting = () => {
                 </motion.div>
               ))
             ) : (
-              campaignPosts?.map((post, index) => (
+              Array.isArray(campaignPosts) && campaignPosts?.map((post, index) => (
                 <motion.div
                   key={post.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -693,7 +757,7 @@ const CampaignReporting = () => {
                       </div>
                     </div>
                     <Tag color="blue" className="flex items-center gap-1">
-                      <InstagramOutlined /> {post.platformName}
+                      {post.platformName}
                     </Tag>
                   </div>
 
@@ -930,9 +994,9 @@ const CampaignReporting = () => {
                               <Skeleton avatar paragraph={{ rows: 4 }} active />
                             </div>
                           ))
-                      : influencers.map((influencer) => (
+                      : Array.isArray(campaignCollaboratorPosts) && campaignCollaboratorPosts?.map((collaborator) => (
                           <motion.div
-                            key={influencer.id}
+                            key={collaborator.id}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className="border border-input rounded-xl p-6 hover:shadow-md transition-all bg-white"
@@ -943,24 +1007,22 @@ const CampaignReporting = () => {
                                 <div className="flex items-start gap-4">
                                   <Avatar
                                     size={80}
-                                    src={influencer.avatar}
+                                    src={collaborator.profilePhoto || "https://randomuser.me/api/portraits/lego/1.jpg"}
                                     className="rounded-xl"
+                                    icon={!collaborator.profilePhoto && <UserOutlined />}
                                   />
                                   <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                       <div>
                                         <h3 className="text-lg font-semibold">
-                                          {influencer.name}
+                                          {collaborator.influencerName}
                                         </h3>
-                                        <p className="text-gray-500">
-                                          {influencer.username}
+                                        <p className="text-gray-500 text-sm">
+                                          ID: {collaborator.influencerId.slice(0, 8)}...
                                         </p>
                                         <div className="flex items-center gap-2 mt-2">
-                                          {getPlatformIcon(influencer.platform)}
-                                          <span className="text-sm capitalize">
-                                            {influencer.platform}
-                                          </span>
-                                          {getTierTag(influencer.tier)}
+                                          {getConnectionStatus(collaborator.isInstagramConnected, collaborator.isTiktokConnected)}
+                                          {getStatusTag(collaborator.status)}
                                         </div>
                                       </div>
                                       <Dropdown
@@ -980,22 +1042,25 @@ const CampaignReporting = () => {
                                         <div className="flex items-center gap-2 text-gray-500 mb-1">
                                           <Users size={16} />
                                           <span className="text-sm font-medium">
-                                            Reach
+                                            Posts
                                           </span>
                                         </div>
                                         <p className="text-xl font-bold">
-                                          {influencer.reach}
+                                          {collaborator.posts?.length || 0}
                                         </p>
                                       </div>
                                       <div className="bg-gray-50 p-4 rounded-xl">
                                         <div className="flex items-center gap-2 text-gray-500 mb-1">
                                           <Zap size={16} />
                                           <span className="text-sm font-medium">
-                                            Engagement
+                                            Total Engagement
                                           </span>
                                         </div>
                                         <p className="text-xl font-bold">
-                                          {influencer.engagement}
+                                          {collaborator.report ? 
+                                            (collaborator.report.totalLikes + collaborator.report.totalComments + collaborator.report.totalShares) : 
+                                            0
+                                          }
                                         </p>
                                       </div>
                                       <div className="bg-gray-50 p-4 rounded-xl">
@@ -1007,7 +1072,7 @@ const CampaignReporting = () => {
                                         </div>
                                         <div className="space-y-2">
                                           <Progress
-                                            percent={influencer.completion}
+                                            percent={collaborator.submissionCompletionPercentage}
                                             strokeColor={{
                                               "0%": "#3680A1",
                                               "100%": "#5373d4",
@@ -1016,11 +1081,33 @@ const CampaignReporting = () => {
                                             size="small"
                                           />
                                           <p className="text-sm font-semibold">
-                                            {influencer.completion}%
+                                            {collaborator.submissionCompletionPercentage}%
                                           </p>
                                         </div>
                                       </div>
                                     </div>
+
+                                    {/* Additional Metrics */}
+                                    {collaborator.report && (
+                                      <div className="grid grid-cols-4 gap-3 mt-4">
+                                        <div className="bg-blue-50 p-3 rounded-lg">
+                                          <div className="text-xs text-blue-600 font-medium">Likes</div>
+                                          <div className="text-lg font-bold text-blue-700">{collaborator.report.totalLikes}</div>
+                                        </div>
+                                        <div className="bg-green-50 p-3 rounded-lg">
+                                          <div className="text-xs text-green-600 font-medium">Comments</div>
+                                          <div className="text-lg font-bold text-green-700">{collaborator.report.totalComments}</div>
+                                        </div>
+                                        <div className="bg-purple-50 p-3 rounded-lg">
+                                          <div className="text-xs text-purple-600 font-medium">Shares</div>
+                                          <div className="text-lg font-bold text-purple-700">{collaborator.report.totalShares}</div>
+                                        </div>
+                                        <div className="bg-orange-50 p-3 rounded-lg">
+                                          <div className="text-xs text-orange-600 font-medium">Views</div>
+                                          <div className="text-lg font-bold text-orange-700">{collaborator.report.totalViews}</div>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -1038,38 +1125,80 @@ const CampaignReporting = () => {
                                     View All
                                   </Button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                  {influencer.posts.map((post) => (
-                                    <div
-                                      key={post.id}
-                                      className="relative group rounded-xl overflow-hidden"
-                                    >
-                                      <img
-                                        src={post.image}
-                                        alt=""
-                                        className="w-full h-48 object-cover"
-                                      />
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                                          <div className="flex justify-between text-white text-sm">
+                                
+                                {collaborator.posts && collaborator.posts.length > 0 ? (
+                                  <div className="grid grid-cols-2 gap-4">
+                                    {collaborator.posts.slice(0, 4).map((post) => (
+                                      <div
+                                        key={post.id}
+                                        className="relative group rounded-xl overflow-hidden border border-input"
+                                      >
+                                        <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                                          {post.mediaProductType === "FEED" ? (
+                                            <div className="text-center p-4">
+                                              <InstagramOutlined className="text-2xl text-pink-500 mb-2" />
+                                              <p className="text-xs text-gray-500">Feed Post</p>
+                                            </div>
+                                          ) : (
+                                            <div className="text-center p-4">
+                                              <YoutubeOutlined className="text-2xl text-red-500 mb-2" />
+                                              <p className="text-xs text-gray-500">Video Content</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                        
+                                        <div className="p-3">
+                                          <div className="flex justify-between text-gray-600 text-xs mb-2">
                                             <span className="flex items-center gap-1">
-                                              <HeartFilled /> {post.likes}
+                                              <HeartFilled className="text-red-500" /> {post.likeCount}
                                             </span>
                                             <span className="flex items-center gap-1">
-                                              <MessageFilled /> {post.comments}
+                                              <MessageFilled className="text-blue-500" /> {post.commentCount}
                                             </span>
                                             <span className="flex items-center gap-1">
-                                              <Share2 size={14} /> {post.shares}
+                                              <Share2 size={12} className="text-green-500" /> {post.shareCount}
                                             </span>
                                           </div>
-                                          <p className="text-white text-xs mt-2">
-                                            {post.date}
+                                          
+                                          <p className="text-xs text-gray-500 line-clamp-2 mb-2">
+                                            {post.caption}
                                           </p>
+                                          
+                                          <div className="flex justify-between items-center">
+                                            <Tag color="blue" className="text-xs">
+                                              {post.platformName}
+                                            </Tag>
+                                            <span className="text-xs text-gray-400">
+                                              {new Date(post.timestamp).toLocaleDateString()}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                                            <Button
+                                              type="primary"
+                                              size="small"
+                                              href={post.permalink}
+                                              target="_blank"
+                                              className="w-full"
+                                            >
+                                              View Post
+                                            </Button>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
-                                </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="text-center py-8 border-2 border-dashed border-input rounded-xl">
+                                    <UserOutlined className="text-4xl text-gray-300 mb-2" />
+                                    <p className="text-gray-500">No posts yet</p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      {collaborator.status === "pending" ? "Waiting for content submission" : "No content available"}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </motion.div>
@@ -1081,14 +1210,97 @@ const CampaignReporting = () => {
                 key: "2",
                 label: "Top Performing",
                 children: (
-                  <div className="p-6">Top performing content here</div>
+                  <div className="p-6">
+                    {Array.isArray(campaignCollaboratorPosts) && campaignCollaboratorPosts?.filter(c => c.report && c.posts && c.posts.length > 0).length > 0 ? (
+                      <div className="space-y-4">
+                        {Array.isArray(campaignCollaboratorPosts) && campaignCollaboratorPosts
+                          .filter(c => c.report && c.posts && c.posts.length > 0)
+                          .sort((a, b) => {
+                            const aEngagement = a.report.totalLikes + a.report.totalComments + a.report.totalShares;
+                            const bEngagement = b.report.totalLikes + b.report.totalComments + b.report.totalShares;
+                            return bEngagement - aEngagement;
+                          })
+                          .slice(0, 3)
+                          .map((collaborator, index) => (
+                            <div key={collaborator.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow/30">
+                              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {index + 1}
+                              </div>
+                              <Avatar src={collaborator.profilePhoto} size={48} />
+                              <div className="flex-1">
+                                <h4 className="font-semibold">{collaborator.influencerName}</h4>
+                                <p className="text-sm text-gray-500">
+                                  {collaborator.report.totalLikes + collaborator.report.totalComments + collaborator.report.totalShares} total engagement
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-yellow-600">
+                                  {collaborator.posts.length} posts
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {collaborator.report.engagementRate}% engagement rate
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <StarFilled className="text-4xl text-gray-300 mb-2" />
+                        <p className="text-gray-500">No top performers yet</p>
+                        <p className="text-sm text-gray-400">Content needs to be submitted and approved</p>
+                      </div>
+                    )}
+                  </div>
                 ),
               },
               {
                 key: "3",
                 label: "Pending Review",
                 children: (
-                  <div className="p-6">Content pending review here</div>
+                  <div className="p-6">
+                    {Array.isArray(campaignCollaboratorPosts) && campaignCollaboratorPosts?.filter(c => c.status === "pending").length > 0 ? (
+                      <div className="space-y-4">
+                        {Array.isArray(campaignCollaboratorPosts) && campaignCollaboratorPosts
+                          .filter(c => c.status === "pending")
+                          .map((collaborator) => (
+                            <div key={collaborator.id} className="flex items-center gap-4 p-4 bg-orange-50 rounded-xl border border-orange-200">
+                              <Avatar src={collaborator.profilePhoto} size={48} />
+                              <div className="flex-1">
+                                <h4 className="font-semibold">{collaborator.influencerName}</h4>
+                                <p className="text-sm text-gray-500">
+                                  Waiting for content submission
+                                </p>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <Progress
+                                    percent={collaborator.submissionCompletionPercentage}
+                                    size="small"
+                                    strokeColor="#f97316"
+                                    showInfo={false}
+                                    style={{ width: 100 }}
+                                  />
+                                  <span className="text-xs text-orange-600">
+                                    {collaborator.submissionCompletionPercentage}% complete
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <Tag color="orange">Pending</Tag>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {new Date(collaborator.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Clock className="text-4xl text-gray-300 mb-2" />
+                        <p className="text-gray-500">No pending reviews</p>
+                        <p className="text-sm text-gray-400">All content has been reviewed</p>
+                      </div>
+                    )}
+                  </div>
                 ),
               },
             ]}
@@ -1099,6 +1311,16 @@ const CampaignReporting = () => {
   );
 };
 
-export default CampaignReporting;
+export default dynamic(() => Promise.resolve(CampaignReporting), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-gray-500">Loading campaign report...</p>
+      </div>
+    </div>
+  ),
+});
 
 

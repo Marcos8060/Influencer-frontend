@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllCampaigns, fetchAppliedCampaigns, fetchApprovedCampaigns, fetchBrandCampaigns, fetchCampaignDetails, fetchCampaignPosts, fetchCampaignReport, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
+import { fetchAllCampaigns, fetchAppliedCampaigns, fetchApprovedCampaigns, fetchBrandCampaigns, fetchCampaignCollaboratorPosts, fetchCampaignDetails, fetchCampaignPosts, fetchCampaignReport, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
@@ -13,6 +13,7 @@ const initialState = {
   campaignDetails: {},
   campaignReport: {},
   campaignPosts: [],
+  campaignCollaboratorPosts: [],
   campaignData: {
     title: null,
     description: null,
@@ -93,6 +94,9 @@ const CampaignSlice = createSlice({
     setCampaignPosts: (state,action) => {
       state.campaignPosts = action.payload;
     },
+    setCampaignCollaboratorPosts: (state,action) => {
+      state.campaignCollaboratorPosts = action.payload;
+    },
     updateCollaboratorStatus: (state, action) => {
       const { influencerId, campaignId, status } = action.payload;
       
@@ -142,7 +146,8 @@ export const {
   setCampaignDetails,
   setCampaignReport,
   updateCollaboratorStatus,
-  setCampaignPosts
+  setCampaignPosts,
+  setCampaignCollaboratorPosts
 } = CampaignSlice.actions;
 
 export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
@@ -239,6 +244,15 @@ export const getAllCampaignPosts = (auth,campaign_id) => async (dispatch) => {
   try {
     const data = await fetchCampaignPosts(auth,campaign_id);
     dispatch(setCampaignPosts(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const getAllCampaignCollaboratorPosts = (auth,campaign_id) => async (dispatch) => {
+  try {
+    const data = await fetchCampaignCollaboratorPosts(auth,campaign_id);
+    dispatch(setCampaignCollaboratorPosts(data));
     return data;
   } catch (error) {
     console.log(error);

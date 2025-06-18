@@ -12,12 +12,11 @@ import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBa
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCountryFlag } from "react-country-flag";
-import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
 import { Select, DatePicker } from "antd";
 import dayjs from "dayjs";
+import { countryData } from "./countryData";
 
-const countryData = countries.getData();
 
 const Address = () => {
   const influencerData = useSelector(
@@ -214,11 +213,15 @@ const Address = () => {
                   >
                     {details.influencerCountry.name ? (
                       <>
-                        <ReactCountryFlag
-                          countryCode={details.influencerCountry.code}
-                          svg
-                          className="w-5 h-5 mr-2"
-                        />
+                        {details.influencerCountry.flag ? (
+                          <span className="w-5 h-5 mr-2">{details.influencerCountry.flag}</span>
+                        ) : (
+                          <ReactCountryFlag
+                            countryCode={details.influencerCountry.code}
+                            svg
+                            className="w-5 h-5 mr-2"
+                          />
+                        )}
                         <span>{details.influencerCountry.name}</span>
                       </>
                     ) : (
@@ -255,6 +258,7 @@ const Address = () => {
                                   influencerCountry: {
                                     name: country.name,
                                     code: country.code,
+                                    flag: country.flag,
                                   },
                                   influencerPhoneNumber: {
                                     ...details.influencerPhoneNumber,
@@ -267,11 +271,15 @@ const Address = () => {
                                 setIsCountryOpen(false);
                               }}
                             >
-                              <ReactCountryFlag
-                                countryCode={country.code}
-                                svg
-                                className="w-5 h-5 mr-2"
-                              />
+                              {country.flag ? (
+                                <span className="w-5 h-5 mr-2">{country.flag}</span>
+                              ) : (
+                                <ReactCountryFlag
+                                  countryCode={country.code}
+                                  svg
+                                  className="w-5 h-5 mr-2"
+                                />
+                              )}
                               <span>{country.name}</span>
                             </div>
                           ))}

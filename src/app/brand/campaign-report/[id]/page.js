@@ -191,7 +191,7 @@ const CampaignDetails = () => {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/brand/campaign-report/report"
+              href={`/brand/campaign-report/report?id=${id}`}
               className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
             >
               <EyeOutlined />
