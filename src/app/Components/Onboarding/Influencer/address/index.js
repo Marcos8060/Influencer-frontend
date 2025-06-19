@@ -16,6 +16,7 @@ import { countryPhoneData } from "./countryPhoneData";
 import { Select, DatePicker } from "antd";
 import dayjs from "dayjs";
 import { countryData } from "./countryData";
+import { useLocation } from '@/app/layout';
 
 
 const Address = () => {
@@ -23,6 +24,7 @@ const Address = () => {
     (store) => store.influencerStepper.influencerData
   );
   const dispatch = useDispatch();
+  const { location } = useLocation();
   const [details, setDetails] = useState({
     influencerAddressLine1: influencerData.influencerAddressLine1 || "",
     influencerAddressLine2: influencerData.influencerAddressLine2 || "",
@@ -40,6 +42,7 @@ const Address = () => {
       number: "",
     },
   });
+  const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
@@ -73,6 +76,31 @@ const Address = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    // Only auto-fill if location is available, not already filled, and fields are empty
+    if (
+      location &&
+      !hasAutoFilled &&
+      !details.influencerAddressLine1 &&
+      !details.influencerCity &&
+      !details.influencerCountry.name &&
+      !details.influencerZipCode
+    ) {
+      setDetails((prev) => ({
+        ...prev,
+        influencerAddressLine1: location.addressLine1 || "",
+        influencerAddressLine2: location.addressLine2 || "",
+        influencerCity: location.city || "",
+        influencerCountry: {
+          name: location.country || "",
+          code: location.countryCode || "",
+        },
+        influencerZipCode: location.zipCode || "",
+      }));
+      setHasAutoFilled(true);
+    }
+  }, [location, hasAutoFilled, details]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();

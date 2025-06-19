@@ -640,7 +640,7 @@ const CampaignReporting = () => {
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`p-3 rounded-xl bg-primary/10`}>
                       {platform === "Instagram" ? (
-                        <InstagramOutlined className="text-primary text-xl" />
+                      <InstagramOutlined className="text-primary text-xl" />
                       ) : platform === "TikTok" ? (
                         <TikTokOutlined className="text-primary text-xl" />
                       ) : platform === "YouTube" ? (
@@ -1093,7 +1093,7 @@ const CampaignReporting = () => {
                                         <div className="bg-blue-50 p-3 rounded-lg">
                                           <div className="text-xs text-blue-600 font-medium">Likes</div>
                                           <div className="text-lg font-bold text-blue-700">{collaborator.report.totalLikes}</div>
-                                        </div>
+                                  </div>
                                         <div className="bg-green-50 p-3 rounded-lg">
                                           <div className="text-xs text-green-600 font-medium">Comments</div>
                                           <div className="text-lg font-bold text-green-700">{collaborator.report.totalComments}</div>
@@ -1127,10 +1127,10 @@ const CampaignReporting = () => {
                                 </div>
                                 
                                 {collaborator.posts && collaborator.posts.length > 0 ? (
-                                  <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-4">
                                     {collaborator.posts.slice(0, 4).map((post) => (
-                                      <div
-                                        key={post.id}
+                                    <div
+                                      key={post.id}
                                         className="relative group rounded-xl overflow-hidden border border-input"
                                       >
                                         <div className="aspect-square bg-gray-100 flex items-center justify-center">
@@ -1185,11 +1185,11 @@ const CampaignReporting = () => {
                                             >
                                               View Post
                                             </Button>
-                                          </div>
                                         </div>
                                       </div>
-                                    ))}
-                                  </div>
+                                    </div>
+                                  ))}
+                                </div>
                                 ) : (
                                   <div className="text-center py-8 border-2 border-dashed border-input rounded-xl">
                                     <UserOutlined className="text-4xl text-gray-300 mb-2" />

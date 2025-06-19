@@ -14,12 +14,14 @@ import { ReactCountryFlag } from "react-country-flag";
 import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from '@/app/layout';
 
 const countryData = countries.getData();
 
 const BrandDetails = () => {
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
+  const { location } = useLocation();
   const [details, setDetails] = useState({
     brandWebsite: formData.brandWebsite || "",
     legalCompanyName: formData.legalCompanyName || "",
@@ -32,6 +34,7 @@ const BrandDetails = () => {
     brandName: formData.brandName || "",
     brandDescription: formData.brandDescription || "",
   });
+  const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
@@ -66,6 +69,30 @@ const BrandDetails = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    // Only auto-fill if location is available, not already filled, and fields are empty
+    if (
+      location &&
+      !hasAutoFilled &&
+      !details.address &&
+      !details.city &&
+      !details.country.name &&
+      !details.zipCode
+    ) {
+      setDetails((prev) => ({
+        ...prev,
+        address: location.addressLine1 || "",
+        city: location.city || "",
+        country: {
+          name: location.country || "",
+          code: location.countryCode || "",
+        },
+        zipCode: location.zipCode || "",
+      }));
+      setHasAutoFilled(true);
+    }
+  }, [location, hasAutoFilled, details]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
