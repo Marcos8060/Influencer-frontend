@@ -34,7 +34,7 @@ export default function AddToBucketListModal({ data, open, onClose }) {
 
     try {
       const influencerIds = Array.isArray(data)
-        ? data.map((influencer) => String(influencer.id))
+        ? data.map((influencer) => String(influencer.influencerId))
         : [String(data.influencerId)];
 
       const payload = {
