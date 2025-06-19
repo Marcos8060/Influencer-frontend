@@ -83,20 +83,20 @@ export default function InfluencerCard({ influencer, onAddToBucket, onAddToCampa
               View profile
             </Button>
           </Link>
-          <Button
-            className="rounded-full px-4 font-medium border border-primary text-primary bg-white hover:bg-primary hover:text-white"
+          <button
+            className="rounded px-4 font-medium border border-primary text-primary bg-white hover:bg-primary hover:text-white"
             size="small"
             onClick={onAddToBucket}
           >
             Add to Bucket
-          </Button>
-          <Button
-            className="rounded-full px-4 font-medium border border-secondary text-secondary bg-white hover:bg-secondary hover:text-white"
+          </button>
+          <button
+            className="rounded px-4 font-medium border border-secondary text-secondary bg-white hover:bg-secondary hover:text-white"
             size="small"
             onClick={onAddToCampaign}
           >
             Add to Campaign
-          </Button>
+          </button>
           <Tooltip title="Chat with this influencer">
             <Link href={`/brand/chat/${influencer.id}`}>
               <Button

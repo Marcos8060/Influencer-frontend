@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { Modal, Button, Select, Tag, Space, Form, message, theme } from "antd";
+import React, { useState,useEffect } from "react";
+import { Modal, Select, Tag, Space, Form, message, theme } from "antd";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
@@ -22,9 +22,6 @@ export default function AddToCampaignModal({ data, open, onClose }) {
     !campaign.collaborators.some(influencer => influencer.influencer === data[0]?.influencerId)
   );
 
-  // Create a ref with the new React 19 pattern
-  const selectRef = React.useRef(null);
-
   const handleSubmit = async (values) => {
     setLoading(true);
 
@@ -40,7 +37,8 @@ export default function AddToCampaignModal({ data, open, onClose }) {
 
       const response = await moveToCampaign(auth, payload);
       if (response.status === 200) {
-        toast.success("Added to campaign successfully,visit your campaigns to view all influencers");
+        toast.success("Added to campaign successfully");
+        onClose();
         dispatch(fetchAllBrandCampaigns(auth));
         form.resetFields();
       } else {
@@ -103,7 +101,7 @@ export default function AddToCampaignModal({ data, open, onClose }) {
         <div className="flex justify-between items-center mt-6">
           <Space>
             <button
-              className="bg-primary text-white font-light px-4 py-3 text-xs rounded-sm"
+              className="bg-gradient-to-r from-primary to-secondary rounded text-white font-light px-4 py-3 text-xs"
               htmlType="submit"
               loading={loading}
               disabled={loading}
