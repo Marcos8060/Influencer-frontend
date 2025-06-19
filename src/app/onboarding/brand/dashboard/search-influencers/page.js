@@ -34,6 +34,9 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import toast from "react-hot-toast";
 import { fetchAllSearchResults, getAllInfluencers } from "@/redux/features/influencer/filter";
 import { country_names } from "@/app/Components/country-names";
+import InfluencerCard from "@/app/Components/Influencer/All-Influencers/InfluencerCard";
+import AddToBucketListModal from "@/app/Components/Influencer/All-Influencers/add-to-bucket-modal";
+import AddToCampaignModal from "@/app/Components/Influencer/All-Influencers/add-to-campaign-modal";
 
 const { Title, Text } = Typography;
 
@@ -134,6 +137,8 @@ const SearchInfluencers = () => {
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState([]);
   const [selectedFollowerCountries, setSelectedFollowerCountries] = useState([]);
+  const [bucketModalData, setBucketModalData] = useState(null);
+  const [campaignModalData, setCampaignModalData] = useState(null);
 
   // Fetch results from backend
   const fetchResults = (customCursor = null) => {
@@ -585,8 +590,12 @@ const SearchInfluencers = () => {
             </div>
             <Row gutter={[24, 24]}>
               {results.map((influencer) => (
-                <Col xs={24} sm={12} md={8} lg={6} key={influencer.id}>
-                  <InfluencerCard influencer={influencer} />
+                <Col xs={24} sm={12} md={12} lg={8} key={influencer.id}>
+                  <InfluencerCard
+                    influencer={influencer}
+                    onAddToBucket={() => setBucketModalData([influencer])}
+                    onAddToCampaign={() => setCampaignModalData([influencer])}
+                  />
                 </Col>
               ))}
             </Row>
@@ -598,6 +607,17 @@ const SearchInfluencers = () => {
                 Next
               </Button>
             </div>
+            {/* Modals for add to bucket/campaign */}
+            <AddToBucketListModal
+              data={bucketModalData || []}
+              open={!!bucketModalData}
+              onClose={() => setBucketModalData(null)}
+            />
+            <AddToCampaignModal
+              data={campaignModalData || []}
+              open={!!campaignModalData}
+              onClose={() => setCampaignModalData(null)}
+            />
           </>
         ) : (
           <Card>
@@ -631,125 +651,6 @@ const SearchInfluencers = () => {
             </Empty>
           </Card>
         )}
-      </div>
-    </div>
-  );
-};
-
-// Influencer Card Component
-const InfluencerCard = ({ influencer }) => {
-  // Social icons based on connection flags
-  const socialIcons = [
-    influencer.isInstagramConnected && {
-      platform: "instagram",
-      icon: <InstagramOutlined style={{ color: '#E1306C', fontSize: 20 }} />,
-    },
-    influencer.isTiktokConnected && {
-      platform: "tiktok",
-      icon: <TikTokOutlined style={{ color: '#000', fontSize: 20 }} />,
-    },
-  ].filter(Boolean);
-
-  // Category color mapping (customize as needed)
-  const categoryColors = {
-    "Beauty & Skincare": "bg-primary text-white",
-    "Fashion": "bg-secondary text-white",
-    "Lifestyle": "bg-yellow text-gray-900",
-    // Add more as needed
-  };
-
-  // Gradient color pairs using only theme colors
-  const gradients = [
-    'from-primary to-secondary',
-    'from-secondary to-tertiary',
-    'from-primary to-yellow',
-    'from-green to-primary',
-    'from-tertiary to-primary',
-    'from-yellow to-secondary',
-    'from-red to-primary',
-  ];
-  // Get initials (first two letters of name)
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  };
-  const initials = getInitials(influencer.fullName);
-  const gradientIdx = initials.charCodeAt(0) % gradients.length;
-  const gradientClass = `bg-gradient-to-br ${gradients[gradientIdx]}`;
-
-  return (
-    <div className="bg-gradient-to-b from-background to-white rounded-2xl shadow-md flex flex-col items-center p-0 overflow-hidden transition-all duration-300 hover:shadow-lg border border-input min-h-[500px]">
-      {/* Profile Image (placeholder if missing) */}
-      <div className="w-full flex justify-center bg-white px-2" style={{paddingTop: '10px', paddingBottom: '0'}}>
-        {influencer.profilePicture ? (
-          <img
-            src={influencer.profilePicture}
-            alt={influencer.fullName || 'Influencer'}
-            className="rounded-2xl w-full h-[220px] object-cover shadow-md border-2 border-white"
-            style={{marginTop: 0, marginBottom: 0}}
-          />
-        ) : (
-          <div
-            className={`rounded-2xl w-full h-[220px] flex items-center justify-center border-2 border-white shadow-md ${gradientClass}`}
-            style={{marginTop: 0, marginBottom: 0}}
-          >
-            <span className="text-white font-extrabold text-6xl drop-shadow-lg">
-              {initials}
-            </span>
-          </div>
-        )}
-      </div>
-      {/* Name */}
-      <div className="w-full flex flex-col items-center mt-4 px-4">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-lg text-color">{influencer.fullName || 'Unknown Name'}</span>
-        </div>
-        {/* Age & Gender */}
-        <div className="flex items-center gap-2 text-muted text-sm mb-1">
-          <span>
-            {influencer.influencerAge ? `${influencer.influencerAge} years` : ''}
-            {influencer.influencerGender ? ` • ${influencer.influencerGender}` : ''}
-          </span>
-        </div>
-        {/* Location */}
-        <div className="flex items-center gap-2 text-muted text-sm mb-2">
-          <span>{getDisplayName(influencer.city) || 'Unknown City'}, {getDisplayName(influencer.country) || 'Unknown Country'}</span>
-        </div>
-      </div>
-      {/* Social Icons */}
-      <div className="flex justify-center gap-3 mb-2">
-        {socialIcons.length > 0 ? socialIcons.map((social, idx) => (
-          <span key={social.platform}>{social.icon}</span>
-        )) : <span className="text-muted text-xs">No social connected</span>}
-      </div>
-      {/* Category Tags Polished */}
-      <div className="mb-4 flex flex-wrap justify-center gap-2">
-        {influencer.contentCategories?.slice(0, 2).map((category) => (
-          <span
-            key={category}
-            className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-input ${categoryColors[category] || 'bg-muted text-white'}`}
-          >
-            {category}
-          </span>
-        ))}
-        {influencer.contentCategories?.length > 2 && (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-input text-gray-700 border border-input shadow-sm">
-            +{influencer.contentCategories.length - 2}
-          </span>
-        )}
-      </div>
-      {/* Action Buttons */}
-      <div className="w-full flex justify-between items-center px-6 pb-4 gap-2">
-        <Tooltip title="Chat with this influencer">
-          <Link href={`/brand/chat/${influencer.id}`}>
-            <Button shape="circle" icon={<MailOutlined />} className="text-primary border-primary" />
-          </Link>
-        </Tooltip>
-        <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.id}`} className="flex-1 ml-2">
-          <Button block className="bg-primary text-white font-semibold border-0 hover:bg-secondary transition-colors duration-200">View Profile</Button>
-        </Link>
       </div>
     </div>
   );

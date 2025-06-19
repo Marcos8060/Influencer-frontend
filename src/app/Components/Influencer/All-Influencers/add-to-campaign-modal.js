@@ -9,15 +9,13 @@ import toast from "react-hot-toast";
 
 const { useToken } = theme;
 
-export default function AddToCampaignModal({ data }) {
+export default function AddToCampaignModal({ data, open, onClose }) {
   const { token } = useToken();
   const [form] = Form.useForm();
   const { brandCampaigns } = useSelector((store) => store.campaign);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const auth = useAuth();
-  const [open, setOpen] = useState(false);
-
 
   // Only display campaigns which the influencer has not been added
   const excludedCampaigns = brandCampaigns.filter(campaign =>
@@ -44,7 +42,6 @@ export default function AddToCampaignModal({ data }) {
       if (response.status === 200) {
         toast.success("Added to campaign successfully,visit your campaigns to view all influencers");
         dispatch(fetchAllBrandCampaigns(auth));
-        setOpen(false);
         form.resetFields();
       } else {
         message.error(response.data?.message || "Something went wrong");
@@ -58,81 +55,64 @@ export default function AddToCampaignModal({ data }) {
     }
   };
 
-  const handleOpen = () => {
-    if (Array.isArray(data) && data.length === 0) {
-      message.warning("No influencers selected");
-      return;
-    }
-    setOpen(true);
-  };
-
   return (
-    <>
-      <button
-        className="bg-primary text-white font-light px-4 py-2 text-xs rounded-sm"
-        onClick={handleOpen}
-      >
-        Add To Campaign
-      </button>
+    <Modal
+      title="Add to Campaign"
+      open={open}
+      onCancel={() => {
+        form.resetFields();
+        if (onClose) onClose();
+      }}
+      footer={null}
+      centered
+      width={400}
+      styles={{
+        header: {
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          marginBottom: token.marginSM,
+        },
+      }}
+    >
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form.Item
+          name="selectedCampaign"
+          label="Select Campaign"
+          rules={[{ required: true, message: "Please select a campaign" }]}
+        >
+          <Select
+            // ref={selectRef}
+            placeholder="Select a campaign"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option?.title?.toLowerCase().includes(input.toLowerCase())
+            }
+            options={excludedCampaigns.map((campaign) => ({
+              value: campaign.id,
+              label: (
+                <Space>
+                  <span>{campaign.title}</span>
+                  <Tag color="blue">{campaign.collaborators?.length}</Tag>
+                </Space>
+              ),
+              title: campaign.title,
+            }))}
+          />
+        </Form.Item>
 
-      <Modal
-        title="Add to Campaign"
-        open={open}
-        onCancel={() => {
-          form.resetFields();
-          setOpen(false);
-        }}
-        footer={null}
-        centered
-        width={400}
-        styles={{
-          header: {
-            borderBottom: `1px solid ${token.colorBorderSecondary}`,
-            marginBottom: token.marginSM,
-          },
-        }}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            name="selectedCampaign"
-            label="Select Campaign"
-            rules={[{ required: true, message: "Please select a campaign" }]}
-          >
-            <Select
-              // ref={selectRef}
-              placeholder="Select a campaign"
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option?.title?.toLowerCase().includes(input.toLowerCase())
-              }
-              options={excludedCampaigns.map((campaign) => ({
-                value: campaign.id,
-                label: (
-                  <Space>
-                    <span>{campaign.title}</span>
-                    <Tag color="blue">{campaign.collaborators?.length}</Tag>
-                  </Space>
-                ),
-                title: campaign.title,
-              }))}
-            />
-          </Form.Item>
-
-          <div className="flex justify-between items-center mt-6">
-            <Space>
-              <button
-                className="bg-primary text-white font-light px-4 py-3 text-xs rounded-sm"
-                htmlType="submit"
-                loading={loading}
-                disabled={loading}
-              >
-                {loading ? "Adding..." : "Add to Campaign"}
-              </button>
-            </Space>
-          </div>
-        </Form>
-      </Modal>
-    </>
+        <div className="flex justify-between items-center mt-6">
+          <Space>
+            <button
+              className="bg-primary text-white font-light px-4 py-3 text-xs rounded-sm"
+              htmlType="submit"
+              loading={loading}
+              disabled={loading}
+            >
+              {loading ? "Adding..." : "Add to Campaign"}
+            </button>
+          </Space>
+        </div>
+      </Form>
+    </Modal>
   );
 }
