@@ -16,15 +16,22 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/(.*)",
         headers: [
           {
-            key: 'Content-Security-Policy',
-            value: "connect-src 'self' ws://147.78.141.96:8075 wss://147.78.141.96:8075;"
-          }
-        ]
-      }
-    ]
+            key: "Content-Security-Policy",
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-inline' 'unsafe-eval';
+              style-src 'self' 'unsafe-inline';
+              img-src * blob: data:;
+              connect-src 'self' https://nominatim.openstreetmap.org;
+              font-src 'self';
+            `.replace(/\n/g, ""),
+          },
+        ],
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
