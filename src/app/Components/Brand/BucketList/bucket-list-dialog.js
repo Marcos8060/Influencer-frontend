@@ -1,96 +1,89 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog } from "primereact/dialog";
-import InputComponent from "../../SharedComponents/InputComponent";
-import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
+import { Modal, Input, Button, Form, message } from "antd";
 import { createBucketList } from "@/redux/services/auth/brand/bucketList";
-import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch } from "react-redux";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { MdAdd } from "react-icons/md";
 
-
 export default function BucketListDialog() {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    name: null,
-    description: null,
-  });
+  const [form] = Form.useForm();
   const auth = useAuth();
 
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
     setLoading(true);
     try {
       if (auth) {
-        await createBucketList(auth, formData);
-        setFormData({
-          name: "",
-          description: "",
-        });
+        await createBucketList(auth, values);
         toast.success("Bucket List created successfully");
         setVisible(false);
         dispatch(fetchAllBuckets(auth));
+        form.resetFields();
       }
     } catch (error) {
-      toast.error(error.response.data.errorMessage[0])
+      toast.error(error?.response?.data?.errorMessage?.[0] || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="card flex justify-content-center">
-      <button
+    <div className="flex justify-center">
+      <Button
+        type="default"
+        icon={<MdAdd className="text-md" />}
         className="flex items-center gap-1 border border-primary rounded text-xs px-4 py-3"
-        label="Show"
-        type="button"
-        icon="pi pi-external-link"
         onClick={() => setVisible(true)}
       >
-        <MdAdd className="text-md" />
         Create New Bucket
-      </button>
-      <Dialog
-        header="Create Bucket List"
-        visible={visible}
-        style={{ width: "40vw" }}
-        onHide={() => {
-          if (!visible) return;
-          setVisible(false);
-        }}
+      </Button>
+      <Modal
+        title="Create Bucket List"
+        open={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+        centered
+        width={400}
+        destroyOnClose
       >
-        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
-          <InputComponent
-            placeholder="Name"
-            type="text"
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="mt-2"
+        >
+          <Form.Item
             name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-          <TextAreaComponent
-            placeholder="Description..."
-            type="text"
+            label="Name"
+            rules={[{ required: true, message: "Please enter a name" }]}
+          >
+            <Input placeholder="Name" size="large" />
+          </Form.Item>
+          <Form.Item
             name="description"
-            value={formData.description}
-            onChange={handleChange}
-          />
-          <ButtonComponent
-            type="submit"
-            label={loading ? "Processing..." : "Create New List"}
-            disabled={loading}
-          />
-        </form>
-      </Dialog>
+            label="Description"
+            rules={[{ required: false }]}
+          >
+            <Input.TextArea placeholder="Description..." rows={4} />
+          </Form.Item>
+          <Form.Item>
+            <button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 w-full rounded"
+            >
+              {loading ? "Processing..." : "Create New List"}
+            </button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

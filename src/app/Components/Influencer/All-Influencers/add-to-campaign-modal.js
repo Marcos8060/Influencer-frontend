@@ -27,7 +27,7 @@ export default function AddToCampaignModal({ data, open, onClose }) {
 
     try {
       const influencers = Array.isArray(data)
-        ? data.map((influencer) => String(influencer.influencerId))
+        ? data.map((influencer) => String(influencer.id))
         : [String(data.influencerId)];
 
       const payload = {

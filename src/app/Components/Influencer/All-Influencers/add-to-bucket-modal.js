@@ -34,7 +34,7 @@ export default function AddToBucketListModal({ data, open, onClose }) {
 
     try {
       const influencerIds = Array.isArray(data)
-        ? data.map((influencer) => String(influencer.influencerId))
+        ? data.map((influencer) => String(influencer.id))
         : [String(data.influencerId)];
 
       const payload = {
@@ -45,6 +45,7 @@ export default function AddToBucketListModal({ data, open, onClose }) {
       const response = await moveToBucket(auth, payload);
       if (response.status === 200) {
         toast.success("Added to bucket successfully");
+        onClose();
         dispatch(fetchAllBuckets(auth));
         form.resetFields();
       } else {
@@ -109,7 +110,7 @@ export default function AddToBucketListModal({ data, open, onClose }) {
 
           <Space>
             <button
-              className="bg-primary text-white font-light px-4 py-3 text-xs rounded-sm"
+              className="bg-gradient-to-r from-primary to-secondary text-white font-light px-4 py-2 text-xs rounded"
               htmlType="submit"
               loading={loading}
               disabled={loading}
