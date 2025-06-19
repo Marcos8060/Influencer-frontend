@@ -10,6 +10,7 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "primeicons/primeicons.css";
 import { AuthProvider } from "@/assets/context/use-context";
 import SplashScreen from "./Components/SplashScreen";
+import { Inter } from 'next/font/google';
 
 // Location context
 export const LocationContext = createContext({
@@ -20,6 +21,8 @@ export const LocationContext = createContext({
 export function useLocation() {
   return useContext(LocationContext);
 }
+
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -113,15 +116,11 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Influencer Platform</title>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-          rel="stylesheet"
-        />
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
       </head>
       <body>
