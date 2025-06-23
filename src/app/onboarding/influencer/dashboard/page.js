@@ -9,6 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAppliedCampaigns, getApprovedCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
 import { useAuth } from "@/assets/hooks/use-auth";
+import StatsCards from "@/app/Components/Influencer/DashboardStats/StatsCards";
+import StatusDistributionChart from "@/app/Components/Influencer/DashboardStats/StatusDistributionChart";
+import CampaignsOverTimeChart from "@/app/Components/Influencer/DashboardStats/CampaignsOverTimeChart";
+import ProductsPerCampaignChart from "@/app/Components/Influencer/DashboardStats/ProductsPerCampaignChart";
+import DeadlinesChart from "@/app/Components/Influencer/DashboardStats/DeadlinesChart";
+import SocialChannelsChart from "@/app/Components/Influencer/DashboardStats/SocialChannelsChart";
 
 
 const InfluencerDashboard = () => {
@@ -45,54 +51,69 @@ const InfluencerDashboard = () => {
     }
   }, [auth]);
 
+  // Calculate stats
+  const now = new Date();
+  const in7Days = new Date(now);
+  in7Days.setDate(now.getDate() + 7);
+  const allCampaigns = [...(appliedCampaigns || []), ...(approvedCampaigns || [])];
+  const upcomingDeadlines = allCampaigns.filter(c => {
+    const end = new Date(c.endDate);
+    return end > now && end <= in7Days;
+  }).length;
+  const totalCollaborations = allCampaigns.length;
+  // Placeholder for engagement rate
+  const engagementRate = null;
+
+  // Skeleton loader
+  if (!appliedCampaigns || !approvedCampaigns) {
+    return (
+      <div className="space-y-8">
+        <div className="grid md:grid-cols-5 grid-cols-1 md:gap-8 gap-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-32" />
+          ))}
+        </div>
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-80 w-full" />
+          ))}
+        </div>
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-80 w-full" />
+          ))}
+        </div>
+        <div className="grid md:grid-cols-1 grid-cols-1 gap-8 mt-8">
+          <div className="bg-gray-200 animate-pulse rounded-2xl h-80 w-full" />
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthorized) {
     return null;
   }
 
   return (
     <div>
-      <section className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
-        <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-          <div className="flex gap-2 items-center justify-between">
-            <p className="font-light">Pending Applications</p>
-            <FaUsersViewfinder className="text-xl" />
-          </div>
-          <div className="flex gap-4 items-center">
-            <p className="font-semibold text-2xl">{appliedCampaigns.length}</p>
-            <small className="text-secondary text-xs font-semibold">Awaiting Approval</small>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-          <div className="flex gap-2 items-center justify-between">
-            <p className="font-light">Approved Applications</p>
-            <MdWorkHistory className="text-xl text-green" />
-          </div>
-          <div className="flex gap-4 items-center">
-            <p className="font-semibold text-2xl">{approvedCampaigns.length}</p>
-            <small className="text-green text-xs font-semibold">Total Offers</small>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-          <div className="flex gap-2 items-center justify-between">
-            <p className="font-light">Upcoming Deadlines</p>
-            <AiOutlineShopping className="text-xl" />
-          </div>
-          <div className="flex gap-4 items-center">
-            <p className="font-semibold text-2xl">12</p>
-            <small className="text-secondary text-xs font-semibold">Approaching Deadlines</small>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-          <div className="flex gap-2 items-center justify-between">
-            <p className="font-light">Engagement Rate</p>
-            <FaUsersBetweenLines className="text-xl" />
-          </div>
-          <div className="flex gap-4 items-center">
-            <p className="font-semibold text-2xl">12%</p>
-            <small className="text-primary text-xs font-semibold">Average Engagement</small>
-          </div>
-        </div>
-      </section>
+      <StatsCards
+        pendingApplications={appliedCampaigns.length}
+        approvedApplications={approvedCampaigns.length}
+        upcomingDeadlines={upcomingDeadlines}
+        totalCollaborations={totalCollaborations}
+        engagementRate={engagementRate}
+      />
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
+        <StatusDistributionChart appliedCampaigns={appliedCampaigns} approvedCampaigns={approvedCampaigns} />
+        <CampaignsOverTimeChart appliedCampaigns={appliedCampaigns} approvedCampaigns={approvedCampaigns} />
+      </div>
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
+        <ProductsPerCampaignChart appliedCampaigns={appliedCampaigns} approvedCampaigns={approvedCampaigns} />
+        <DeadlinesChart appliedCampaigns={appliedCampaigns} approvedCampaigns={approvedCampaigns} />
+      </div>
+      <div className="grid md:grid-cols-1 grid-cols-1 gap-8 mt-8">
+        <SocialChannelsChart appliedCampaigns={appliedCampaigns} approvedCampaigns={approvedCampaigns} />
+      </div>
     </div>
   );
 };
