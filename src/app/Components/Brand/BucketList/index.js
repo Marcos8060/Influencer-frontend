@@ -45,13 +45,14 @@ const BucketList = () => {
       width: 150,
       render: (text) => <span className="font-medium">{text}</span>,
     },
-    // {
-    //   title: 'Description',
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   width: 200,
-    //   ellipsis: true,
-    // },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      width: 200,
+      ellipsis: true,
+      render: (text) => text && text.length > 50 ? text.slice(0, 50) + '...' : text,
+    },
     {
       title: 'No. Of Influencers',
       dataIndex: 'influencers',
