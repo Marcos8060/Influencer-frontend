@@ -51,7 +51,7 @@ const ApplicantsStatusChart = ({ brandCampaigns }) => {
   };
   if (!labels.length) return <div className="p-4">No applicant data available.</div>;
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full flex items-center justify-center">
+    <div className="bg-white rounded-2xl h-[50vh] p-4 shadow-lg mt-8 w-full flex items-center justify-center">
       <Doughnut data={chartData} options={options} />
     </div>
   );
