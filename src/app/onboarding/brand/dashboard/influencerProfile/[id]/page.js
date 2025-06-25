@@ -51,6 +51,7 @@ const { TabPane } = Tabs;
 export default function InfluencerProfile() {
   const [loading, setLoading] = useState(false);
   const { discoveryProfile } = useSelector((store) => store.socials);
+  console.log("PROFILE ", discoveryProfile);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pathname = usePathname();
@@ -439,7 +440,7 @@ export default function InfluencerProfile() {
               {/* Engagement Stats */}
               <Card title="Engagement Stats" className="mb-4">
                 <Row gutter={[16, 16]}>
-                  <Col xs={12}>
+                  {/* <Col xs={12}>
                     <Card bodyStyle={{ padding: "12px" }}>
                       <Statistic
                         title="Overall Rating"
@@ -448,36 +449,49 @@ export default function InfluencerProfile() {
                         prefix={<StarOutlined className="text-yellow-500" />}
                       />
                     </Card>
-                  </Col>
-                  <Col xs={12}>
+                  </Col> */}
+                  <Col xs={24}>
                     <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Likes"
-                        value={formatNumber(discoveryProfile.tiktokLikesCount)}
-                        prefix={<LikeOutlined className="text-green-500" />}
-                      />
+                      <div className="flex items-center justify-between w-full">
+                        <Statistic
+                          title="TikTok Followers"
+                          value={formatNumber(
+                            discoveryProfile.tiktok?.followerCount
+                          )}
+                          prefix={<LikeOutlined className="text-green-500" />}
+                        />
+                        <Statistic
+                          title="Instagram Followers"
+                          value={formatNumber(
+                            discoveryProfile.instagram?.followersCount
+                          )}
+                          prefix={<LikeOutlined className="text-pink-500" />}
+                        />
+                      </div>
                     </Card>
                   </Col>
-                  <Col xs={12}>
+                  <Col xs={24}>
                     <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Videos"
-                        value={formatNumber(discoveryProfile.tiktokVideoCount)}
-                        prefix={
-                          <VideoCameraOutlined className="text-purple-500" />
-                        }
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Followers"
-                        value={formatNumber(
-                          discoveryProfile.tiktokFollowerCount
-                        )}
-                        prefix={<TeamOutlined className="text-blue-500" />}
-                      />
+                      <div className="flex items-center justify-between w-full">
+                        <Statistic
+                          title="TikTok Videos"
+                          value={formatNumber(
+                            discoveryProfile.tiktok?.videoCount
+                          )}
+                          prefix={
+                            <VideoCameraOutlined className="text-purple-500" />
+                          }
+                        />
+                        <Statistic
+                          title="Instagram Videos"
+                          value={formatNumber(
+                            discoveryProfile.instagram?.mediaCount
+                          )}
+                          prefix={
+                            <VideoCameraOutlined className="text-purple-500" />
+                          }
+                        />
+                      </div>
                     </Card>
                   </Col>
                 </Row>
