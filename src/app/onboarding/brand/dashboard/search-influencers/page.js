@@ -153,6 +153,9 @@ const SearchInfluencers = () => {
   const [selectedFollowerCountries, setSelectedFollowerCountries] = useState(
     []
   );
+  const [selectedFollowerCities, setSelectedFollowerCities] = useState(
+    []
+  );
   const [bucketModalData, setBucketModalData] = useState(null);
   const [campaignModalData, setCampaignModalData] = useState(null);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
@@ -160,7 +163,6 @@ const SearchInfluencers = () => {
   // Get bucket list and campaigns for status checking
   const { bucketList } = useSelector((store) => store.bucket);
   const { brandCampaigns } = useSelector((store) => store.campaign);
-
 
   // Fetch results from backend
   const fetchResults = (customCursor = null) => {
@@ -686,6 +688,28 @@ const SearchInfluencers = () => {
                     {filters.social_media_followers_country_percentage}%)
                   </Tag>
                 )}
+
+                {filters.social_media_followers_city && (
+                  <Tag
+                    closable
+                    onClose={() => {
+                      handleFilterChange(
+                        "social_media_followers_city",
+                        null
+                      );
+                      handleFilterChange(
+                        "social_media_followers_city_percentage",
+                        null
+                      );
+                      setSelectedFollowerCities(null);
+                    }}
+                    className="flex items-center gap-1"
+                    color="blue"
+                  >
+                    Follower City: {filters.social_media_followers_city} (
+                    {filters.social_media_followers_city_percentage}%)
+                  </Tag>
+                )}
               </div>
             </div>
             <Button
@@ -717,6 +741,7 @@ const SearchInfluencers = () => {
                   hideInCampaign: false,
                   hideInBucket: false,
                 });
+                setSelectedFollowerCities([]);
               }}
               className="text-xs"
             >
@@ -740,6 +765,7 @@ const SearchInfluencers = () => {
                 setSelectedFollowerGenders([]);
                 setSelectedFollowerAgeRanges([]);
                 setSelectedFollowerCountries([]);
+                setSelectedFollowerCities([]);
                 setSelectedPlatform(null);
                 // Reset follower demographics filters to null
                 handleFilterChange("social_media_followers_gender", null);
@@ -755,6 +781,11 @@ const SearchInfluencers = () => {
                 handleFilterChange("social_media_followers_country", null);
                 handleFilterChange(
                   "social_media_followers_country_percentage",
+                  null
+                );
+                handleFilterChange("social_media_followers_city", null);
+                handleFilterChange(
+                  "social_media_followers_city_percentage",
                   null
                 );
                 handleFilterChange("social_media_platform_name", null);
@@ -798,6 +829,15 @@ const SearchInfluencers = () => {
                   );
                   return;
                 }
+                if (
+                  selectedFollowerCities &&
+                  !filters.social_media_followers_city_percentage
+                ) {
+                  toast.error(
+                    "Please enter a percentage for the selected city"
+                  );
+                  return;
+                }
 
                 // Always set the platform first
                 handleFilterChange(
@@ -825,6 +865,12 @@ const SearchInfluencers = () => {
                     selectedFollowerCountries
                   );
                 }
+                if (selectedFollowerCities) {
+                  handleFilterChange(
+                    "social_media_followers_city",
+                    selectedFollowerCities
+                  );
+                }
                 setDrawerVisible(false);
               }}
             >
@@ -850,6 +896,7 @@ const SearchInfluencers = () => {
               setSelectedFollowerGenders([]);
               setSelectedFollowerAgeRanges([]);
               setSelectedFollowerCountries([]);
+              setSelectedFollowerCities([]);
               handleFilterChange("social_media_followers_gender", null);
               handleFilterChange(
                 "social_media_followers_gender_percentage",
@@ -860,6 +907,11 @@ const SearchInfluencers = () => {
               handleFilterChange("social_media_followers_country", null);
               handleFilterChange(
                 "social_media_followers_country_percentage",
+                null
+              );
+              handleFilterChange("social_media_followers_city", null);
+              handleFilterChange(
+                "social_media_followers_city_percentage",
                 null
               );
             }}
@@ -942,12 +994,33 @@ const SearchInfluencers = () => {
                     max={100}
                     placeholder="%"
                     style={{ width: "100px" }}
+                    onKeyDown={(e) => {
+                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
+                        return;
+                      }
+                      // Allow: numbers and decimal point
+                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
+                        // Check if adding this digit would exceed 100
+                        const currentValue = e.target.value;
+                        const newValue = currentValue + e.key;
+                        if (parseFloat(newValue) > 100) {
+                          e.preventDefault();
+                        }
+                        return;
+                      }
+                      e.preventDefault();
+                    }}
                     onChange={(e) => {
                       if (!selectedPlatform) {
                         toast.error("Please select a platform first");
                         return;
                       }
                       const percentage = e.target.value;
+                      const numValue = parseFloat(percentage);
+                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                        return; // Simply ignore invalid values
+                      }
                       handleFilterChange(
                         "social_media_followers_age_percentage",
                         percentage
@@ -1010,12 +1083,33 @@ const SearchInfluencers = () => {
                     max={100}
                     placeholder="%"
                     style={{ width: "100px" }}
+                    onKeyDown={(e) => {
+                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
+                        return;
+                      }
+                      // Allow: numbers and decimal point
+                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
+                        // Check if adding this digit would exceed 100
+                        const currentValue = e.target.value;
+                        const newValue = currentValue + e.key;
+                        if (parseFloat(newValue) > 100) {
+                          e.preventDefault();
+                        }
+                        return;
+                      }
+                      e.preventDefault();
+                    }}
                     onChange={(e) => {
                       if (!selectedPlatform) {
                         toast.error("Please select a platform first");
                         return;
                       }
                       const percentage = e.target.value;
+                      const numValue = parseFloat(percentage);
+                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                        return; // Simply ignore invalid values
+                      }
                       handleFilterChange(
                         "social_media_followers_gender_percentage",
                         percentage
@@ -1085,14 +1179,130 @@ const SearchInfluencers = () => {
                     max={100}
                     placeholder="%"
                     style={{ width: "100px" }}
+                    onKeyDown={(e) => {
+                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
+                        return;
+                      }
+                      // Allow: numbers and decimal point
+                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
+                        // Check if adding this digit would exceed 100
+                        const currentValue = e.target.value;
+                        const newValue = currentValue + e.key;
+                        if (parseFloat(newValue) > 100) {
+                          e.preventDefault();
+                        }
+                        return;
+                      }
+                      e.preventDefault();
+                    }}
                     onChange={(e) => {
                       if (!selectedPlatform) {
                         toast.error("Please select a platform first");
                         return;
                       }
                       const percentage = e.target.value;
+                      const numValue = parseFloat(percentage);
+                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                        return; // Simply ignore invalid values
+                      }
                       handleFilterChange(
                         "social_media_followers_country_percentage",
+                        percentage
+                      );
+                    }}
+                    disabled={!selectedPlatform}
+                  />
+                </Tooltip>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <Divider />
+
+        <div>
+          <Tooltip title="Filter influencers whose followers are predominantly from specific cities with the specified percentage - especially useful for local businesses">
+            <Title level={5} className="mb-3 cursor-help">
+              Top Follower Cities
+            </Title>
+          </Tooltip>
+          <Text type="secondary" className="block mb-3 text-sm">
+            Select a city and specify the percentage of followers from that
+            city. Perfect for local business campaigns.
+          </Text>
+          <div className="space-y-4">
+            <Select
+              showSearch
+              placeholder="Search and select a city"
+              value={selectedFollowerCities}
+              onChange={(value) => {
+                if (!selectedPlatform) {
+                  toast.error("Please select a platform first");
+                  return;
+                }
+                setSelectedFollowerCities(value);
+                if (value) {
+                  handleFilterChange("social_media_followers_city", value);
+                } else {
+                  handleFilterChange("social_media_followers_city", null);
+                  handleFilterChange(
+                    "social_media_followers_city_percentage",
+                    null
+                  );
+                }
+              }}
+              className="w-full mb-4"
+              options={cities.map((city) => ({
+                value: city,
+                label: city,
+              }))}
+              disabled={!selectedPlatform}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
+            {selectedFollowerCities && (
+              <div className="flex items-center justify-between gap-4">
+                <Text className="flex-1">{selectedFollowerCities}</Text>
+                <Tooltip title="Enter the minimum percentage of followers from this city">
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    placeholder="%"
+                    style={{ width: "100px" }}
+                    onKeyDown={(e) => {
+                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
+                        return;
+                      }
+                      // Allow: numbers and decimal point
+                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
+                        // Check if adding this digit would exceed 100
+                        const currentValue = e.target.value;
+                        const newValue = currentValue + e.key;
+                        if (parseFloat(newValue) > 100) {
+                          e.preventDefault();
+                        }
+                        return;
+                      }
+                      e.preventDefault();
+                    }}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error("Please select a platform first");
+                        return;
+                      }
+                      const percentage = e.target.value;
+                      const numValue = parseFloat(percentage);
+                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                        return; // Simply ignore invalid values
+                      }
+                      handleFilterChange(
+                        "social_media_followers_city_percentage",
                         percentage
                       );
                     }}
