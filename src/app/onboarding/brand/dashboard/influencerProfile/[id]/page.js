@@ -437,6 +437,32 @@ export default function InfluencerProfile() {
 
             {/* Right Column */}
             <Col xs={24} lg={8}>
+              {/* Collaboration Status */}
+              <Card title="Collaboration Status" className="mb-4">
+                <Space direction="vertical">
+                  <Space>
+                    <Badge
+                      status={
+                        discoveryProfile.isAvailableForCollaboration
+                          ? "success"
+                          : "error"
+                      }
+                      text={
+                        <Text strong>
+                          {discoveryProfile.isAvailableForCollaboration
+                            ? "Available"
+                            : "Not Available"}
+                        </Text>
+                      }
+                    />
+                  </Space>
+                  <Text type="secondary">
+                    {discoveryProfile.isAvailableForCollaboration
+                      ? "This influencer is open for collaborations"
+                      : "This influencer is not currently available for collaborations"}
+                  </Text>
+                </Space>
+              </Card>
               {/* Engagement Stats */}
               <Card title="Engagement Stats" className="mb-4">
                 <Row gutter={[16, 16]}>
@@ -509,33 +535,6 @@ export default function InfluencerProfile() {
                   </Space>
                 </Card>
               )}
-
-              {/* Collaboration Status */}
-              <Card title="Collaboration Status" className="mb-4">
-                <Space direction="vertical">
-                  <Space>
-                    <Badge
-                      status={
-                        discoveryProfile.isAvailableForCollaboration
-                          ? "success"
-                          : "error"
-                      }
-                      text={
-                        <Text strong>
-                          {discoveryProfile.isAvailableForCollaboration
-                            ? "Available"
-                            : "Not Available"}
-                        </Text>
-                      }
-                    />
-                  </Space>
-                  <Text type="secondary">
-                    {discoveryProfile.isAvailableForCollaboration
-                      ? "This influencer is open for collaborations"
-                      : "This influencer is not currently available for collaborations"}
-                  </Text>
-                </Space>
-              </Card>
 
               {/* Contact Information */}
               <Card title="Contact Information">

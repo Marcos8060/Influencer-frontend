@@ -480,9 +480,9 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
     return (
       <div style={{ padding: "0 16px" }}>
         <MetricsDisplayCard>
-          <Title level={4} style={{ marginBottom: 8 }}>
+          <p className="mb-8 text-md">
             {instagramMetricsLifetime.description}
-          </Title>
+          </p>
 
           {renderDateInfo()}
 
