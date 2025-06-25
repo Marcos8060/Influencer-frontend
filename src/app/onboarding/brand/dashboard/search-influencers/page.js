@@ -141,7 +141,7 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
-  console.log("USERS ",searchResults)
+  console.log("USERS ", searchResults);
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState(
     []
@@ -230,22 +230,24 @@ const SearchInfluencers = () => {
   // Handle influencer selection
   const handleInfluencerSelect = (influencerId, isSelected) => {
     if (isSelected) {
-      setSelectedInfluencers(prev => [...prev, influencerId]);
+      setSelectedInfluencers((prev) => [...prev, influencerId]);
     } else {
-      setSelectedInfluencers(prev => prev.filter(id => id !== influencerId));
+      setSelectedInfluencers((prev) =>
+        prev.filter((id) => id !== influencerId)
+      );
     }
   };
 
   // Handle bulk actions
   const handleBulkAddToBucket = () => {
-    const selectedInfluencerData = results.filter(influencer => 
+    const selectedInfluencerData = results.filter((influencer) =>
       selectedInfluencers.includes(influencer.influencerId)
     );
     setBucketModalData(selectedInfluencerData);
   };
 
   const handleBulkAddToCampaign = () => {
-    const selectedInfluencerData = results.filter(influencer => 
+    const selectedInfluencerData = results.filter((influencer) =>
       selectedInfluencers.includes(influencer.influencerId)
     );
     setCampaignModalData(selectedInfluencerData);
@@ -366,6 +368,203 @@ const SearchInfluencers = () => {
           </div>
         </div>
       </div>
+
+      {/* Selected Filters Display */}
+      {Object.keys(filters).some((key) => {
+        const value = filters[key];
+        return (
+          (value && typeof value === "string" && value !== "") ||
+          (Array.isArray(value) && value.length > 0) ||
+          (typeof value === "object" &&
+            value !== null &&
+            Object.keys(value).length > 0)
+        );
+      }) && (
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <section className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Text strong className="text-primary">
+                Active Filters:
+              </Text>
+              <div className="flex flex-wrap gap-2">
+                {/* Search term */}
+                {filters.fullName && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("fullName", "")}
+                    className="flex items-center gap-1"
+                    color="blue"
+                  >
+                    Search: {filters.fullName}
+                  </Tag>
+                )}
+
+                {/* Categories */}
+                {filters.categories &&
+                  filters.categories.length > 0 &&
+                  filters.categories.map((category, index) => (
+                    <Tag
+                      key={`category-${index}`}
+                      closable
+                      onClose={() => {
+                        const newCategories = filters.categories.filter(
+                          (_, i) => i !== index
+                        );
+                        handleFilterChange("categories", newCategories);
+                      }}
+                      className="flex items-center gap-1"
+                      color="purple"
+                    >
+                      {category}
+                    </Tag>
+                  ))}
+
+                {/* Gender */}
+                {filters.gender && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("gender", "")}
+                    className="flex items-center gap-1"
+                    color="green"
+                  >
+                    Gender: {filters.gender}
+                  </Tag>
+                )}
+
+                {/* Country */}
+                {filters.country && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("country", "")}
+                    className="flex items-center gap-1"
+                    color="orange"
+                  >
+                    Country: {filters.country}
+                  </Tag>
+                )}
+
+                {/* City */}
+                {filters.city && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("city", "")}
+                    className="flex items-center gap-1"
+                    color="cyan"
+                  >
+                    City: {filters.city}
+                  </Tag>
+                )}
+
+                {/* Social Media Platform */}
+                {filters.social_media_platform_name && (
+                  <Tag
+                    closable
+                    onClose={() => {
+                      handleFilterChange("social_media_platform_name", null);
+                      setSelectedPlatform(null);
+                    }}
+                    className="flex items-center gap-1"
+                    color="magenta"
+                  >
+                    Platform: {filters.social_media_platform_name}
+                  </Tag>
+                )}
+
+                {/* Follower Demographics */}
+                {filters.social_media_followers_gender && (
+                  <Tag
+                    closable
+                    onClose={() => {
+                      handleFilterChange("social_media_followers_gender", null);
+                      handleFilterChange(
+                        "social_media_followers_gender_percentage",
+                        null
+                      );
+                      setSelectedFollowerGenders([]);
+                    }}
+                    className="flex items-center gap-1"
+                    color="red"
+                  >
+                    Follower Gender:{" "}
+                    {filters.social_media_followers_gender_percentage}%
+                  </Tag>
+                )}
+
+                {filters.social_media_followers_age && (
+                  <Tag
+                    closable
+                    onClose={() => {
+                      handleFilterChange("social_media_followers_age", null);
+                      handleFilterChange(
+                        "social_media_followers_age_percentage",
+                        null
+                      );
+                      setSelectedFollowerAgeRanges([]);
+                    }}
+                    className="flex items-center gap-1"
+                    color="volcano"
+                  >
+                    Follower Age: {filters.social_media_followers_age} (
+                    {filters.social_media_followers_age_percentage}%)
+                  </Tag>
+                )}
+
+                {filters.social_media_followers_country && (
+                  <Tag
+                    closable
+                    onClose={() => {
+                      handleFilterChange(
+                        "social_media_followers_country",
+                        null
+                      );
+                      handleFilterChange(
+                        "social_media_followers_country_percentage",
+                        null
+                      );
+                      setSelectedFollowerCountries(null);
+                    }}
+                    className="flex items-center gap-1"
+                    color="geekblue"
+                  >
+                    Follower Country: {filters.social_media_followers_country} (
+                    {filters.social_media_followers_country_percentage}%)
+                  </Tag>
+                )}
+              </div>
+            </div>
+            <Button
+              size="small"
+              onClick={() => {
+                setFilters({
+                  bio: "",
+                  platform_verified: null,
+                  race: "",
+                  country: "",
+                  city: "",
+                  categories: [],
+                  age_start: null,
+                  age_end: null,
+                  gender: "",
+                  fullName: "",
+                  page_size: 20,
+                  social_media_followers_age: null,
+                  social_media_followers_age_percentage: null,
+                  social_media_followers_city: null,
+                  social_media_followers_city_percentage: null,
+                  social_media_followers_country: null,
+                  social_media_followers_country_percentage: null,
+                  social_media_followers_gender: null,
+                  social_media_followers_gender_percentage: null,
+                  social_media_platform_name: null,
+                });
+              }}
+              className="text-xs"
+            >
+              Clear All
+            </Button>
+          </section>
+        </div>
+      )}
 
       {/* Follower Demographics Drawer */}
       <Drawer
@@ -792,7 +991,9 @@ const SearchInfluencers = () => {
                     influencer={influencer}
                     onAddToBucket={() => setBucketModalData([influencer])}
                     onAddToCampaign={() => setCampaignModalData([influencer])}
-                    isSelected={selectedInfluencers.includes(influencer.influencerId)}
+                    isSelected={selectedInfluencers.includes(
+                      influencer.influencerId
+                    )}
                     onSelect={handleInfluencerSelect}
                     showCheckbox={true}
                     bucketList={bucketList}

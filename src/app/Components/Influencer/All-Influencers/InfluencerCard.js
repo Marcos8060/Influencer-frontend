@@ -66,7 +66,7 @@ export default function InfluencerCard({
         }`}
         style={{ 
           boxShadow: isSelected 
-            ? "0 8px 32px rgba(59, 130, 246, 0.15), 0 4px 16px rgba(0,0,0,0.08)" 
+            ? "0 4px 16px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(0,0,0,0.04)" 
             : "0 4px 24px 0 rgba(0,0,0,0.04)"
         }}
       >
