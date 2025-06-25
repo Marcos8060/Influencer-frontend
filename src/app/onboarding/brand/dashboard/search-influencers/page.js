@@ -131,6 +131,11 @@ const SearchInfluencers = () => {
     social_media_followers_gender: null,
     social_media_followers_gender_percentage: null,
     social_media_platform_name: null,
+    // Add campaign and bucket filtering
+    selectedCampaign: null,
+    selectedBucket: null,
+    hideInCampaign: false,
+    hideInBucket: false,
   });
   const [cursor, setCursor] = useState(null);
   const [nextCursor, setNextCursor] = useState(null);
@@ -141,7 +146,6 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
-  console.log("USERS ", searchResults);
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState(
     []
@@ -153,6 +157,10 @@ const SearchInfluencers = () => {
   const [campaignModalData, setCampaignModalData] = useState(null);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  // Get bucket list and campaigns for status checking
+  const { bucketList } = useSelector((store) => store.bucket);
+  const { brandCampaigns } = useSelector((store) => store.campaign);
+
 
   // Fetch results from backend
   const fetchResults = (customCursor = null) => {
@@ -220,6 +228,62 @@ const SearchInfluencers = () => {
   // Results to display
   const results = searchResults?.results || [];
 
+  // Filter results based on campaign/bucket selections
+  const filteredResults = results.filter((influencer) => {
+    // Check if influencer is in the selected campaign
+    if (filters.selectedCampaign) {
+      const selectedCampaign = brandCampaigns.find(c => c.id === filters.selectedCampaign);
+      const isInSelectedCampaign = selectedCampaign?.collaborators?.some(
+        collab => collab.influencer === influencer.influencerId
+      );
+      
+      // If hideInCampaign is true, exclude influencers in campaigns
+      if (filters.hideInCampaign && isInSelectedCampaign) {
+        return false;
+      }
+      
+      // If a specific campaign is selected, only show influencers in that campaign
+      if (!isInSelectedCampaign) {
+        return false;
+      }
+    }
+    
+    // Check if influencer is in the selected bucket
+    if (filters.selectedBucket) {
+      const selectedBucket = bucketList.find(b => b.id === filters.selectedBucket);
+      const isInSelectedBucket = selectedBucket?.influencers?.some(
+        inf => inf.id === influencer.influencerId
+      );
+      
+      // If hideInBucket is true, exclude influencers in buckets
+      if (filters.hideInBucket && isInSelectedBucket) {
+        return false;
+      }
+      
+      // If a specific bucket is selected, only show influencers in that bucket
+      if (!isInSelectedBucket) {
+        return false;
+      }
+    }
+    
+    // General hide options (when no specific campaign/bucket is selected)
+    if (filters.hideInCampaign && !filters.selectedCampaign) {
+      const isInAnyCampaign = brandCampaigns.some(campaign =>
+        campaign.collaborators.some(collab => collab.influencer === influencer.influencerId)
+      );
+      if (isInAnyCampaign) return false;
+    }
+    
+    if (filters.hideInBucket && !filters.selectedBucket) {
+      const isInAnyBucket = bucketList.some(bucket =>
+        bucket.influencers.some(inf => inf.id === influencer.influencerId)
+      );
+      if (isInAnyBucket) return false;
+    }
+    
+    return true;
+  });
+
   useEffect(() => {
     if (auth) {
       dispatch(fetchAllBuckets(auth));
@@ -240,14 +304,14 @@ const SearchInfluencers = () => {
 
   // Handle bulk actions
   const handleBulkAddToBucket = () => {
-    const selectedInfluencerData = results.filter((influencer) =>
+    const selectedInfluencerData = filteredResults.filter((influencer) =>
       selectedInfluencers.includes(influencer.influencerId)
     );
     setBucketModalData(selectedInfluencerData);
   };
 
   const handleBulkAddToCampaign = () => {
-    const selectedInfluencerData = results.filter((influencer) =>
+    const selectedInfluencerData = filteredResults.filter((influencer) =>
       selectedInfluencers.includes(influencer.influencerId)
     );
     setCampaignModalData(selectedInfluencerData);
@@ -263,11 +327,6 @@ const SearchInfluencers = () => {
   useEffect(() => {
     setShowBulkActions(selectedInfluencers.length > 0);
   }, [selectedInfluencers]);
-
-  // Get bucket list and campaigns for status checking
-  const { bucketList } = useSelector((store) => store.bucket);
-  const { brandCampaigns } = useSelector((store) => store.campaign);
-
   // Render
   return (
     <div className="w-full text-color p-4 md:p-6">
@@ -368,6 +427,51 @@ const SearchInfluencers = () => {
                   </Tooltip>
                 </div>
               </div>
+
+              {/* Campaign & Bucket Filters */}
+              <div>
+                <Tooltip title="Filter and organize influencers by specific campaigns or buckets to manage your influencer discovery process">
+                  <Text strong className="block mb-2 text-primary cursor-help">
+                    Campaign & Bucket Organization
+                  </Text>
+                </Tooltip>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <Select
+                    placeholder="Filter by Campaign"
+                    value={filters.selectedCampaign}
+                    onChange={(val) => handleFilterChange("selectedCampaign", val)}
+                    style={{ minWidth: "200px" }}
+                    allowClear
+                    options={brandCampaigns.map((campaign) => ({
+                      value: campaign.id,
+                      label: campaign.title,
+                    }))}
+                  />
+                  <Select
+                    placeholder="Filter by Bucket"
+                    value={filters.selectedBucket}
+                    onChange={(val) => handleFilterChange("selectedBucket", val)}
+                    style={{ minWidth: "200px" }}
+                    allowClear
+                    options={bucketList.map((bucket) => ({
+                      value: bucket.id,
+                      label: bucket.name,
+                    }))}
+                  />
+                  <Checkbox
+                    checked={filters.hideInCampaign}
+                    onChange={(e) => handleFilterChange("hideInCampaign", e.target.checked)}
+                  >
+                    Hide influencers in campaigns
+                  </Checkbox>
+                  <Checkbox
+                    checked={filters.hideInBucket}
+                    onChange={(e) => handleFilterChange("hideInBucket", e.target.checked)}
+                  >
+                    Hide influencers in buckets
+                  </Checkbox>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -379,6 +483,7 @@ const SearchInfluencers = () => {
         return (
           (value && typeof value === "string" && value !== "") ||
           (Array.isArray(value) && value.length > 0) ||
+          (typeof value === "boolean" && value === true) ||
           (typeof value === "object" &&
             value !== null &&
             Object.keys(value).length > 0)
@@ -474,6 +579,53 @@ const SearchInfluencers = () => {
                   </Tag>
                 )}
 
+                {/* Campaign Filter */}
+                {filters.selectedCampaign && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("selectedCampaign", null)}
+                    className="flex items-center gap-1"
+                    color="lime"
+                  >
+                    Campaign: {brandCampaigns.find(c => c.id === filters.selectedCampaign)?.title}
+                  </Tag>
+                )}
+                
+                {/* Bucket Filter */}
+                {filters.selectedBucket && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("selectedBucket", null)}
+                    className="flex items-center gap-1"
+                    color="gold"
+                  >
+                    Bucket: {bucketList.find(b => b.id === filters.selectedBucket)?.name}
+                  </Tag>
+                )}
+                
+                {/* Hide Options */}
+                {filters.hideInCampaign && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("hideInCampaign", false)}
+                    className="flex items-center gap-1"
+                    color="red"
+                  >
+                    Hide Campaign Influencers
+                  </Tag>
+                )}
+                
+                {filters.hideInBucket && (
+                  <Tag
+                    closable
+                    onClose={() => handleFilterChange("hideInBucket", false)}
+                    className="flex items-center gap-1"
+                    color="red"
+                  >
+                    Hide Bucket Influencers
+                  </Tag>
+                )}
+
                 {/* Follower Demographics */}
                 {filters.social_media_followers_gender && (
                   <Tag
@@ -560,6 +712,10 @@ const SearchInfluencers = () => {
                   social_media_followers_gender: null,
                   social_media_followers_gender_percentage: null,
                   social_media_platform_name: null,
+                  selectedCampaign: null,
+                  selectedBucket: null,
+                  hideInCampaign: false,
+                  hideInBucket: false,
                 });
               }}
               className="text-xs"
@@ -965,7 +1121,7 @@ const SearchInfluencers = () => {
           <>
             <div className="results-header mb-4">
               <div className="flex justify-between items-center">
-                <Text strong>Showing {results.length} influencers</Text>
+                <Text strong>Showing {filteredResults.length} influencers</Text>
                 {showBulkActions && (
                   <div className="flex gap-2">
                     <Button
@@ -997,7 +1153,7 @@ const SearchInfluencers = () => {
               </div>
             </div>
             <Row gutter={[24, 24]}>
-              {results.map((influencer) => (
+              {filteredResults.map((influencer) => (
                 <Col xs={24} sm={12} md={12} lg={8} key={influencer.id}>
                   <InfluencerCard
                     influencer={influencer}
