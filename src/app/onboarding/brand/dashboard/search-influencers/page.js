@@ -27,6 +27,8 @@ import {
   FacebookOutlined,
   TikTokOutlined,
   MailOutlined,
+  TeamOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
@@ -149,6 +151,8 @@ const SearchInfluencers = () => {
   );
   const [bucketModalData, setBucketModalData] = useState(null);
   const [campaignModalData, setCampaignModalData] = useState(null);
+  const [selectedInfluencers, setSelectedInfluencers] = useState([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
   // Fetch results from backend
   const fetchResults = (customCursor = null) => {
@@ -222,6 +226,45 @@ const SearchInfluencers = () => {
       dispatch(fetchAllBrandCampaigns(auth));
     }
   }, [auth]);
+
+  // Handle influencer selection
+  const handleInfluencerSelect = (influencerId, isSelected) => {
+    if (isSelected) {
+      setSelectedInfluencers(prev => [...prev, influencerId]);
+    } else {
+      setSelectedInfluencers(prev => prev.filter(id => id !== influencerId));
+    }
+  };
+
+  // Handle bulk actions
+  const handleBulkAddToBucket = () => {
+    const selectedInfluencerData = results.filter(influencer => 
+      selectedInfluencers.includes(influencer.influencerId)
+    );
+    setBucketModalData(selectedInfluencerData);
+  };
+
+  const handleBulkAddToCampaign = () => {
+    const selectedInfluencerData = results.filter(influencer => 
+      selectedInfluencers.includes(influencer.influencerId)
+    );
+    setCampaignModalData(selectedInfluencerData);
+  };
+
+  // Clear selections when filters change
+  useEffect(() => {
+    setSelectedInfluencers([]);
+    setShowBulkActions(false);
+  }, [filters]);
+
+  // Show bulk actions when influencers are selected
+  useEffect(() => {
+    setShowBulkActions(selectedInfluencers.length > 0);
+  }, [selectedInfluencers]);
+
+  // Get bucket list and campaigns for status checking
+  const { bucketList } = useSelector((store) => store.bucket);
+  const { brandCampaigns } = useSelector((store) => store.campaign);
 
   // Render
   return (
@@ -710,7 +753,37 @@ const SearchInfluencers = () => {
         ) : results.length > 0 ? (
           <>
             <div className="results-header mb-4">
-              <Text strong>Showing {results.length} influencers</Text>
+              <div className="flex justify-between items-center">
+                <Text strong>Showing {results.length} influencers</Text>
+                {showBulkActions && (
+                  <div className="flex gap-2">
+                    <Button
+                      className="bg-gradient-to-r from-primary to-secondary"
+                      type="primary"
+                      size="small"
+                      onClick={handleBulkAddToBucket}
+                      icon={<TeamOutlined />}
+                    >
+                      Add {selectedInfluencers.length} to Bucket
+                    </Button>
+                    <Button
+                      className="bg-gradient-to-r from-secondary to-primary"
+                      type="primary"
+                      size="small"
+                      onClick={handleBulkAddToCampaign}
+                      icon={<ShoppingOutlined />}
+                    >
+                      Add {selectedInfluencers.length} to Campaign
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => setSelectedInfluencers([])}
+                    >
+                      Clear Selection
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
             <Row gutter={[24, 24]}>
               {results.map((influencer) => (
@@ -719,6 +792,11 @@ const SearchInfluencers = () => {
                     influencer={influencer}
                     onAddToBucket={() => setBucketModalData([influencer])}
                     onAddToCampaign={() => setCampaignModalData([influencer])}
+                    isSelected={selectedInfluencers.includes(influencer.influencerId)}
+                    onSelect={handleInfluencerSelect}
+                    showCheckbox={true}
+                    bucketList={bucketList}
+                    brandCampaigns={brandCampaigns}
                   />
                 </Col>
               ))}
