@@ -8,6 +8,7 @@ import { FaUsersGear } from "react-icons/fa6";
 import { FaUserEdit } from "react-icons/fa";
 import { MdCampaign } from "react-icons/md";
 import { GoDotFill } from "react-icons/go";
+import { FaBoxOpen } from "react-icons/fa";
 
 export const menu = [
   {
@@ -23,28 +24,34 @@ export const menu = [
     role: ["Influencer"],
   },
   {
-    label: "Influencers",
-    path: "/brand/influencer-discovery",
+    label: "Influencer Discovery",
+    path: "/onboarding/brand/dashboard/search-influencers",
     icon: <FaUsersGear />,
     role: ["Brand"],
-    children: [
-      {
-        label: "Influencer Discovery",
-        path: "/brand/influencer-discovery",
-        icon: <GoDotFill className="text-xs" />,
-        role: ["Brand"],
-      },
-      {
-        label: "Search Influencers",
-        path: "/onboarding/brand/dashboard/search-influencers",
-        icon: <GoDotFill className="text-xs" />,
-        role: ["Brand"],
-      },
-    ],
+    // children: [
+    //   {
+    //     label: "Influencer Discovery",
+    //     path: "/brand/influencer-discovery",
+    //     icon: <GoDotFill className="text-xs" />,
+    //     role: ["Brand"],
+    //   },
+    //   {
+    //     label: "Influencer Discovery",
+    //     path: "/onboarding/brand/dashboard/search-influencers",
+    //     icon: <GoDotFill className="text-xs" />,
+    //     role: ["Brand"],
+    //   },
+    // ],
+  },
+  {
+    label: "Buckets",
+    path: "/brand/buckets",
+    icon: <FaBoxOpen />,
+    role: ["Brand"],
   },
   {
     label: "Brand Discovery",
-    path: "/onboarding/influencer/brand-discovery",
+    path: "/onboarding/influencer/buckets",
     icon: <FaUsersGear />,
     role: ["Influencer"],
   },

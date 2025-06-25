@@ -77,7 +77,7 @@ const BucketList = () => {
       width: 150,
       align: 'left',
       render: (_, record) => (
-        <Link href={`/brand/influencer-discovery/influencerBuckets/${record.id}`}>
+        <Link href={`/brand/buckets/influencerBuckets/${record.id}`}>
           <Button 
             type="text" 
             icon={<TiEye className="text-lg" />} 
@@ -101,7 +101,7 @@ const BucketList = () => {
 
   return (
     <Card
-      title="Bucket List"
+      title={<span className="text-lg font-bold text-primary">Bucket List</span>}
       extra={
         <Space>
           {/* <Button className="flex items-center">
@@ -110,57 +110,64 @@ const BucketList = () => {
           <BucketListDialog />
         </Space>
       }
-      className="shadow-sm"
+      className="shadow-md border-none bg-white rounded-2xl"
+      bodyStyle={{ padding: 0 }}
     >
-      {loading ? (
-        <Table
-          columns={columns}
-          dataSource={[]}
-          loading={loading}
-          pagination={false}
-        />
-      ) : (
-        <>
-          {currentData.length > 0 ? (
-            <div className="w-full">
-              <Table
-                columns={columns}
-                dataSource={currentData}
-                pagination={false}
-                scroll={{ x: 'max-content', y: '55vh' }}
-                className="custom-table"
-                rowKey="id"
-              />
-              
-              <div className="flex justify-center mt-6">
-                <Pagination
-                  current={currentPage}
-                  total={bucketList.length}
-                  pageSize={itemsPerPage}
-                  onChange={setCurrentPage}
-                  showSizeChanger={false}
-                  prevIcon={<HiArrowLongLeft />}
-                  nextIcon={<HiArrowLongRight />}
-                  className="ant-pagination-custom"
+      <div className="w-full p-4">
+        {loading ? (
+          <Table
+            columns={columns}
+            dataSource={[]}
+            loading={loading}
+            pagination={false}
+            className="w-full rounded-xl overflow-hidden"
+          />
+        ) : (
+          <>
+            {currentData.length > 0 ? (
+              <div className="w-full">
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  scroll={{ x: 'max-content', y: '55vh' }}
+                  className="w-full rounded-xl overflow-hidden polished-table"
+                  rowKey="id"
+                  bordered
+                  size="middle"
+                  rowClassName={(_, idx) => idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                  style={{ minWidth: '100%', background: 'white' }}
                 />
+                <div className="flex justify-center mt-6">
+                  <Pagination
+                    current={currentPage}
+                    total={bucketList.length}
+                    pageSize={itemsPerPage}
+                    onChange={setCurrentPage}
+                    showSizeChanger={false}
+                    prevIcon={<HiArrowLongLeft />}
+                    nextIcon={<HiArrowLongRight />}
+                    className="ant-pagination-custom"
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <Empty
-              image={<FaBoxOpen className="text-6xl text-gray-400" />}
-              imageStyle={{ height: 80, fontSize: '4rem' }}
-              description={
-                <span className="text-gray-500">
-                  No Buckets available in your Repository
-                </span>
-              }
-              className="flex flex-col items-center justify-center h-[60vh]"
-            >
-              <BucketListDialog />
-            </Empty>
-          )}
-        </>
-      )}
+            ) : (
+              <Empty
+                image={<FaBoxOpen className="text-6xl text-gray-400" />}
+                imageStyle={{ height: 80, fontSize: '4rem' }}
+                description={
+                  <span className="text-gray-500">
+                    No Buckets available in your Repository
+                  </span>
+                }
+                className="flex flex-col items-center justify-center h-[60vh]"
+              >
+                <BucketListDialog />
+              </Empty>
+            )}
+          </>
+        )}
+      </div>
     </Card>
   );
 };

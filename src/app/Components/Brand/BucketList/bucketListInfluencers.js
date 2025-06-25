@@ -4,19 +4,15 @@ import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaRegEnvelope } from "react-icons/fa";
-import { FaHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { HiArrowNarrowLeft } from "react-icons/hi";
 import Link from "next/link";
 import "react-loading-skeleton/dist/skeleton.css";
-import Skeleton from "react-loading-skeleton";
 import { FaBoxOpen } from "react-icons/fa";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { removeFromBucket } from "@/redux/services/influencer/bucket";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { fetchAllInfluencersInBucket } from "@/redux/features/bucket-list";
-import toast from "react-hot-toast";
 import { Spin, Modal, Button, Tooltip, Tag, message } from "antd";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 
@@ -54,7 +50,7 @@ const BucketListInfluencers = ({ loading }) => {
     <>
       <section className="py-4 bg-background">
         <Link
-          href="/brand/influencer-discovery"
+          href="/brand/buckets"
           className="flex items-center gap-2 mb-3 text-link"
         >
           <HiArrowNarrowLeft />

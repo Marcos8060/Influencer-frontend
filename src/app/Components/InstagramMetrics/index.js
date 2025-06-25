@@ -201,7 +201,6 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       const response = await dispatch(
         getInstagramMetricsLifetime(auth, payload)
       );
-      console.log("RESPONSE ", response);
       if (response.statusCode === 10) {
         toast.error("The Influencer has less than 100 engaged audience");
       }

@@ -5,7 +5,6 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllBuckets,
-  fetchExcludedBuckets,
 } from "@/redux/features/bucket-list";
 import BucketListDialog from "../../Brand/BucketList/bucket-list-dialog";
 import toast from "react-hot-toast";
@@ -22,12 +21,9 @@ export default function AddToBucketListModal({ data, open, onClose }) {
   const auth = useAuth();
 
   // Only display buckets which the influencer has not been added
-  const excludedBuckets = bucketList.filter(bucket =>
+  const excludedBuckets = Array.isArray(bucketList) && bucketList.filter(bucket =>
     !bucket.influencers.some(influencer => influencer.id === data[0]?.influencerId)
   );
-
-  // Create a ref with the new React 19 pattern
-  const selectRef = React.useRef(null);
 
   const handleSubmit = async (values) => {
     setLoading(true);
