@@ -61,8 +61,8 @@ export default function InfluencerCard({
       <div
         className={`bg-white rounded-2xl shadow flex flex-col md:flex-row items-center p-4 gap-4 min-h-[220px] h-full w-full max-w-full relative transition-all duration-200 ${
           isSelected 
-            ? "ring-2 ring-primary ring-opacity-60 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-primary shadow-lg transform scale-[1.02]" 
-            : "hover:shadow-md hover:scale-[1.01]"
+            ? "ring-1 ring-primary ring-opacity-60 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-primary shadow-sm transform scale-[1.02]" 
+            : "hover:shadow-md"
         }`}
         style={{ 
           boxShadow: isSelected 
