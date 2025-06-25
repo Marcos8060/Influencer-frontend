@@ -33,9 +33,9 @@ import {
   PhoneOutlined,
   LinkOutlined,
   BookOutlined,
-  PictureOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
+import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 import { FaTiktok } from "react-icons/fa";
 import Link from "next/link";
@@ -300,8 +300,8 @@ export default function InfluencerProfile() {
                           icon={<FaTiktok />}
                           className={
                             discoveryProfile.isTiktokConnected
-                              ? "bg-black text-white"
-                              : "bg-gray-200 text-gray-400"
+                              ? "bg-black flex items-center justify-center text-white"
+                              : "bg-gray-200 flex items-center justify-center text-gray-400"
                           }
                         />
                         <div>
@@ -319,7 +319,7 @@ export default function InfluencerProfile() {
                       </Space>
                     </Card>
                   </Col>
-                  <Col xs={24} sm={12}>
+                  {/* <Col xs={24} sm={12}>
                     <Card
                       className={`border-l-4 ${
                         discoveryProfile.isFacebookAccountConnected
@@ -361,15 +361,15 @@ export default function InfluencerProfile() {
                     >
                       <Space>
                         <Avatar
-                          icon={<TwitterOutlined />}
+                          icon={<FaXTwitter />}
                           className={
                             discoveryProfile.isTwitterAccountConnected
-                              ? "bg-blue-100 text-blue-400"
-                              : "bg-gray-200 text-gray-400"
+                              ? "bg-primary flex items-center justify-center text-blue-400"
+                              : "bg-gray-200 flex items-center justify-center text-gray-400"
                           }
                         />
                         <div>
-                          <Text strong>Twitter</Text>
+                          <Text strong>X</Text>
                           <div>
                             <Text type="secondary">
                               {discoveryProfile.isTwitterAccountConnected
@@ -380,7 +380,7 @@ export default function InfluencerProfile() {
                         </div>
                       </Space>
                     </Card>
-                  </Col>
+                  </Col> */}
                 </Row>
               </Card>
 

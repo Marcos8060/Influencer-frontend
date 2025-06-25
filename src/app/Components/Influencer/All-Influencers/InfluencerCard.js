@@ -75,7 +75,7 @@ export default function InfluencerCard({ influencer, onAddToBucket, onAddToCampa
         </div>
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 mt-2">
-          <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.id}`}>
+          <Link href={`/brand/influencer-discovery/influencerProfile/${influencer.influencerId}`}>
             <Button
               className="rounded-full px-4 font-medium border border-gray-300 bg-white hover:bg-gray-50"
               size="small"
