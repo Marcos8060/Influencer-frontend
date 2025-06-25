@@ -35,17 +35,16 @@ export default function InfluencerCard({
   const city = getDisplayName(influencer.city);
   const country = getDisplayName(influencer.country);
 
-  // Check if influencer is in any bucket
-  const isInBucket = bucketList.some((bucket) =>
+  // Count buckets and campaigns
+  const bucketCount = bucketList.filter((bucket) =>
     bucket.influencers.some((inf) => inf.id === influencer.influencerId)
-  );
+  ).length;
 
-  // Check if influencer is in any campaign
-  const isInCampaign = brandCampaigns.some((campaign) =>
+  const campaignCount = brandCampaigns.filter((campaign) =>
     campaign.collaborators.some(
       (collab) => collab.influencer === influencer.influencerId
     )
-  );
+  ).length;
 
   // Avatar initials fallback
   const getInitials = (name) => {
@@ -85,7 +84,7 @@ export default function InfluencerCard({
         
         {/* Status indicators - moved to top right */}
         <div className="absolute top-3 right-3 z-10 flex gap-1">
-          {isInBucket && (
+          {bucketCount > 0 && (
             <Tag 
               color="blue" 
               className="text-xs flex items-center gap-1 font-semibold px-3 py-1 rounded-full shadow-sm border-0"
@@ -100,7 +99,7 @@ export default function InfluencerCard({
               In Bucket
             </Tag>
           )}
-          {isInCampaign && (
+          {campaignCount > 0 && (
             <Tag 
               color="green" 
               className="text-xs flex items-center gap-1 font-semibold px-3 py-1 rounded-full shadow-sm border-0"
@@ -171,27 +170,27 @@ export default function InfluencerCard({
             </Link>
             <button
               className={`rounded px-4 font-medium border ${
-                isInBucket
+                bucketCount > 0
                   ? "border-gray-300 text-gray-500 bg-gray-100 cursor-not-allowed"
                   : "border-primary text-primary bg-white hover:bg-primary hover:text-white"
               }`}
               size="small"
-              onClick={!isInBucket ? onAddToBucket : undefined}
-              disabled={isInBucket}
+              onClick={bucketCount === 0 ? onAddToBucket : undefined}
+              disabled={bucketCount > 0}
             >
-              {isInBucket ? "In Bucket" : "Add to Bucket"}
+              {bucketCount > 0 ? "In Bucket" : "Add to Bucket"}
             </button>
             <button
               className={`rounded px-4 font-medium border ${
-                isInCampaign
+                campaignCount > 0
                   ? "border-gray-300 text-gray-500 bg-gray-100 cursor-not-allowed"
                   : "border-secondary text-secondary bg-white hover:bg-secondary hover:text-white"
               }`}
               size="small"
-              onClick={!isInCampaign ? onAddToCampaign : undefined}
-              disabled={isInCampaign}
+              onClick={campaignCount === 0 ? onAddToCampaign : undefined}
+              disabled={campaignCount > 0}
             >
-              {isInCampaign ? "In Campaign" : "Add to Campaign"}
+              {campaignCount > 0 ? "In Campaign" : "Add to Campaign"}
             </button>
             <Tooltip title="Chat with this influencer">
               <Link href={`/brand/chat/${influencer.id}`}>
