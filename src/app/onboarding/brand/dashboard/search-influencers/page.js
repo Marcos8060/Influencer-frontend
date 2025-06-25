@@ -300,9 +300,11 @@ const SearchInfluencers = () => {
             <div className="flex flex-col gap-4">
               {/* Influencer Quick Filters */}
               <div>
-                <Text strong className="block mb-2 text-primary">
-                  Influencer Filters
-                </Text>
+                <Tooltip title="Filter influencers based on their personal characteristics like content categories, gender, location, and age">
+                  <Text strong className="block mb-2 text-primary cursor-help">
+                    Influencer Filters
+                  </Text>
+                </Tooltip>
                 <div className="flex flex-wrap gap-3">
                   <Select
                     mode="multiple"
@@ -355,13 +357,15 @@ const SearchInfluencers = () => {
                       label: city,
                     }))}
                   />
-                  <button
-                    className="bg-gradient-to-r rounded px-4 py-2 text-sm from-primary to-secondary text-white"
-                    // icon={<TeamOutlined />}
-                    onClick={() => setDrawerVisible(true)}
-                  >
-                    Follower Demographics
-                  </button>
+                  <Tooltip title="Filter influencers based on their audience demographics - the age, gender, and location of their followers on social media platforms">
+                    <button
+                      className="bg-gradient-to-r rounded px-4 py-2 text-sm from-primary to-secondary text-white cursor-help"
+                      // icon={<TeamOutlined />}
+                      onClick={() => setDrawerVisible(true)}
+                    >
+                      Follower Demographics
+                    </button>
+                  </Tooltip>
                 </div>
               </div>
             </div>
@@ -674,9 +678,11 @@ const SearchInfluencers = () => {
         }
       >
         <div className="mb-6">
-          <Text strong className="block mb-3">
-            Select Platform
-          </Text>
+          <Tooltip title="Select the social media platform to filter followers by (Instagram, TikTok, or Facebook)">
+            <Title level={5} className="mb-3 cursor-help">
+              Select Platform
+            </Title>
+          </Tooltip>
           <Radio.Group
             value={selectedPlatform}
             onChange={(e) => {
@@ -732,9 +738,11 @@ const SearchInfluencers = () => {
         <Divider />
 
         <div className="mb-6">
-          <Title level={5} className="mb-3">
-            Follower Age Range
-          </Title>
+          <Tooltip title="Filter influencers whose followers fall within specific age ranges with the specified percentage">
+            <Title level={5} className="mb-3 cursor-help">
+              Follower Age Range
+            </Title>
+          </Tooltip>
           <Text type="secondary" className="block mb-3 text-sm">
             Select an age range and specify the percentage of followers in that
             range
@@ -801,9 +809,11 @@ const SearchInfluencers = () => {
         </div>
 
         <div className="mb-6">
-          <Title level={5} className="mb-3">
-            Follower Gender
-          </Title>
+          <Tooltip title="Filter influencers whose followers are predominantly of a specific gender with the specified percentage">
+            <Title level={5} className="mb-3 cursor-help">
+              Follower Gender
+            </Title>
+          </Tooltip>
           <Text type="secondary" className="block mb-3 text-sm">
             Select a gender and specify the percentage of followers of that
             gender
@@ -867,9 +877,11 @@ const SearchInfluencers = () => {
         </div>
 
         <div>
-          <Title level={5} className="mb-3">
-            Top Follower Countries
-          </Title>
+          <Tooltip title="Filter influencers whose followers are predominantly from specific countries with the specified percentage">
+            <Title level={5} className="mb-3 cursor-help">
+              Top Follower Countries
+            </Title>
+          </Tooltip>
           <Text type="secondary" className="block mb-3 text-sm">
             Select a country and specify the percentage of followers from that
             country
