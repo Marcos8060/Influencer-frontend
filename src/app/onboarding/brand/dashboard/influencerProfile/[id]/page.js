@@ -33,9 +33,9 @@ import {
   PhoneOutlined,
   LinkOutlined,
   BookOutlined,
-  PictureOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
+import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 import { FaTiktok } from "react-icons/fa";
 import Link from "next/link";
@@ -51,6 +51,7 @@ const { TabPane } = Tabs;
 export default function InfluencerProfile() {
   const [loading, setLoading] = useState(false);
   const { discoveryProfile } = useSelector((store) => store.socials);
+  console.log("PROFILE ", discoveryProfile);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pathname = usePathname();
@@ -137,7 +138,7 @@ export default function InfluencerProfile() {
                     <Statistic
                       title={
                         <span className="custom-statistic-title">
-                          Followers
+                          Instagram Followers
                         </span>
                       }
                       value={formatNumber(
@@ -150,7 +151,7 @@ export default function InfluencerProfile() {
                     <Statistic
                       title={
                         <span className="custom-statistic-title">
-                          Following
+                          Instagram Following
                         </span>
                       }
                       value={formatNumber(
@@ -161,7 +162,7 @@ export default function InfluencerProfile() {
                     />
                     <Statistic
                       title={
-                        <span className="custom-statistic-title">Posts</span>
+                        <span className="custom-statistic-title">Instagram Posts</span>
                       }
                       value={formatNumber(
                         discoveryProfile.instagram?.mediaCount
@@ -300,8 +301,8 @@ export default function InfluencerProfile() {
                           icon={<FaTiktok />}
                           className={
                             discoveryProfile.isTiktokConnected
-                              ? "bg-black text-white"
-                              : "bg-gray-200 text-gray-400"
+                              ? "bg-black flex items-center justify-center text-white"
+                              : "bg-gray-200 flex items-center justify-center text-gray-400"
                           }
                         />
                         <div>
@@ -314,68 +315,6 @@ export default function InfluencerProfile() {
                             ) : (
                               <Text type="secondary">Not connected</Text>
                             )}
-                          </div>
-                        </div>
-                      </Space>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Card
-                      className={`border-l-4 ${
-                        discoveryProfile.isFacebookAccountConnected
-                          ? "border-blue-500"
-                          : "border-gray-300"
-                      }`}
-                      bodyStyle={{ padding: "12px" }}
-                    >
-                      <Space>
-                        <Avatar
-                          icon={<FacebookOutlined />}
-                          className={
-                            discoveryProfile.isFacebookAccountConnected
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-gray-200 text-gray-400"
-                          }
-                        />
-                        <div>
-                          <Text strong>Facebook</Text>
-                          <div>
-                            <Text type="secondary">
-                              {discoveryProfile.isFacebookAccountConnected
-                                ? "Connected"
-                                : "Not connected"}
-                            </Text>
-                          </div>
-                        </div>
-                      </Space>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Card
-                      className={`border-l-4 ${
-                        discoveryProfile.isTwitterAccountConnected
-                          ? "border-blue-400"
-                          : "border-gray-300"
-                      }`}
-                      bodyStyle={{ padding: "12px" }}
-                    >
-                      <Space>
-                        <Avatar
-                          icon={<TwitterOutlined />}
-                          className={
-                            discoveryProfile.isTwitterAccountConnected
-                              ? "bg-blue-100 text-blue-400"
-                              : "bg-gray-200 text-gray-400"
-                          }
-                        />
-                        <div>
-                          <Text strong>Twitter</Text>
-                          <div>
-                            <Text type="secondary">
-                              {discoveryProfile.isTwitterAccountConnected
-                                ? "Connected"
-                                : "Not connected"}
-                            </Text>
                           </div>
                         </div>
                       </Space>
@@ -436,66 +375,6 @@ export default function InfluencerProfile() {
 
             {/* Right Column */}
             <Col xs={24} lg={8}>
-              {/* Engagement Stats */}
-              <Card title="Engagement Stats" className="mb-4">
-                <Row gutter={[16, 16]}>
-                  <Col xs={12}>
-                    <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="Overall Rating"
-                        value={discoveryProfile.overallRate}
-                        suffix="/ 5.0"
-                        prefix={<StarOutlined className="text-yellow-500" />}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Likes"
-                        value={formatNumber(discoveryProfile.tiktokLikesCount)}
-                        prefix={<LikeOutlined className="text-green-500" />}
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Videos"
-                        value={formatNumber(discoveryProfile.tiktokVideoCount)}
-                        prefix={
-                          <VideoCameraOutlined className="text-purple-500" />
-                        }
-                      />
-                    </Card>
-                  </Col>
-                  <Col xs={12}>
-                    <Card bodyStyle={{ padding: "12px" }}>
-                      <Statistic
-                        title="TikTok Followers"
-                        value={formatNumber(
-                          discoveryProfile.tiktokFollowerCount
-                        )}
-                        prefix={<TeamOutlined className="text-blue-500" />}
-                      />
-                    </Card>
-                  </Col>
-                </Row>
-              </Card>
-
-              {/* Keywords */}
-              {discoveryProfile.keywords?.length > 0 && (
-                <Card title="Content Keywords" className="mb-4">
-                  <Space size={[0, 8]} wrap>
-                    {discoveryProfile.keywords.map((keyword, index) => (
-                      <Tag key={index} color="geekblue">
-                        {keyword}
-                      </Tag>
-                    ))}
-                  </Space>
-                </Card>
-              )}
-
               {/* Collaboration Status */}
               <Card title="Collaboration Status" className="mb-4">
                 <Space direction="vertical">
@@ -522,6 +401,78 @@ export default function InfluencerProfile() {
                   </Text>
                 </Space>
               </Card>
+              {/* Engagement Stats */}
+              <Card title="Engagement Stats" className="mb-4">
+                <Row gutter={[16, 16]}>
+                  {/* <Col xs={12}>
+                    <Card bodyStyle={{ padding: "12px" }}>
+                      <Statistic
+                        title="Overall Rating"
+                        value={discoveryProfile.overallRate}
+                        suffix="/ 5.0"
+                        prefix={<StarOutlined className="text-yellow-500" />}
+                      />
+                    </Card>
+                  </Col> */}
+                  <Col xs={24}>
+                    <Card bodyStyle={{ padding: "12px" }}>
+                      <div className="flex items-center justify-between w-full">
+                        <Statistic
+                          title="TikTok Followers"
+                          value={formatNumber(
+                            discoveryProfile.tiktok?.followerCount
+                          )}
+                          prefix={<LikeOutlined className="text-green-500" />}
+                        />
+                        <Statistic
+                          title="Instagram Followers"
+                          value={formatNumber(
+                            discoveryProfile.instagram?.followersCount
+                          )}
+                          prefix={<LikeOutlined className="text-pink-500" />}
+                        />
+                      </div>
+                    </Card>
+                  </Col>
+                  <Col xs={24}>
+                    <Card bodyStyle={{ padding: "12px" }}>
+                      <div className="flex items-center justify-between w-full">
+                        <Statistic
+                          title="TikTok Videos"
+                          value={formatNumber(
+                            discoveryProfile.tiktok?.videoCount
+                          )}
+                          prefix={
+                            <VideoCameraOutlined className="text-purple-500" />
+                          }
+                        />
+                        <Statistic
+                          title="Instagram Videos"
+                          value={formatNumber(
+                            discoveryProfile.instagram?.mediaCount
+                          )}
+                          prefix={
+                            <VideoCameraOutlined className="text-purple-500" />
+                          }
+                        />
+                      </div>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+
+              {/* Keywords */}
+              {discoveryProfile.keywords?.length > 0 && (
+                <Card title="Content Keywords" className="mb-4">
+                  <Space size={[0, 8]} wrap>
+                    {discoveryProfile.keywords.map((keyword, index) => (
+                      <Tag key={index} color="geekblue">
+                        {keyword}
+                      </Tag>
+                    ))}
+                  </Space>
+                </Card>
+              )}
 
               {/* Contact Information */}
               <Card title="Contact Information">

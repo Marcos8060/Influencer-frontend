@@ -50,15 +50,17 @@ const AllInfluencers = () => {
   const displayedInfluencers =
     filterResults.length > 0 ? filterResults : influencers;
   const totalItems = displayedInfluencers?.length || 0;
-
+   console.log("BUCKET_LIST ",bucketList)
   // influencers in buckets
   const influencersInBuckets = new Set(
-    bucketList.flatMap((bucket) =>
-      Array.isArray(bucket.influencers)
-        ? bucket.influencers.map((inf) => inf.id)
-        : []
-    )
-  );
+  Array.isArray(bucketList)
+    ? bucketList.flatMap((bucket) =>
+        Array.isArray(bucket.influencers)
+          ? bucket.influencers.map((inf) => inf.id)
+          : []
+      )
+    : []
+);
 
   const handleCheckboxChange = (influencer, checked) => {
     setSelectedInfluencers((prev) =>

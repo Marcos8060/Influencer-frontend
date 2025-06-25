@@ -201,7 +201,6 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       const response = await dispatch(
         getInstagramMetricsLifetime(auth, payload)
       );
-      console.log("RESPONSE ", response);
       if (response.statusCode === 10) {
         toast.error("The Influencer has less than 100 engaged audience");
       }
@@ -472,7 +471,12 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       return (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="No data available for the selected filters"
+          description={
+            <>
+              No data available for the selected filters.<br />
+              <span className="text-xs text-gray-500">If you see this message, it means the selected metric has no results for the chosen filters or date range.</span>
+            </>
+          }
           style={{ padding: "40px 0" }}
         />
       );
@@ -481,9 +485,9 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
     return (
       <div style={{ padding: "0 16px" }}>
         <MetricsDisplayCard>
-          <Title level={4} style={{ marginBottom: 8 }}>
+          <p className="mb-8 text-md">
             {instagramMetricsLifetime.description}
-          </Title>
+          </p>
 
           {renderDateInfo()}
 

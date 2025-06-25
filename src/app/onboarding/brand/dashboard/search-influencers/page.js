@@ -139,6 +139,7 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
+  console.log("USERS ",searchResults)
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState(
     []
@@ -170,6 +171,12 @@ const SearchInfluencers = () => {
         delete payload[key];
       }
     });
+    // Map fullName to full_name for backend, remove keywords and fullName
+    if (payload.fullName) {
+      payload.full_name = payload.fullName;
+      delete payload.fullName;
+      delete payload.keywords;
+    }
     dispatch(fetchAllSearchResults(auth, payload)).then((response) => {
       const getCursorParam = (url) => {
         try {
@@ -235,11 +242,11 @@ const SearchInfluencers = () => {
             {/* Search Bar */}
             <div className="flex-1">
               <Input
-                placeholder="Search influencers by name, bio, category, or location..."
+                placeholder="Search influencers by name..."
                 prefix={<SearchOutlined />}
                 size="large"
-                value={filters.keywords}
-                onChange={(e) => handleFilterChange("keywords", e.target.value)}
+                value={filters.fullName || ""}
+                onChange={(e) => handleFilterChange("fullName", e.target.value)}
                 allowClear
               />
             </div>

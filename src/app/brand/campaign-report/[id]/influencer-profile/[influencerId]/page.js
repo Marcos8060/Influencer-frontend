@@ -458,10 +458,10 @@ const InfluencerProfile = () => {
                 </p>
                 <div className="flex gap-4 text-sm text-gray-500">
                   <span>
-                    {brandInfluencerProfile.instagram.mediaCount} posts
+                    {brandInfluencerProfile.instagram?.mediaCount} posts
                   </span>
                   <span>
-                    {brandInfluencerProfile.instagram.followsCount} following
+                    {brandInfluencerProfile.instagram?.followsCount} following
                   </span>
                 </div>
               </div>
@@ -476,16 +476,16 @@ const InfluencerProfile = () => {
               <div>
                 <h3 className="text-gray-500 font-medium">TikTok</h3>
                 <p className="text-2xl font-bold">
-                  {brandInfluencerProfile.tiktok.followerCount?.toLocaleString() ||
+                  {brandInfluencerProfile.tiktok?.followerCount?.toLocaleString() ||
                     "N/A"}
                   <span className="text-gray-500 text-sm ml-1">followers</span>
                 </p>
                 <div className="flex gap-4 text-sm text-gray-500">
-                  <span>{brandInfluencerProfile.tiktok.videoCount} videos</span>
+                  <span>{brandInfluencerProfile.tiktok?.videoCount} videos</span>
                   <span>
-                    {brandInfluencerProfile.tiktok.followingCount} following
+                    {brandInfluencerProfile.tiktok?.followingCount} following
                   </span>
-                  <span>{brandInfluencerProfile.tiktok.likesCount} likes</span>
+                  <span>{brandInfluencerProfile.tiktok?.likesCount} likes</span>
                 </div>
               </div>
             </div>
