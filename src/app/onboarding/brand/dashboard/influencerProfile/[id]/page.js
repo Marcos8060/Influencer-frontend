@@ -138,7 +138,7 @@ export default function InfluencerProfile() {
                     <Statistic
                       title={
                         <span className="custom-statistic-title">
-                          Followers
+                          Instagram Followers
                         </span>
                       }
                       value={formatNumber(
@@ -151,7 +151,7 @@ export default function InfluencerProfile() {
                     <Statistic
                       title={
                         <span className="custom-statistic-title">
-                          Following
+                          Instagram Following
                         </span>
                       }
                       value={formatNumber(
@@ -162,7 +162,7 @@ export default function InfluencerProfile() {
                     />
                     <Statistic
                       title={
-                        <span className="custom-statistic-title">Posts</span>
+                        <span className="custom-statistic-title">Instagram Posts</span>
                       }
                       value={formatNumber(
                         discoveryProfile.instagram?.mediaCount
@@ -320,68 +320,6 @@ export default function InfluencerProfile() {
                       </Space>
                     </Card>
                   </Col>
-                  {/* <Col xs={24} sm={12}>
-                    <Card
-                      className={`border-l-4 ${
-                        discoveryProfile.isFacebookAccountConnected
-                          ? "border-blue-500"
-                          : "border-gray-300"
-                      }`}
-                      bodyStyle={{ padding: "12px" }}
-                    >
-                      <Space>
-                        <Avatar
-                          icon={<FacebookOutlined />}
-                          className={
-                            discoveryProfile.isFacebookAccountConnected
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-gray-200 text-gray-400"
-                          }
-                        />
-                        <div>
-                          <Text strong>Facebook</Text>
-                          <div>
-                            <Text type="secondary">
-                              {discoveryProfile.isFacebookAccountConnected
-                                ? "Connected"
-                                : "Not connected"}
-                            </Text>
-                          </div>
-                        </div>
-                      </Space>
-                    </Card>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Card
-                      className={`border-l-4 ${
-                        discoveryProfile.isTwitterAccountConnected
-                          ? "border-blue-400"
-                          : "border-gray-300"
-                      }`}
-                      bodyStyle={{ padding: "12px" }}
-                    >
-                      <Space>
-                        <Avatar
-                          icon={<FaXTwitter />}
-                          className={
-                            discoveryProfile.isTwitterAccountConnected
-                              ? "bg-primary flex items-center justify-center text-blue-400"
-                              : "bg-gray-200 flex items-center justify-center text-gray-400"
-                          }
-                        />
-                        <div>
-                          <Text strong>X</Text>
-                          <div>
-                            <Text type="secondary">
-                              {discoveryProfile.isTwitterAccountConnected
-                                ? "Connected"
-                                : "Not connected"}
-                            </Text>
-                          </div>
-                        </div>
-                      </Space>
-                    </Card>
-                  </Col> */}
                 </Row>
               </Card>
 

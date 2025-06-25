@@ -471,7 +471,12 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       return (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="No data available for the selected filters"
+          description={
+            <>
+              No data available for the selected filters.<br />
+              <span className="text-xs text-gray-500">If you see this message, it means the selected metric has no results for the chosen filters or date range.</span>
+            </>
+          }
           style={{ padding: "40px 0" }}
         />
       );
