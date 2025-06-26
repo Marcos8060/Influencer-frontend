@@ -206,7 +206,7 @@ export default function InfluencerProfile() {
                       <div>
                         <Text type="secondary">Location</Text>
                         <div className="font-medium">
-                          {discoveryProfile.city}, {discoveryProfile.country}
+                          {discoveryProfile.city}, {discoveryProfile?.country?.name}
                         </div>
                       </div>
                     </Space>
