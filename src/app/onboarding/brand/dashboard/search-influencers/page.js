@@ -573,7 +573,10 @@ const SearchInfluencers = () => {
                     className="flex items-center gap-1"
                     color="lime"
                   >
-                    Campaign: {brandCampaigns.find(c => c.id === filters.selectedCampaign)?.title}
+                    Campaign: {(() => {
+                      const name = brandCampaigns.find(c => c.id === filters.selectedCampaign)?.title || '';
+                      return name.length > 27 ? name.slice(0, 27) + '...' : name;
+                    })()}
                   </Tag>
                 )}
                 
@@ -585,7 +588,10 @@ const SearchInfluencers = () => {
                     className="flex items-center gap-1"
                     color="gold"
                   >
-                    Bucket: {bucketList.find(b => b.id === filters.selectedBucket)?.name}
+                    Bucket: {(() => {
+                      const name = bucketList.find(b => b.id === filters.selectedBucket)?.name || '';
+                      return name.length > 27 ? name.slice(0, 27) + '...' : name;
+                    })()}
                   </Tag>
                 )}
                 
