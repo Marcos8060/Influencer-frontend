@@ -1,10 +1,26 @@
 "use client";
 import MenuChildren from "./MenuChildren";
 import Image from "next/image";
+import { useContext } from "react";
+import { authContext } from "@/assets/context/use-context";
+import { LogoutOutlined } from "@ant-design/icons";
 
 const Sidebar = ({ collapse, setCollapse, icon }) => {
+  const { logoutBrand, logoutInfluencer, user } = useContext(authContext);
   const toggleSidebar = () => {
     setCollapse(!collapse);
+  };
+
+  const handleLogout = () => {
+    if (user?.roleName === "Brand") {
+      logoutBrand();
+    } else if (user?.roleName === "Influencer") {
+      logoutInfluencer();
+    } else {
+      // fallback: try both
+      logoutBrand();
+      logoutInfluencer();
+    }
   };
 
   return (
@@ -45,17 +61,13 @@ const Sidebar = ({ collapse, setCollapse, icon }) => {
       {/* Bottom Section */}
       {!collapse && (
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="bg-background rounded-xl p-4">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <span className="text-white font-semibold">?</span>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-color">Need Help?</h3>
-                <p className="text-xs text-gray">Contact support</p>
-              </div>
-            </div>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-50 text-sm text-red-600 border border-input rounded-xl py-3 flex items-center justify-center gap-2"
+          >
+            <LogoutOutlined className="text-lg" />
+            Logout
+          </button>
         </div>
       )}
     </section>
