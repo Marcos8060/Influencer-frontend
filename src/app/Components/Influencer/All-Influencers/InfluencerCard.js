@@ -73,7 +73,6 @@ export default function InfluencerCard({
         {showCheckbox && (
           <div className="absolute top-3 left-3 z-10">
             <Checkbox
-              className="scale-125"
               checked={isSelected}
               onChange={(e) =>
                 onSelect && onSelect(influencer.influencerId, e.target.checked)
