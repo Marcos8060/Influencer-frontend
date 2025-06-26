@@ -51,7 +51,6 @@ const { TabPane } = Tabs;
 export default function InfluencerProfile() {
   const [loading, setLoading] = useState(false);
   const { discoveryProfile } = useSelector((store) => store.socials);
-  console.log("PROFILE ", discoveryProfile);
   const dispatch = useDispatch();
   const auth = useAuth();
   const pathname = usePathname();
