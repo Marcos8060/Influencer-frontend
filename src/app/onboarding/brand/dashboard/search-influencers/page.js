@@ -759,25 +759,13 @@ const SearchInfluencers = () => {
                 setSelectedPlatform(null);
                 // Reset follower demographics filters to null
                 handleFilterChange("social_media_followers_gender", null);
-                handleFilterChange(
-                  "social_media_followers_gender_percentage",
-                  null
-                );
+                handleFilterChange("social_media_followers_gender_percentage", null);
                 handleFilterChange("social_media_followers_age", null);
-                handleFilterChange(
-                  "social_media_followers_age_percentage",
-                  null
-                );
+                handleFilterChange("social_media_followers_age_percentage", null);
                 handleFilterChange("social_media_followers_country", null);
-                handleFilterChange(
-                  "social_media_followers_country_percentage",
-                  null
-                );
+                handleFilterChange("social_media_followers_country_percentage", null);
                 handleFilterChange("social_media_followers_city", null);
-                handleFilterChange(
-                  "social_media_followers_city_percentage",
-                  null
-                );
+                handleFilterChange("social_media_followers_city_percentage", null);
                 handleFilterChange("social_media_platform_name", null);
               }}
             >
@@ -791,7 +779,7 @@ const SearchInfluencers = () => {
                   return;
                 }
 
-                // Validate that if a filter is selected, its percentage is also set
+                // Only validate filters that are actually selected
                 if (
                   selectedFollowerAgeRanges.length > 0 &&
                   !filters.social_media_followers_age_percentage
@@ -811,7 +799,7 @@ const SearchInfluencers = () => {
                   return;
                 }
                 if (
-                  selectedFollowerCountries &&
+                  selectedFollowerCountries && selectedFollowerCountries.length > 0 &&
                   !filters.social_media_followers_country_percentage
                 ) {
                   toast.error(
@@ -820,7 +808,7 @@ const SearchInfluencers = () => {
                   return;
                 }
                 if (
-                  selectedFollowerCities &&
+                  selectedFollowerCities && selectedFollowerCities.length > 0 &&
                   !filters.social_media_followers_city_percentage
                 ) {
                   toast.error(
@@ -842,24 +830,36 @@ const SearchInfluencers = () => {
                     "social_media_followers_gender",
                     genderMapping[selectedGender]
                   );
+                } else {
+                  handleFilterChange("social_media_followers_gender", null);
+                  handleFilterChange("social_media_followers_gender_percentage", null);
                 }
                 if (selectedFollowerAgeRanges.length > 0) {
                   handleFilterChange(
                     "social_media_followers_age",
                     selectedFollowerAgeRanges[0]
                   );
+                } else {
+                  handleFilterChange("social_media_followers_age", null);
+                  handleFilterChange("social_media_followers_age_percentage", null);
                 }
-                if (selectedFollowerCountries) {
+                if (selectedFollowerCountries && selectedFollowerCountries.length > 0) {
                   handleFilterChange(
                     "social_media_followers_country",
                     selectedFollowerCountries
                   );
+                } else {
+                  handleFilterChange("social_media_followers_country", null);
+                  handleFilterChange("social_media_followers_country_percentage", null);
                 }
-                if (selectedFollowerCities) {
+                if (selectedFollowerCities && selectedFollowerCities.length > 0) {
                   handleFilterChange(
                     "social_media_followers_city",
                     selectedFollowerCities
                   );
+                } else {
+                  handleFilterChange("social_media_followers_city", null);
+                  handleFilterChange("social_media_followers_city_percentage", null);
                 }
                 setDrawerVisible(false);
               }}
