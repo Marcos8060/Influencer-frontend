@@ -51,7 +51,7 @@ export const menu = [
   },
   {
     label: "Brand Discovery",
-    path: "/onboarding/influencer/buckets",
+    path: "/onboarding/influencer/brand-discovery",
     icon: <FaUsersGear />,
     role: ["Influencer"],
   },
