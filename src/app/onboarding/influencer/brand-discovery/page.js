@@ -45,6 +45,7 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactCountryFlag } from "react-country-flag";
 import { motion } from "framer-motion";
+import { country_names } from "@/app/Components/country-names";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -60,76 +61,100 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
   <motion.div {...fadeIn} className="h-full">
     <Card
       hoverable
-      className="brand-card transform transition-all duration-300 hover:shadow-xl h-full flex flex-col"
-      bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-      actions={[
-        <Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"}>
-          <Button
-            type="text"
-            icon={isFavorite ? <HeartFilled className="text-red-500" /> : <HeartOutlined />}
-            onClick={() => onFavoriteToggle(brand.id)}
-          />
-        </Tooltip>,
-        <Tooltip title="Contact brand">
-          <Button type="text" icon={<PhoneOutlined />} />
-        </Tooltip>,
-        <Dropdown menu={menu} placement="bottomRight">
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
-      ]}
+      className="brand-card transform transition-all duration-300 h-full flex flex-col border-0 bg-white rounded-2xl shadow-lg hover:shadow-md"
+      bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: '1.5rem', padding: 24 }}
     >
       <div className="flex flex-col h-full">
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start space-x-4 mb-2">
           <Avatar
-            size={64}
+            size={72}
             src={brand.logo}
-            className="flex-shrink-0"
+            className="flex-shrink-0 border-4 border-white shadow-md"
           >
             {brand.name?.[0]?.toUpperCase()}
           </Avatar>
           <div className="flex-grow min-w-0">
-            <div className="flex items-center justify-between">
-              <Title level={4} className="m-0 truncate">
+            <div className="flex items-center gap-2 mb-1">
+              <Title level={4} className="m-0 truncate text-indigo-900">
                 {brand.name}
               </Title>
               {brand.verified && (
                 <Tooltip title="Verified Brand">
-                  <Badge status="success" />
+                  <span className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold ml-1">Verified</span>
                 </Tooltip>
               )}
             </div>
-            
-            <Space className="mt-2" wrap>
-              {brand.industry?.split(',').map((industry, index) => (
-                <Tag key={index} color="blue" className="rounded-full">
-                  {industry.trim()}
-                </Tag>
-              ))}
-            </Space>
+            {brand.businessType && (
+              <Text className="block text-xs text-gray-500 mb-1">{brand.businessType}</Text>
+            )}
+            {brand.website && (
+              <a href={brand.website} target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-600 hover:underline truncate">
+                {brand.website}
+              </a>
+            )}
           </div>
         </div>
-
-        <Paragraph className="mt-4 text-gray-600 line-clamp-2 flex-grow">
+        {/* <Paragraph className="mt-2 text-gray-600 line-clamp-2 flex-grow">
           {brand.description}
-        </Paragraph>
-
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
-            <TeamOutlined className="text-blue-500" />
-            <Text className="text-sm">{brand.teamSize || 'Team size N/A'}</Text>
+        </Paragraph> */}
+        <div className="grid grid-cols-2 gap-4">
+          {brand.brandPhoneNumber?.number && (
+            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+              <PhoneOutlined className="text-blue-500" />
+              <Text className="text-sm">{brand.brandPhoneNumber.code} {brand.brandPhoneNumber.number}</Text>
+            </div>
+          )}
+          {brand.address && (
+            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+              <EnvironmentOutlined className="text-purple-500" />
+              <Text className="text-sm">{brand.address}</Text>
+            </div>
+          )}
+          {brand.city && (
+            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+              <GlobalOutlined className="text-indigo-500" />
+              <Text className="text-sm">{brand.city}</Text>
+            </div>
+          )}
+          {brand.countryData?.name && (
+            <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
+              <GlobalOutlined className="text-indigo-500" />
+              <Text className="text-sm">{brand.countryData.name}</Text>
+            </div>
+          )}
+        </div>
+        {/* Preferences Section */}
+        {brand.preferences && (
+          <div className="mt-4">
+            {Array.isArray(brand.preferences.preferredSocialMediaPlatforms) && brand.preferences.preferredSocialMediaPlatforms.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-2">
+                {brand.preferences.preferredSocialMediaPlatforms.map((platform, idx) => (
+                  <Tag key={platform + idx} color="purple" className="rounded-full text-xs">{platform}</Tag>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
-            <DollarOutlined className="text-green-500" />
-            <Text className="text-sm">{brand.budget || 'Budget N/A'}</Text>
-          </div>
-          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
-            <TrophyOutlined className="text-yellow-500" />
-            <Text className="text-sm">{brand.campaignCount || '0'} Campaigns</Text>
-          </div>
-          <div className="flex items-center space-x-2 bg-gray-50 p-2 rounded-lg">
-            <GlobalOutlined className="text-purple-500" />
-            <Text className="text-sm">{brand.countryData?.name || 'Location N/A'}</Text>
-          </div>
+        )}
+        {/* --- Card Actions: View Campaigns & Contact Brand --- */}
+        <div className="flex flex-col gap-2 mt-6">
+          {brand.campaignCount > 0 && (
+            <Button
+              type="primary"
+              className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-full shadow"
+              icon={<ArrowRightOutlined />}
+              onClick={() => {/* TODO: Open brand campaigns modal or navigate to campaigns page */}}
+            >
+              View {brand.campaignCount} Campaign{brand.campaignCount > 1 ? 's' : ''}
+            </Button>
+          )}
+          <Button
+            type="default"
+            className="w-full rounded-full border-indigo-200 text-indigo-700 hover:bg-indigo-50 shadow"
+            icon={<InboxOutlined />}
+            onClick={() => {/* TODO: Open contact modal or mailto link */}}
+          >
+            Contact Brand
+          </Button>
         </div>
       </div>
     </Card>
@@ -140,10 +165,9 @@ const BrandDiscovery = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState(undefined);
   const [selectedCountry, setSelectedCountry] = useState(undefined);
+  const [selectedPrefInfluencerCountry, setSelectedPrefInfluencerCountry] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
-  const [favorites, setFavorites] = useState([]);
   const dispatch = useDispatch();
   const { brands } = useSelector((store) => store.filterResults);
   const auth = useAuth();
@@ -169,33 +193,27 @@ const BrandDiscovery = () => {
 
   const filteredBrands = brands.filter((brand) => {
     const brandName = brand?.name ?? "";
-    const brandDescription = brand?.description ?? "";
-    const brandIndustry = brand?.industry ?? "";
-  
+    const businessType = brand?.businessType ?? "";
     const searchTerm = searchText.toLowerCase();
-  
     const matchesSearch =
       searchText === "" ||
       brandName.toLowerCase().includes(searchTerm) ||
-      brandDescription.toLowerCase().includes(searchTerm) ||
-      brandIndustry.toLowerCase().includes(searchTerm);
-  
+      businessType.toLowerCase().includes(searchTerm);
+    const brandIndustry = brand?.industry ?? "";
     const matchesIndustry =
       selectedIndustry === undefined ||
       (brandIndustry &&
         brandIndustry
           .split(",")
           .some((ind) => ind.trim() === selectedIndustry));
-  
     const matchesCountry =
       selectedCountry === undefined ||
       (brand.countryData && brand.countryData.name === selectedCountry);
-  
-    const matchesTab =
-      activeTab === "all" ||
-      (activeTab === "favorites" && favorites.includes(brand.id));
-  
-    return matchesSearch && matchesIndustry && matchesCountry && matchesTab;
+    const matchesPrefInfluencerCountry =
+      selectedPrefInfluencerCountry === undefined ||
+      (brand.preferences && Array.isArray(brand.preferences.preferredInfluencerCountries) &&
+        brand.preferences.preferredInfluencerCountries.some(c => c.name === selectedPrefInfluencerCountry));
+    return matchesSearch && matchesIndustry && matchesCountry && matchesPrefInfluencerCountry;
   });
 
   // Get unique industries and countries for filters
@@ -221,17 +239,11 @@ const BrandDiscovery = () => {
     currentPage * pageSize
   );
 
-  const toggleFavorite = (id) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
-    );
-  };
-
   const clearFilters = () => {
     setSearchText("");
     setSelectedIndustry(undefined);
     setSelectedCountry(undefined);
-    setActiveTab("all");
+    setSelectedPrefInfluencerCountry(undefined);
     setCurrentPage(1);
   };
 
@@ -247,9 +259,7 @@ const BrandDiscovery = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      {/* Hero Section */}
-      
+    <div className="min-h-screen bg-white p-4">      
 
       {/* Search and Filters Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -285,20 +295,45 @@ const BrandDiscovery = () => {
                 ))}
               </Select>
 
-              <Select
-                size="large"
-                placeholder="Select Country"
-                style={{ minWidth: 200 }}
-                value={selectedCountry}
-                onChange={setSelectedCountry}
-                allowClear
-              >
-                {countries.map((country) => (
-                  <Option key={country} value={country}>
-                    {country}
-                  </Option>
-                ))}
-              </Select>
+              <div style={{ minWidth: 200 }}>
+                <div className="mb-1 text-xs text-gray-500 font-medium">Brand Country</div>
+                  <Select
+                    size="large"
+                    placeholder="Select Country"
+                    style={{ width: '100%' }}
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    allowClear
+                  >
+                    {countries.map((country) => (
+                      <Option key={country} value={country}>
+                        {country}
+                      </Option>
+                    ))}
+                  </Select>
+              </div>
+
+              <div style={{ minWidth: 220 }}>
+                <div className="mb-1 text-xs text-gray-500 font-medium">Preferred Influencer Country</div>
+                  <Select
+                    size="large"
+                    placeholder="Preferred Influencer Country"
+                    style={{ width: '100%' }}
+                    value={selectedPrefInfluencerCountry}
+                    onChange={setSelectedPrefInfluencerCountry}
+                    allowClear
+                    showSearch
+                    filterOption={(input, option) =>
+                      (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                  >
+                    {country_names.map((country) => (
+                      <Option key={country.name} value={country.name}>
+                        {country.name}
+                      </Option>
+                    ))}
+                  </Select>
+              </div>
 
               <Button 
                 type="default"
@@ -314,30 +349,6 @@ const BrandDiscovery = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          className="mb-8"
-          items={[
-            {
-              key: "all",
-              label: (
-                <span>
-                  <GlobalOutlined /> All Brands
-                </span>
-              ),
-            },
-            {
-              key: "favorites",
-              label: (
-                <span>
-                  <HeartOutlined /> Favorites ({favorites.length})
-                </span>
-              ),
-            },
-          ]}
-        />
-
         {loading ? (
           <div className="text-center py-20">
             <Spin size="large" />
@@ -346,11 +357,11 @@ const BrandDiscovery = () => {
           <>
             <Row gutter={[24, 24]}>
               {paginatedBrands.map((brand) => (
-                <Col xs={24} sm={24} md={12} lg={12} xl={12} key={brand.id}>
+                <Col xs={24} sm={24} md={12} lg={8} xl={8} key={brand.id}>
                   <BrandCard
                     brand={brand}
-                    isFavorite={favorites.includes(brand.id)}
-                    onFavoriteToggle={toggleFavorite}
+                    isFavorite={false}
+                    onFavoriteToggle={() => {}}
                     menu={menu}
                   />
                 </Col>
