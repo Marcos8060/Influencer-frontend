@@ -81,8 +81,44 @@ export default function InfluencerCard({
           </div>
         )}
         
-        {/* Status indicators - moved to top right */}
-        <div className="absolute top-3 right-3 z-10 flex gap-1">
+        {/* Status indicators - responsive position */}
+        {/* Desktop: absolute top-right; Mobile: static below avatar */}
+        <div
+          className="hidden sm:flex absolute top-3 right-3 z-10 gap-1"
+        >
+          {bucketCount > 0 && (
+            <Tag 
+              color="blue" 
+              className="text-xs flex items-center gap-1 font-semibold px-3 py-1 rounded-full shadow-sm border-0"
+              style={{ 
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                color: 'white',
+                boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+              }}
+            >
+              <TeamOutlined />
+              In Bucket
+            </Tag>
+          )}
+          {campaignCount > 0 && (
+            <Tag 
+              color="green" 
+              className="text-xs flex items-center gap-1 font-semibold px-3 py-1 rounded-full shadow-sm border-0"
+              style={{ 
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.1)'
+              }}
+            >
+              <ShoppingOutlined />
+              In Campaign
+            </Tag>
+          )}
+        </div>
+        {/* Mobile: badges below avatar */}
+        <div className="flex sm:hidden flex-row flex-wrap gap-2 w-full justify-center mt-2 mb-1">
           {bucketCount > 0 && (
             <Tag 
               color="blue" 
