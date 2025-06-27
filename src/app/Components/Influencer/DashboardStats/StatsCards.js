@@ -1,7 +1,6 @@
 import React from "react";
-import { FaUsersViewfinder, FaUsersBetweenLines } from "react-icons/fa6";
-import { MdWorkHistory } from "react-icons/md";
-import { AiOutlineShopping } from "react-icons/ai";
+import { MdPendingActions, MdCheckCircle, MdOutlineAccessTime, MdTrendingUp } from "react-icons/md";
+import { FaUsers } from "react-icons/fa6";
 
 const StatsCards = ({
   pendingApplications = 0,
@@ -10,58 +9,67 @@ const StatsCards = ({
   totalCollaborations = 0,
   engagementRate = null,
 }) => {
+  const cards = [
+    {
+      title: "Pending Applications",
+      value: pendingApplications,
+      subtitle: "Awaiting Approval",
+      icon: <MdPendingActions size={28} className="text-yellow" />,
+      bgIcon: <MdPendingActions size={80} className="absolute right-2 bottom-2 text-yellow/10" />,
+      bg: "bg-yellow/10",
+    },
+    {
+      title: "Approved Applications",
+      value: approvedApplications,
+      subtitle: "Total Offers",
+      icon: <MdCheckCircle size={28} className="text-green" />,
+      bgIcon: <MdCheckCircle size={80} className="absolute right-2 bottom-2 text-green/10" />,
+      bg: "bg-green/10",
+    },
+    {
+      title: "Upcoming Deadlines",
+      value: upcomingDeadlines,
+      subtitle: "Approaching Deadlines",
+      icon: <MdOutlineAccessTime size={28} className="text-secondary" />,
+      bgIcon: <MdOutlineAccessTime size={80} className="absolute right-2 bottom-2 text-secondary/10" />,
+      bg: "bg-secondary/10",
+    },
+    {
+      title: "Total Collaborations",
+      value: totalCollaborations,
+      subtitle: "All Campaigns",
+      icon: <FaUsers size={28} className="text-primary" />,
+      bgIcon: <FaUsers size={80} className="absolute right-2 bottom-2 text-primary/10" />,
+      bg: "bg-primary/10",
+    },
+    {
+      title: "Engagement Rate",
+      value: engagementRate !== null ? engagementRate + "%" : "-",
+      subtitle: "Average Engagement",
+      icon: <MdTrendingUp size={28} className="text-secondary" />,
+      bgIcon: <MdTrendingUp size={80} className="absolute right-2 bottom-2 text-secondary/10" />,
+      bg: "bg-secondary/10",
+    },
+  ];
+
   return (
-    <section className="grid md:grid-cols-5 grid-cols-1 md:gap-8 gap-4">
-      <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-        <div className="flex gap-2 items-center justify-between">
-          <p className="font-light">Pending Applications</p>
-          <FaUsersViewfinder className="text-xl" />
+    <section className="grid md:grid-cols-5 grid-cols-1 gap-4">
+      {cards.map((card) => (
+        <div
+          key={card.title}
+          className={`relative overflow-hidden rounded-2xl p-6 shadow bg-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl group ${card.bg}`}
+        >
+          {card.bgIcon}
+          <div className="flex justify-between items-start mb-2">
+            <div className="z-10">{card.icon}</div>
+          </div>
+          <div className="z-10 relative">
+            <div className="text-gray font-medium text-sm mb-1">{card.title}</div>
+            <div className="text-3xl font-extrabold text-color mb-1">{card.value}</div>
+            <div className="text-xs text-gray mb-6">{card.subtitle}</div>
+          </div>
         </div>
-        <div className="flex gap-4 items-center">
-          <p className="font-semibold text-2xl">{pendingApplications}</p>
-          <small className="text-secondary text-xs font-semibold">Awaiting Approval</small>
-        </div>
-      </div>
-      <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-        <div className="flex gap-2 items-center justify-between">
-          <p className="font-light">Approved Applications</p>
-          <MdWorkHistory className="text-xl text-green" />
-        </div>
-        <div className="flex gap-4 items-center">
-          <p className="font-semibold text-2xl">{approvedApplications}</p>
-          <small className="text-green text-xs font-semibold">Total Offers</small>
-        </div>
-      </div>
-      <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-        <div className="flex gap-2 items-center justify-between">
-          <p className="font-light">Upcoming Deadlines</p>
-          <AiOutlineShopping className="text-xl" />
-        </div>
-        <div className="flex gap-4 items-center">
-          <p className="font-semibold text-2xl">{upcomingDeadlines}</p>
-          <small className="text-secondary text-xs font-semibold">Approaching Deadlines</small>
-        </div>
-      </div>
-      <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-        <div className="flex gap-2 items-center justify-between">
-          <p className="font-light">Total Collaborations</p>
-          <FaUsersBetweenLines className="text-xl" />
-        </div>
-        <div className="flex gap-4 items-center">
-          <p className="font-semibold text-2xl">{totalCollaborations}</p>
-          <small className="text-primary text-xs font-semibold">All Campaigns</small>
-        </div>
-      </div>
-      <div className="bg-white rounded-2xl p-4 text-color shadow-lg text-center space-y-4">
-        <div className="flex gap-2 items-center justify-between">
-          <p className="font-light">Engagement Rate</p>
-          <FaUsersBetweenLines className="text-xl" />
-        </div>
-        <div className="flex gap-4 items-center">
-          <p className="font-semibold text-2xl">{engagementRate !== null ? engagementRate + "%" : "-"}</p>
-          <small className="text-primary text-xs font-semibold">Average Engagement</small>
-        </div>
-      </div>
+      ))}
     </section>
   );
 };
