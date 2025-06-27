@@ -7,222 +7,284 @@ import {
   previousStep,
 } from "@/redux/features/stepper";
 
+const plans = [
+  {
+    name: "Discovery plan",
+    price: "Free",
+    priceValue: 0,
+    description: "For exploring brands & startups",
+    cta: "Get started",
+    features: [
+      "Browse influencers",
+      "Contact details access",
+      "Campaign creation",
+      "Monthly invites",
+      "Creator collaborations",
+      "Advanced search filters",
+      "Analytics",
+      "ROI modeling",
+      "Team seats",
+      "Dedicated strategist",
+      "Geographic targeting",
+      "Language & geo filters",
+      "UK Brand Spotlight",
+      "Early feature access",
+    ],
+    values: [
+      <span className="text-link font-medium">View profiles</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-yellow font-medium">1 saved</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      1,
+      <span className="text-red">✗</span>,
+      <span className="text-yellow font-medium">Basic suggestions</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+    ],
+    popular: false,
+    icon: null,
+  },
+  {
+    name: "Local plan",
+    price: "£49",
+    priceValue: 49,
+    description: "For local service-based businesses",
+    cta: "Get started",
+    features: [
+      "Browse influencers",
+      "Contact details access",
+      "Campaign creation",
+      "Monthly invites",
+      "Creator collaborations",
+      "Advanced search filters",
+      "Analytics",
+      "ROI modeling",
+      "Team seats",
+      "Dedicated strategist",
+      "Geographic targeting",
+      "Language & geo filters",
+      "UK Brand Spotlight",
+      "Early feature access",
+    ],
+    values: [
+      <span className="text-green">✓</span>,
+      <span className="text-green">✓</span>,
+      "Up to 3",
+      150,
+      "Up to 5",
+      <span className="text-green">✓</span>,
+      <span className="text-yellow font-medium">Basic reach & views</span>,
+      <span className="text-red">✗</span>,
+      1,
+      <span className="text-red">✗</span>,
+      <span className="text-yellow font-medium">Region/City only</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-red">✗</span>,
+    ],
+    popular: true,
+    icon: null,
+  },
+  {
+    name: "Nationwide plan",
+    price: "£89",
+    priceValue: 89,
+    description: "For UK-wide eCommerce & regional brands",
+    cta: "Get started",
+    features: [
+      "Browse influencers",
+      "Contact details access",
+      "Campaign creation",
+      "Monthly invites",
+      "Creator collaborations",
+      "Advanced search filters",
+      "Analytics",
+      "ROI modeling",
+      "Team seats",
+      "Dedicated strategist",
+      "Geographic targeting",
+      "Language & geo filters",
+      "UK Brand Spotlight",
+      "Early feature access",
+    ],
+    values: [
+      <span className="text-green">✓</span>,
+      <span className="text-green">✓</span>,
+      "Up to 5",
+      300,
+      "Up to 10",
+      <span className="text-green">✓</span>,
+      <span className="text-green">Audience demographics</span>,
+      <span className="text-green">✓</span>,
+      1,
+      <span className="text-red">✗</span>,
+      <span className="text-green">All UK creators</span>,
+      <span className="text-red">✗</span>,
+      <span className="text-green">✓</span>,
+      <span className="text-red">✗</span>,
+    ],
+    popular: false,
+    icon: null,
+  },
+  {
+    name: "Global plan",
+    price: "£149",
+    priceValue: 149,
+    description: "For international brands & agencies",
+    cta: "Get started",
+    features: [
+      "Browse influencers",
+      "Contact details access",
+      "Campaign creation",
+      "Monthly invites",
+      "Creator collaborations",
+      "Advanced search filters",
+      "Analytics",
+      "ROI modeling",
+      "Team seats",
+      "Dedicated strategist",
+      "Geographic targeting",
+      "Language & geo filters",
+      "UK Brand Spotlight",
+      "Early feature access",
+    ],
+    values: [
+      <span className="text-green">✓</span>,
+      <span className="text-green">✓</span>,
+      "Up to 7",
+      600,
+      "Up to 15",
+      <span className="text-green">✓</span>,
+      <span className="text-green">Engagement heatmaps</span>,
+      <span className="text-green">✓</span>,
+      <span className="text-green">1 included</span>,
+      <span className="text-green">✓</span>,
+      <span className="text-green">Global access</span>,
+      <span className="text-green">✓</span>,
+      <span className="text-green">✓</span>,
+      <span className="text-green">✓</span>,
+    ],
+    popular: false,
+    icon: null,
+  },
+];
+
 const Pricing = () => {
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(setCurrentStep(17));
   }, [dispatch]);
 
-  const plans = [
-    {
-      name: "Discovery Plan",
-      price: "Free",
-      period: "forever",
-      description: "For exploring brands & startups",
-      features: [
-        "Browse influencers (blurred contact info)",
-        "Draft & save 1 campaign",
-        "Get 20–30 influencer suggestions (by niche & location)",
-        "Create a brand profile",
-        "Connect social media + verify contact",
-      ],
-      locked: [
-        "Cannot launch campaigns",
-        "No contact, invites, or analytics",
-      ],
-      upgradeTeasers: [
-        "You've matched with 37 creators – unlock to connect",
-        "Send invites and see full profiles — upgrade now",
-      ],
-      cta: "Get Started",
-      popular: false,
-      icon: "🆓",
-      gradient: "from-[#f5f9fc] to-white"
-    },
-    {
-      name: "Local Plan",
-      price: "£49",
-      period: "per month",
-      description: "For local service-based businesses",
-      features: [
-        "Access creators within your chosen region or city",
-        "Advanced search filters (gender, age, platform)",
-        "Up to 3 active campaigns",
-        "Up to 150 invites/month",
-        "Work with up to 5 creators/month",
-        "Campaign performance analytics (basic reach & views)",
-      ],
-      cta: "Start Free Trial",
-      popular: true,
-      icon: "🏙",
-      gradient: "from-[#5373d4]/5 to-white"
-    },
-    {
-      name: "Nationwide Plan",
-      price: "£89",
-      period: "per month",
-      description: "For UK-wide eCommerce & regional brands",
-      features: [
-        "Search & collaborate with creators across the UK",
-        "Up to 5 active campaigns",
-        "Up to 300 invites/month",
-        "Work with up to 10 creators/month",
-        "Advanced analytics (audience gender, age, regional split)",
-        "Predictive ROI modelling",
-        "UK Brand Spotlight eligibility",
-      ],
-      cta: "Start Free Trial",
-      popular: false,
-      icon: "🇬🇧",
-      gradient: "from-[#3680A1]/5 to-white"
-    },
-    {
-      name: "Global Plan",
-      price: "£149",
-      period: "per month",
-      description: "For international brands & agencies",
-      features: [
-        "Global creator discovery across all regions",
-        "Up to 7 active campaigns",
-        "Up to 600 invites/month",
-        "Work with up to 15 creators/month",
-        "Language + geo targeting filters",
-        "Content engagement heatmaps",
-        "1 team seat included",
-        "Dedicated strategist session monthly",
-        "Early feature access",
-      ],
-      cta: "Start Free Trial",
-      popular: false,
-      icon: "🌍",
-      gradient: "from-[#5373d4]/5 to-white"
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-[#f5f9fc] to-white py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12 px-2 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-20">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl mb-6">
-            Tailored by geography, not jargon
-          </h1>
-          <p className="max-w-2xl mx-auto text-xl text-gray-600 leading-relaxed">
-            Choose a plan that matches your scale of operations
+        {/* Plan Cards */}
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-extrabold text-gray mb-2">
+            Choose a plan that's right for you
+          </h2>
+          <p className="text-lg text-muted mb-10">
+            We believe influencer marketing should be accessible to all
+            companies, no matter the size of your startup.
           </p>
         </div>
-
-        {/* Pricing Cards */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative p-6 rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl ${
-                plan.popular 
-                  ? "bg-gradient-to-br from-white to-white border-2 border-[#5373d4]" 
-                  : `bg-gradient-to-br ${plan.gradient}`
+              className={`relative flex flex-col justify-between p-7 rounded-3xl border bg-white shadow transition-all duration-300 hover:shadow-lg ${
+                plan.popular ? "border-2 border-secondary" : "border-input"
               }`}
             >
               {plan.popular && (
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <span className="px-4 py-1.5 text-xs font-semibold tracking-wide text-white uppercase bg-[#5373d4] rounded-full shadow-md">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <span className="px-4 py-1.5 text-xs font-semibold tracking-wide text-white uppercase bg-yellow rounded-full shadow-md">
                     Most Popular
                   </span>
                 </div>
               )}
-              
               <div className="mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">{plan.icon}</span>
-                  <h2 className="text-2xl font-bold text-gray-900">{plan.name}</h2>
-                </div>
-                <p className="text-gray-600 text-lg">{plan.description}</p>
-                
-                <div className="mt-6 flex items-baseline">
-                  <span className="text-5xl font-extrabold text-[#3680A1]">
+                <h2 className="text-2xl font-bold text-gray mb-2">
+                  {plan.name.replace(" plan", "")}
+                </h2>
+                <p className="text-muted text-base mb-4">{plan.description}</p>
+                <div className="flex items-end justify-center gap-2 mb-2">
+                  <span className="text-5xl font-extrabold text-primary">
                     {plan.price}
                   </span>
-                  <span className="ml-2 text-lg font-medium text-gray-500">
-                    /{plan.period}
-                  </span>
+                  {plan.priceValue !== 0 && (
+                    <span className="text-base text-gray font-medium mb-1">
+                      /month
+                    </span>
+                  )}
                 </div>
               </div>
-              
-              {/* Features */}
-              <ul className="space-y-4">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start">
-                    <svg
-                      className="h-5 w-5 text-[#5373d4] mt-0.5 flex-shrink-0"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="ml-3 text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Locked Features (for Discovery Plan) */}
-              {plan.locked && (
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-4">Locked:</h4>
-                  <ul className="space-y-3">
-                    {plan.locked.map((feature) => (
-                      <li key={feature} className="flex items-start">
-                        <svg
-                          className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="ml-3 text-gray-500">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Upgrade Teasers (for Discovery Plan) */}
-              {plan.upgradeTeasers && (
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <ul className="space-y-3">
-                    {plan.upgradeTeasers.map((teaser) => (
-                      <li key={teaser} className="text-sm text-[#5373d4] italic bg-[#5373d4]/5 px-4 py-2 rounded-lg">
-                        "{teaser}"
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
-              {/* CTA */}
-              <div className="mt-8">
-                <button
-                  className={`w-full px-6 py-3.5 rounded-xl text-base font-semibold text-white transition-all duration-300 ${
-                    plan.popular
-                      ? "bg-[#5373d4] hover:bg-[#4a67c0] shadow-lg shadow-[#5373d4]/20"
-                      : "bg-[#3680A1] hover:bg-[#2a6a8a] shadow-md"
-                  }`}
-                >
-                  {plan.cta}
-                </button>
-              </div>
+              <button
+                className={`w-full px-6 py-3.5 rounded-xl text-base font-semibold text-white transition-all duration-300 mt-auto ${
+                  plan.popular
+                    ? "bg-secondary hover:bg-secondary/90 shadow-lg shadow-secondary/20"
+                    : "bg-primary hover:bg-primary/90 shadow-md"
+                }`}
+              >
+                {plan.cta}
+              </button>
             </div>
           ))}
+        </div>
+        {/* Comparison Table */}
+        <div className="overflow-x-auto rounded-2xl border border-input bg-white mb-16">
+          <table className="min-w-full text-sm md:text-base">
+            <thead>
+              <tr className="bg-background">
+                <th className="py-5 px-4 text-left font-bold text-gray text-lg">
+                  Overview
+                </th>
+                {plans.map((plan, idx) => (
+                  <th
+                    key={plan.name}
+                    className="py-5 px-4 text-center font-bold text-lg text-gray relative"
+                  >
+                    {plan.name.replace(" plan", "")}
+                    {plan.popular && (
+                      <span className="absolute top-2 left-1/2 -translate-x-1/2 bg-yellow text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
+                        Most Popular
+                      </span>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {plans[0].features.map((feature, rowIdx) => (
+                <tr
+                  key={feature}
+                  className={rowIdx % 2 === 0 ? "bg-white" : "bg-background"}
+                >
+                  <td className="py-4 px-4 font-medium text-gray-700 border-t border-input w-56">
+                    {feature}
+                  </td>
+                  {plans.map((plan, colIdx) => (
+                    <td
+                      key={plan.name + feature}
+                      className="py-4 px-4 text-center border-t border-input"
+                    >
+                      {typeof plan.values[rowIdx] === "string" ||
+                      typeof plan.values[rowIdx] === "number" ? (
+                        <span>{plan.values[rowIdx]}</span>
+                      ) : (
+                        plan.values[rowIdx]
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
