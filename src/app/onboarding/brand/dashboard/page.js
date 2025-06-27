@@ -21,6 +21,8 @@ const Dashboard = () => {
   const auth = useAuth();
   const dispatch = useDispatch();
 
+  console.log("brand_campaigns ",brandCampaigns)
+
   // Calculate stats
   const totalCampaigns = Array.isArray(brandCampaigns) ? brandCampaigns.length : 0;
   const allCollaborators = Array.isArray(brandCampaigns)

@@ -9,6 +9,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdCampaign } from "react-icons/md";
 import { GoDotFill } from "react-icons/go";
 import { FaBoxOpen } from "react-icons/fa";
+import { FaTrophy } from "react-icons/fa6";
 
 export const menu = [
   {
@@ -58,7 +59,7 @@ export const menu = [
   {
     label: "Campaigns",
     path: "/brand/create-campaign",
-    icon: <MdCampaign className="text-xl" />,
+    icon: <FaTrophy className="text-xl" />,
     role: ["Brand"],
     children: [
       {
