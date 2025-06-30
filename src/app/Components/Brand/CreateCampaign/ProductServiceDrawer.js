@@ -10,6 +10,21 @@ import ExistingProducts from "./ExistingProducts";
 import { createProduct } from "@/redux/services/campaign";
 import toast from "react-hot-toast";
 import ProductCoverImageModal from "./productCoverImage";
+import Select from "react-select";
+import { currencyData } from "./currencyData";
+
+// Helper to get user's locale currency
+function getDefaultCurrency() {
+  try {
+    const locale = navigator.language;
+    const region = locale.split("-")[1] || "US";
+    // Try to find a currency for the region
+    const found = currencyData.find(c => c.country && c.country.toLowerCase().includes(region.toLowerCase()));
+    return found ? found.code : "USD";
+  } catch {
+    return "USD";
+  }
+}
 
 export default function ProductServiceDrawer({
   setSelectedProducts,
@@ -27,6 +42,7 @@ export default function ProductServiceDrawer({
     productManualText: "",
     price: "",
     productImages: [],
+    currency: getDefaultCurrency(),
   });
   const [errors, setErrors] = useState({
     name: "",
@@ -34,6 +50,7 @@ export default function ProductServiceDrawer({
     productManualUrl: "",
     productManualText: "",
     price: "",
+    currency: "",
   });
 
   const validateFields = () => {
@@ -44,6 +61,7 @@ export default function ProductServiceDrawer({
       productManualUrl: "",
       productManualText: "",
       price: "",
+      currency: "",
     };
 
     if (!details.name.trim()) {
@@ -62,6 +80,13 @@ export default function ProductServiceDrawer({
     } else if (isNaN(details.price)) {
       newErrors.price = "Price must be a number";
       isValid = false;
+    } else {
+      // Validate decimals for selected currency
+      const selectedCurrency = currencyData.find(c => c.code === details.currency);
+      if (selectedCurrency && selectedCurrency.decimals === 0 && details.price.includes(".")) {
+        newErrors.price = `No decimals allowed for ${selectedCurrency.code}`;
+        isValid = false;
+      }
     }
 
     if (!details.productManualUrl.trim()) {
@@ -105,6 +130,7 @@ export default function ProductServiceDrawer({
           productManualText: "",
           price: "",
           productImages: [],
+          currency: getDefaultCurrency(),
         });
         setVisible(false);
       } else {
@@ -244,20 +270,50 @@ export default function ProductServiceDrawer({
                     <label className="text-xs font-semibold" htmlFor="">
                       Price
                     </label>
-                    <InputComponent
-                      className="w-full"
-                      required
-                      placeholder="price"
-                      name="price"
-                      type="number"
-                      value={details.price}
-                      onChange={(e) =>
-                        setDetails((prevDetails) => ({
-                          ...prevDetails,
-                          [e.target.name]: e.target.value,
-                        }))
-                      }
-                    />
+                    <div className="flex gap-1 items-center">
+                      {/* Currency symbol */}
+                      <span className="px-2 text-base font-semibold">
+                        {currencyData.find(c => c.code === details.currency)?.symbol || "$"}
+                      </span>
+                      {/* Price input with formatting */}
+                      <input
+                        className="w-full border border-input rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                        required
+                        placeholder="price"
+                        name="price"
+                        type="text"
+                        inputMode="decimal"
+                        value={details.price}
+                        onChange={e => {
+                          // Only allow valid input for selected currency
+                          const selectedCurrency = currencyData.find(c => c.code === details.currency);
+                          let val = e.target.value.replace(/[^\d.]/g, "");
+                          if (selectedCurrency && selectedCurrency.decimals === 0) {
+                            val = val.replace(/\..*/, "");
+                          }
+                          setDetails(prev => ({ ...prev, price: val }));
+                        }}
+                        aria-label="Price"
+                      />
+                      {/* Currency dropdown with react-select */}
+                      <div className="min-w-[160px]">
+                        <Select
+                          classNamePrefix="currency-select"
+                          options={currencyData.map(c => ({
+                            value: c.code,
+                            label: `${c.symbol} ${c.code} - ${c.name}`,
+                          }))}
+                          value={currencyData
+                            .filter(c => c.code === details.currency)
+                            .map(c => ({ value: c.code, label: `${c.symbol} ${c.code} - ${c.name}` }))}
+                          onChange={option => {
+                            setDetails(prev => ({ ...prev, currency: option.value }));
+                          }}
+                          isSearchable
+                          aria-label="Currency"
+                        />
+                      </div>
+                    </div>
                     {errors.price && (
                       <p className="text-red text-xs mt-1">{errors.price}</p>
                     )}
