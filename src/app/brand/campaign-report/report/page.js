@@ -28,6 +28,7 @@ import {
   LineChartOutlined,
   DollarOutlined,
   FireFilled,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -49,6 +50,7 @@ import { getAllCampaignCollaboratorPosts, getAllCampaignDetails, getAllCampaignP
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useSearchParams } from "next/navigation";
 import dynamic from 'next/dynamic';
+import Link from "next/link";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -487,6 +489,12 @@ const CampaignReporting = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
+              {/* Go Back to Campaign Details Button */}
+              <Link href={`/brand/campaign-report/${campaignId}`}>
+                <Button icon={<ArrowLeftOutlined />} className="flex items-center hover:text-primary">
+                  Back to Campaign Details
+                </Button>
+              </Link>
               <Tooltip title="Refresh data">
                 <Button
                   icon={
@@ -502,6 +510,11 @@ const CampaignReporting = () => {
               </Tooltip>
             </div>
           </div>
+        </div>
+
+        {/* Performance Stats Title */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">Campaign Performance Stats</h2>
         </div>
 
         {/* Stats Grid */}
