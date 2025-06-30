@@ -393,6 +393,50 @@ const BrandDiscovery = () => {
                 Clear Filters
               </Button>
             </div>
+
+            {/* Active Filters Section */}
+            <div className="flex flex-wrap gap-2 mt-4">
+              {searchText && (
+                <Tag
+                  closable
+                  onClose={() => setSearchText("")}
+                  color="blue"
+                  className="flex items-center"
+                >
+                  Search: {searchText}
+                </Tag>
+              )}
+              {selectedIndustry && (
+                <Tag
+                  closable
+                  onClose={() => setSelectedIndustry(undefined)}
+                  color="purple"
+                  className="flex items-center"
+                >
+                  Industry: {selectedIndustry}
+                </Tag>
+              )}
+              {selectedCountry && (
+                <Tag
+                  closable
+                  onClose={() => setSelectedCountry(undefined)}
+                  color="geekblue"
+                  className="flex items-center"
+                >
+                  Country: {selectedCountry}
+                </Tag>
+              )}
+              {selectedPrefInfluencerCountry && (
+                <Tag
+                  closable
+                  onClose={() => setSelectedPrefInfluencerCountry(undefined)}
+                  color="cyan"
+                  className="flex items-center"
+                >
+                  Preferred Influencer Country: {selectedPrefInfluencerCountry}
+                </Tag>
+              )}
+            </div>
           </Space>
         </motion.div>
       </div>
