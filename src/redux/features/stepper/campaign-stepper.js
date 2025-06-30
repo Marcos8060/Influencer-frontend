@@ -78,6 +78,7 @@ const CampaignSlice = createSlice({
     },
     resetCampaignData: (state) => {
       state.campaignData = initialState.campaignData;
+      state.currentStep = 0;
     },
     setPostInsights: (state,action) => {
       state.postInsights = action.payload;
