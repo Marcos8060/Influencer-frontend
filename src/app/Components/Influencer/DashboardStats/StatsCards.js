@@ -7,7 +7,6 @@ const StatsCards = ({
   approvedApplications = 0,
   upcomingDeadlines = 0,
   totalCollaborations = 0,
-  engagementRate = null,
 }) => {
   const cards = [
     {
@@ -42,22 +41,14 @@ const StatsCards = ({
       bgIcon: <FaUsers size={80} className="absolute right-2 bottom-2 text-primary/10" />,
       bg: "bg-primary/10",
     },
-    {
-      title: "Engagement Rate",
-      value: engagementRate !== null ? engagementRate + "%" : "-",
-      subtitle: "Average Engagement",
-      icon: <MdTrendingUp size={28} className="text-secondary" />,
-      bgIcon: <MdTrendingUp size={80} className="absolute right-2 bottom-2 text-secondary/10" />,
-      bg: "bg-secondary/10",
-    },
   ];
 
   return (
-    <section className="grid md:grid-cols-5 grid-cols-1 gap-4">
+    <section className="grid md:grid-cols-4 grid-cols-1 gap-4">
       {cards.map((card) => (
         <div
           key={card.title}
-          className={`relative overflow-hidden rounded-2xl p-6 shadow bg-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl group ${card.bg}`}
+          className={`relative overflow-hidden rounded-2xl p-4 shadow bg-white transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl group ${card.bg}`}
         >
           {card.bgIcon}
           <div className="flex justify-between items-start mb-2">
