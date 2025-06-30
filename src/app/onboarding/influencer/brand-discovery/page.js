@@ -40,6 +40,15 @@ import {
   DollarOutlined,
   TrophyOutlined,
   MessageOutlined,
+  ShopOutlined,
+  CarOutlined,
+  SkinOutlined,
+  BulbOutlined,
+  RocketOutlined,
+  GiftOutlined,
+  HomeOutlined,
+  CoffeeOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 import { getAllBrands } from "@/redux/features/influencer/filter";
 import { useAuth } from "@/assets/hooks/use-auth";
@@ -56,6 +65,21 @@ const fadeIn = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.5 },
+};
+
+// Map industry/category names to icons
+const industryIcons = {
+  "E-Commerce": <ShopOutlined />,
+  "Automotive": <CarOutlined />,
+  "Beauty & Personal Care": <SkinOutlined />,
+  "Arts, Crafts & Creativity": <BulbOutlined />,
+  "Technology": <RocketOutlined />,
+  "Health": <HeartOutlined />,
+  "Gifts": <GiftOutlined />,
+  "Home": <HomeOutlined />,
+  "Food & Beverage": <CoffeeOutlined />,
+  // fallback
+  "default": <AppstoreOutlined />,
 };
 
 const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
@@ -379,6 +403,16 @@ const BrandDiscovery = () => {
                     value={selectedIndustry}
                     onChange={setSelectedIndustry}
                     allowClear
+                    showSearch
+                    filterOption={(input, option) => {
+                      let label = "";
+                      if (Array.isArray(option?.children)) {
+                        label = option.children.find(child => typeof child === "string") || "";
+                      } else if (typeof option?.children === "string") {
+                        label = option.children;
+                      }
+                      return label.toLowerCase().includes(input.toLowerCase());
+                    }}
                   >
                     {Array.from(
                       new Set(
@@ -393,7 +427,8 @@ const BrandDiscovery = () => {
                       )
                     ).map((industry) => (
                       <Option key={industry} value={industry}>
-                        {industry}
+                        {industryIcons[industry] || industryIcons["default"]}
+                        <span style={{ marginLeft: 8 }}>{industry}</span>
                       </Option>
                     ))}
                   </Select>
@@ -410,12 +445,23 @@ const BrandDiscovery = () => {
                   value={selectedCountry}
                   onChange={setSelectedCountry}
                   allowClear
+                  showSearch
+                  filterOption={(input, option) => {
+                    let label = "";
+                    if (Array.isArray(option?.children)) {
+                      label = option.children.find(child => typeof child === "string") || "";
+                    } else if (typeof option?.children === "string") {
+                      label = option.children;
+                    }
+                    return label.toLowerCase().includes(input.toLowerCase());
+                  }}
                 >
-                  {Array.from(
-                    new Set(brands.map((brand) => brand.countryData?.name).filter(Boolean))
-                  ).map((country) => (
-                    <Option key={country} value={country}>
-                      {country}
+                  {country_names.map((country) => (
+                    <Option key={country.name} value={country.name}>
+                      {country.code && (
+                        <ReactCountryFlag countryCode={country.code} svg style={{ marginRight: 8 }} />
+                      )}
+                      {country.name}
                     </Option>
                   ))}
                 </Select>
@@ -433,14 +479,21 @@ const BrandDiscovery = () => {
                   onChange={setSelectedPrefInfluencerCountry}
                   allowClear
                   showSearch
-                  filterOption={(input, option) =>
-                    (option?.children ?? "")
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  }
+                  filterOption={(input, option) => {
+                    let label = "";
+                    if (Array.isArray(option?.children)) {
+                      label = option.children.find(child => typeof child === "string") || "";
+                    } else if (typeof option?.children === "string") {
+                      label = option.children;
+                    }
+                    return label.toLowerCase().includes(input.toLowerCase());
+                  }}
                 >
                   {country_names.map((country) => (
                     <Option key={country.name} value={country.name}>
+                      {country.code && (
+                        <ReactCountryFlag countryCode={country.code} svg style={{ marginRight: 8 }} />
+                      )}
                       {country.name}
                     </Option>
                   ))}
