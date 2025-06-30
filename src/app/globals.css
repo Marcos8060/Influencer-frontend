@@ -347,3 +347,8 @@
     linear-gradient(to right, rgba(54,128,161,0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(54,128,161,0.05) 1px, transparent 1px);
 }
+
+/* Add space between month and year in PrimeReact Calendar popup */
+.p-datepicker .p-datepicker-header .p-datepicker-month {
+  margin-right: 8px;
+}

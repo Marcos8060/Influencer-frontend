@@ -45,12 +45,12 @@ const CampaignBasics = () => {
 
   // Handle form submission and persist data in Redux
   const handleNext = () => {
-    if (!details.startDate || !details.title || !details.description || !details.endDate) {
+    if (!details.startDate || !details.title || !details.description) {
       toast.error('Please fill out all required fields');
       return;
     }
-    
-    if (details.startDate > details.endDate) {
+    // Only check endDate if provided
+    if (details.endDate && details.startDate > details.endDate) {
       toast.error('End date must be after start date');
       return;
     }
@@ -166,7 +166,7 @@ const CampaignBasics = () => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="endDate">
-                End Date <span className="text-red-500">*</span>
+                End Date <span className="text-gray-400 text-xs">(optional)</span>
               </label>
               <DateFieldComponent
                 value={details.endDate}
@@ -179,9 +179,11 @@ const CampaignBasics = () => {
             </div>
           </div>
           <p className="mt-3 text-sm text-gray-500">
-            {details.startDate && details.endDate ? (
-              `Campaign will run for ${Math.ceil((details.endDate - details.startDate) / (1000 * 60 * 60 * 24))} days`
-            ) : "Select both dates to see duration"}
+            {details.startDate && details.endDate
+              ? `Campaign will run for ${Math.ceil((details.endDate - details.startDate) / (1000 * 60 * 60 * 24))} days`
+              : details.startDate && !details.endDate
+              ? "No end date (runs indefinitely)"
+              : "Select a start date to see duration"}
           </p>
         </section>
 
@@ -209,7 +211,7 @@ const CampaignBasics = () => {
             onClick={handleNext} 
             label="Continue" 
             className="px-8 py-3 bg-gradient-to-r from-primary to-secondary hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
-            disabled={!details.title || !details.description || !details.startDate || !details.endDate}
+            disabled={!details.title || !details.description || !details.startDate}
           />
         </footer>
       </div>

@@ -31,7 +31,7 @@ const CreateCampaign = () => {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       {/* Progress Bar */}
       <div className="mb-4">
         {/* Stepper */}
@@ -45,9 +45,9 @@ const CreateCampaign = () => {
                       ${index < currentStep
                         ? "bg-primary text-white border-primary"
                         : index === currentStep
-                        ? "border-4 border-gray-400 bg-white text-primary shadow-lg"
+                        ? "border-2 border-gray-400 bg-white text-primary shadow-lg"
                         : "bg-gray-200 text-gray-400 border-gray-200"}
-                      border-4 w-10 h-10 text-xl relative z-10`}
+                      border-2 w-10 h-10 text-xl relative z-10`}
                   >
                     {index < currentStep ? (
                       <CheckCircleFilled className="text-white text-2xl" />
