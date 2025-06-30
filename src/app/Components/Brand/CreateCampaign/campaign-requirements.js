@@ -57,16 +57,15 @@ const CampaignRequirements = () => {
   const handleNext = () => {
     if (!details.campaignPreferences.videosPerCreator || 
         !details.campaignPreferences.videoDuration || 
-        details.campaignPreferences.socialChannels.length === 0 || 
-        !details.exampleVideoUrl) {
+        details.campaignPreferences.socialChannels.length === 0) {
       toast.error("Please complete all required fields");
       return;
     }
 
-    if (!validateVideoUrl(details.exampleVideoUrl)) {
-      toast.error("Please provide a valid YouTube, TikTok, or Instagram URL");
-      return;
-    }
+    // if (!validateVideoUrl(details.exampleVideoUrl)) {
+    //   toast.error("Please provide a valid YouTube, TikTok, or Instagram URL");
+    //   return;
+    // }
 
     const uniqueProductIds = [...new Set([...campaignData.products, ...selectedProducts])];
 
@@ -379,8 +378,7 @@ const CampaignRequirements = () => {
             className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
             disabled={
               !details.campaignPreferences.videosPerCreator || 
-              !details.campaignPreferences.videoDuration || 
-              !details.exampleVideoUrl
+              !details.campaignPreferences.videoDuration
             }
           />
         </footer>
