@@ -225,8 +225,6 @@ const BrandDiscovery = () => {
   const auth = useAuth();
   const pageSize = 8;
 
-  console.log("BRANDs ",brands)
-
   useEffect(() => {
     if (auth) {
       setLoading(true);
