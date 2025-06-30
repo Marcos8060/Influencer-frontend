@@ -384,7 +384,7 @@ const BrandDiscovery = () => {
           <Space direction="vertical" className="w-full">
             <Input
               size="large"
-              placeholder="Search brands by name, industry, or keywords..."
+              placeholder="Search brands by name..."
               prefix={<SearchOutlined className="text-gray-400" />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
