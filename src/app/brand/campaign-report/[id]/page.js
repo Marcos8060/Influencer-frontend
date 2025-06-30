@@ -67,30 +67,63 @@ const CampaignDetails = () => {
     }
   }, [auth]);
 
+  // Calculate stats from campaignDetails
+  const applicantsCount = Array.isArray(campaignDetails.collaborators)
+    ? campaignDetails.collaborators.length
+    : 0;
+  const pendingApplicants = Array.isArray(campaignDetails.collaborators)
+    ? campaignDetails.collaborators.filter(c => c.status === 'pending').length
+    : 0;
+  const approvedApplicants = Array.isArray(campaignDetails.collaborators)
+    ? campaignDetails.collaborators.filter(c => c.status === 'approved').length
+    : 0;
+
+  // Unique countries among collaborators
+  const uniqueCountries = Array.isArray(campaignDetails.collaborators)
+    ? Array.from(new Set(
+        campaignDetails.collaborators.map(c => {
+          if (c.influencerCountry) {
+            try {
+              const parsed = typeof c.influencerCountry === 'string' ? JSON.parse(c.influencerCountry) : c.influencerCountry;
+              return parsed?.name || null;
+            } catch {
+              return null;
+            }
+          }
+          return null;
+        }).filter(Boolean)
+      )).length
+    : 0;
+
+  // Number of products in campaign
+  const productsCount = Array.isArray(campaignDetails.products)
+    ? campaignDetails.products.length
+    : 0;
+
   const stats = [
     {
       title: "No. of Applicants",
-      value: campaignDetails.collaborators?.length || 0,
+      value: applicantsCount,
       icon: <TeamOutlined className="text-blue-500" />,
-      suffix: "Pending Approval",
+      suffix: `${pendingApplicants} Pending Approval`,
     },
     {
       title: "Influencer Posts",
-      value: 18,
+      value: approvedApplicants,
       icon: <HistoryOutlined className="text-green-500" />,
-      suffix: "Total Offers",
+      suffix: "Total Approved",
     },
     {
-      title: "Total Reach",
-      value: "1.2M",
-      icon: <ShoppingOutlined className="text-purple-500" />,
-      suffix: "Total Reach",
-    },
-    {
-      title: "Engagement Rate",
-      value: "12%",
+      title: "Unique Countries",
+      value: uniqueCountries,
       icon: <TeamOutlined className="text-orange-500" />,
-      suffix: "Avg Engagement",
+      suffix: "Countries Represented",
+    },
+    {
+      title: "Products in Campaign",
+      value: productsCount,
+      icon: <ShoppingOutlined className="text-purple-500" />,
+      suffix: "Products",
     },
   ];
 
