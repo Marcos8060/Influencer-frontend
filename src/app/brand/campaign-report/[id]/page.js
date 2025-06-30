@@ -150,6 +150,12 @@ const CampaignDetails = () => {
       dataIndex: "influencerCountry",
       key: "country",
       responsive: ["md"],
+      render: (influencerCountry) => {
+        if (!influencerCountry || !influencerCountry.name) {
+          return <Text type="secondary">N/A</Text>;
+        }
+        return <Text>{influencerCountry.name}</Text>;
+      },
     },
     {
       title: "Status",
