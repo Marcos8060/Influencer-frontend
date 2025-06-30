@@ -34,6 +34,7 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { getAllCampaignDetails, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
+import InviteInfluencersDrawer from "@/app/Components/Brand/CampaignReport/InviteInfluencersDrawer";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -44,6 +45,7 @@ const CampaignDetails = () => {
   const pathname = usePathname();
   const router = useRouter();
   const auth = useAuth();
+  const [inviteDrawerOpen, setInviteDrawerOpen] = useState(false);
 
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
@@ -412,12 +414,12 @@ const CampaignDetails = () => {
                 </span>
               }
               extra={
-                <button
+                <Button
                   className="text-primary text-md hover:underline font-semibold"
-                  
+                  onClick={() => setInviteDrawerOpen(true)}
                 >
                   Invite Applicants
-                </button>
+                </Button>
               }
               className="shadow-sm border-0"
               bodyStyle={{ padding: "24px" }}
@@ -444,6 +446,13 @@ const CampaignDetails = () => {
           </div>
         )}
       </div>
+      <InviteInfluencersDrawer
+        open={inviteDrawerOpen}
+        onClose={() => setInviteDrawerOpen(false)}
+        campaignId={id}
+        auth={auth}
+        onInvited={() => {/* Optionally refresh campaign details here */}}
+      />
     </div>
   );
 };
