@@ -352,3 +352,8 @@
 .p-datepicker .p-datepicker-header .p-datepicker-month {
   margin-right: 8px;
 }
+
+/* Slow down the ping animation for status dots */
+.slow-ping {
+  animation-duration: 20s !important;
+}

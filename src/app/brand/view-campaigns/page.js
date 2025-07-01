@@ -65,20 +65,44 @@ const CampaignsTable = () => {
   );
 
   const getStatusBadge = (status) => {
+    const lowerStatus = status?.toLowerCase();
+    if (lowerStatus === 'live') {
+      return (
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-green shadow-green-glow animate-ping border-2 border-white"></span>
+          <span className="text-green font-semibold">Live</span>
+        </span>
+      );
+    }
+    if (lowerStatus === 'upcoming') {
+      return (
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-blue-500 shadow-blue-glow animate-ping border-2 border-white"></span>
+          <span className="text-blue-700 font-semibold">Upcoming</span>
+        </span>
+      );
+    }
+    if (lowerStatus === 'finished') {
+      return (
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-3 h-3 rounded-full bg-yellow shadow-yellow-400/40 animate-ping slow-ping border-2 border-white"></span>
+          <span className="text-yellow font-semibold">Finished</span>
+        </span>
+      );
+    }
     const colors = {
-      active: "green",    // Custom green
-      pending: "gold",      // Gold color
-      completed: "blue",    // Blue color
-      draft: "default",     // Default tag color
-      rejected: "red",      // Red color
+      active: "green",
+      pending: "gold",
+      completed: "blue",
+      draft: "default",
+      rejected: "red",
     };
-    
     return (
-      <Tag color={colors[status?.toLowerCase()] || "default"} className="capitalize">
+      <Tag color={colors[lowerStatus] || "default"} className="capitalize">
         {status || "Unknown"}
       </Tag>
     );
-  };  
+  };
 
   const columns = [
     {
@@ -93,16 +117,6 @@ const CampaignsTable = () => {
       sorter: true,
       render: (status) => getStatusBadge(status),
     },
-    // {
-    //   title: "Description",
-    //   dataIndex: "description",
-    //   responsive: ["lg"],
-    //   render: (desc) => (
-    //     <Tooltip title={desc}>
-    //       {desc.length > 50 ? `${desc.slice(0, 50)}...` : desc}
-    //     </Tooltip>
-    //   ),
-    // },
     {
       title: "Applications",
       dataIndex: "numberOfInfluencers",
@@ -129,6 +143,7 @@ const CampaignsTable = () => {
           type="link"
           icon={<FiEye />}
           onClick={() => router.push(`/brand/campaign-report/${record.id}`)}
+          className="text-primary font-semibold hover:underline"
         >
           View
         </Button>
@@ -137,21 +152,20 @@ const CampaignsTable = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+    <div className="bg-white rounded-2xl shadow-lg p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-color">Campaigns</h2>
-          <p className="text-color">{processedCampaigns.length} campaigns found</p>
+          <h2 className="text-3xl font-extrabold text-primary mb-1">Campaigns</h2>
+          <p className="text-color text-base">{processedCampaigns.length} campaigns found</p>
         </div>
-
         <Search
           placeholder="Search campaigns"
           onChange={(e) => setSearchTerm(e.target.value)}
           allowClear
           style={{ width: 300 }}
+          className="rounded-lg border border-input shadow-sm"
         />
       </div>
-
       {loading ? (
         <Skeleton active paragraph={{ rows: 6 }} />
       ) : (
@@ -166,17 +180,19 @@ const CampaignsTable = () => {
             }
           }}
           scroll={{ x: true }}
+          className="custom-campaign-table"
+          rowClassName={() => "hover:bg-primary/5 transition-colors"}
         />
       )}
-
       {!loading && (
-        <div className="mt-6 flex justify-end">
+        <div className="mt-8 flex justify-end">
           <Pagination
             current={currentPage}
             pageSize={itemsPerPage}
             total={processedCampaigns.length}
             onChange={(page) => setCurrentPage(page)}
             showSizeChanger={false}
+            className="custom-pagination"
           />
         </div>
       )}
