@@ -85,13 +85,13 @@ const CampaignRequirements = () => {
   };
 
   const durations = [
-    { value: 10, label: "10 seconds" },
-    { value: 15, label: "15 seconds" },
-    { value: 30, label: "30 seconds" },
-    { value: 45, label: "45 seconds" },
-    { value: 60, label: "60 seconds (1 min)" },
-    { value: 90, label: "90 seconds (1.5 min)" },
-    { value: 120, label: "120 seconds (2 min)" },
+    { value: "10", label: "10 seconds" },
+    { value: "15", label: "15 seconds" },
+    { value: "30", label: "30 seconds" },
+    { value: "45", label: "45 seconds" },
+    { value: "60", label: "60 seconds (1 min)" },
+    { value: "90", label: "90 seconds (1.5 min)" },
+    { value: "120", label: "120 seconds (2 min)" },
     { value: "open", label: "Open-ended / No strict limit" },
   ];
 
