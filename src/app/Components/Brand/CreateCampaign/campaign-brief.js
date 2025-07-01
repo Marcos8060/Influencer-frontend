@@ -102,7 +102,7 @@ const CampaignBrief = () => {
   const descriptionLength = details.briefDescription.length || 0;
 
   return (
-    <div className="bg-gray-50 min-h-screen px-4 py-8 flex items-center justify-center text-color">
+    <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
       <div className="max-w-3xl w-full mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
@@ -110,7 +110,7 @@ const CampaignBrief = () => {
         </div>
 
         {/* Campaign Brief Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-2 rounded-full mr-4">
               <FiFileText className="text-blue-600 text-lg" />
@@ -168,7 +168,7 @@ const CampaignBrief = () => {
         </section>
 
         {/* Social Channels Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-6">
             <div className="bg-purple-100 p-2 rounded-full mr-4">
               <FiShare2 className="text-purple-600 text-lg" />
@@ -256,7 +256,7 @@ const CampaignBrief = () => {
         </section>
 
         {/* Video Style Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-6">
             <div className="bg-amber-100 p-2 rounded-full mr-4">
               <FiFilm className="text-amber-600 text-lg" />

@@ -77,10 +77,10 @@ const CampaignPreview = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
       {success ? (
         <div className="flex items-center justify-center min-h-[50vh] text-color">
-          <section className="bg-white rounded-xl shadow p-8 max-w-md w-full text-center transform transition-all hover:scale-[1.01] duration-300">
+          <section className="bg-white rounded-md shadow p-8 max-w-md w-full text-center transform transition-all hover:scale-[1.01] duration-300">
             <div className="space-y-4">
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br bg-green animate-pulse">
                 <svg
@@ -132,7 +132,7 @@ const CampaignPreview = () => {
         <>
           <div className="max-w-6xl mx-auto text-color">
             {/* Premium Beauty Campaign Card */}
-            <section className="bg-white rounded-3xl shadow overflow-hidden mb-10 transform transition-all hover:shadow-2xl duration-300">
+            <section className="bg-white rounded-xl shadow overflow-hidden mb-10 transform transition-all hover:shadow-xl duration-300">
               {/* Luxury Gradient Header */}
               <div className="relative bg-gradient-to-r from-primary to-secondary px-10 py-6 text-center">
                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10"></div>
@@ -152,7 +152,7 @@ const CampaignPreview = () => {
 
               {/* Hero Cover Image */}
               <div className="px-10 pt-10">
-                <div className="rounded-2xl overflow-hidden border-[6px] border-white shadow relative group">
+                <div className="rounded-xl overflow-hidden border-[6px] border-white shadow relative group">
                   <img
                     className="w-full h-60 md:h-60 object-cover transform group-hover:scale-[1.01] transition-transform duration-500"
                     src={campaignData.coverImage?.url}
