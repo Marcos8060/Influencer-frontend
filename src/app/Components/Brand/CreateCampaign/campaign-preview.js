@@ -19,6 +19,8 @@ import {
 } from "react-icons/md";
 import { RiVideoUploadLine } from "react-icons/ri";
 import Link from "next/link";
+import { Modal, Checkbox } from "antd";
+import { useRouter } from "next/navigation";
 
 const CampaignPreview = () => {
   const { campaignData } = useSelector((store) => store.campaign);
@@ -26,6 +28,11 @@ const CampaignPreview = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const auth = useAuth();
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const router = useRouter();
+
+  const termsText = `Grace Belgravia Influencer Platform\nBrand Campaign Submission Terms\nEffective Date: [Insert Date]\nGoverning Law: England and Wales\nCompany: LOXA HOLDINGS LTD\nRegistered Address: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ\nCorrespondence Address: Office 7, Siddeley House, 50 Canbury Park Rd, Kingston upon Thames, KT2 6LX\nWebsite: https://gracebelgravia.com/\nEmail: info@gracebelgravia.com\n1. Agreement to Terms\nBy submitting a campaign brief or invitation through the Grace Belgravia platform, you (the \"Brand\") agree to be bound by the following Campaign Submission Terms in addition to the platform's general Terms and Conditions. If you do not agree to these terms, do not submit a campaign.\n2. Authority and Representations\n2.1 The Brand confirms that it has full legal authority to submit the campaign and bind its organisation to these Terms.\n2.2 The individual submitting the campaign affirms that they are duly authorised to act on behalf of the Brand and enter binding commercial agreements.\n2.3 The Brand represents that it holds all necessary rights to any materials, trademarks, images, logos, or creative assets included in the campaign brief.\n3. Campaign Content\n3.1 All campaign briefs must clearly define the intended deliverables, usage rights, payment or gifting terms, deadlines, and any specific brand or content guidelines.\n3.2 Campaigns must not contain:\nUnlawful, defamatory, discriminatory, or misleading content;\nInstructions requiring influencers to violate advertising laws or platform policies;\nInfringing or unlicensed copyrighted materials.\n3.3 The Brand is solely responsible for the accuracy, legality, and completeness of campaign content and communications.\n4. Usage and Ownership Rights\n4.1 Unless otherwise agreed in writing, all influencer content submitted for a paid or gifted campaign shall be treated as \"work for hire\" and shall become the Brand's exclusive property upon submission.\n4.2 The Brand shall have the right to use, reproduce, edit, display, distribute, and publish the content for commercial and non-commercial purposes across all media, including but not limited to digital, print, PR, email, and paid media.\n4.3 The Brand agrees to use the content in a lawful, ethical, and non-defamatory manner.\n5. Compliance and Conduct\n5.1 The Brand agrees to comply with all applicable laws, regulations, and platform rules, including the ASA (Advertising Standards Authority) guidelines.\n5.2 The Brand agrees to treat all influencers with professionalism, fairness, and respect throughout the duration of any campaign.\n5.3 The Brand must not request off-platform engagement or payments designed to bypass platform fees or rules.\n6. Cancellations and Disputes\n6.1 If the Brand wishes to cancel a live campaign or accepted collaboration, written notice must be given, and any reasonable incurred costs by the influencer must be reimbursed.\n6.2 In the event of a dispute regarding content or performance, both parties agree to attempt resolution in good faith.\n6.3 The platform may offer informal mediation but shall not be liable for resolving disputes between Brands and Influencers.\n7. Indemnity and Liability\n7.1 The Brand agrees to indemnify LOXA HOLDINGS LTD and all platform users against any third-party claims arising from copyright infringement, unauthorised use of assets, or campaign-related legal claims.\n7.2 LOXA HOLDINGS LTD shall not be liable for any indirect, incidental, or consequential damages arising from the Brand's use of the platform or campaign outcomes.\n8. Governing Law and Jurisdiction\n8.1 These Terms shall be governed by the laws of England and Wales.\n8.2 Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.\nFor questions or clarifications about these terms, please contact info@gracebelgravia.com.`;
 
   const addCampaign = async () => {
     let response;
@@ -78,7 +85,11 @@ const CampaignPreview = () => {
     }
   };
 
-  console.log("DATA ",campaignData)
+  const handleViewCampaigns = (e) => {
+    e.preventDefault();
+    router.push('/brand/view-campaigns');
+    dispatch(setCurrentStep(0));
+  };
 
   return (
     <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
@@ -119,6 +130,7 @@ const CampaignPreview = () => {
                 </button>
                 <Link
                   href="/brand/view-campaigns"
+                  onClick={handleViewCampaigns}
                   className="flex-1 px-2 text-sm py-3 rounded-lg border-2 border-primary text-primary font-semibold bg-white shadow hover:bg-primary/10 transition-all duration-200 flex items-center justify-center"
                 >
                   View My Campaigns
@@ -410,51 +422,124 @@ const CampaignPreview = () => {
               </div>
             </section>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between px-4">
-              <CustomizedBackButton
-                onClick={() => dispatch(previousStep())}
-                className="px-8 py-3.5 text-gray-700 hover:bg-gray-50 rounded-full border border-gray-200 transition-all duration-300 hover:-translate-x-1"
-              >
-                Back to Edit
-              </CustomizedBackButton>
+            {/* Launch Campaign Button triggers terms modal */}
+            <div className="flex justify-end mt-8">
               <ButtonComponent
-                disabled={loading}
-                onClick={addCampaign}
+                onClick={() => setTermsOpen(true)}
+                label={loading ? "Launching..." : "Launch Campaign"}
                 className="px-12 py-4 text-base font-semibold rounded-full bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-              >
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    {"Launching Campaign..."}
-                  </span>
-                ) : (
-                  <>
-                    <span className="mr-2">{"🚀"}</span>
-                    {"Launch Campaign"}
-                  </>
-                )}
-              </ButtonComponent>
+                disabled={loading}
+              />
             </div>
+            {/* Terms Modal */}
+            <Modal
+              open={termsOpen}
+              onCancel={() => { setTermsOpen(false); setAgreed(false); }}
+              footer={null}
+              centered
+              width={700}
+              styles={{ body: { maxHeight: '70vh', overflowY: 'auto', padding: 32 } }}
+            >
+              <h2 className="text-xl font-bold mb-4 text-primary">Brand Campaign Submission Terms</h2>
+              <div className="text-gray-700 text-sm mb-6 space-y-4">
+                <div>
+                  <h3 className="font-bold text-base mb-1">Grace Belgravia Influencer Platform</h3>
+                  <div>Brand Campaign Submission Terms</div>
+                  <div className="text-xs text-gray-500">Effective Date: [Insert Date]</div>
+                  <div className="text-xs text-gray-500">Governing Law: England and Wales</div>
+                  <div className="text-xs text-gray-500">Company: LOXA HOLDINGS LTD</div>
+                  <div className="text-xs text-gray-500">Registered Address: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ</div>
+                  <div className="text-xs text-gray-500">Correspondence Address: Office 7, Siddeley House, 50 Canbury Park Rd, Kingston upon Thames, KT2 6LX</div>
+                  <div className="text-xs text-gray-500">Website: <a href="https://gracebelgravia.com/" className="underline text-primary" target="_blank">gracebelgravia.com</a></div>
+                  <div className="text-xs text-gray-500">Email: <a href="mailto:info@gracebelgravia.com" className="underline text-primary">info@gracebelgravia.com</a></div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">1. Agreement to Terms</h4>
+                  <p>By submitting a campaign brief or invitation through the Grace Belgravia platform, you (the "Brand") agree to be bound by the following Campaign Submission Terms in addition to the platform's general Terms and Conditions. If you do not agree to these terms, do not submit a campaign.</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">2. Authority and Representations</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>The Brand confirms that it has full legal authority to submit the campaign and bind its organisation to these Terms.</li>
+                    <li>The individual submitting the campaign affirms that they are duly authorised to act on behalf of the Brand and enter binding commercial agreements.</li>
+                    <li>The Brand represents that it holds all necessary rights to any materials, trademarks, images, logos, or creative assets included in the campaign brief.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">3. Campaign Content</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>All campaign briefs must clearly define the intended deliverables, usage rights, payment or gifting terms, deadlines, and any specific brand or content guidelines.</li>
+                    <li>Campaigns must not contain:
+                      <ul className="list-disc pl-5 mt-1">
+                        <li>Unlawful, defamatory, discriminatory, or misleading content;</li>
+                        <li>Instructions requiring influencers to violate advertising laws or platform policies;</li>
+                        <li>Infringing or unlicensed copyrighted materials.</li>
+                      </ul>
+                    </li>
+                    <li>The Brand is solely responsible for the accuracy, legality, and completeness of campaign content and communications.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">4. Usage and Ownership Rights</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Unless otherwise agreed in writing, all influencer content submitted for a paid or gifted campaign shall be treated as "work for hire" and shall become the Brand's exclusive property upon submission.</li>
+                    <li>The Brand shall have the right to use, reproduce, edit, display, distribute, and publish the content for commercial and non-commercial purposes across all media, including but not limited to digital, print, PR, email, and paid media.</li>
+                    <li>The Brand agrees to use the content in a lawful, ethical, and non-defamatory manner.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">5. Compliance and Conduct</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>The Brand agrees to comply with all applicable laws, regulations, and platform rules, including the ASA (Advertising Standards Authority) guidelines.</li>
+                    <li>The Brand agrees to treat all influencers with professionalism, fairness, and respect throughout the duration of any campaign.</li>
+                    <li>The Brand must not request off-platform engagement or payments designed to bypass platform fees or rules.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">6. Cancellations and Disputes</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>If the Brand wishes to cancel a live campaign or accepted collaboration, written notice must be given, and any reasonable incurred costs by the influencer must be reimbursed.</li>
+                    <li>In the event of a dispute regarding content or performance, both parties agree to attempt resolution in good faith.</li>
+                    <li>The platform may offer informal mediation but shall not be liable for resolving disputes between Brands and Influencers.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">7. Indemnity and Liability</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>The Brand agrees to indemnify LOXA HOLDINGS LTD and all platform users against any third-party claims arising from copyright infringement, unauthorised use of assets, or campaign-related legal claims.</li>
+                    <li>LOXA HOLDINGS LTD shall not be liable for any indirect, incidental, or consequential damages arising from the Brand's use of the platform or campaign outcomes.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-1">8. Governing Law and Jurisdiction</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>These Terms shall be governed by the laws of England and Wales.</li>
+                    <li>Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.</li>
+                  </ul>
+                </div>
+                <div className="text-xs text-gray-500 pt-2">For questions or clarifications about these terms, please contact <a href="mailto:info@gracebelgravia.com" className="underline text-primary">info@gracebelgravia.com</a>.</div>
+              </div>
+              <Checkbox
+                checked={agreed}
+                onChange={e => setAgreed(e.target.checked)}
+                className="mb-6 text-base"
+              >
+                I have read and agree to the Brand Campaign Submission Terms
+              </Checkbox>
+              <div className="flex justify-end gap-4">
+                <ButtonComponent
+                  onClick={() => { setTermsOpen(false); setAgreed(false); }}
+                  label="Cancel"
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium"
+                />
+                <ButtonComponent
+                  onClick={async () => { await addCampaign(); setTermsOpen(false); setAgreed(false); }}
+                  label={loading ? "Publishing..." : "Publish"}
+                  className="px-8 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold shadow"
+                  disabled={!agreed || loading}
+                />
+              </div>
+            </Modal>
           </div>
         </>
       )}

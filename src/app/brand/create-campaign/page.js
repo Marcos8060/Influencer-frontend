@@ -37,7 +37,7 @@ const CreateCampaign = () => {
         {/* Progress Stepper Card */}
         <div className="mb-10 rounded-lg shadow-sm bg-white/80 backdrop-blur-md border border-primary/10 p-8">
           {/* Steps Row */}
-          <div className="flex items-center justify-between relative z-10">
+          <div className="flex flex-row w-full overflow-x-auto min-w-0 gap-x-6 sm:gap-x-10 items-center justify-between relative z-10">
             {steps.map((step, index) => {
               // Step states
               const isCompleted = index < currentStep;
@@ -45,7 +45,7 @@ const CreateCampaign = () => {
               const isUpcoming = index > currentStep;
               const isLast = index === steps.length - 1;
               return (
-                <div key={index} className="flex-1 flex flex-col items-center min-w-0">
+                <div key={index} className="flex-1 flex flex-col items-center min-w-0 min-w-[110px] flex-shrink-0">
                   <div className="flex items-center space-x-2">
                     {/* Icon or Checkmark */}
                     {isLast && isActive ? (
@@ -66,11 +66,11 @@ const CreateCampaign = () => {
                     {/* Step Label */}
                     <span
                       className={
-                        isActive
+                        (isActive
                           ? `font-bold text-primary text-base drop-shadow-sm`
                           : isCompleted
                           ? `text-primary text-base`
-                          : `text-gray-300 text-base`
+                          : `text-gray-300 text-base`) + ' text-center w-full block'
                       }
                     >
                       {step.name}
@@ -81,13 +81,13 @@ const CreateCampaign = () => {
             })}
           </div>
           {/* Progress Bar */}
-          <div className="relative mt-6 h-1 w-full">
+          <div className="relative mt-6 h-1 w-full min-w-0 sm:mx-0 mx-2">
             {/* Gray background */}
             <div className="absolute top-0 left-0 w-full h-1 rounded-full bg-input" />
             {/* Colored progress */}
             <div
               className="absolute top-0 left-0 h-1 rounded-full bg-gradient-to-r from-primary to-secondary shadow-lg transition-all duration-500"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%`, minWidth: 0 }}
             />
           </div>
         </div>
