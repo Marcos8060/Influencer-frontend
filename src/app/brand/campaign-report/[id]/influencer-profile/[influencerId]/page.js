@@ -284,7 +284,7 @@ const InfluencerProfile = () => {
                 </h1>
                 <div className="flex flex-wrap items-center gap-2">
                   <Tag color="geekblue" className="flex items-center gap-1 px-3 py-1">
-                    <GlobalOutlined /> {brandInfluencerProfile.country}
+                    <GlobalOutlined /> {brandInfluencerProfile.country?.name}
                   </Tag>
                   {brandInfluencerProfile.ethnicBackground?.map((ethnicity) => (
                     <Tag key={ethnicity} color="purple" className="px-3 py-1">
@@ -560,7 +560,7 @@ const InfluencerProfile = () => {
                     {brandInfluencerProfile.addressLine2 &&
                       `${brandInfluencerProfile.addressLine2}, `}
                     {brandInfluencerProfile.city},{" "}
-                    {brandInfluencerProfile.country}{" "}
+                    {brandInfluencerProfile?.country?.name}{" "}
                     {brandInfluencerProfile.zipCode}
                   </span>
                 </div>

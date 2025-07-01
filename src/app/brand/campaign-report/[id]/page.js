@@ -139,7 +139,7 @@ const CampaignDetails = () => {
             <Text strong>{text}</Text>
             <br />
             <Text type="secondary">
-              @{text.toLowerCase().replace(/\s+/g, "")}
+              @{text?.toLowerCase().replace(/\s+/g, "")}
             </Text>
           </div>
         </Space>
