@@ -56,12 +56,15 @@ const CampaignPreview = () => {
   }, [dispatch]);
 
   const formatDate = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return null;
     const options = {
       month: "short",
       day: "numeric",
       year: "numeric",
     };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+    return date.toLocaleDateString("en-US", options);
   };
 
   const getVideoStyleIcon = (style) => {
@@ -74,6 +77,8 @@ const CampaignPreview = () => {
         return "🎥";
     }
   };
+
+  console.log("DATA ",campaignData)
 
   return (
     <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
@@ -175,12 +180,12 @@ const CampaignPreview = () => {
                     {[
                       {
                         label: "Start Date",
-                        value: formatDate(campaignData.startDate),
+                        value: formatDate(campaignData.startDate) || 'No start date',
                         icon: "📅",
                       },
                       {
                         label: "End Date",
-                        value: formatDate(campaignData.endDate),
+                        value: formatDate(campaignData.endDate) || 'No end date',
                         icon: "⏳",
                       },
                     ].map((item, index) => (
