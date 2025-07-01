@@ -14,6 +14,7 @@ import {
   EyeOutlined,
   CheckCircleFilled,
 } from "@ant-design/icons";
+import { FiInfo, FiFileText, FiCheckCircle, FiEye } from "react-icons/fi";
 
 const CreateCampaign = () => {
   const { currentStep } = useSelector((store) => store.campaign);
@@ -22,85 +23,77 @@ const CreateCampaign = () => {
   if (!isAuthorized) return null;
 
   const steps = [
-    { name: "Basics", icon: <EditOutlined />, component: <CampaignBasics /> },
-    { name: "Brief", icon: <FileTextOutlined />, component: <CampaignBrief /> },
-    { name: "Requirements", icon: <CheckSquareOutlined />, component: <CampaignRequirements  /> },
-    { name: "Preview", icon: <EyeOutlined />, component: <CampaignPreview /> },
+    { name: "Campaign Basics", icon: <FiInfo className="text-xl" />, component: <CampaignBasics /> },
+    { name: "Campaign Brief", icon: <FiFileText className="text-xl" />, component: <CampaignBrief /> },
+    { name: "Campaign Requirements", icon: <FiCheckCircle className="text-xl" />, component: <CampaignRequirements /> },
+    { name: "Campaign Preview", icon: <FiEye className="text-xl" />, component: <CampaignPreview /> },
   ];
 
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-      {/* Progress Bar */}
-      <div className="mb-4">
-        {/* Stepper */}
-        <div className="hidden sm:flex flex-col items-center mb-4">
-          <div className="flex w-full items-center justify-between relative">
-            {steps.map((step, index) => (
-              <React.Fragment key={index}>
-                <div className="flex flex-col items-center flex-1 min-w-0">
-                  <div
-                    className={`flex items-center justify-center rounded-full transition-all duration-300
-                      ${index < currentStep
-                        ? "bg-primary text-white border-primary"
-                        : index === currentStep
-                        ? "border-2 border-gray-400 bg-white text-primary shadow-lg"
-                        : "bg-gray-200 text-gray-400 border-gray-200"}
-                      border-2 w-10 h-10 text-xl relative z-10`}
-                  >
-                    {index < currentStep ? (
-                      <CheckCircleFilled className="text-white text-2xl" />
-                    ) : index === currentStep ? (
-                      step.icon
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/10 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        {/* Progress Stepper Card */}
+        <div className="mb-10 rounded-lg shadow-sm bg-white/80 backdrop-blur-md border border-primary/10 p-8">
+          {/* Steps Row */}
+          <div className="flex items-center justify-between relative z-10">
+            {steps.map((step, index) => {
+              // Step states
+              const isCompleted = index < currentStep;
+              const isActive = index === currentStep;
+              const isUpcoming = index > currentStep;
+              const isLast = index === steps.length - 1;
+              return (
+                <div key={index} className="flex-1 flex flex-col items-center min-w-0">
+                  <div className="flex items-center space-x-2">
+                    {/* Icon or Checkmark */}
+                    {isLast && isActive ? (
+                      <CheckCircleFilled className="text-primary text-xl" />
+                    ) : isCompleted ? (
+                      <span className="text-primary text-xl"><CheckCircleFilled /></span>
                     ) : (
-                      step.icon
+                      <span className={
+                        isActive
+                          ? "text-primary text-xl"
+                          : isUpcoming
+                          ? "text-gray-300 text-xl"
+                          : "text-primary text-xl"
+                      }>
+                        {step.icon}
+                      </span>
                     )}
+                    {/* Step Label */}
+                    <span
+                      className={
+                        isActive
+                          ? `font-bold text-primary text-base drop-shadow-sm`
+                          : isCompleted
+                          ? `text-primary text-base`
+                          : `text-gray-300 text-base`
+                      }
+                    >
+                      {step.name}
+                    </span>
                   </div>
-                  <span
-                    className={`mt-2 text-sm text-center ${
-                      index === currentStep
-                        ? "font-bold text-primary"
-                        : index < currentStep
-                        ? "text-primary"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {step.name}
-                  </span>
                 </div>
-                {/* Connector */}
-                {index < steps.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 transition-all duration-300 rounded-full
-                      ${index < currentStep
-                        ? "bg-primary"
-                        : "bg-gray-300"}
-                    `}
-                    style={{ minWidth: 0, marginLeft: "-20px", marginRight: "-20px" }}
-                  />
-                )}
-              </React.Fragment>
-            ))}
+              );
+            })}
           </div>
-        </div>
-        {/* Mobile Progress */}
-        <div className="sm:hidden flex items-center">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <motion.div
-              className="bg-gradient-to-r from-primary to-secondary rounded-full h-2"
-              initial={{ width: "0%" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+          {/* Progress Bar */}
+          <div className="relative mt-6 h-1 w-full">
+            {/* Gray background */}
+            <div className="absolute top-0 left-0 w-full h-1 rounded-full bg-input" />
+            {/* Colored progress */}
+            <div
+              className="absolute top-0 left-0 h-1 rounded-full bg-gradient-to-r from-primary to-secondary shadow-lg transition-all duration-500"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
-          <div className="ml-4 text-sm font-medium text-gray-600">
-            Step {currentStep + 1} of {steps.length}
-          </div>
         </div>
+        {/* Current Step Content */}
+        <div className="mt-8">{steps[currentStep].component}</div>
       </div>
-      {/* Current Step Content */}
-      <div className="">{steps[currentStep].component}</div>
     </div>
   );
 };

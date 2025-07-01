@@ -137,7 +137,7 @@ const CampaignRequirements = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen px-4 py-8 flex items-center justify-center text-gray-800 text-color">
+    <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
       <div className="max-w-3xl w-full mx-auto space-y-6">
         {/* Header */}
         <div className="text-center">
@@ -145,7 +145,7 @@ const CampaignRequirements = () => {
         </div>
 
         {/* Product or Service Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-6">
             <div className="bg-green-100 p-2 rounded-full mr-4">
               <FaCheck className="text-green-600 text-lg" />
@@ -182,7 +182,7 @@ const CampaignRequirements = () => {
                     selectedProducts={selectedProducts}
                     setSelectedProducts={setSelectedProducts}
                     buttonLabel="Select Products"
-                    buttonClass="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium"
+                    buttonClass="w-full px-4 py-3 bg-white border border-input rounded-lg hover:bg-gray-50 text-gray-700 font-medium"
                   />
                 </div>
               )}
@@ -204,7 +204,7 @@ const CampaignRequirements = () => {
                   },
                 })}
                 placeholder="e.g. 3"
-                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-2 text-sm border border-input rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
               <p className="mt-1 text-xs text-gray-500">Number of videos expected from each creator</p>
             </div>
@@ -212,7 +212,7 @@ const CampaignRequirements = () => {
         </section>
 
         {/* Video Duration Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-2 rounded-full mr-4">
               <FiClock className="text-blue-600 text-lg" />
@@ -232,7 +232,7 @@ const CampaignRequirements = () => {
                 className={`p-2 border rounded-lg cursor-pointer transition-colors ${
                   details.campaignPreferences.videoDuration === duration.value
                     ? 'border-primary bg-primary/10'
-                    : 'border-gray-200 hover:border-blue-300'
+                    : 'border-input hover:border-blue-300'
                 }`}
                 onClick={() => toggleVideoDuration(duration.value)}
               >
@@ -258,7 +258,7 @@ const CampaignRequirements = () => {
         </section>
 
         {/* Creator Requirements Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-6">
             <div className="bg-purple-100 p-2 rounded-full mr-4">
               <FiUser className="text-purple-600 text-lg" />
@@ -278,7 +278,7 @@ const CampaignRequirements = () => {
                 className={`p-2 border rounded-lg cursor-pointer transition-colors ${
                   details.campaignPreferences.showFace === req.value
                     ? 'border-primary bg-primary/10'
-                    : 'border-gray-200 hover:border-blue-300'
+                    : 'border-input hover:border-blue-300'
                 }`}
                 onClick={() => toggleShowFace(req.value)}
               >
@@ -304,7 +304,7 @@ const CampaignRequirements = () => {
         </section>
 
         {/* Video Format Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-6">
             <div className="bg-amber-100 p-2 rounded-full mr-4">
               <FiFilm className="text-amber-600 text-lg" />
@@ -324,7 +324,7 @@ const CampaignRequirements = () => {
                 className={`p-2 border rounded-lg cursor-pointer transition-colors ${
                   details.campaignPreferences.videoFormat === format.value
                     ? 'border-primary bg-primary/10'
-                    : 'border-gray-200 hover:border-blue-300'
+                    : 'border-input hover:border-blue-300'
                 }`}
                 onClick={() => toggleVideoFormat(format.value)}
               >
@@ -346,7 +346,7 @@ const CampaignRequirements = () => {
         </section>
 
         {/* Example Content Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-4">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-6">
             <div className="bg-red-100 p-2 rounded-full mr-4">
               <FaYoutube className="text-red-600 text-lg" />
@@ -365,7 +365,7 @@ const CampaignRequirements = () => {
               value={details.exampleVideoUrl}
               onChange={(e) => setDetails({ ...details, exampleVideoUrl: e.target.value })}
               placeholder="https://youtube.com/watch?v=example"
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-input rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
           </div>
           <p className="mt-2 text-xs text-gray-500">YouTube, TikTok, or Instagram links work best</p>
@@ -375,7 +375,7 @@ const CampaignRequirements = () => {
         <footer className="flex justify-between ">
           <CustomizedBackButton 
             onClick={() => dispatch(previousStep())}
-            className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all"
+            className="px-6 py-3 border border-input text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-all"
           />
           <ButtonComponent 
             onClick={handleNext} 

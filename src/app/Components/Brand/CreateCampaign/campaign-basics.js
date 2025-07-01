@@ -78,7 +78,7 @@ const CampaignBasics = () => {
         </div>
 
         {/* Campaign Basics Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-6">
             <div className="bg-blue-100 p-2 rounded-full mr-4">
               <FiInfo className="text-blue-600 text-lg" />
@@ -138,7 +138,7 @@ const CampaignBasics = () => {
         </section>
 
         {/* Timeframe Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-6">
             <div className="bg-purple-100 p-2 rounded-full mr-4">
               <FiCalendar className="text-purple-600 text-lg" />
@@ -188,7 +188,7 @@ const CampaignBasics = () => {
         </section>
 
         {/* Cover Image Section */}
-        <section className="bg-white rounded-xl shadow-sm border border-input p-6">
+        <section className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-4">
             <div className="bg-amber-100 p-2 rounded-full mr-4">
               <FiImage className="text-amber-600 text-lg" />
