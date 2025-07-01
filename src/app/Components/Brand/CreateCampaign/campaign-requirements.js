@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 
 const CampaignRequirements = () => {
   const { campaignData } = useSelector((store) => store.campaign);
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState(campaignData.products || []);
   const dispatch = useDispatch();
 
   const [details, setDetails] = useState({
@@ -53,6 +53,10 @@ const CampaignRequirements = () => {
   useEffect(() => {
     dispatch(setCurrentStep(2));
   }, [dispatch]);
+
+  useEffect(() => {
+    setSelectedProducts(campaignData.products || []);
+  }, [campaignData.products]);
 
   const handleNext = () => {
     if (!details.campaignPreferences.videosPerCreator || 
