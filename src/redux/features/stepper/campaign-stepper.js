@@ -33,7 +33,7 @@ const initialState = {
       videoFormat: "vertical",
       socialChannels: [],
       collaborationType: [],
-      campaignObjective: null,
+      campaignObjective: [],
       contentLanguages: "en,es,fr",
     },
     campaignCollaborators: [
