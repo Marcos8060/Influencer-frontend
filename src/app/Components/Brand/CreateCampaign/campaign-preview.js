@@ -34,7 +34,6 @@ const CampaignPreview = () => {
       response = await createCampaign(auth, campaignData);
       if (response.status === 200) {
         toast.success("Campaign launched successfully!");
-        dispatch(resetCampaignData());
         setSuccess(true);
       } else {
         toast.error(
@@ -79,50 +78,45 @@ const CampaignPreview = () => {
   return (
     <div className="bg-background text-color min-h-[60vh] px-4 py-8 flex items-center justify-center text-gray-800">
       {success ? (
-        <div className="flex items-center justify-center min-h-[50vh] text-color">
-          <section className="bg-white rounded-md shadow p-8 max-w-md w-full text-center transform transition-all hover:scale-[1.01] duration-300">
-            <div className="space-y-4">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br bg-green animate-pulse">
-                <svg
-                  className="h-8 w-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+        <div className="flex items-center justify-center min-h-[60vh] w-full">
+          <section className="relative bg-white/90 rounded-2xl shadow-2xl p-10 max-w-lg w-full text-center border border-primary/10 overflow-hidden">
+            {/* Confetti SVG */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+              <svg className="w-full h-full" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="30" r="6" fill="#fbbf24" fillOpacity=".7" />
+                <circle cx="350" cy="60" r="5" fill="#34d399" fillOpacity=".7" />
+                <circle cx="200" cy="20" r="4" fill="#60a5fa" fillOpacity=".7" />
+                <circle cx="100" cy="120" r="7" fill="#f472b6" fillOpacity=".7" />
+                <circle cx="300" cy="150" r="6" fill="#f87171" fillOpacity=".7" />
+                <circle cx="370" cy="110" r="4" fill="#a78bfa" fillOpacity=".7" />
+                <circle cx="30" cy="170" r="5" fill="#34d399" fillOpacity=".7" />
+                <circle cx="180" cy="180" r="6" fill="#fbbf24" fillOpacity=".7" />
+              </svg>
+            </div>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-primary to-secondary shadow-lg mb-6 animate-bounce">
+                <svg className="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Campaign Live! ✨
-              </h2>
-              <p className="text-gray-600">
-                Your Summer Skin Glow campaign is now active and ready for
-                creators!
-              </p>
-              <div className="pt-6">
+              <h2 className="text-2xl font-extrabold text-primary mb-2">Campaign Created Successfully!</h2>
+              <p className="text-gray-600 mb-8">Your campaign is now live and ready for creators to discover. What would you like to do next?</p>
+              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <button
+                  onClick={() => {
+                    setSuccess(false);
+                    dispatch(resetCampaignData());
+                    dispatch(setCurrentStep(0));
+                  }}
+                  className="flex-1 px-2 text-sm py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow hover:from-primary-dark hover:to-secondary-dark transition-all duration-200"
+                >
+                  Create Another Campaign
+                </button>
                 <Link
                   href="/brand/view-campaigns"
-                  className="inline-flex items-center justify-center text-sm px-8 py-3 border border-transparent font-light rounded-full shadow-lg text-white bg-green hover:from-primary-dark hover:to-secondary-dark focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-300 transform hover:-translate-y-0.5"
+                  className="flex-1 px-2 text-sm py-3 rounded-lg border-2 border-primary text-primary font-semibold bg-white shadow hover:bg-primary/10 transition-all duration-200 flex items-center justify-center"
                 >
-                  View Campaign Dashboard
-                  <svg
-                    className="ml-2 -mr-1 w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  View My Campaigns
                 </Link>
               </div>
             </div>
