@@ -73,7 +73,7 @@ const CampaignRequirements = () => {
       ...campaignData,
       ...details,
       products: uniqueProductIds,
-      exampleVideoUrl: details.exampleVideoUrl?.trim() || "",
+      exampleVideoUrl: details.exampleVideoUrl?.trim() || null,
       campaignPreferences: {
         ...campaignData.campaignPreferences,
         ...details.campaignPreferences,
