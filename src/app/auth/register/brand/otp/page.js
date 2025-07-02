@@ -84,10 +84,15 @@ const OtpPage = () => {
       notificationType: "Registration otp",
     };
     try {
-      await SendOtp(payload);
-      toast.success("OTP verified successfully!");
-      router.push("/auth/login/brand");
-      setOtp(new Array(otpLength).fill(""));
+      const res = await SendOtp(payload);
+      if (res.statusCode === 401) {
+        toast.error("Incorrect code, please request a new code.");
+        setOtp(new Array(otpLength).fill(""));
+      } else {
+        toast.success("OTP verified successfully!");
+        router.push("/auth/login/brand");
+        setOtp(new Array(otpLength).fill(""));
+      }
     } catch (error) {
       console.log("OTP Verification Error:", error);
     } finally {
@@ -106,8 +111,8 @@ const OtpPage = () => {
       const response = await RequestOtp(payload);
       if (response.status === 200) {
         toast.success("New OTP sent to your email!");
-      }else{
-        toast.error('Something went wrong')
+      } else {
+        toast.error("Something went wrong");
       }
     } else {
       toast.error("Please wait until the timer runs out.");
