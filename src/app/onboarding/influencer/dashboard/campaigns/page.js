@@ -247,7 +247,7 @@ const Campaigns = () => {
           {currentTab === 1 && (
             <>
               {/* Filters Section */}
-              <div className="bg-white rounded-2xl shadow-sm border border-input p-6 mb-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <FilterOutlined className="text-primary text-xl" />
