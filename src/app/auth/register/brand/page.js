@@ -381,17 +381,6 @@ const BrandRegister = () => {
                   </div>
                 </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                required
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">
-                I agree to the Terms of Service and Privacy Policy
-              </label>
-            </div>
-
             <motion.div
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
