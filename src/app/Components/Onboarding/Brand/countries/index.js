@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { ReactCountryFlag } from "react-country-flag";
 import { motion } from "framer-motion";
 import { FiSearch } from "react-icons/fi";
+import { country_names } from "@/app/Components/country-names";
 
 const Countries = () => {
   const formData = useSelector((store) => store.stepper.formData);
@@ -17,20 +18,7 @@ const Countries = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
 
-  const countries = [
-    { name: "Kenya", code: "KE" },
-    { name: "United States", code: "US" },
-    { name: "India", code: "IN" },
-    { name: "France", code: "FR" },
-    { name: "Australia", code: "AU" },
-    { name: "Brazil", code: "BR" },
-    { name: "China", code: "CN" },
-    { name: "Egypt", code: "EG" },
-    { name: "United Kingdom", code: "GB" },
-    { name: "Canada", code: "CA" },
-    { name: "Germany", code: "DE" },
-    { name: "Japan", code: "JP" },
-  ];
+  const countries = country_names;
 
   const filteredCountries = countries.filter(country =>
     country.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,6 +63,20 @@ const Countries = () => {
           <p className="text-gray-500">
             Select countries where you'd like your influencers to be based
           </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative w-full">
+            <input
+              type="text"
+              className="w-full border border-input rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              placeholder="Search countries..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          </div>
         </div>
 
         {/* Country Selection */}

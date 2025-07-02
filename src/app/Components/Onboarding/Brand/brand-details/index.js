@@ -15,6 +15,7 @@ import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from '@/app/layout';
+import { Select } from "antd";
 
 const countryData = countries.getData();
 
@@ -26,7 +27,7 @@ const BrandDetails = () => {
     brandWebsite: formData.brandWebsite || "",
     legalCompanyName: formData.legalCompanyName || "",
     country: formData.country || { name: "", code: "" },
-    phoneNumber: formData.phoneNumber || { code: "+1", number: "" },
+    phoneNumber: formData.phoneNumber || { code: "", number: "" },
     state: formData.state || "",
     city: formData.city || "",
     address: formData.address || "",
@@ -229,6 +230,38 @@ const BrandDetails = () => {
 
   const descriptionLength = details.brandDescription?.length || 0;
 
+  // CountryCodeDropdown for phone number
+  const CountryCodeDropdown = ({ value, onChange }) => (
+    <Select
+      showSearch
+      value={value}
+      onChange={onChange}
+      style={{ width: 100 }}
+      optionFilterProp="label"
+      filterOption={(input, option) =>
+        option.label.toLowerCase().includes(input.toLowerCase())
+      }
+      dropdownStyle={{ zIndex: 2000 }}
+    >
+      {countryPhoneData.map((country) => (
+        <Select.Option
+          key={`${country.code}-${country.dial_code}`}
+          value={country.dial_code}
+          label={`${country.name} ${country.dial_code}`}
+        >
+          <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
+            <img
+              src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
+              alt={country.code}
+              style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
+            />
+          </span>
+          {country.name} {country.dial_code}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-color">
       <motion.div
@@ -406,96 +439,31 @@ const BrandDetails = () => {
                   Phone <span className="text-red-500">*</span>
                 </label>
                 <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <div
-                      className="flex items-center border border-input rounded-md px-2 h-10 cursor-pointer hover:border-primary transition-colors"
-                      onClick={() => setIsPhoneCodeOpen(!isPhoneCodeOpen)}
-                    >
-                      {details.country.code ? (
-                        <>
-                          <ReactCountryFlag
-                            countryCode={details.country.code}
-                            svg
-                            className="w-5 h-5 mr-1 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                          />
-                          <span>{details.phoneNumber.code}</span>
-                        </>
-                      ) : (
-                        <span className="text-gray-400">Code</span>
-                      )}
-                    </div>
-
-                    <AnimatePresence>
-                      {isPhoneCodeOpen && (
-                        <motion.div
-                          ref={phoneCodeDropdownRef}
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
-                        >
-                          <div className="p-2 sticky top-0 bg-white border-b border-input">
-                            <input
-                              type="text"
-                              placeholder="Search country codes..."
-                              className="w-full p-2 border border-input rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                              onChange={handlePhoneCodeSearch}
-                              autoFocus
-                            />
-                          </div>
-                          <div className="max-h-60 overflow-y-auto">
-                            {filteredPhoneCodes.map((item) => (
-                              <div
-                                key={item.code}
-                                className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
-                                onClick={() => {
-                                  setDetails({
-                                    ...details,
-                                    phoneNumber: {
-                                      ...details.phoneNumber,
-                                      code: item.dial_code,
-                                    },
-                                    country: {
-                                      name: item.name,
-                                      code: item.code,
-                                    },
-                                  });
-                                  setIsPhoneCodeOpen(false);
-                                }}
-                              >
-                                <ReactCountryFlag
-                                  countryCode={item.code}
-                                  svg
-                                  className="w-5 h-5 mr-2"
-                                />
-                                <span className="mr-2">{item.dial_code}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                  <div className="flex-2">
-                    <InputComponent
-                      value={details.phoneNumber.number}
-                      onChange={(e) => {
-                        const digitsOnly = e.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 15);
-                        setDetails({
-                          ...details,
-                          phoneNumber: {
-                            ...details.phoneNumber,
-                            number: digitsOnly,
-                          },
-                        });
-                      }}
-                      placeholder="Phone number"
-                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    />
-                  </div>
+                  <CountryCodeDropdown
+                    value={details.phoneNumber.code}
+                    onChange={(val) => setDetails({
+                      ...details,
+                      phoneNumber: {
+                        ...details.phoneNumber,
+                        code: val,
+                      },
+                    })}
+                  />
+                  <InputComponent
+                    value={details.phoneNumber.number}
+                    onChange={(e) => {
+                      const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+                      setDetails({
+                        ...details,
+                        phoneNumber: {
+                          ...details.phoneNumber,
+                          number: digitsOnly,
+                        },
+                      });
+                    }}
+                    placeholder="Phone number"
+                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  />
                 </div>
               </div>
 
