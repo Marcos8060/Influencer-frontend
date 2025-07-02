@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Input, Button, List, Avatar, Checkbox, Tag, Space, Spin, message } from "antd";
+import { Drawer, Input, Button, List, Avatar, Checkbox, Tag, Space, Spin, message, Select } from "antd";
 import { SearchOutlined, InstagramOutlined, TikTokOutlined, CheckCircleTwoTone, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { country_names } from "@/app/Components/country-names";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +35,42 @@ const platformBadges = (influencer) => (
   </Space>
 );
 
+// Influencer filter constants
+const categories = [
+  "Adult & 18+",
+  "Apparel & Fashion",
+  "Arts & Culture",
+  "Beauty & Skincare",
+  "Business & Finance",
+  "Crypto & Web3",
+  "Dating & Relationships",
+  "Education & Learning",
+  "E-commerce & Startups",
+  "Entertainment & Pop Culture",
+  "Fitness & Sports",
+  "Food & Drink",
+  "Gaming & Esports",
+  "Health & Wellness",
+  "Home & Lifestyle",
+  "Lifestyle & Self-Development",
+  "Luxury & Aspirational Living",
+  "Men's Interests",
+  "Music & Audio",
+  "Other / Miscellaneous",
+  "Parenting & Family",
+  "Pets & Animals",
+  "Photography & Visual Media",
+  "Politics & Society",
+  "Spirituality & Mindfulness",
+  "Sustainability & Green Living",
+  "Tech & Gadgets",
+  "Toys, Crafts & Hobbies",
+  "Travel & Leisure",
+  "Vegan & Plant-Based",
+  "Women's Interests",
+];
+const genders = ["Male", "Female"];
+
 export default function InviteInfluencersDrawer({ open, onClose, campaignId, onInvited, auth }) {
   const dispatch = useDispatch();
   const { searchResults } = useSelector((store) => store.filterResults);
@@ -47,16 +83,39 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
   const [sending, setSending] = useState(false);
   const pageSize = 10;
 
+  // Influencer filters state
+  const [filters, setFilters] = useState({
+    fullName: "",
+    categories: [],
+    gender: "",
+    country: "",
+    city: "",
+    page_size: pageSize,
+  });
+
+  // Get unique countries and cities for Selects
+  const availableCountries = Array.from(
+    new Set(searchResults?.results?.map((i) => i.country?.name || i.country).filter(Boolean))
+  );
+  const cities = Array.from(
+    new Set(searchResults?.results?.map((i) => i.city).filter(Boolean))
+  );
+
+  // Handle filter change
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCursor(null); // Reset to first page
+  };
+
   // Fetch influencers using Redux action
-  const fetchResults = (customCursor = null, searchTerm = "") => {
+  const fetchResults = (customCursor = null, customFilters = null) => {
     setLoading(true);
     const payload = {
-      page_size: pageSize,
+      ...filters,
+      ...(customFilters || {}),
       cursor: customCursor || null,
+      page_size: pageSize,
     };
-    if (searchTerm) {
-      payload.full_name = searchTerm;
-    }
     // Remove empty values
     Object.keys(payload).forEach((key) => {
       if (
@@ -70,6 +129,11 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
         delete payload[key];
       }
     });
+    // Map fullName to full_name for backend
+    if (payload.fullName) {
+      payload.full_name = payload.fullName;
+      delete payload.fullName;
+    }
     dispatch(fetchAllSearchResults(auth, payload)).then((response) => {
       const getCursorParam = (url) => {
         try {
@@ -85,19 +149,27 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
     });
   };
 
+  // Fetch on filters or auth change
   useEffect(() => {
     if (open && auth) {
-      fetchResults();
+      fetchResults(null);
       setSelected([]);
       setSearch("");
     }
     // eslint-disable-next-line
   }, [open, auth]);
 
+  useEffect(() => {
+    if (open && auth) {
+      fetchResults(null);
+    }
+    // eslint-disable-next-line
+  }, [filters]);
+
   // Search handler
   const handleSearch = (e) => {
     setSearch(e.target.value);
-    fetchResults(null, e.target.value);
+    handleFilterChange("fullName", e.target.value);
   };
 
   // Selection logic
@@ -138,16 +210,54 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
       destroyOnClose
       footer={null}
     >
-      <div className="mb-4 flex gap-2">
+      {/* Influencer Filters Bar */}
+      <div className="mb-4 flex flex-col gap-2">
         <Input
-          placeholder="Search by name or category..."
+          placeholder="Search by name..."
           prefix={<SearchOutlined />}
-          value={search}
+          value={filters.fullName}
           onChange={handleSearch}
           allowClear
         />
-        <Button onClick={selectAll} size="small">Select All</Button>
-        <Button onClick={clearAll} size="small">Clear</Button>
+        <Space wrap>
+          <Select
+            mode="multiple"
+            placeholder="Content Categories"
+            value={filters.categories}
+            onChange={(val) => handleFilterChange("categories", val)}
+            style={{ minWidth: 180 }}
+            maxTagCount={2}
+            options={categories.map((category) => ({ value: category, label: category }))}
+          />
+          <Select
+            mode="multiple"
+            placeholder="Gender"
+            value={filters.gender ? [filters.gender] : []}
+            onChange={(val) => handleFilterChange("gender", val[0] || "")}
+            style={{ minWidth: 120 }}
+            options={genders.map((gender) => ({ value: gender, label: gender }))}
+          />
+          <Select
+            mode="multiple"
+            placeholder="Country"
+            value={filters.country ? [filters.country] : []}
+            onChange={(val) => handleFilterChange("country", val[0] || "")}
+            style={{ minWidth: 140 }}
+            maxTagCount={1}
+            options={country_names.map((country) => ({ value: country.name, label: country.name }))}
+          />
+          <Select
+            mode="multiple"
+            placeholder="City"
+            value={filters.city ? [filters.city] : []}
+            onChange={(val) => handleFilterChange("city", val[0] || "")}
+            style={{ minWidth: 140 }}
+            maxTagCount={1}
+            options={cities.map((city) => ({ value: city, label: city }))}
+          />
+          <Button onClick={selectAll} size="small">Select All</Button>
+          <Button onClick={() => setFilters({ fullName: '', categories: [], gender: '', country: '', city: '', page_size: pageSize })} size="small">Clear Filters</Button>
+        </Space>
       </div>
       {loading ? (
         <div className="flex justify-center items-center py-12">
@@ -184,14 +294,14 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
       <div className="flex justify-between items-center mt-4">
         <Button
           icon={<LeftOutlined />}
-          onClick={() => fetchResults(prevCursor, search)}
+          onClick={() => fetchResults(prevCursor, filters)}
           disabled={!prevCursor || loading}
         >
           Previous
         </Button>
         <Button
           icon={<RightOutlined />}
-          onClick={() => fetchResults(nextCursor, search)}
+          onClick={() => fetchResults(nextCursor, filters)}
           disabled={!nextCursor || loading}
         >
           Next

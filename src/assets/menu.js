@@ -79,7 +79,7 @@ export const menu = [
   {
     label: "Campaigns",
     path: "/onboarding/influencer/dashboard/campaigns",
-    icon: <MdCampaign />,
+    icon: <FaTrophy className="text-xl" />,
     role: ["Influencer"],
   },
   {

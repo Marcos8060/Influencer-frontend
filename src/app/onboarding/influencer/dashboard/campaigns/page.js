@@ -41,6 +41,8 @@ const Campaigns = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
 
+  console.log("Campaigns ",allCampaigns)
+
   const [loading, setLoading] = useState(true);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applied, setApplied] = useState(false);
