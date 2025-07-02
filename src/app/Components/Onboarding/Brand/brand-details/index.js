@@ -217,6 +217,7 @@ const BrandDetails = () => {
     if (!details.address) missingFields.push("Address");
     if (!details.zipCode) missingFields.push("Zip Code");
     if (!details.brandDescription) missingFields.push("Brand Description");
+    if (!details.phoneNumber.code) missingFields.push("Phone Country Code");
 
     if (missingFields.length > 0) {
       toast.error(`Please fill: ${missingFields.join(", ")}`);
