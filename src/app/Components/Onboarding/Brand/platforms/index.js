@@ -24,8 +24,8 @@ const Platforms = () => {
     { name: "Instagram", icon: <FaInstagram className="text-pink-600" /> },
     { name: "TikTok", icon: <FaTiktok className="text-black" /> },
     { name: "Facebook", icon: <FaFacebook className="text-blue-600" /> },
-    { name: "YouTube", icon: <FaYoutube className="text-red-600" /> },
-    { name: "X", icon: <FaXTwitter className="text-blue-400" /> },
+    { name: "YouTube", icon: <FaYoutube className="text-red" /> },
+    { name: "X(Twitter)", icon: <FaXTwitter className="text-blue-400" /> },
   ];
 
   const togglePlatform = (platform) => {
