@@ -207,20 +207,19 @@ const BrandDetails = () => {
   const handleNext = (e) => {
     e.preventDefault();
 
-    const requiredFields = [
-      !details.brandWebsite || details.brandWebsite === "https://",
-      !details.legalCompanyName,
-      !details.brandName,
-      !details.country.name,
-      !details.state,
-      !details.city,
-      !details.address,
-      !details.zipCode,
-      !details.brandDescription,
-    ];
+    const missingFields = [];
+    if (!details.brandWebsite || details.brandWebsite === "https://") missingFields.push("Website");
+    if (!details.legalCompanyName) missingFields.push("Legal Company Name");
+    if (!details.brandName) missingFields.push("Brand Name");
+    if (!details.country.name) missingFields.push("Country");
+    if (!details.state) missingFields.push("State");
+    if (!details.city) missingFields.push("City");
+    if (!details.address) missingFields.push("Address");
+    if (!details.zipCode) missingFields.push("Zip Code");
+    if (!details.brandDescription) missingFields.push("Brand Description");
 
-    if (requiredFields.some(Boolean)) {
-      toast.error("Please fill out all required fields");
+    if (missingFields.length > 0) {
+      toast.error(`Please fill: ${missingFields.join(", ")}`);
       return;
     }
 
