@@ -32,7 +32,10 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { getAllCampaignDetails, getAllCampaignReport } from "@/redux/features/stepper/campaign-stepper";
+import {
+  getAllCampaignDetails,
+  getAllCampaignReport,
+} from "@/redux/features/stepper/campaign-stepper";
 import toast from "react-hot-toast";
 import InviteInfluencersDrawer from "@/app/Components/Brand/CampaignReport/InviteInfluencersDrawer";
 
@@ -72,27 +75,35 @@ const CampaignDetails = () => {
     ? campaignDetails.collaborators.length
     : 0;
   const pendingApplicants = Array.isArray(campaignDetails.collaborators)
-    ? campaignDetails.collaborators.filter(c => c.status === 'pending').length
+    ? campaignDetails.collaborators.filter((c) => c.status === "pending").length
     : 0;
   const approvedApplicants = Array.isArray(campaignDetails.collaborators)
-    ? campaignDetails.collaborators.filter(c => c.status === 'approved').length
+    ? campaignDetails.collaborators.filter((c) => c.status === "approved")
+        .length
     : 0;
 
   // Unique countries among collaborators
   const uniqueCountries = Array.isArray(campaignDetails.collaborators)
-    ? Array.from(new Set(
-        campaignDetails.collaborators.map(c => {
-          if (c.influencerCountry) {
-            try {
-              const parsed = typeof c.influencerCountry === 'string' ? JSON.parse(c.influencerCountry) : c.influencerCountry;
-              return parsed?.name || null;
-            } catch {
+    ? Array.from(
+        new Set(
+          campaignDetails.collaborators
+            .map((c) => {
+              if (c.influencerCountry) {
+                try {
+                  const parsed =
+                    typeof c.influencerCountry === "string"
+                      ? JSON.parse(c.influencerCountry)
+                      : c.influencerCountry;
+                  return parsed?.name || null;
+                } catch {
+                  return null;
+                }
+              }
               return null;
-            }
-          }
-          return null;
-        }).filter(Boolean)
-      )).length
+            })
+            .filter(Boolean)
+        )
+      ).length
     : 0;
 
   // Number of products in campaign
@@ -231,6 +242,12 @@ const CampaignDetails = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <Button
+              className="text-primary text-md hover:underline font-semibold"
+              onClick={() => setInviteDrawerOpen(true)}
+            >
+              Invite Influencers
+            </Button>
             <Link
               href={`/brand/campaign-report/report?id=${id}`}
               className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
@@ -457,7 +474,7 @@ const CampaignDetails = () => {
                   className="text-primary text-md hover:underline font-semibold"
                   onClick={() => setInviteDrawerOpen(true)}
                 >
-                  Invite Applicants
+                  Invite Influencers
                 </Button>
               }
               className="shadow-sm border-0"
@@ -490,7 +507,9 @@ const CampaignDetails = () => {
         onClose={() => setInviteDrawerOpen(false)}
         campaignId={id}
         auth={auth}
-        onInvited={() => {/* Optionally refresh campaign details here */}}
+        onInvited={() => {
+          /* Optionally refresh campaign details here */
+        }}
       />
     </div>
   );

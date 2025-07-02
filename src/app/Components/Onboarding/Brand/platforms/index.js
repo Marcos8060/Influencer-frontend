@@ -6,7 +6,8 @@ import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { FaInstagram, FaTiktok, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
+import { FaInstagram, FaTiktok, FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Platforms = () => {
   const dispatch = useDispatch();
@@ -23,8 +24,8 @@ const Platforms = () => {
     { name: "Instagram", icon: <FaInstagram className="text-pink-600" /> },
     { name: "TikTok", icon: <FaTiktok className="text-black" /> },
     { name: "Facebook", icon: <FaFacebook className="text-blue-600" /> },
-    { name: "YouTube", icon: <FaYoutube className="text-red-600" /> },
-    { name: "Twitter", icon: <FaTwitter className="text-blue-400" /> },
+    { name: "YouTube", icon: <FaYoutube className="text-red" /> },
+    { name: "X(Twitter)", icon: <FaXTwitter className="text-blue-400" /> },
   ];
 
   const togglePlatform = (platform) => {

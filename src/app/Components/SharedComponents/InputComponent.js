@@ -1,9 +1,10 @@
 import React, { forwardRef } from "react";
 import { InputText } from "primereact/inputtext";
 
-const InputComponent = forwardRef(({ className = "", ...props }, ref) => {
+const InputComponent = forwardRef(({ className = "", prefix, ...props }, ref) => {
   return (
-    <div>
+    <div className="flex items-center w-full">
+      {prefix && <span className="mr-2">{prefix}</span>}
       <InputText
         ref={ref}
         {...props}

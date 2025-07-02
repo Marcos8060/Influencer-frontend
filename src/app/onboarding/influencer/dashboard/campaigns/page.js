@@ -41,6 +41,8 @@ const Campaigns = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
 
+  console.log("Campaigns ",allCampaigns)
+
   const [loading, setLoading] = useState(true);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applied, setApplied] = useState(false);
@@ -245,7 +247,7 @@ const Campaigns = () => {
           {currentTab === 1 && (
             <>
               {/* Filters Section */}
-              <div className="bg-white rounded-2xl shadow-sm border border-input p-6 mb-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <FilterOutlined className="text-primary text-xl" />
@@ -454,7 +456,6 @@ const Campaigns = () => {
                       filteredCampaigns.map((campaign) => (
                         <motion.div
                           key={campaign.id}
-                          whileHover={{ scale: 1.01 }}
                           onClick={() => {
                             setSelectedCampaign(campaign);
                             setApplied(false);

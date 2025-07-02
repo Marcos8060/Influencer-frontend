@@ -3,13 +3,46 @@ import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import { RegisterBrand } from "@/redux/services/auth";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
 import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
+import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-details/countryPhoneData";
+import { Select } from "antd";
+
+const CountryCodeDropdown = ({ value, onChange }) => (
+  <Select
+    showSearch
+    value={value}
+    onChange={onChange}
+    style={{ width: 100 }}
+    optionFilterProp="label"
+    filterOption={(input, option) =>
+      option.label.toLowerCase().includes(input.toLowerCase())
+    }
+    dropdownStyle={{ zIndex: 2000 }}
+  >
+    {countryPhoneData.map((country) => (
+      <Select.Option
+        key={country.dial_code}
+        value={country.dial_code}
+        label={`${country.name} ${country.dial_code}`}
+      >
+        <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
+          <img
+            src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
+            alt={country.code}
+            style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
+          />
+        </span>
+        {country.name} {country.dial_code}
+      </Select.Option>
+    ))}
+  </Select>
+);
 
 const BrandRegister = () => {
   const [loading, setLoading] = useState(false);
@@ -23,6 +56,7 @@ const BrandRegister = () => {
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [countryCode, setCountryCode] = useState("+1");
   const router = useRouter();
 
   const handleChange = (event) => {
@@ -36,8 +70,8 @@ const BrandRegister = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    if (!validatePhoneNumber(formData.phoneNumber)) {
+    const fullPhone = `${countryCode}${formData.phoneNumber.replace(/^0+/, "")}`;
+    if (!validatePhoneNumber(fullPhone)) {
       toast.error("Please enter a valid phone number");
       return;
     }
@@ -49,6 +83,7 @@ const BrandRegister = () => {
 
     setLoading(true);
     const { confirmPassword, ...registrationData } = formData;
+    registrationData.phoneNumber = fullPhone;
     try {
       const response = await RegisterBrand(registrationData);
 
@@ -265,7 +300,7 @@ const BrandRegister = () => {
               <label className="block text-sm font-medium text-gray-700">
                 Phone Number
                   </label>
-              <div className="mt-1 relative">
+              <div className="mt-1 relative flex items-center">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <FiPhone className="text-gray-400" />
                     </div>
@@ -275,8 +310,11 @@ const BrandRegister = () => {
                       value={formData.phoneNumber}
                       onChange={handleChange}
                       required
-                  className="pl-10 block w-full rounded-lg border-gray-300"
-                      placeholder="+1 (555) 123-4567"
+                      className="pl-28 block w-full rounded-lg border-gray-300"
+                      placeholder="(555) 123-4567"
+                      prefix={
+                        <CountryCodeDropdown value={countryCode} onChange={setCountryCode} />
+                      }
                     />
                   </div>
                 </div>
@@ -342,17 +380,6 @@ const BrandRegister = () => {
                     </button>
                   </div>
                 </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                required
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">
-                I agree to the Terms of Service and Privacy Policy
-              </label>
-            </div>
 
             <motion.div
               whileHover={{ scale: 1.01 }}

@@ -32,7 +32,14 @@ const CampaignPreview = () => {
   const [agreed, setAgreed] = useState(false);
   const router = useRouter();
 
-  const termsText = `Grace Belgravia Influencer Platform\nBrand Campaign Submission Terms\nEffective Date: [Insert Date]\nGoverning Law: England and Wales\nCompany: LOXA HOLDINGS LTD\nRegistered Address: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ\nCorrespondence Address: Office 7, Siddeley House, 50 Canbury Park Rd, Kingston upon Thames, KT2 6LX\nWebsite: https://gracebelgravia.com/\nEmail: info@gracebelgravia.com\n1. Agreement to Terms\nBy submitting a campaign brief or invitation through the Grace Belgravia platform, you (the \"Brand\") agree to be bound by the following Campaign Submission Terms in addition to the platform's general Terms and Conditions. If you do not agree to these terms, do not submit a campaign.\n2. Authority and Representations\n2.1 The Brand confirms that it has full legal authority to submit the campaign and bind its organisation to these Terms.\n2.2 The individual submitting the campaign affirms that they are duly authorised to act on behalf of the Brand and enter binding commercial agreements.\n2.3 The Brand represents that it holds all necessary rights to any materials, trademarks, images, logos, or creative assets included in the campaign brief.\n3. Campaign Content\n3.1 All campaign briefs must clearly define the intended deliverables, usage rights, payment or gifting terms, deadlines, and any specific brand or content guidelines.\n3.2 Campaigns must not contain:\nUnlawful, defamatory, discriminatory, or misleading content;\nInstructions requiring influencers to violate advertising laws or platform policies;\nInfringing or unlicensed copyrighted materials.\n3.3 The Brand is solely responsible for the accuracy, legality, and completeness of campaign content and communications.\n4. Usage and Ownership Rights\n4.1 Unless otherwise agreed in writing, all influencer content submitted for a paid or gifted campaign shall be treated as \"work for hire\" and shall become the Brand's exclusive property upon submission.\n4.2 The Brand shall have the right to use, reproduce, edit, display, distribute, and publish the content for commercial and non-commercial purposes across all media, including but not limited to digital, print, PR, email, and paid media.\n4.3 The Brand agrees to use the content in a lawful, ethical, and non-defamatory manner.\n5. Compliance and Conduct\n5.1 The Brand agrees to comply with all applicable laws, regulations, and platform rules, including the ASA (Advertising Standards Authority) guidelines.\n5.2 The Brand agrees to treat all influencers with professionalism, fairness, and respect throughout the duration of any campaign.\n5.3 The Brand must not request off-platform engagement or payments designed to bypass platform fees or rules.\n6. Cancellations and Disputes\n6.1 If the Brand wishes to cancel a live campaign or accepted collaboration, written notice must be given, and any reasonable incurred costs by the influencer must be reimbursed.\n6.2 In the event of a dispute regarding content or performance, both parties agree to attempt resolution in good faith.\n6.3 The platform may offer informal mediation but shall not be liable for resolving disputes between Brands and Influencers.\n7. Indemnity and Liability\n7.1 The Brand agrees to indemnify LOXA HOLDINGS LTD and all platform users against any third-party claims arising from copyright infringement, unauthorised use of assets, or campaign-related legal claims.\n7.2 LOXA HOLDINGS LTD shall not be liable for any indirect, incidental, or consequential damages arising from the Brand's use of the platform or campaign outcomes.\n8. Governing Law and Jurisdiction\n8.1 These Terms shall be governed by the laws of England and Wales.\n8.2 Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.\nFor questions or clarifications about these terms, please contact info@gracebelgravia.com.`;
+  // --------- CURRENT DATE -----------//
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, "0");
+  const day = today.getDate().toString().padStart(2, "0");
+
+  const formattedDate = `${year}-${month}-${day}`;
+  // --------- CURRENT DATE -----------//
 
   const addCampaign = async () => {
     let response;
@@ -520,7 +527,7 @@ const CampaignPreview = () => {
                   </h3>
                   <div>Brand Campaign Submission Terms</div>
                   <div className="text-xs text-gray-500">
-                    Effective Date: [Insert Date]
+                    Effective Date: {formattedDate}
                   </div>
                   <div className="text-xs text-gray-500">
                     Governing Law: England and Wales
