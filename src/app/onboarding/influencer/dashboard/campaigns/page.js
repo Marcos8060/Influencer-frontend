@@ -456,7 +456,6 @@ const Campaigns = () => {
                       filteredCampaigns.map((campaign) => (
                         <motion.div
                           key={campaign.id}
-                          whileHover={{ scale: 1.01 }}
                           onClick={() => {
                             setSelectedCampaign(campaign);
                             setApplied(false);
