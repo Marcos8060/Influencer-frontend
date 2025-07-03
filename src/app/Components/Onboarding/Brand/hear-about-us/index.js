@@ -14,7 +14,7 @@ const FindAboutUs = () => {
   const [selectedOption, setSelectedOption] = useState(formData.platformIntroductionSource || "");
 
   useEffect(() => {
-    dispatch(setCurrentStep(4));
+    dispatch(setCurrentStep(5));
   }, [dispatch]);
 
   const discoveryOptions = [
