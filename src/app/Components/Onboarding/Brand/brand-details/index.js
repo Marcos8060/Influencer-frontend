@@ -236,12 +236,14 @@ const BrandDetails = () => {
       showSearch
       value={value}
       onChange={onChange}
-      style={{ width: 100 }}
+      style={{ width: 100, height: 40 }}
       optionFilterProp="label"
       filterOption={(input, option) =>
         option.label.toLowerCase().includes(input.toLowerCase())
       }
       dropdownStyle={{ zIndex: 2000 }}
+      size="large"
+      className="h-12"
     >
       {countryPhoneData.map((country) => (
         <Select.Option
@@ -441,6 +443,7 @@ const BrandDetails = () => {
                 <div className="flex gap-2">
                   <CountryCodeDropdown
                     value={details.phoneNumber.code}
+                    className="h-10"
                     onChange={(val) => setDetails({
                       ...details,
                       phoneNumber: {
@@ -462,7 +465,7 @@ const BrandDetails = () => {
                       });
                     }}
                     placeholder="Phone number"
-                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
                   />
                 </div>
               </div>
