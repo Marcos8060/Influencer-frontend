@@ -149,7 +149,7 @@ const InfluencerProfilePage = () => {
 
     // Parse country
     let countryObj = {
-      name: profile.country || "",
+      name: profile?.country.name || "",
       code: "", // You'll need to get this from somewhere
       flag: "", // You'll need to get this from somewhere
     };
@@ -988,7 +988,7 @@ const InfluencerProfilePage = () => {
                               {influencerProfile.addressLine2}
                               <br />
                               {influencerProfile.city},{" "}
-                              {influencerProfile.country}{" "}
+                              {influencerProfile?.country?.name}{" "}
                               {influencerProfile.zipCode}
                             </Text>
                           </div>
