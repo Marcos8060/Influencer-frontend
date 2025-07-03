@@ -11,6 +11,8 @@ import "primeicons/primeicons.css";
 import { AuthProvider } from "@/assets/context/use-context";
 import SplashScreen from "./Components/SplashScreen";
 import { Inter } from 'next/font/google';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor } from '../redux/store';
 
 // Location context
 export const LocationContext = createContext({
@@ -126,38 +128,40 @@ export default function RootLayout({ children }) {
       <body>
         <PrimeReactProvider>
           <Provider store={store}>
-            <AuthProvider>
-              <LocationContext.Provider value={{ location, setLocation }}>
-                <Toaster position="top-center" />
-                {isLoading ? <SplashScreen /> : null}
-                {showLocationPrompt && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                    <div className="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center">
-                      <h2 className="text-lg font-bold mb-2">Allow Location Access?</h2>
-                      <p className="text-gray-500 mb-4">We can auto-fill your address details for faster onboarding.</p>
-                      {locationError && <div className="text-red-500 mb-2">{locationError}</div>}
-                      <div className="flex gap-3 justify-center">
-                        <button
-                          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition"
-                          onClick={handleAllowLocation}
-                          disabled={isGettingLocation}
-                        >
-                          {isGettingLocation ? "Getting location..." : "Allow"}
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
-                          onClick={handleDenyLocation}
-                          disabled={isGettingLocation}
-                        >
-                          Deny
-                        </button>
+            <PersistGate loading={<SplashScreen />} persistor={persistor}>
+              <AuthProvider>
+                <LocationContext.Provider value={{ location, setLocation }}>
+                  <Toaster position="top-center" />
+                  {isLoading ? <SplashScreen /> : null}
+                  {showLocationPrompt && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                      <div className="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center">
+                        <h2 className="text-lg font-bold mb-2">Allow Location Access?</h2>
+                        <p className="text-gray-500 mb-4">We can auto-fill your address details for faster onboarding.</p>
+                        {locationError && <div className="text-red-500 mb-2">{locationError}</div>}
+                        <div className="flex gap-3 justify-center">
+                          <button
+                            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition"
+                            onClick={handleAllowLocation}
+                            disabled={isGettingLocation}
+                          >
+                            {isGettingLocation ? "Getting location..." : "Allow"}
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+                            onClick={handleDenyLocation}
+                            disabled={isGettingLocation}
+                          >
+                            Deny
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-                {children}
-              </LocationContext.Provider>
-            </AuthProvider>
+                  )}
+                  {children}
+                </LocationContext.Provider>
+              </AuthProvider>
+            </PersistGate>
           </Provider>
         </PrimeReactProvider>
       </body>

@@ -36,10 +36,12 @@ const Terms = () => {
         finishedOnboarding: true 
       };
       const response = await brandOnboarding(auth, updatedFormData);
-      
+      console.log("RESPONSE ",response)
       if (response.status === 200) {
         toast.success("Onboarding completed successfully!");
         router.push('/onboarding/brand/dashboard');
+      }else{
+        toast.error(response.errorMessage || 'User has already onboarded')
       }
     } catch (error) {
       toast.error(error.response?.data?.errorMessage?.[0] || "An error occurred during onboarding");
@@ -49,7 +51,7 @@ const Terms = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(5));
+    dispatch(setCurrentStep(6));
     
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);

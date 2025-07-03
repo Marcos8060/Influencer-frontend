@@ -41,6 +41,7 @@
     "react-redux": "^9.2.0",
     "react-select": "^5.10.1",
     "react-world-flags": "^1.6.0",
+    "redux-persist": "^6.0.0",
     "styled-components": "^6.1.17",
     "websocket": "^1.0.35"
   },
