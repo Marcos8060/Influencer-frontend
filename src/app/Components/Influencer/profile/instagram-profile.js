@@ -176,53 +176,6 @@ const InstagramProfile = () => {
             <section className="flex flex-col text-color">
               <div className="bg-white shadow-sm rounded-xl p-4">
                 <section className="md:flex justify-end">
-                  {/* <div className="flex gap-4">
-                    <a href={instagramProfile?.profileDeepLink} target="_blank">
-                      <img
-                        className="h-20 w-20 mx-auto object-cover rounded-full"
-                        src={instagramProfile?.profilePictureUrl}
-                        alt=""
-                      />
-                    </a>
-                    <div className="space-y-3">
-                      <section className="flex items-center gap-2">
-                        <p className="font-bold text-xl">
-                          {instagramProfile?.name}
-                        </p>
-                        {instagramProfile?.isVerified && (
-                          <MdVerifiedUser className="text-link" />
-                        )}
-                      </section>
-                      <section>
-                        <p>{instagramProfile?.username}</p>
-                      </section>
-                      <section className="flex items-center gap-6">
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {instagramProfile?.followsCount}
-                          </span>{" "}
-                          Following
-                        </p>
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {instagramProfile?.followersCount}
-                          </span>{" "}
-                          Followers
-                        </p>
-                        <p className="font-light">
-                          <span className="font-bold">
-                            {instagramProfile?.mediaCount}
-                          </span>{" "}
-                          Posts
-                        </p>
-                      </section>
-                      <section>
-                        <p className="italic font-light text-sm">
-                          {instagramProfile?.biography}
-                        </p>
-                      </section>
-                    </div>
-                  </div> */}
                   <div className=" text-color">
                     <button
                       onClick={handleInstagramLogin}
