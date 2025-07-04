@@ -34,6 +34,7 @@ function InstagramCallbackInner() {
       try {
         const payload = {
           authorizationCode: code,
+          page: 'influencer-profile'
         }
 
         const tokenResponse = await fetch(APP_API_URL.INSTAGRAM_ACCESS_TOKEN, {
