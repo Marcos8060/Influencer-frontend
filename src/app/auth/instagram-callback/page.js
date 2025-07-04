@@ -26,7 +26,6 @@ function InstagramCallbackInner() {
         router.push(`/dashboard?error=instagram_auth_failed&message=${encodeURIComponent(error)}`)
         return
       }
-
       if (!code) {
         router.push('/dashboard?error=no_auth_code')
         return
@@ -70,7 +69,7 @@ function InstagramCallbackInner() {
   )
 }
 
-export default function TikTokCallbackPage() {
+export default function InstagramCallbackPage() {
   return (
     <Suspense fallback={<div className="p-4 text-center">Loading Instagram callback...</div>}>
       <InstagramCallbackInner />
