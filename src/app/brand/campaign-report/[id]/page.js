@@ -207,19 +207,6 @@ const CampaignDetails = () => {
     },
   ];
 
-  const exportMenu = [
-    {
-      key: "1",
-      label: "Download PDF Report",
-      icon: <FilePdfOutlined />,
-    },
-    {
-      key: "2",
-      label: "Export as CSV",
-      icon: <FilePdfOutlined />,
-    },
-  ];
-
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">

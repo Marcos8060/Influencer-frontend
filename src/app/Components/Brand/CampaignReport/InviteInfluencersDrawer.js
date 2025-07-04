@@ -4,6 +4,8 @@ import { SearchOutlined, InstagramOutlined, TikTokOutlined, CheckCircleTwoTone, 
 import { country_names } from "@/app/Components/country-names";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllSearchResults } from "@/redux/features/influencer/filter";
+import { moveToCampaign } from "@/redux/services/campaign";
+import toast from "react-hot-toast";
 
 // Placeholder API for sending invites (replace with your real API call)
 async function sendInvite(auth, campaignId, influencerIds) {
@@ -185,16 +187,20 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
   const handleInvite = async () => {
     setSending(true);
     try {
-      const res = await sendInvite(auth, campaignId, selected);
-      if (res.success) {
-        message.success("Invitations sent!");
+      const payload = {
+        influencers: selected,
+        campaign: campaignId,
+      };
+      const res = await moveToCampaign(auth, payload);
+      if (res.status === 200) {
+        toast.success("Invitations sent successfully!");
         if (onInvited) onInvited(selected);
         onClose();
       } else {
-        message.error("Failed to send invites.");
+        toast.error("Failed to send invites.");
       }
     } catch {
-      message.error("Failed to send invites.");
+      toast.error("Failed to send invites.");
     } finally {
       setSending(false);
     }
@@ -307,7 +313,7 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
           Next
         </Button>
         <button
-          className="bg-gradient-to-r from-primary to-secondary px-2 py-2 rounded text-sm text-white"
+          className={`${selected.length === 0 ? 'cursor-not-allowed' : ''} bg-gradient-to-r from-primary to-secondary px-2 py-2 rounded text-sm text-white`}
           disabled={selected.length === 0 || sending}
           loading={sending}
           onClick={handleInvite}
