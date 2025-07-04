@@ -35,6 +35,7 @@ function InstagramBrandOnboardingCallbackInner() {
       try {
         const payload = {
           authorizationCode: code,
+          redirectUri: 'https://influencer-frontend-nu.vercel.app/auth/instagram-brand-onboarding-callback-uri'
         }
 
         const tokenResponse = await fetch(APP_API_URL.INSTAGRAM_ACCESS_TOKEN, {
