@@ -307,7 +307,7 @@ export default function InviteInfluencersDrawer({ open, onClose, campaignId, onI
           Next
         </Button>
         <button
-          className="bg-gradient-to-r from-primary to-secondary px-2 py-2 rounded text-sm text-white"
+          className={`${selected.length === 0 ? 'cursor-not-allowed' : ''} bg-gradient-to-r from-primary to-secondary px-2 py-2 rounded text-sm text-white`}
           disabled={selected.length === 0 || sending}
           loading={sending}
           onClick={handleInvite}
