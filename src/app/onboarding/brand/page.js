@@ -77,7 +77,7 @@ const BrandOnboarding = () => {
               return (
                 <div
                   key={index}
-                  className="flex-1 flex flex-col items-center min-w-0 min-w-[110px] flex-shrink-0"
+                  className="flex-1 flex flex-col items-center min-w-0 flex-shrink-0"
                 >
                   <div className="flex items-center space-x-2">
                     {/* Icon or Checkmark */}

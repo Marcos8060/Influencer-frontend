@@ -7,7 +7,7 @@ import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is import
 import { useAuth } from '@/assets/hooks/use-auth'
 import toast from 'react-hot-toast'
 
-function InstagramCallbackInner() {
+function InstagramBrandOnboardingCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const code = searchParams.get('code')
@@ -26,6 +26,7 @@ function InstagramCallbackInner() {
         router.push(`/dashboard?error=instagram_auth_failed&message=${encodeURIComponent(error)}`)
         return
       }
+
       if (!code) {
         router.push('/dashboard?error=no_auth_code')
         return
@@ -51,7 +52,7 @@ function InstagramCallbackInner() {
           throw new Error(result.message || 'Failed to get access token')
         }
 
-        router.push('/onboarding/influencer/profile')
+        router.push('/onboarding/brand')
       } catch (err) {
         console.error('Token exchange error:', err)
         router.push(`/dashboard?error=instagram_token_exchange&message=${encodeURIComponent(err.message)}`)
@@ -69,10 +70,10 @@ function InstagramCallbackInner() {
   )
 }
 
-export default function InstagramCallbackPage() {
+export default function TikTokCallbackPage() {
   return (
     <Suspense fallback={<div className="p-4 text-center">Loading Instagram callback...</div>}>
-      <InstagramCallbackInner />
+      <InstagramBrandOnboardingCallbackInner />
     </Suspense>
   )
 }
