@@ -7,7 +7,7 @@ import { APP_API_URL } from '@/assets/api-endpoints' // make sure this is import
 import { useAuth } from '@/assets/hooks/use-auth'
 import toast from 'react-hot-toast'
 
-function InstagramCallbackInner() {
+function TiktokBrandOnboardingCallbackInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const code = searchParams.get('code')
@@ -23,7 +23,7 @@ function InstagramCallbackInner() {
       }
 
       if (error) {
-        router.push(`/dashboard?error=instagram_auth_failed&message=${encodeURIComponent(error)}`)
+        router.push(`/dashboard?error=tiktok_auth_failed&message=${encodeURIComponent(error)}`)
         return
       }
 
@@ -35,9 +35,10 @@ function InstagramCallbackInner() {
       try {
         const payload = {
           authorizationCode: code,
+          deviceType: 'web',
         }
 
-        const tokenResponse = await fetch(APP_API_URL.INSTAGRAM_ACCESS_TOKEN, {
+        const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,33 +48,33 @@ function InstagramCallbackInner() {
         })
 
         const result = await tokenResponse.json()
-        toast.success('Instagram connected successfully')
+        toast.success('Tiktok Connected Successfully')
         if (!tokenResponse.ok) {
           throw new Error(result.message || 'Failed to get access token')
         }
 
-        router.push('/onboarding/influencer/profile')
+        router.push('/onboarding/brand')
       } catch (err) {
         console.error('Token exchange error:', err)
-        router.push(`/dashboard?error=instagram_token_exchange&message=${encodeURIComponent(err.message)}`)
+        router.push(`/dashboard?error=tiktok_token_exchange&message=${encodeURIComponent(err.message)}`)
       }
     }
 
     handleCallback()
-  }, [code, error, router, token])
+  }, [code, error, router])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-      <p className="text-gray-600">Connecting your Instagram account...</p>
+      <p className="text-gray-600">Connecting your TikTok account...</p>
     </div>
   )
 }
 
 export default function TikTokCallbackPage() {
   return (
-    <Suspense fallback={<div className="p-4 text-center">Loading Instagram callback...</div>}>
-      <InstagramCallbackInner />
+    <Suspense fallback={<div className="p-4 text-center">Loading TikTok callback...</div>}>
+      <TiktokBrandOnboardingCallbackInner />
     </Suspense>
   )
 }
