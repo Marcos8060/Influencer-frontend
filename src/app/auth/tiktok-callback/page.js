@@ -36,6 +36,7 @@ function TikTokCallbackInner() {
         const payload = {
           authorizationCode: code,
           deviceType: 'web',
+          page: 'influencer-profile'
         }
 
         const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {

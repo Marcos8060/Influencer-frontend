@@ -36,6 +36,7 @@ function TiktokBrandOnboardingCallbackInner() {
         const payload = {
           authorizationCode: code,
           deviceType: 'web',
+          page: 'brand-onboarding'
         }
 
         const tokenResponse = await fetch(APP_API_URL.TIKTOK_ACCESS_TOKEN, {
