@@ -42,7 +42,7 @@ const InfluencerRegister = () => {
       if (response?.status === 200) {
         localStorage.removeItem("brand_token");
         localStorage.removeItem("influencer_token");
-        
+
         setFormData({
           firstName: "",
           lastName: "",
@@ -60,12 +60,14 @@ const InfluencerRegister = () => {
         toast.success("Please check your email for the OTP!");
         router.push("/auth/register/influencer/otp");
       } else {
+        console.log("RESPONSE ",response)
         const errorMessage =
-          response?.errorMessage?.[0] ||
+          response?.errorMessage || response?.errorMessage?.[0] ||
           "Something went wrong. Please try again.";
         toast.error(errorMessage);
       }
     } catch (error) {
+      console.log("ERROR ",error)
       let errorMessage = "Something went wrong. Please try again.";
       if (error.response && error.response.data) {
         errorMessage = error.response.data.errorMessage?.[0] || errorMessage;
@@ -119,7 +121,7 @@ const InfluencerRegister = () => {
                 Influence
               </h1>
               <p className="text-xl leading-relaxed opacity-90">
-                You've built your following through creativity and authenticity. 
+                You've built your following through creativity and authenticity.
                 Now take your influence to the next level.
               </p>
             </div>
@@ -127,7 +129,11 @@ const InfluencerRegister = () => {
             <div className="space-y-6">
               <div className="flex items-center space-x-3 text-sm">
                 <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
                   </svg>
                 </span>
@@ -136,7 +142,11 @@ const InfluencerRegister = () => {
 
               <div className="flex items-center space-x-3 text-sm">
                 <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                   </svg>
                 </span>
@@ -145,7 +155,11 @@ const InfluencerRegister = () => {
 
               <div className="flex items-center space-x-3 text-sm">
                 <span className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
                     <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" />
                   </svg>
                 </span>
@@ -157,13 +171,27 @@ const InfluencerRegister = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
               <div className="flex -space-x-2">
-                <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
+                <img
+                  src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=50&h=50&fit=crop&crop=faces"
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                  alt="Creator"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=faces"
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                  alt="Creator"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=faces"
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                  alt="Creator"
+                />
               </div>
               <div className="text-sm">
                 <p className="font-medium">Join 2,000+ successful creators</p>
-                <p className="opacity-80">Earning $5K+ monthly through partnerships</p>
+                <p className="opacity-80">
+                  Earning $5K+ monthly through partnerships
+                </p>
               </div>
             </div>
           </div>
@@ -306,17 +334,6 @@ const InfluencerRegister = () => {
                   )}
                 </button>
               </div>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                required
-                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">
-                I have read and agreed to the Terms of Service and Privacy Policy
-              </label>
             </div>
 
             <div>

@@ -13,108 +13,139 @@ import LeadTime from "@/app/Components/Onboarding/Influencer/lead-time";
 import InfluencerTerms from "@/app/Components/Onboarding/Influencer/influencer-terms";
 import PreferredBrandTypes from "@/app/Components/Onboarding/Influencer/preferredBrandTypes";
 import { motion } from "framer-motion";
+import { FiInfo, FiFileText, FiCheckCircle, FiEye, FiMapPin, FiClock, FiUsers } from "react-icons/fi";
+import { CheckCircleFilled } from "@ant-design/icons";
 
 const InfluencerOnboarding = () => {
   const { currentStep } = useSelector((store) => store.influencerStepper);
-  const totalSteps = 5; // Total number of steps (0-5)
 
   const steps = [
-    { name: "Address", component: <Address /> },
-    { name: "Content and Topics", component: <Topics /> },
-    { name: "Brand Preferences", component: <PreferredCompanies /> },
-    { name: "Lead Time", component: <LeadTime /> },
-    { name: "Referral Source", component: <FindAboutUs /> },
-    { name: "Terms", component: <InfluencerTerms /> },
+    {
+      name: "Address",
+      icon: <FiMapPin className="text-xl" />,
+      component: <Address />,
+    },
+    {
+      name: "Content & Topics",
+      icon: <FiFileText className="text-xl" />,
+      component: <Topics />,
+    },
+    {
+      name: "Brand Preferences",
+      icon: <FiUsers className="text-xl" />,
+      component: <PreferredCompanies />,
+    },
+    {
+      name: "Lead Time",
+      icon: <FiClock className="text-xl" />,
+      component: <LeadTime />,
+    },
+    {
+      name: "Referral Source",
+      icon: <FiInfo className="text-xl" />,
+      component: <FindAboutUs />,
+    },
+    {
+      name: "Terms",
+      icon: <FiCheckCircle className="text-xl" />,
+      component: <InfluencerTerms />,
+    },
   ];
 
   // Calculate progress percentage
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Progress Bar */}
-      <div className="mb-10">
-        {/* Step Names */}
-        <div className="hidden sm:flex justify-between mb-4">
-          {steps.slice(0, -1).map((step, index) => (
-            <div
-              key={index}
-              className={`text-sm font-medium ${
-                index <= currentStep
-                  ? "text-primary font-semibold"
-                  : "text-color"
-              }`}
-            >
-              {step.name}
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop Progress Bar */}
-        <div className="hidden sm:block relative">
-          <div className="absolute top-0 left-0 h-1 w-full bg-gray-200 rounded-full"></div>
-          <motion.div
-            className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"
-            initial={{ width: "0%" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          />
-          <div className="flex justify-between absolute top-0 left-0 w-full -mt-2">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={`h-5 w-5 rounded-full border text-color border-input flex items-center justify-center ${
-                  index <= currentStep
-                    ? "border-primary bg-white"
-                    : index === currentStep + 1
-                    ? "border-gray-300 bg-white"
-                    : "border-gray-200 bg-gray-100"
-                }`}
-              >
-                {index < currentStep ? (
-                  <svg
-                    className="h-3 w-3 text-primary"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <span
-                    className={`text-xs font-bold ${
-                      index <= currentStep ? "text-primary" : "text-gray-400"
-                    }`}
-                  >
-                    {index + 1}
-                  </span>
-                )}
-              </div>
-            ))}
+    <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/10 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        {/* Progress Stepper Card */}
+        <div className="mb-10 rounded-lg shadow-sm bg-white/80 backdrop-blur-md border border-primary/10 p-8">
+          {/* Steps Row */}
+          <div
+            className="hidden sm:flex flex-row w-full overflow-x-auto min-w-0 gap-x-6 sm:gap-x-10 items-center justify-between relative z-10 scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {steps.map((step, index) => {
+              // Step states
+              const isCompleted = index < currentStep;
+              const isActive = index === currentStep;
+              const isUpcoming = index > currentStep;
+              const isLast = index === steps.length - 1;
+              return (
+                <div
+                  key={index}
+                  className="flex-1 flex flex-col items-center min-w-0 flex-shrink-0"
+                >
+                  <div className="flex items-center space-x-2">
+                    {/* Icon or Checkmark */}
+                    {isLast && isActive ? (
+                      <CheckCircleFilled className="text-primary text-xl" />
+                    ) : isCompleted ? (
+                      <span className="text-primary text-xl">
+                        <CheckCircleFilled />
+                      </span>
+                    ) : (
+                      <span
+                        className={
+                          isActive
+                            ? "text-primary text-xl"
+                            : isUpcoming
+                            ? "text-gray-300 text-xl"
+                            : "text-primary text-xl"
+                        }
+                      >
+                        {step.icon}
+                      </span>
+                    )}
+                    {/* Step Label */}
+                    <span
+                      className={
+                        (isActive
+                          ? `font-bold text-primary text-base drop-shadow-sm`
+                          : isCompleted
+                          ? `text-primary text-base`
+                          : `text-gray-300 text-base`) +
+                        " text-center w-full block"
+                      }
+                    >
+                      {step.name}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-
-        {/* Mobile Progress */}
-        <div className="sm:hidden flex items-center">
-          <div className="flex-1 bg-gray-200 rounded-full h-2">
-            <motion.div
-              className="bg-gradient-to-r from-primary to-secondary rounded-full h-2"
-              initial={{ width: "0%" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+          {/* Progress Bar */}
+          <div className="relative mt-6 h-1 w-full min-w-0 sm:mx-0 mx-2">
+            {/* Gray background */}
+            <div className="absolute top-0 left-0 w-full h-1 rounded-full bg-input" />
+            {/* Colored progress */}
+            <div
+              className="absolute top-0 left-0 h-1 rounded-full bg-gradient-to-r from-primary to-secondary shadow-lg transition-all duration-500"
+              style={{
+                width: `${((currentStep + 1) / steps.length) * 100}%`,
+                minWidth: 0,
+              }}
             />
           </div>
-          <div className="ml-4 text-sm font-medium text-gray-600">
-            Step {currentStep + 1} of {steps.length}
+          {/* Mobile Progress */}
+          <div className="sm:hidden flex items-center mt-4">
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
+              <motion.div
+                className="bg-gradient-to-r from-primary to-secondary rounded-full h-2"
+                initial={{ width: "0%" }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              />
+            </div>
+            <div className="ml-4 text-sm font-medium text-gray-600">
+              Step {currentStep + 1} of {steps.length}
+            </div>
           </div>
         </div>
+        {/* Current Step Content */}
+        <div className="mt-8">{steps[currentStep].component}</div>
       </div>
-
-      {/* Current Step Content */}
-      <div className="">{steps[currentStep].component}</div>
     </div>
   );
 };

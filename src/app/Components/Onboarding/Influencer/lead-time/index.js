@@ -46,7 +46,7 @@ const LeadTime = () => {
       className="flex items-center justify-center min-h-[70vh] px-4"
     >
       <Card
-        className="w-full max-w-md border border-input"
+        className="w-full max-w-xl border border-input"
         bordered={false}
         bodyStyle={{ padding: 24 }}
       >
