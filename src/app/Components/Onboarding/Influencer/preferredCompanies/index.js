@@ -7,7 +7,7 @@ import {
   previousStep,
   updateFormData,
 } from "@/redux/features/stepper/influencer-stepper";
-import MultiSelectCheckBox from "@/app/Components/SharedComponents/MultiSelectCheckBox";
+import { Select } from "antd";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
@@ -54,7 +54,7 @@ const PreferredCompanies = () => {
       className="flex items-center justify-center h-[70vh] px-4"
     >
       <Card
-        className="w-full max-w-md border border-input"
+        className="w-full max-w-xl border border-input"
         bordered={false}
         bodyStyle={{ padding: 24 }}
       >
@@ -84,14 +84,26 @@ const PreferredCompanies = () => {
           <Text strong className="block mb-3">
             Company Types <Text type="danger">*</Text>
           </Text>
-          <MultiSelectCheckBox
-            value={selectedCompanies}
-            onChange={(e) => setSelectedCompanies(e.value)}
-            options={companyTypes.map((item) => ({ label: item, value: item }))}
-            optionLabel="label"
-            placeholder="Select company types..."
-            className="w-full border border-input"
-          />
+         <Select
+           mode="multiple"
+           allowClear
+           showSearch
+           placeholder="Select company types..."
+           value={selectedCompanies}
+           onChange={setSelectedCompanies}
+           className="w-full"
+           optionFilterProp="children"
+           maxTagCount={3}
+           filterOption={(input, option) =>
+             option.children.toLowerCase().includes(input.toLowerCase())
+           }
+         >
+           {companyTypes.map((type) => (
+             <Select.Option key={type} value={type}>
+               {type}
+             </Select.Option>
+           ))}
+         </Select>
         </motion.div>
 
         {/* Selected Companies Preview */}

@@ -84,10 +84,15 @@ const OtpPage = () => {
       notificationType: "Registration otp",
     };
     try {
-      await SendOtp(payload);
+      const res = await SendOtp(payload);
+      if (res.statusCode === 401) {
+        toast.error("Incorrect code, please request a new code.");
+        setOtp(new Array(otpLength).fill(""));
+      } else {
         toast.success("OTP verified successfully!");
         router.push("/auth/login/influencer");
         setOtp(new Array(otpLength).fill(""));
+      }
     } catch (error) {
       console.log("OTP Verification Error:", error);
     } finally {

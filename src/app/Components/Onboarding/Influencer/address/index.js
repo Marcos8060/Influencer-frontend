@@ -12,12 +12,13 @@ import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBa
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCountryFlag } from "react-country-flag";
-import { countryPhoneData } from "./countryPhoneData";
+import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-details/countryPhoneData";
 import { Select, DatePicker } from "antd";
 import dayjs from "dayjs";
-import { countryData } from "./countryData";
+import countries from "country-list";
 import { useLocation } from '@/app/layout';
 
+const countryData = countries.getData();
 
 const Address = () => {
   const influencerData = useSelector(
@@ -29,29 +30,22 @@ const Address = () => {
     influencerAddressLine1: influencerData.influencerAddressLine1 || "",
     influencerAddressLine2: influencerData.influencerAddressLine2 || "",
     influencerCity: influencerData.influencerCity || "",
-    influencerCountry: influencerData.influencerCountry || {
-      name: "",
-      code: "",
-    },
+    influencerCountry: influencerData.influencerCountry || { name: "", code: "" },
     influencerZipCode: influencerData.influencerZipCode || "",
     gender: influencerData.gender || "",
     dateOfBirth: influencerData.dateOfBirth || "",
-    influencerZipCode: influencerData.influencerZipCode || "",
     influencerPhoneNumber: influencerData.influencerPhoneNumber || {
-      code: "+1",
+      code: "",
       number: "",
     },
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
   const [isCountryOpen, setIsCountryOpen] = useState(false);
-  const [isPhoneCodeOpen, setIsPhoneCodeOpen] = useState(false);
   const [filteredCountries, setFilteredCountries] = useState(countryData);
-  const [filteredPhoneCodes, setFilteredPhoneCodes] =
-    useState(countryPhoneData);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const countryDropdownRef = useRef(null);
-  const phoneCodeDropdownRef = useRef(null);
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
@@ -64,12 +58,6 @@ const Address = () => {
         !countryDropdownRef.current.contains(event.target)
       ) {
         setIsCountryOpen(false);
-      }
-      if (
-        phoneCodeDropdownRef.current &&
-        !phoneCodeDropdownRef.current.contains(event.target)
-      ) {
-        setIsPhoneCodeOpen(false);
       }
     };
 
@@ -111,16 +99,52 @@ const Address = () => {
     );
   };
 
-  const handlePhoneCodeSearch = (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    setFilteredPhoneCodes(
-      countryPhoneData.filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchTerm) ||
-          item.code.toLowerCase().includes(searchTerm) ||
-          item.dial_code.toLowerCase().includes(searchTerm)
-      )
+  const fetchLocationData = async (countryCode) => {
+    try {
+      const response = await fetch(
+        `https://api.geoapify.com/v1/geocode/search?country=${countryCode}&format=json&apiKey=${process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY}`
+      );
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        const result = data.results[0];
+        setDetails((prev) => ({
+          ...prev,
+          influencerCity: result.city || prev.influencerCity,
+          influencerZipCode: result.postcode || prev.influencerZipCode,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching location data:", error);
+      toast.error("Could not auto-fill location details");
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
+  const handleCountrySelect = async (country) => {
+    const phoneData = countryPhoneData.find(
+      (item) => item.code === country.code
     );
+
+    setIsLoadingLocation(true);
+    toast.loading("Detecting location details...", { id: "location-loading" });
+
+    setDetails({
+      ...details,
+      influencerCountry: { name: country.name, code: country.code },
+      influencerPhoneNumber: {
+        ...details.influencerPhoneNumber,
+        code: phoneData?.dial_code || "+1",
+      },
+    });
+    setIsCountryOpen(false);
+
+    try {
+      await fetchLocationData(country.code);
+    } finally {
+      toast.dismiss("location-loading");
+    }
   };
 
   const handleNext = () => {
@@ -139,12 +163,22 @@ const Address = () => {
       return;
     }
 
+    // Normalize influencerPhoneNumber to only have code and number
+    let normalizedPhone = details.influencerPhoneNumber;
+    if (typeof normalizedPhone !== 'object' || Array.isArray(normalizedPhone) || !('code' in normalizedPhone) || !('number' in normalizedPhone)) {
+      normalizedPhone = { code: '', number: '' };
+    } else {
+      normalizedPhone = {
+        code: normalizedPhone.code,
+        number: normalizedPhone.number,
+      };
+    }
+
     try {
       dispatch(
         updateFormData({
           ...details,
-          influencerCountry: details.influencerCountry.name,
-          influencerPhoneNumber: `${details.influencerPhoneNumber.code}${details.influencerPhoneNumber.number}`,
+          influencerPhoneNumber: normalizedPhone
         })
       );
       dispatch(nextStep());
@@ -153,6 +187,40 @@ const Address = () => {
       toast.error("Failed to save data");
     }
   };
+
+  // CountryCodeDropdown for phone number
+  const CountryCodeDropdown = ({ value, onChange }) => (
+    <Select
+      showSearch
+      value={value}
+      onChange={onChange}
+      style={{ width: 100, height: 40 }}
+      optionFilterProp="label"
+      filterOption={(input, option) =>
+        option.label.toLowerCase().includes(input.toLowerCase())
+      }
+      dropdownStyle={{ zIndex: 2000 }}
+      size="large"
+      className="h-12"
+    >
+      {countryPhoneData.map((country) => (
+        <Select.Option
+          key={`${country.code}-${country.dial_code}`}
+          value={country.dial_code}
+          label={`${country.name} ${country.dial_code}`}
+        >
+          <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
+            <img
+              src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
+              alt={country.code}
+              style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
+            />
+          </span>
+          {country.name} {country.dial_code}
+        </Select.Option>
+      ))}
+    </Select>
+  );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-color">
@@ -231,6 +299,7 @@ const Address = () => {
                   />
                 </div>
 
+                {/* Country Select */}
                 <div className="relative" ref={countryDropdownRef}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Country <span className="text-red-500">*</span>
@@ -241,15 +310,11 @@ const Address = () => {
                   >
                     {details.influencerCountry.name ? (
                       <>
-                        {details.influencerCountry.flag ? (
-                          <span className="w-5 h-5 mr-2">{details.influencerCountry.flag}</span>
-                        ) : (
-                          <ReactCountryFlag
-                            countryCode={details.influencerCountry.code}
-                            svg
-                            className="w-5 h-5 mr-2"
-                          />
-                        )}
+                        <ReactCountryFlag
+                          countryCode={details.influencerCountry.code}
+                          svg
+                          className="w-5 h-5 mr-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        />
                         <span>{details.influencerCountry.name}</span>
                       </>
                     ) : (
@@ -260,6 +325,7 @@ const Address = () => {
                   <AnimatePresence>
                     {isCountryOpen && (
                       <motion.div
+                        ref={countryDropdownRef}
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
@@ -280,34 +346,13 @@ const Address = () => {
                             <div
                               key={country.code}
                               className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => {
-                                setDetails({
-                                  ...details,
-                                  influencerCountry: {
-                                    name: country.name,
-                                    code: country.code,
-                                    flag: country.flag,
-                                  },
-                                  influencerPhoneNumber: {
-                                    ...details.influencerPhoneNumber,
-                                    code:
-                                      countryPhoneData.find(
-                                        (c) => c.code === country.code
-                                      )?.dial_code || "+1",
-                                  },
-                                });
-                                setIsCountryOpen(false);
-                              }}
+                              onClick={() => handleCountrySelect(country)}
                             >
-                              {country.flag ? (
-                                <span className="w-5 h-5 mr-2">{country.flag}</span>
-                              ) : (
-                                <ReactCountryFlag
-                                  countryCode={country.code}
-                                  svg
-                                  className="w-5 h-5 mr-2"
-                                />
-                              )}
+                              <ReactCountryFlag
+                                countryCode={country.code}
+                                svg
+                                className="w-5 h-5 mr-2"
+                              />
                               <span>{country.name}</span>
                             </div>
                           ))}
@@ -334,103 +379,38 @@ const Address = () => {
                   />
                 </div>
 
-                <div ref={phoneCodeDropdownRef}>
+                {/* Phone Number */}
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number <span className="text-red-500">*</span>
+                    Phone <span className="text-red-500">*</span>
                   </label>
                   <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <div
-                        className="flex items-center border border-input rounded-md px-2 h-10 cursor-pointer hover:border-primary transition-colors"
-                        onClick={() => setIsPhoneCodeOpen(!isPhoneCodeOpen)}
-                      >
-                        {details.influencerCountry.code ? (
-                          <>
-                            <ReactCountryFlag
-                              countryCode={details.influencerCountry.code}
-                              svg
-                              className="w-5 h-5 mr-1"
-                            />
-                            <span>{details.influencerPhoneNumber.code}</span>
-                          </>
-                        ) : (
-                          <span className="text-gray-400">Code</span>
-                        )}
-                      </div>
-
-                      <AnimatePresence>
-                        {isPhoneCodeOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
-                          >
-                            <div className="p-2 sticky top-0 bg-white border-b border-input">
-                              <input
-                                type="text"
-                                placeholder="Search country codes..."
-                                className="w-full p-2 border border-input rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                                onChange={handlePhoneCodeSearch}
-                                autoFocus
-                              />
-                            </div>
-                            <div className="max-h-60 overflow-y-auto">
-                              {Array.isArray(filteredPhoneCodes) &&
-                                filteredPhoneCodes.map((item) => (
-                                  <div
-                                    key={item.code}
-                                    className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
-                                    onClick={() => {
-                                      setDetails({
-                                        ...details,
-                                        influencerPhoneNumber: {
-                                          ...details.influencerPhoneNumber,
-                                          code: item.dial_code,
-                                        },
-                                        influencerCountry: {
-                                          name: item.name,
-                                          code: item.code,
-                                        },
-                                      });
-                                      setIsPhoneCodeOpen(false);
-                                    }}
-                                  >
-                                    <ReactCountryFlag
-                                      countryCode={item.code}
-                                      svg
-                                      className="w-5 h-5 mr-2"
-                                    />
-                                    <span className="mr-2">
-                                      {item.dial_code}
-                                    </span>
-                                  </div>
-                                ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                    <div className="flex-2">
-                      <InputComponent
-                        value={details.influencerPhoneNumber.number}
-                        onChange={(e) => {
-                          const digitsOnly = e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 15);
-                          setDetails({
-                            ...details,
-                            influencerPhoneNumber: {
-                              ...details.influencerPhoneNumber,
-                              number: digitsOnly,
-                            },
-                          });
-                        }}
-                        placeholder="Phone number"
-                        className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      />
-                    </div>
+                    <CountryCodeDropdown
+                      value={details.influencerPhoneNumber.code}
+                      className="h-10"
+                      onChange={(val) => setDetails({
+                        ...details,
+                        influencerPhoneNumber: {
+                          ...details.influencerPhoneNumber,
+                          code: val,
+                        },
+                      })}
+                    />
+                    <InputComponent
+                      value={details.influencerPhoneNumber.number}
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+                        setDetails({
+                          ...details,
+                          influencerPhoneNumber: {
+                            ...details.influencerPhoneNumber,
+                            number: digitsOnly,
+                          },
+                        });
+                      }}
+                      placeholder="Phone number"
+                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
+                    />
                   </div>
                 </div>
               </div>
@@ -474,10 +454,6 @@ const Address = () => {
 
           {/* Action Buttons */}
           <div className="flex justify-end">
-            {/* <CustomizedBackButton 
-              onClick={() => dispatch(previousStep())} 
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            /> */}
             <ButtonComponent
               onClick={handleNext}
               label="Continue"

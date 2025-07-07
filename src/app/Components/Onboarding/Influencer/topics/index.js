@@ -10,9 +10,10 @@ import {
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
-import MultiInputComponent from "@/app/Components/SharedComponents/MultiInputComponent";
+// Removed MultiInputComponent, using Ant Design Select with mode='tags' instead
 import { motion } from "framer-motion";
 import { Checkbox, Divider } from "antd";
+import { Select } from "antd";
 
 const Topics = () => {
   const influencerData = useSelector((store) => store.influencerStepper.influencerData);
@@ -117,16 +118,19 @@ const Topics = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Specific Topics
           </label>
-          <MultiInputComponent
+          <Select
+            mode="tags"
+            style={{ width: '100%' }}
             value={influencerTopics}
             onChange={setTopics}
+            open={false} // disables dropdown, only allows free text
+            tokenSeparators={[',']}
             placeholder="e.g. Sustainable fashion, VR gaming, Keto recipes..."
-            className="w-full border border-input text-xs rounded-lg p-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            className="w-full text-xs rounded-lg p-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
           />
           <p className="mt-1 text-xs text-gray-500">
             Press Enter or comma to add specific Topics. These help brands find exact matches.
           </p>
-          
           {influencerTopics.length > 0 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -161,25 +165,26 @@ const Topics = () => {
           <label className="block text-sm font-medium text-gray-700 mb-4">
             Content Categories
           </label>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Select
+            mode="multiple"
+            allowClear
+            showSearch
+            placeholder="Select one or more categories"
+            value={categories}
+            onChange={setCategories}
+            className="w-full"
+            optionFilterProp="children"
+            maxTagCount={4}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
+          >
             {contentCategories.map((category) => (
-              <motion.div
-                key={category}
-                whileHover={{ scale: 1.02 }}
-                className="flex items-center"
-              >
-                <Checkbox
-                  checked={categories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                  className="w-full"
-                >
-                  <span className="text-sm">{category}</span>
-                </Checkbox>
-              </motion.div>
+              <Select.Option key={category} value={category}>
+                {category}
+              </Select.Option>
             ))}
-          </div>
-          
+          </Select>
           {categories.length > 0 && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -206,27 +211,14 @@ const Topics = () => {
         </motion.div>
 
         {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex flex-col sm:flex-row justify-between gap-3 pt-4"
-        >
-          <CustomizedBackButton 
-            onClick={() => dispatch(previousStep())}
-            className="w-full sm:w-auto px-4 py-2 border border-input rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
-          />
+        <div className="flex justify-end gap-2 mt-8">
+          <CustomizedBackButton onClick={() => dispatch(previousStep())} />
           <ButtonComponent
             onClick={handleNext}
             label="Continue"
-            disabled={influencerTopics.length === 0 && categories.length === 0}
-            className={`w-full sm:w-auto px-4 py-2 rounded-lg shadow-sm ${
-              influencerTopics.length === 0 && categories.length === 0
-                ? 'bg-gray-300 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark text-white'
-            }`}
+            className="px-6 py-2 bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark text-white font-medium rounded-lg shadow-sm"
           />
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );

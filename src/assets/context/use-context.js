@@ -126,8 +126,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logInfluencer = async (email, password) => {
+    let response;
     try {
-      const response = await authAxios.post(APP_API_URL.LOGIN, {
+      response = await authAxios.post(APP_API_URL.LOGIN, {
         email: email,
         password: password,
       });
@@ -155,9 +156,11 @@ export const AuthProvider = ({ children }) => {
           }
           toast.success("Login successful");
         }
+      }else{
+        toast.error(response?.detail)
       }
     } catch (error) {
-      toast.error(error.response?.data?.errorMessage?.[0] || "Login failed");
+      toast.error(error.response?.data?.errorMessage?.[0] || error.response?.data?.detail);
     }
   };
 
