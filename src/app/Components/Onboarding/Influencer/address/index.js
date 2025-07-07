@@ -35,7 +35,7 @@ const Address = () => {
     gender: influencerData.gender || "",
     dateOfBirth: influencerData.dateOfBirth || "",
     influencerPhoneNumber: influencerData.influencerPhoneNumber || {
-      code: "+1",
+      code: "",
       number: "",
     },
   });
