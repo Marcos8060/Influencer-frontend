@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from 'antd';
 
 ChartJS.register(
   CategoryScale,
@@ -46,9 +47,14 @@ const ProductsPerCampaignChart = ({ appliedCampaigns, approvedCampaigns }) => {
     },
     indexAxis: "y",
   };
-  if (!labels.length) return <div className="p-4">No campaign data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 w-full h-[40vh] flex flex-col items-center justify-center">
+      <Empty description="No campaign data yet" />
+      <div className="mt-2 text-gray-400 text-sm">Products per campaign will appear here once you join campaigns.</div>
+    </div>
+  );
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full">
+    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full h-[40vh] flex items-center justify-center">
       <Bar data={chartData} options={options} />
     </div>
   );

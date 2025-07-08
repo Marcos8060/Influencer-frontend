@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from 'antd';
 
 ChartJS.register(
   CategoryScale,
@@ -56,7 +57,12 @@ const CampaignsOverTimeChart = ({ appliedCampaigns, approvedCampaigns }) => {
       title: { display: true, text: "Campaigns Joined Over Time" },
     },
   };
-  if (!labels.length) return <div className="p-4">No campaign data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 w-full h-[40vh] flex flex-col items-center justify-center">
+      <Empty description="No campaign data yet" />
+      <div className="mt-2 text-gray-400 text-sm">Join or apply to campaigns to see your progress here!</div>
+    </div>
+  );
   return (
     <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full">
       <Line data={chartData} options={options} />

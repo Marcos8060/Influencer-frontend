@@ -6,6 +6,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from 'antd';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -51,9 +52,14 @@ const SocialChannelsChart = ({ appliedCampaigns, approvedCampaigns }) => {
       title: { display: true, text: "Social Channels Required by Campaigns" },
     },
   };
-  if (!labels.length) return <div className="p-4">No social channel data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 w-full h-[40vh] flex flex-col items-center justify-center">
+      <Empty description="No social channel data yet" />
+      <div className="mt-2 text-gray-400 text-sm">Social channel stats will appear here once you join campaigns.</div>
+    </div>
+  );
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full h-[50vh] flex items-center justify-center">
+    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full h-[40vh] flex items-center justify-center">
       <Pie data={chartData} options={options} />
     </div>
   );

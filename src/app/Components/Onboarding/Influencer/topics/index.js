@@ -10,9 +10,7 @@ import {
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
-// Removed MultiInputComponent, using Ant Design Select with mode='tags' instead
 import { motion } from "framer-motion";
-import { Checkbox, Divider } from "antd";
 import { Select } from "antd";
 
 const Topics = () => {
@@ -211,7 +209,7 @@ const Topics = () => {
         </motion.div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-2 mt-8">
+        <div className="flex justify-between gap-2 mt-8">
           <CustomizedBackButton onClick={() => dispatch(previousStep())} />
           <ButtonComponent
             onClick={handleNext}

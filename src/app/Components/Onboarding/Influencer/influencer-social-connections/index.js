@@ -1,5 +1,5 @@
 "use client";
-import React,{ useEffect} from "react";
+import React, { useEffect } from "react";
 import {
   getInstagramResponse,
   getTiktokResponse,
@@ -11,13 +11,13 @@ import { useDispatch } from "react-redux";
 import { InstagramOutlined } from "@ant-design/icons";
 import {
   setCurrentStep,
-  nextStep,
   previousStep,
-} from "@/redux/features/stepper";
+  nextStep,
+} from "@/redux/features/stepper/influencer-stepper";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 
-const SocialConnectStep = () => {
+const InfluencerSocialConnect = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const [connecting, setConnecting] = React.useState({
@@ -29,8 +29,9 @@ const SocialConnectStep = () => {
     try {
       setConnecting((prev) => ({ ...prev, instagram: true }));
       const response = await dispatch(getInstagramResponse(auth));
-      const url =
-        `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1252453379876445&redirect_uri=${encodeURIComponent('https://influencer-frontend-nu.vercel.app/auth/instagram-brand-onboarding-callback-uri')}&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights`;
+      const url = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1252453379876445&redirect_uri=${encodeURIComponent(
+        "https://influencer-frontend-nu.vercel.app/auth/instagram-influencer-onboarding-callback-uri"
+      )}&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights`;
       window.location.href = url;
     } catch (error) {
       toast.error("Instagram connection failed");
@@ -74,7 +75,7 @@ const SocialConnectStep = () => {
           <button
             onClick={handleInstagramConnect}
             disabled={connecting.instagram}
-            className="flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-lg bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-semibold text-lg shadow hover:from-[#C13584] hover:to-[#F56040] transition-all disabled:opacity-60"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-semibold text-sm shadow hover:from-[#C13584] hover:to-[#F56040] transition-all disabled:opacity-60"
           >
             <InstagramOutlined className="text-2xl" />
             {connecting.instagram ? "Connecting..." : "Connect Instagram"}
@@ -82,7 +83,7 @@ const SocialConnectStep = () => {
           <button
             onClick={handleTiktokConnect}
             disabled={connecting.tiktok}
-            className="flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-lg bg-gradient-to-r from-black to-gray-800 text-white font-semibold text-lg shadow hover:from-gray-900 hover:to-black transition-all disabled:opacity-60"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-black to-gray-800 text-white font-semibold text-sm shadow hover:from-gray-900 hover:to-black transition-all disabled:opacity-60"
           >
             <SiTiktok className="text-2xl" />
             {connecting.tiktok ? "Connecting..." : "Connect TikTok"}
@@ -109,4 +110,4 @@ const SocialConnectStep = () => {
   );
 };
 
-export default SocialConnectStep;
+export default InfluencerSocialConnect;
