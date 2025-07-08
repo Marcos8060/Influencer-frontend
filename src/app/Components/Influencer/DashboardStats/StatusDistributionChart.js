@@ -6,6 +6,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from 'antd';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -56,9 +57,14 @@ const StatusDistributionChart = ({ appliedCampaigns, approvedCampaigns }) => {
       title: { display: true, text: "Applications by Status" },
     },
   };
-  if (!labels.length) return <div className="p-4">No application data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 w-full h-[40vh] flex flex-col items-center justify-center">
+      <Empty description="No application data yet" />
+      <div className="mt-2 text-gray-400 text-sm">Apply to campaigns to see your application stats here!</div>
+    </div>
+  );
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full h-[50vh] flex items-center justify-center">
+    <div className="bg-white rounded-2xl p-4 shadow-lg mt-8 w-full flex items-center justify-center">
       <Doughnut data={chartData} options={options} />
     </div>
   );

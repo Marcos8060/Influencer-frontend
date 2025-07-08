@@ -116,7 +116,6 @@ const Address = () => {
       }
     } catch (error) {
       console.error("Error fetching location data:", error);
-      toast.error("Could not auto-fill location details");
     } finally {
       setIsLoadingLocation(false);
     }
