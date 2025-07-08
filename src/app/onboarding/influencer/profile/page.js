@@ -682,9 +682,9 @@ const InfluencerProfilePage = () => {
                                     />
                                   </Form.Item>
                                   
-                                  {phoneNumber && countryCode && (
+                                  {phoneNumber && (
                                     <div className="text-xs text-primary">
-                                      Your phone number: <span className="font-medium">{countryCode} {phoneNumber}</span>
+                                      Your phone number: <span className="font-medium">{phoneNumber.code} {phoneNumber.number}</span>
                                     </div>
                                   )}
                                 </div>
@@ -979,7 +979,7 @@ const InfluencerProfilePage = () => {
                           </div>
                           <div className="flex items-center">
                             <FiPhone className="mr-2" />
-                            <Text>{influencerProfile.phoneNumber}</Text>
+                            <Text>{influencerProfile.phoneNumber.code} {influencerProfile.phoneNumber.number}</Text>
                           </div>
                           <div className="flex items-center">
                             <FiMapPin className="mr-2" />

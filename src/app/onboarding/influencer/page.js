@@ -1,20 +1,23 @@
 "use client";
-import Gender from "@/app/Components/Onboarding/Influencer/gender";
 import FindAboutUs from "@/app/Components/Onboarding/Influencer/hear-about-us";
 import { useSelector } from "react-redux";
-import DateOfBirth from "@/app/Components/Onboarding/Influencer/dob";
-import EthnicBackground from "@/app/Components/Onboarding/Influencer/ethnic-background";
-import InfluencerContent from "@/app/Components/Onboarding/Influencer/content";
 import PreferredCompanies from "@/app/Components/Onboarding/Influencer/preferredCompanies";
 import Topics from "@/app/Components/Onboarding/Influencer/topics";
 import Address from "@/app/Components/Onboarding/Influencer/address";
-import InfluencerCollaboration from "@/app/Components/Onboarding/Influencer/collaboration";
 import LeadTime from "@/app/Components/Onboarding/Influencer/lead-time";
 import InfluencerTerms from "@/app/Components/Onboarding/Influencer/influencer-terms";
-import PreferredBrandTypes from "@/app/Components/Onboarding/Influencer/preferredBrandTypes";
+import { InstagramOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { FiInfo, FiFileText, FiCheckCircle, FiEye, FiMapPin, FiClock, FiUsers } from "react-icons/fi";
+import {
+  FiInfo,
+  FiFileText,
+  FiCheckCircle,
+  FiMapPin,
+  FiClock,
+  FiUsers,
+} from "react-icons/fi";
 import { CheckCircleFilled } from "@ant-design/icons";
+import InfluencerSocialConnect from "@/app/Components/Onboarding/Influencer/influencer-social-connections";
 
 const InfluencerOnboarding = () => {
   const { currentStep } = useSelector((store) => store.influencerStepper);
@@ -39,6 +42,11 @@ const InfluencerOnboarding = () => {
       name: "Lead Time",
       icon: <FiClock className="text-xl" />,
       component: <LeadTime />,
+    },
+    {
+      name: "Social Connect",
+      icon: <InstagramOutlined className="text-xl" />,
+      component: <InfluencerSocialConnect />,
     },
     {
       name: "Referral Source",

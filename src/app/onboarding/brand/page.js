@@ -4,7 +4,6 @@ import BusinessIndustry from "@/app/Components/Onboarding/Brand/business-industr
 import Countries from "@/app/Components/Onboarding/Brand/countries";
 import FindAboutUs from "@/app/Components/Onboarding/Brand/hear-about-us";
 import Platforms from "@/app/Components/Onboarding/Brand/platforms";
-import SocialConnectStep from "@/app/Components/Onboarding/Brand/social-connections";
 import Terms from "@/app/Components/Onboarding/Brand/terms";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -12,6 +11,7 @@ import { motion } from "framer-motion";
 import { FiInfo, FiFileText, FiCheckCircle, FiEye } from "react-icons/fi";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { InstagramOutlined } from "@ant-design/icons";
+import BrandSocialConnectStep from "@/app/Components/Onboarding/Brand/brand-social-connections";
 
 const BrandOnboarding = () => {
   const { currentStep } = useSelector((store) => store.stepper);
@@ -41,7 +41,7 @@ const BrandOnboarding = () => {
     {
       name: "Social Connect",
       icon: <InstagramOutlined className="text-xl" />,
-      component: <SocialConnectStep />,
+      component: <BrandSocialConnectStep />,
     },
     {
       name: "About Us",

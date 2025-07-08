@@ -8,7 +8,6 @@ import {
 } from "@/redux/features/stepper/influencer-stepper";
 import InputComponent from "@/app/Components/SharedComponents/InputComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
-import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactCountryFlag } from "react-country-flag";
@@ -16,7 +15,7 @@ import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-detail
 import { Select, DatePicker } from "antd";
 import dayjs from "dayjs";
 import countries from "country-list";
-import { useLocation } from '@/app/layout';
+import { useLocation } from "@/app/layout";
 
 const countryData = countries.getData();
 
@@ -30,7 +29,10 @@ const Address = () => {
     influencerAddressLine1: influencerData.influencerAddressLine1 || "",
     influencerAddressLine2: influencerData.influencerAddressLine2 || "",
     influencerCity: influencerData.influencerCity || "",
-    influencerCountry: influencerData.influencerCountry || { name: "", code: "" },
+    influencerCountry: influencerData.influencerCountry || {
+      name: "",
+      code: "",
+    },
     influencerZipCode: influencerData.influencerZipCode || "",
     gender: influencerData.gender || "",
     dateOfBirth: influencerData.dateOfBirth || "",
@@ -147,25 +149,31 @@ const Address = () => {
   };
 
   const handleNext = () => {
-    const requiredFields = [
-      !details.influencerAddressLine1,
-      !details.influencerCity,
-      !details.influencerCountry.name,
-      !details.influencerZipCode,
-      !details.influencerPhoneNumber.number,
-      !details.gender,
-      !details.dateOfBirth,
-    ];
+    const missingFields = [];
+    if (!details.influencerAddressLine1) missingFields.push("Address Line 1");
+    if (!details.influencerCity) missingFields.push("City");
+    if (!details.influencerCountry.name) missingFields.push("Country");
+    if (!details.influencerZipCode) missingFields.push("Zip code");
+    if (!details.influencerPhoneNumber.number)
+      missingFields.push("Phone number");
+    if (!details.influencerPhoneNumber.code) missingFields.push("Phone country code");
+    if (!details.gender) missingFields.push("Gender");
+    if (!details.dateOfBirth) missingFields.push("Date of Birth");
 
-    if (requiredFields.some(Boolean)) {
-      toast.error("Please fill out all required fields");
+    if (missingFields.length > 0) {
+      toast.error(`Please fill: ${missingFields.join(", ")}`);
       return;
     }
 
     // Normalize influencerPhoneNumber to only have code and number
     let normalizedPhone = details.influencerPhoneNumber;
-    if (typeof normalizedPhone !== 'object' || Array.isArray(normalizedPhone) || !('code' in normalizedPhone) || !('number' in normalizedPhone)) {
-      normalizedPhone = { code: '', number: '' };
+    if (
+      typeof normalizedPhone !== "object" ||
+      Array.isArray(normalizedPhone) ||
+      !("code" in normalizedPhone) ||
+      !("number" in normalizedPhone)
+    ) {
+      normalizedPhone = { code: "", number: "" };
     } else {
       normalizedPhone = {
         code: normalizedPhone.code,
@@ -177,7 +185,7 @@ const Address = () => {
       dispatch(
         updateFormData({
           ...details,
-          influencerPhoneNumber: normalizedPhone
+          influencerPhoneNumber: normalizedPhone,
         })
       );
       dispatch(nextStep());
@@ -212,7 +220,14 @@ const Address = () => {
             <img
               src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
               alt={country.code}
-              style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
+              style={{
+                width: 20,
+                height: 14,
+                borderRadius: 2,
+                objectFit: "cover",
+                display: "inline-block",
+                marginRight: 6,
+              }}
             />
           </span>
           {country.name} {country.dial_code}
@@ -387,18 +402,22 @@ const Address = () => {
                     <CountryCodeDropdown
                       value={details.influencerPhoneNumber.code}
                       className="h-10"
-                      onChange={(val) => setDetails({
-                        ...details,
-                        influencerPhoneNumber: {
-                          ...details.influencerPhoneNumber,
-                          code: val,
-                        },
-                      })}
+                      onChange={(val) =>
+                        setDetails({
+                          ...details,
+                          influencerPhoneNumber: {
+                            ...details.influencerPhoneNumber,
+                            code: val,
+                          },
+                        })
+                      }
                     />
                     <InputComponent
                       value={details.influencerPhoneNumber.number}
                       onChange={(e) => {
-                        const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+                        const digitsOnly = e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 15);
                         setDetails({
                           ...details,
                           influencerPhoneNumber: {
@@ -422,7 +441,9 @@ const Address = () => {
                     placeholder="Select gender"
                     className="w-full"
                     value={details.gender || undefined}
-                    onChange={(value) => setDetails({ ...details, gender: value })}
+                    onChange={(value) =>
+                      setDetails({ ...details, gender: value })
+                    }
                   >
                     <Select.Option value="Male">Male</Select.Option>
                     <Select.Option value="Female">Female</Select.Option>
@@ -436,14 +457,16 @@ const Address = () => {
                   <DatePicker
                     className="w-full"
                     placeholder="Select date of birth"
-                    value={details.dateOfBirth ? dayjs(details.dateOfBirth) : null}
+                    value={
+                      details.dateOfBirth ? dayjs(details.dateOfBirth) : null
+                    }
                     onChange={(date, dateString) => {
                       setDetails({ ...details, dateOfBirth: dateString });
                     }}
                     format="YYYY-MM-DD"
                     disabledDate={(current) => {
                       // Disable future dates
-                      return current && current > dayjs().endOf('day');
+                      return current && current > dayjs().endOf("day");
                     }}
                   />
                 </div>

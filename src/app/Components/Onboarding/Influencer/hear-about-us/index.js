@@ -67,7 +67,7 @@ const FindAboutUs = () => {
   };
 
   useEffect(() => {
-    dispatch(setCurrentStep(4));
+    dispatch(setCurrentStep(5));
     setSelectedOption(influencerData.platformIntroductionSource || "");
   }, [influencerData.platformIntroductionSource]);
 
