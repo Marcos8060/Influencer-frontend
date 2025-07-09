@@ -11,7 +11,7 @@ import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { Select } from "antd";
+import { Select, Divider } from "antd";
 
 const Topics = () => {
   const influencerData = useSelector((store) => store.influencerStepper.influencerData);
