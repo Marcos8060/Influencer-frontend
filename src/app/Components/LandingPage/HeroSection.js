@@ -24,15 +24,15 @@ const HeroSection = () => {
         <div className="flex gap-4">
           <Link
             href="/auth/login/brand"
-            className="px-6 py-2 text-gray hover:text-color transition-colors"
+            className="px-6 py-2 text-gray border border-input flex items-center justify-center rounded-3xl hover:text-color transition-colors"
           >
-            Login
+            Brand Login
           </Link>
           <Link
-            href="/auth/register/brand"
+            href="/auth/login/influencer"
             className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:bg-black transition-all"
           >
-            Register
+            Influencer Login
           </Link>
         </div>
       </nav>
