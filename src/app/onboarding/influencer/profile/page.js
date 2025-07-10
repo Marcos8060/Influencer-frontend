@@ -41,6 +41,8 @@ import "primereact/resources/primereact.min.css";
 import toast from "react-hot-toast";
 // MUI Components
 import { FiUser, FiPhone, FiBriefcase, FiSettings, FiEdit, FiCheck, FiMail, FiMapPin } from 'react-icons/fi';
+import ImageUploadModal from "@/app/Components/SharedComponents/ImageUploadModal";
+import { editProfilePhoto } from "@/redux/services/influencer/profile";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -353,49 +355,6 @@ const InfluencerProfilePage = () => {
   };
 
   // ... (keep existing upload and other helper functions)
-  const handleUploadChange = (info) => {
-    let newFileList = [...info.fileList];
-
-    // Limit to 1 file
-    newFileList = newFileList.slice(-1);
-
-    // Read from response and show file link
-    newFileList = newFileList.map((file) => {
-      if (file.response) {
-        // Component will show file.url as link
-        file.url = file.response.url;
-      }
-      return file;
-    });
-
-    setFileList(newFileList);
-
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-      form.setFieldsValue({
-        profilePicture: info.file.response.url,
-      });
-    } else if (info.file.status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  };
-  const uploadProps = {
-    name: "file",
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
-    headers: {
-      authorization: "authorization-text",
-    },
-    fileList,
-    onChange: handleUploadChange,
-    beforeUpload: (file) => {
-      const isImage = file.type.startsWith("image/");
-      if (!isImage) {
-        message.error("You can only upload image files!");
-      }
-      return isImage;
-    },
-  };
-
   const parsePhoneNumber = (phoneString) => {
     if (!phoneString) return { code: "+1", number: "" };
 
@@ -550,9 +509,25 @@ const InfluencerProfilePage = () => {
               }
             >
               <div className="flex justify-center mb-8">
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
-                  <Upload {...uploadProps} className="relative">
+                <ImageUploadModal
+                  initialImage={fileList[0]?.url || influencerProfile.profilePicture}
+                  buttonLabel="Upload Profile Picture"
+                  onUploadSuccess={(url) => {
+                    form.setFieldValue("profilePicture", url);
+                    setFileList([{ url }]);
+                  }}
+                  onUpload={async (file) => {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("file_section", "profilePicture");
+                    const res = await editProfilePhoto(auth, formData);
+                    if (res && res.status === 200 && res.data && res.data.url) {
+                      return res.data.url;
+                    } else {
+                      throw new Error("Failed to upload profile picture");
+                    }
+                  }}
+                  triggerComponent={
                     <div className="relative cursor-pointer group">
                       <Avatar
                         size={120}
@@ -563,8 +538,8 @@ const InfluencerProfilePage = () => {
                         <FiEdit className="text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       </div>
                     </div>
-                  </Upload>
-                </div>
+                  }
+                />
               </div>
 
               <Form
