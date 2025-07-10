@@ -1,148 +1,144 @@
 "use client";
 import React, { useState, useRef } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import toast from "react-hot-toast";
-import Slide from "@mui/material/Slide";
 import { FaCamera } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
-export default function ImageUploadModal({
+export default function ImageUploadInline({
   onUploadSuccess,
-  uploadEndpoint,
   buttonLabel = "Upload Image",
   initialImage = null,
   triggerComponent = null,
-  authHeaders = {}, // Optional: for auth headers
   onUpload, // Optional: custom upload handler
+  shape = "circle", // "circle" for avatar, "rect" for cover
+  className = "",
 }) {
-  const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(initialImage);
+  const [showOverlay, setShowOverlay] = useState(false);
 
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const triggerFileInput = () => fileInputRef.current.click();
+  const openFilePicker = () => fileInputRef.current.click();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
       setPreviewImage(URL.createObjectURL(file));
+      setShowOverlay(true);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleDrop = (e) => {
     e.preventDefault();
-    if (!imageFile) {
-      toast.error("Please select an image first.");
-      return;
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+      setShowOverlay(true);
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleSave = async () => {
+    if (!imageFile) return;
     try {
       setLoading(true);
       let url;
       if (onUpload) {
-        // Use custom upload handler
         url = await onUpload(imageFile);
-      } else {
-        // Default upload logic
-        const form_data = new FormData();
-        form_data.append("file", imageFile);
-        form_data.append("file_section", "profilePhoto");
-        const res = await fetch(uploadEndpoint, {
-          method: "POST",
-          body: form_data,
-          headers: authHeaders,
-        });
-        const data = await res.json();
-        if ((res.status === 200 || res.status === 201) && data.url) {
-          url = data.url;
-        } else {
-          throw new Error("Failed to upload photo");
-        }
       }
       setLoading(false);
       if (url) {
         toast.success("Image uploaded successfully");
         setPreviewImage(url);
+        setShowOverlay(false);
+        setImageFile(null);
         onUploadSuccess(url);
-        setOpen(false);
       } else {
         toast.error("Failed to upload photo");
       }
     } catch (error) {
+      // console.log("UPLOAD_ERROR ",error)
       setLoading(false);
-      toast.error("Upload failed");
+      // toast.error("Upload failed");
     }
   };
 
-  return (
-    <>
-      {triggerComponent ? (
-        React.cloneElement(triggerComponent, { onClick: handleClickOpen })
+  const handleCancel = () => {
+    setPreviewImage(initialImage);
+    setImageFile(null);
+    setShowOverlay(false);
+  };
+
+  const renderImage = () => (
+    <div
+      className={`relative group ${shape === "circle" ? "rounded-full" : "rounded-lg"} overflow-hidden cursor-pointer bg-gray-200 flex items-center justify-center ${className}`}
+      onClick={openFilePicker}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      style={{ width: shape === "circle" ? 120 : "100%", height: shape === "circle" ? 120 : 160 }}
+      tabIndex={0}
+      role="button"
+      aria-label={buttonLabel}
+    >
+      {previewImage ? (
+        <img
+          src={previewImage}
+          alt="Preview"
+          className={`object-cover w-full h-full ${shape === "circle" ? "rounded-full" : "rounded-lg"}`}
+        />
       ) : (
-        <button onClick={handleClickOpen}>{buttonLabel}</button>
+        <FaCamera className="text-gray-500 text-4xl" />
       )}
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        maxWidth="sm"
-        fullWidth
-        onClose={handleClose}
-      >
-        <DialogContent>
-          <div className="flex flex-col items-center">
-            <h2 className="text-color text-center font-semibold text-sm mb-2">
-              {buttonLabel}
-            </h2>
-            <div className="w-full rounded bg-gray-200 flex items-center justify-center overflow-hidden mb-4">
-              {previewImage ? (
-                <img
-                  className="w-full h-40 object-cover"
-                  src={previewImage}
-                  alt="Preview"
-                />
-              ) : (
-                <FaCamera className="text-gray-500 text-4xl" />
-              )}
-            </div>
-            <footer className="flex items-center justify-between border-t border-input my-2 pt-2 w-full">
-              <div
-                className="space-y-1 cursor-pointer"
-                onClick={triggerFileInput}
+      {/* Edit icon overlay on hover (not in upload overlay mode) */}
+      {!showOverlay && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:bg-black/30 group-hover:pointer-events-auto transition-colors duration-200">
+          <FiEdit className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        </div>
+      )}
+      {/* Overlay for Save/Cancel */}
+      {showOverlay && (
+        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10">
+          {loading ? (
+            <div className="text-white">Uploading...</div>
+          ) : (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleSave(); }}
+                className="bg-primary text-white px-4 py-2 rounded mb-2"
+                disabled={loading}
               >
-                <FaCamera className="text-secondary ml-8 text-xl" />
-                <p className="text-xs">Upload Photo</p>
-              </div>
-              <div>
-                {imageFile && (
-                  <button
-                    onClick={handleSubmit}
-                    className="bg-secondary text-white px-4 py-2 rounded text-xs"
-                    disabled={loading}
-                  >
-                    {loading ? "Uploading..." : "Save Photo"}
-                  </button>
-                )}
-              </div>
-            </footer>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+                Save
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleCancel(); }}
+                className="bg-gray-300 text-white px-4 py-2 rounded"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
+    </div>
+  );
+
+  return triggerComponent ? (
+    React.cloneElement(triggerComponent, { onClick: openFilePicker })
+  ) : (
+    renderImage()
   );
 } 
