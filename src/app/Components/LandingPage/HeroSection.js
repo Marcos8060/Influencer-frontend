@@ -15,24 +15,22 @@ const HeroSection = () => {
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-gradient-to-r from-secondary/20 to-primary/20 rounded-full blur-3xl opacity-30 mix-blend-multiply" />
 
       {/* Navigation */}
-      <nav className="relative flex justify-between items-center py-6 px-8">
+      <nav className="relative flex justify-between items-center py-2 px-8">
         <div className="flex items-center space-x-2">
-          <h1 className="text-2xl md:text-3xl font-light text-gray">
-            Grace Belgravia
-          </h1>
+          <Image src="/images/logo.png" alt="Logo" width={120} height={80} />
         </div>
         <div className="flex gap-4">
           <Link
             href="/auth/login/brand"
-            className="px-6 py-2 text-gray hover:text-color transition-colors"
+            className="px-6 py-2 text-gray border border-input flex items-center justify-center rounded-3xl hover:text-color transition-colors"
           >
-            Login
+            Brand Login
           </Link>
           <Link
-            href="/auth/register/brand"
+            href="/auth/login/influencer"
             className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-full hover:bg-black transition-all"
           >
-            Register
+            Influencer Login
           </Link>
         </div>
       </nav>
