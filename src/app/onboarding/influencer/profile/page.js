@@ -387,7 +387,7 @@ const InfluencerProfilePage = () => {
 
       // Now send the payload
       const response = await updateInfluencerProfile(auth, base);
-
+      console.log("PROFILE_RESPONSE ",response)
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
         setIsEditing(false);
@@ -933,21 +933,29 @@ const InfluencerProfilePage = () => {
                                 label="Ethnic Background"
                                 name="ethnicBackground"
                               >
-                                <Select mode="multiple">
+                                <Select mode="tags" tokenSeparators={[',']} placeholder="Select or type to add">
                                   <Option value="Asian">Asian</Option>
                                   <Option value="Black">Black</Option>
                                   <Option value="Hispanic">Hispanic</Option>
                                   <Option value="White">White</Option>
-                                  <Option value="Native American">
-                                    Native American
-                                  </Option>
+                                  <Option value="Native American">Native American</Option>
                                   <Option value="Other">Other</Option>
                                 </Select>
                               </Form.Item>
                             </Col>
                             <Col span={24}>
                               <Form.Item label="Languages" name="languages">
-                                <Select mode="tags" tokenSeparators={[","]} />
+                                <Select mode="tags" tokenSeparators={[',']} placeholder="Select or type to add">
+                                  <Option value="English">English</Option>
+                                  <Option value="French">French</Option>
+                                  <Option value="German">German</Option>
+                                  <Option value="Russian">Russian</Option>
+                                  <Option value="Chinese">Chinese</Option>
+                                  <Option value="Korean">Korean</Option>
+                                  <Option value="Spanish">Spanish</Option>
+                                  <Option value="Swahili">Swahili</Option>
+                                  <Option value="Arabic">Arabic</Option>
+                                </Select>
                               </Form.Item>
                             </Col>
                             <Col span={24}>
