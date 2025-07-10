@@ -20,25 +20,14 @@ import {
   Tabs,
 } from "antd";
 import {
-  EditOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  InstagramOutlined,
-  FacebookOutlined,
-  TikTokOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
-  CheckCircleFilled,
-  UserOutlined,
   PhoneOutlined as PhoneIcon,
   BriefcaseOutlined as BriefcaseIcon,
-  SettingOutlined,
 } from "@ant-design/icons";
 import { FaFacebook } from "react-icons/fa";
 import SocialMediaTabs from "@/app/Components/Influencer/profile/socialMediaTabs";
 import { useSelector, useDispatch } from "react-redux";
-import SuccessButtonComponent from "@/app/Components/SharedComponents/SuccessButtonComponent";
 import { getInfluencerProfile } from "@/redux/features/socials";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
@@ -47,16 +36,11 @@ import { countryOptions } from "@/assets/utils/countryData";
 import moment from "moment";
 // PrimeReact Components
 import { Calendar } from "primereact/calendar";
-import { InputMask } from "primereact/inputmask";
-import { Chips } from "primereact/chips";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import toast from "react-hot-toast";
 // MUI Components
 import { FiUser, FiPhone, FiBriefcase, FiSettings, FiEdit, FiCheck, FiMail, FiMapPin } from 'react-icons/fi';
-import { SiTiktok } from 'react-icons/si';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -95,97 +79,97 @@ const InfluencerProfilePage = () => {
 
   // Create edit payload structure based on second object format
   // Update this function in your InfluencerProfilePage component
-  const createEditPayload = (profile) => {
-    if (!profile) return null;
+  // const createEditPayload = (profile) => {
+  //   if (!profile) return null;
 
-    // Parse phone number
-    let phoneNumberObj = { number: "", code: "" };
-    if (profile.phoneNumber) {
-      // Handle when phoneNumber is an object from API
-      if (
-        typeof profile.phoneNumber === "object" &&
-        profile.phoneNumber.code &&
-        profile.phoneNumber.number
-      ) {
-        phoneNumberObj = {
-          code: profile.phoneNumber.code,
-          number: profile.phoneNumber.number,
-        };
-        setPhoneNumber(profile.phoneNumber.number);
-        setCountryCode(profile.phoneNumber.code);
-      }
-      // Handle when phoneNumber is a string like "+254(070) 285-4204"
-      else if (typeof profile.phoneNumber === "string") {
-        // Extract country code (everything before the parenthesis)
-        const codeMatch = profile.phoneNumber.match(/^(\+\d+)/);
-        const code = codeMatch ? codeMatch[1] : "+1";
+  //   // Parse phone number
+  //   let phoneNumberObj = { number: "", code: "" };
+  //   if (profile.phoneNumber) {
+  //     // Handle when phoneNumber is an object from API
+  //     if (
+  //       typeof profile.phoneNumber === "object" &&
+  //       profile.phoneNumber.code &&
+  //       profile.phoneNumber.number
+  //     ) {
+  //       phoneNumberObj = {
+  //         code: profile.phoneNumber.code,
+  //         number: profile.phoneNumber.number,
+  //       };
+  //       setPhoneNumber(profile.phoneNumber.number);
+  //       setCountryCode(profile.phoneNumber.code);
+  //     }
+  //     // Handle when phoneNumber is a string like "+254(070) 285-4204"
+  //     else if (typeof profile.phoneNumber === "string") {
+  //       // Extract country code (everything before the parenthesis)
+  //       const codeMatch = profile.phoneNumber.match(/^(\+\d+)/);
+  //       const code = codeMatch ? codeMatch[1] : "+1";
 
-        // Extract the actual phone number (everything inside and after parentheses)
-        const numberMatch = profile.phoneNumber.match(/\(([^)]+)\)\s*([\d-]+)/);
-        const number = numberMatch
-          ? `(${numberMatch[1]}) ${numberMatch[2]}`
-          : profile.phoneNumber.replace(/^\+\d+\s*/, "");
+  //       // Extract the actual phone number (everything inside and after parentheses)
+  //       const numberMatch = profile.phoneNumber.match(/\(([^)]+)\)\s*([\d-]+)/);
+  //       const number = numberMatch
+  //         ? `(${numberMatch[1]}) ${numberMatch[2]}`
+  //         : profile.phoneNumber.replace(/^\+\d+\s*/, "");
 
-        phoneNumberObj = { code, number };
-        setPhoneNumber(number);
-        setCountryCode(code);
-      }
-    }
+  //       phoneNumberObj = { code, number };
+  //       setPhoneNumber(number);
+  //       setCountryCode(code);
+  //     }
+  //   }
 
-    // Rest of the function remains the same...
-    let dob = null;
-    if (profile.dateOfBirth) {
-      // Try to parse the date using moment
-      const parsedDate = moment(profile.dateOfBirth);
-      if (parsedDate.isValid()) {
-        dob = parsedDate.toDate();
-        setDateOfBirth(dob);
-      }
-    } else if (profile.age) {
-      // Fallback to calculating from age
-      dob = moment().subtract(profile.age, "years").toDate();
-      setDateOfBirth(dob);
-    }
+  //   // Rest of the function remains the same...
+  //   let dob = null;
+  //   if (profile.dateOfBirth) {
+  //     // Try to parse the date using moment
+  //     const parsedDate = moment(profile.dateOfBirth);
+  //     if (parsedDate.isValid()) {
+  //       dob = parsedDate.toDate();
+  //       setDateOfBirth(dob);
+  //     }
+  //   } else if (profile.age) {
+  //     // Fallback to calculating from age
+  //     dob = moment().subtract(profile.age, "years").toDate();
+  //     setDateOfBirth(dob);
+  //   }
 
-    // Parse country
-    let countryObj = {
-      name: profile?.country.name || "",
-      code: "", // You'll need to get this from somewhere
-      flag: "", // You'll need to get this from somewhere
-    };
+  //   // Parse country
+  //   let countryObj = {
+  //     name: profile?.country.name || "",
+  //     code: "", // You'll need to get this from somewhere
+  //     flag: "", // You'll need to get this from somewhere
+  //   };
 
-    return {
-      dateOfBirth: dateOfBirth,
-      gender: profile.gender || "",
-      bio: profile.bio || "",
-      ethnicBackground: profile.ethnicBackground || [],
-      addressLine1: profile.addressLine1 || "",
-      addressLine2: profile.addressLine2 || "",
-      city: profile.city || "",
-      country: countryObj,
-      zipCode: profile.zipCode || "",
-      phoneNumber: phoneNumberObj,
-      isAvailableForCollaboration: profile.isAvailableForCollaboration || false,
-      languages: profile.languages || [],
-      contentCategories: profile.contentCategories || [],
-      keywords: profile.keywords || [],
-      firstName: profile.fullName?.split(" ")[0] || "",
-      lastName: profile.fullName?.split(" ").slice(-1)[0] || "",
-      middleName:
-        profile.fullName?.split(" ").length > 2
-          ? profile.fullName?.split(" ").slice(1, -1).join(" ")
-          : "",
-      influencerPreference: profile.influencerPreference || {
-        preferredBrands: [],
-        preferredCollaborationContentFormat: [],
-        preferredCompaniesType: [],
-        preferredPaymentOption: [],
-        preferredLeadTimeForProjectDays: 0,
-        preferredPaidMinimumPay: "0",
-        preferredPaidMaximumPay: "0",
-      },
-    };
-  };
+  //   return {
+  //     dateOfBirth: dateOfBirth,
+  //     gender: profile.gender || "",
+  //     bio: profile.bio || "",
+  //     ethnicBackground: profile.ethnicBackground || [],
+  //     addressLine1: profile.addressLine1 || "",
+  //     addressLine2: profile.addressLine2 || "",
+  //     city: profile.city || "",
+  //     country: countryObj,
+  //     zipCode: profile.zipCode || "",
+  //     phoneNumber: phoneNumberObj,
+  //     isAvailableForCollaboration: profile.isAvailableForCollaboration || false,
+  //     languages: profile.languages || [],
+  //     contentCategories: profile.contentCategories || [],
+  //     keywords: profile.keywords || [],
+  //     firstName: profile.fullName?.split(" ")[0] || "",
+  //     lastName: profile.fullName?.split(" ").slice(-1)[0] || "",
+  //     middleName:
+  //       profile.fullName?.split(" ").length > 2
+  //         ? profile.fullName?.split(" ").slice(1, -1).join(" ")
+  //         : "",
+  //     influencerPreference: profile.influencerPreference || {
+  //       preferredBrands: [],
+  //       preferredCollaborationContentFormat: [],
+  //       preferredCompaniesType: [],
+  //       preferredPaymentOption: [],
+  //       preferredLeadTimeForProjectDays: 0,
+  //       preferredPaidMinimumPay: "0",
+  //       preferredPaidMaximumPay: "0",
+  //     },
+  //   };
+  // };
 
   const fetchInfluencerProfile = async () => {
     try {
@@ -211,80 +195,148 @@ const InfluencerProfilePage = () => {
 
   const handleEdit = () => {
     if (influencerProfile) {
-      let phoneCode = "+1";
-      let phoneNum = "";
-      
-      // Handle phone number parsing
-      if (influencerProfile.phoneNumber) {
-        if (typeof influencerProfile.phoneNumber === 'string') {
-          // Parse format like "(+254)071 675 1302"
-          const phoneStr = influencerProfile.phoneNumber.trim();
-          const match = phoneStr.match(/^\(([^)]+)\)(.+)$/);
-          
-          if (match) {
-            phoneCode = match[1]; // This will be "+254"
-            phoneNum = match[2].trim(); // This will be "071 675 1302"
-          }
-        } else if (typeof influencerProfile.phoneNumber === 'object') {
-          // Handle object format if it exists
-          phoneCode = influencerProfile.phoneNumber.code?.replace(/[()]/g, '') || "+1";
-          phoneNum = influencerProfile.phoneNumber.number || "";
-        }
-      }
+      // Map all fields from API to form fields
+      const {
+        dateOfBirth,
+        gender,
+        bio,
+        ethnicBackground,
+        addressLine1,
+        addressLine2,
+        city,
+        country,
+        zipCode,
+        phoneNumber,
+        isAvailableForCollaboration,
+        languages,
+        contentCategories,
+        keywords,
+        fullName,
+        influencerPreference,
+      } = influencerProfile;
 
-      let birthDate = null;
-      if (influencerProfile.dateOfBirth) {
-        birthDate = moment(influencerProfile.dateOfBirth).toDate();
-        if (isNaN(birthDate.getTime())) {
-          birthDate = null;
-        }
-      }
+      // Split fullName
+      const nameParts = (fullName || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+      const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
 
-      const editPayload = {
-        ...createEditPayload(influencerProfile),
-        countryCode: phoneCode,
-        phoneNumber: phoneNum,
-        dateOfBirth: birthDate
+      // Prepare form values
+      const formValues = {
+        dateOfBirth: dateOfBirth ? moment(dateOfBirth) : null,
+        gender: gender || '',
+        bio: bio || '',
+        ethnicBackground: ethnicBackground || [],
+        addressLine1: addressLine1 || '',
+        addressLine2: addressLine2 || '',
+        city: city || '',
+        country: {
+          name: country?.name || '',
+          code: country?.code || '',
+          flag: country?.flag || '',
+        },
+        zipCode: zipCode || '',
+        countryCode: phoneNumber?.code || '',
+        phoneNumber: phoneNumber.number || '',
+        isAvailableForCollaboration: typeof isAvailableForCollaboration === 'boolean' ? isAvailableForCollaboration : false,
+        languages: languages || [],
+        contentCategories: contentCategories || [],
+        keywords: keywords || [],
+        firstName,
+        lastName,
+        middleName,
+        influencerPreference: {
+          preferredBrands: influencerPreference?.preferredBrands || [],
+          preferredCollaborationContentFormat: influencerPreference?.preferredCollaborationContentFormat || [],
+          preferredCompaniesType: influencerPreference?.preferredCompaniesType || [],
+          preferredPaymentOption: influencerPreference?.preferredPaymentOption || [],
+          preferredLeadTimeForProjectDays: influencerPreference?.preferredLeadTimeForProjectDays || 0,
+          preferredPaidMinimumPay: influencerPreference?.preferredPaidMinimumPay || '0',
+          preferredPaidMaximumPay: influencerPreference?.preferredPaidMaximumPay || '0',
+        },
       };
-      form.setFieldsValue(editPayload);
-      setCountryCode(phoneCode);
-      setPhoneNumber(phoneNum);
-      setDateOfBirth(birthDate);
+
+      form.setFieldsValue(formValues);
+      setCountryCode(phoneNumber?.code || '');
+      setPhoneNumber(phoneNumber?.number || '');
+      setDateOfBirth(dateOfBirth ? moment(dateOfBirth).toDate() : null);
       setIsEditing(true);
     }
   };
 
   // Update the handleSave function
   const handleSave = async () => {
+    console.log('I am clicked ', )
+    const base = JSON.parse(JSON.stringify(influencerProfile));
+    console.log("BASE ",base)
     setSubmitting(true);
     try {
       const values = await form.validateFields();
-      
-      const formattedPayload = {
-        ...values,
-        dateOfBirth: values.dateOfBirth ? moment(values.dateOfBirth).format("YYYY-MM-DD") : null,
-        phoneNumber: {
-          code: `(${values.countryCode})`,
-          number: values.phoneNumber
-        },
-        country: {
-          name: values.country?.name || "",
-          code: values.country?.code || "",
-          flag: values.country?.flag || "",
-        },
-        influencerPreference: {
-          ...values.influencerPreference,
-          preferredPaymentOption: values.influencerPreference?.preferredPaymentOption || []
-        }
+      console.log("VALUES ",values)
+      // Start with a deep clone of the API object
+
+
+      // Overwrite with new form values
+      // Handle name fields
+      base.firstName = values.firstName ?? base.firstName ?? '';
+      base.middleName = values.middleName ?? base.middleName ?? '';
+      base.lastName = values.lastName ?? base.lastName ?? '';
+      // Optionally update fullName
+      base.fullName = [base.firstName, base.middleName, base.lastName].filter(Boolean).join(' ');
+
+      // Handle dateOfBirth
+      base.dateOfBirth = values.dateOfBirth
+        ? moment(values.dateOfBirth).format('YYYY-MM-DD')
+        : base.dateOfBirth ?? null;
+
+      // Handle other direct fields
+      base.gender = values.gender ?? base.gender ?? '';
+      base.bio = values.bio ?? base.bio ?? '';
+      base.ethnicBackground = values.ethnicBackground ?? base.ethnicBackground ?? [];
+      base.addressLine1 = values.addressLine1 ?? base.addressLine1 ?? '';
+      base.addressLine2 = values.addressLine2 ?? base.addressLine2 ?? '';
+      base.city = values.city ?? base.city ?? '';
+      base.zipCode = values.zipCode ?? base.zipCode ?? '';
+      base.isAvailableForCollaboration = typeof values.isAvailableForCollaboration === 'boolean'
+        ? values.isAvailableForCollaboration
+        : base.isAvailableForCollaboration ?? false;
+      base.languages = values.languages ?? base.languages ?? [];
+      base.contentCategories = values.contentCategories ?? base.contentCategories ?? [];
+      base.keywords = values.keywords ?? base.keywords ?? [];
+
+      // Handle nested country
+      base.country = {
+        name: values.country?.name ?? base.country?.name ?? '',
+        code: values.country?.code ?? base.country?.code ?? '',
+        flag: values.country?.flag ?? base.country?.flag ?? '',
       };
 
-      console.log("Saving profile with payload:", formattedPayload);
-      const response = await updateInfluencerProfile(auth, formattedPayload);
-      
+      // Handle nested phoneNumber
+      base.phoneNumber = {
+        number: values.phoneNumber ?? base.phoneNumber?.number ?? '',
+        code: values.countryCode ?? base.phoneNumber?.code ?? '',
+      };
+
+      // Handle influencerPreference
+      base.influencerPreference = {
+        preferredBrands: values.influencerPreference?.preferredBrands ?? base.influencerPreference?.preferredBrands ?? [],
+        preferredCollaborationContentFormat: values.influencerPreference?.preferredCollaborationContentFormat ?? base.influencerPreference?.preferredCollaborationContentFormat ?? [],
+        preferredCompaniesType: values.influencerPreference?.preferredCompaniesType ?? base.influencerPreference?.preferredCompaniesType ?? [],
+        preferredPaymentOption: values.influencerPreference?.preferredPaymentOption ?? base.influencerPreference?.preferredPaymentOption ?? [],
+        preferredLeadTimeForProjectDays: values.influencerPreference?.preferredLeadTimeForProjectDays ?? base.influencerPreference?.preferredLeadTimeForProjectDays ?? 0,
+        preferredPaidMinimumPay: values.influencerPreference?.preferredPaidMinimumPay ?? base.influencerPreference?.preferredPaidMinimumPay ?? '0',
+        preferredPaidMaximumPay: values.influencerPreference?.preferredPaidMaximumPay ?? base.influencerPreference?.preferredPaidMaximumPay ?? '0',
+      };
+
+      // Remove any fields you don't want to send (like id, email, etc.) if needed
+
+      // Now send the payload
+      const response = await updateInfluencerProfile(auth, base);
+
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
         setIsEditing(false);
-        fetchUpdateProfile()
+        fetchUpdateProfile();
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -662,20 +714,21 @@ const InfluencerProfilePage = () => {
                                   <Form.Item
                                     name="phoneNumber"
                                     noStyle
-                                    rules={[
-                                      { required: true, message: 'Please input your phone number!' },
-                                      {
-                                        pattern: /^\d{3}\s\d{3}\s\d{4}$/,
-                                        message: 'Please enter a valid phone number'
-                                      }
-                                    ]}>
+                                    // rules={[
+                                    //   { required: true, message: 'Please input your phone number!' },
+                                    //   {
+                                    //     pattern: /^\d{3}\s\d{3}\s\d{4}$/,
+                                    //     message: 'Please enter a valid phone number'
+                                    //   }
+                                    // ]}
+                                    >
                                     <Input
                                       prefix={<FiPhone className="text-gray-400" />}
                                       placeholder="123 456 7890"
                                       className="w-full"
                                       onChange={(e) => {
                                         const formatted = formatPhoneNumber(e.target.value);
-                                        setPhoneNumber(formatted);
+                                        setPhoneNumber(e.target.value);
                                         form.setFieldValue('phoneNumber', formatted);
                                       }}
                                       maxLength={12}
@@ -684,7 +737,7 @@ const InfluencerProfilePage = () => {
                                   
                                   {phoneNumber && (
                                     <div className="text-xs text-primary">
-                                      Your phone number: <span className="font-medium">{phoneNumber.code} {phoneNumber.number}</span>
+                                      Your phone number: <span className="font-medium">{phoneNumber}</span>
                                     </div>
                                   )}
                                 </div>
