@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentStep, previousStep, updateFormData } from "@/redux/features/stepper";
+import { setCurrentStep, previousStep, updateFormData,resetStepper } from "@/redux/features/stepper";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import { useAuth } from "@/assets/hooks/use-auth";
@@ -38,10 +38,10 @@ const BrandTerms = () => {
         finishedOnboarding: true 
       };
       const response = await brandOnboarding(auth, updatedFormData);
-      console.log("RESPONSE ",response)
       if (response.status === 200) {
         toast.success("Onboarding completed successfully!");
         router.push('/onboarding/brand/dashboard');
+        dispatch(resetStepper())
       }else{
         toast.error(response.errorMessage || 'User has already onboarded')
       }

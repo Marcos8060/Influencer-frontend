@@ -1,5 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllCampaigns, fetchAppliedCampaigns, fetchApprovedCampaigns, fetchBrandCampaigns, fetchCampaignCollaboratorPosts, fetchCampaignDetails, fetchCampaignPosts, fetchCampaignReport, fetchMedia, fetchPostInsights, fetchProducts } from "@/redux/services/campaign";
+import {
+  fetchAllCampaigns,
+  fetchAppliedCampaigns,
+  fetchApprovedCampaigns,
+  fetchBrandCampaigns,
+  fetchCampaignCollaboratorPosts,
+  fetchCampaignDetails,
+  fetchCampaignPosts,
+  fetchCampaignReport,
+  fetchMedia,
+  fetchPostInsights,
+  fetchProducts,
+} from "@/redux/services/campaign";
 
 const initialState = {
   currentStep: 0,
@@ -36,12 +48,7 @@ const initialState = {
       campaignObjective: [],
       contentLanguages: "en,es,fr",
     },
-    campaignCollaborators: [
-      // {
-      //   influencerId: "4d757a99-183e-4fe1-a1b1-d3f23edb2791",
-      //   status: "pending",
-      // },
-    ],
+    campaignCollaborators: [],
   },
 };
 
@@ -80,51 +87,56 @@ const CampaignSlice = createSlice({
       state.campaignData = initialState.campaignData;
       state.currentStep = 0;
     },
-    setPostInsights: (state,action) => {
+    setPostInsights: (state, action) => {
       state.postInsights = action.payload;
     },
-    setPosts: (state,action) => {
+    setPosts: (state, action) => {
       state.posts = action.payload;
     },
-    setCampaignDetails: (state,action) => {
+    setCampaignDetails: (state, action) => {
       state.campaignDetails = action.payload;
     },
-    setCampaignReport: (state,action) => {
+    setCampaignReport: (state, action) => {
       state.campaignReport = action.payload;
     },
-    setCampaignPosts: (state,action) => {
+    setCampaignPosts: (state, action) => {
       state.campaignPosts = action.payload;
     },
-    setCampaignCollaboratorPosts: (state,action) => {
+    setCampaignCollaboratorPosts: (state, action) => {
       state.campaignCollaboratorPosts = action.payload;
     },
     updateCollaboratorStatus: (state, action) => {
       const { influencerId, campaignId, status } = action.payload;
-      
+
       // Update in campaignData.campaignCollaborators if this is the current campaign
       if (state.campaignData.id === campaignId) {
-        const collaboratorIndex = state.campaignData.campaignCollaborators.findIndex(
-          c => c.influencerId === influencerId
-        );
-        
+        const collaboratorIndex =
+          state.campaignData.campaignCollaborators.findIndex(
+            (c) => c.influencerId === influencerId
+          );
+
         if (collaboratorIndex !== -1) {
-          state.campaignData.campaignCollaborators[collaboratorIndex].status = status;
+          state.campaignData.campaignCollaborators[collaboratorIndex].status =
+            status;
         } else {
           state.campaignData.campaignCollaborators.push({
             influencerId,
-            status
+            status,
           });
         }
       }
-      
+
       // Also update in campaignDetails if we're viewing that campaign
       if (state.campaignDetails.id === campaignId) {
-        const collaboratorIndex = state.campaignDetails.campaignCollaborators?.findIndex(
-          c => c.influencerId === influencerId
-        );
-        
+        const collaboratorIndex =
+          state.campaignDetails.campaignCollaborators?.findIndex(
+            (c) => c.influencerId === influencerId
+          );
+
         if (collaboratorIndex !== -1) {
-          state.campaignDetails.campaignCollaborators[collaboratorIndex].status = status;
+          state.campaignDetails.campaignCollaborators[
+            collaboratorIndex
+          ].status = status;
         }
       }
     },
@@ -148,7 +160,7 @@ export const {
   setCampaignReport,
   updateCollaboratorStatus,
   setCampaignPosts,
-  setCampaignCollaboratorPosts
+  setCampaignCollaboratorPosts,
 } = CampaignSlice.actions;
 
 export const fetchAllBrandCampaigns = (auth) => async (dispatch) => {
@@ -201,9 +213,9 @@ export const getAllProducts = (auth) => async (dispatch) => {
   }
 };
 
-export const getAllPosts = (auth,userId) => async (dispatch) => {
+export const getAllPosts = (auth, userId) => async (dispatch) => {
   try {
-    const data = await fetchMedia(auth,userId);
+    const data = await fetchMedia(auth, userId);
     dispatch(setPosts(data));
     return data;
   } catch (error) {
@@ -211,9 +223,9 @@ export const getAllPosts = (auth,userId) => async (dispatch) => {
   }
 };
 
-export const getAllPostInsights = (auth,payload) => async (dispatch) => {
+export const getAllPostInsights = (auth, payload) => async (dispatch) => {
   try {
-    const data = await fetchPostInsights(auth,payload);
+    const data = await fetchPostInsights(auth, payload);
     dispatch(setPostInsights(data));
     return data;
   } catch (error) {
@@ -221,19 +233,20 @@ export const getAllPostInsights = (auth,payload) => async (dispatch) => {
   }
 };
 
-export const getAllCampaignDetails = (auth,campaign_id) => async (dispatch) => {
-  try {
-    const data = await fetchCampaignDetails(auth,campaign_id);
-    dispatch(setCampaignDetails(data));
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
+export const getAllCampaignDetails =
+  (auth, campaign_id) => async (dispatch) => {
+    try {
+      const data = await fetchCampaignDetails(auth, campaign_id);
+      dispatch(setCampaignDetails(data));
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-export const getAllCampaignReport = (auth,campaign_id) => async (dispatch) => {
+export const getAllCampaignReport = (auth, campaign_id) => async (dispatch) => {
   try {
-    const data = await fetchCampaignReport(auth,campaign_id);
+    const data = await fetchCampaignReport(auth, campaign_id);
     dispatch(setCampaignReport(data));
     return data;
   } catch (error) {
@@ -241,23 +254,24 @@ export const getAllCampaignReport = (auth,campaign_id) => async (dispatch) => {
   }
 };
 
-export const getAllCampaignPosts = (auth,campaign_id) => async (dispatch) => {
+export const getAllCampaignPosts = (auth, campaign_id) => async (dispatch) => {
   try {
-    const data = await fetchCampaignPosts(auth,campaign_id);
+    const data = await fetchCampaignPosts(auth, campaign_id);
     dispatch(setCampaignPosts(data));
     return data;
   } catch (error) {
     console.log(error);
   }
 };
-export const getAllCampaignCollaboratorPosts = (auth,campaign_id) => async (dispatch) => {
-  try {
-    const data = await fetchCampaignCollaboratorPosts(auth,campaign_id);
-    dispatch(setCampaignCollaboratorPosts(data));
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
+export const getAllCampaignCollaboratorPosts =
+  (auth, campaign_id) => async (dispatch) => {
+    try {
+      const data = await fetchCampaignCollaboratorPosts(auth, campaign_id);
+      dispatch(setCampaignCollaboratorPosts(data));
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 export default CampaignSlice.reducer;

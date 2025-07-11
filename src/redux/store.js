@@ -9,19 +9,26 @@ import socialsReducer from "./features/socials";
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-const stepperPersistConfig = {
+const brandStepperPersistConfig = {
   key: 'stepper',
   storage,
-  whitelist: ['currentStep', 'formData'],
+  whitelist: ['currentStep', 'formData','currentStep','influencerData'],
 };
 
-const persistedStepReducer = persistReducer(stepperPersistConfig, stepReducer);
+const influencerStepperPersistConfig = {
+  key: 'influencerStepper',
+  storage,
+  whitelist: ['currentStep','influencerData'],
+};
+
+const brandPersistedStepReducer = persistReducer(brandStepperPersistConfig, stepReducer);
+const influencerPersistedStepReducer = persistReducer(influencerStepperPersistConfig, influencerReducer);
 
 export const store = configureStore({
   reducer: {
     bucket: bucketReducer,
-    stepper: persistedStepReducer,
-    influencerStepper: influencerReducer,
+    stepper: brandPersistedStepReducer,
+    influencerStepper: influencerPersistedStepReducer,
     campaign: campaignReducer,
     filterResults: filterReducer,
     influencerProfile: influencerProfileReducer,

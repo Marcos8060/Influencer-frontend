@@ -148,6 +148,27 @@ const Address = () => {
     }
   };
 
+  // When country changes, update phone code if it doesn't match
+  useEffect(() => {
+    if (details.influencerCountry && details.influencerCountry.code) {
+      const phoneData = countryPhoneData.find(
+        (item) => item.code === details.influencerCountry.code
+      );
+      if (
+        phoneData &&
+        details.influencerPhoneNumber.code !== phoneData.dial_code
+      ) {
+        setDetails((prev) => ({
+          ...prev,
+          influencerPhoneNumber: {
+            ...prev.influencerPhoneNumber,
+            code: phoneData.dial_code,
+          },
+        }));
+      }
+    }
+  }, [details.influencerCountry]);
+
   const handleNext = () => {
     const missingFields = [];
     if (!details.influencerAddressLine1) missingFields.push("Address Line 1");

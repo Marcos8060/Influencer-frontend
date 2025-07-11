@@ -102,7 +102,7 @@ const Topics = () => {
             transition={{ delay: 0.2 }}
             className="text-gray-500 text-sm"
           >
-            Help brands understand your content by adding influencerTopics and selecting categories
+            Help brands understand your content by adding influencer topics and selecting categories
           </motion.p>
         </div>
 
