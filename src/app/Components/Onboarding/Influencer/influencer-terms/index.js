@@ -5,6 +5,7 @@ import {
   setCurrentStep,
   previousStep,
   updateFormData,
+  resetStepper,
 } from "@/redux/features/stepper/influencer-stepper";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
@@ -56,6 +57,7 @@ const InfluencerTerms = () => {
         if (response.status === 200) {
           toast.success("Onboarding completed successfully!");
           router.push("/onboarding/influencer/dashboard");
+          dispatch(resetStepper())
         } else {
           toast.error(response.errorMessage[0]);
         }

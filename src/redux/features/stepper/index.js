@@ -39,10 +39,32 @@ const StepperSlice = createSlice({
     updateFormData: (state, action) => {
       state.formData = { ...state.formData, ...action.payload };
     },
+    resetStepper: () => ({
+      currentStep: 0,
+      formData: {
+        platformIntroductionSource: null,
+        brandWebsite: null,
+        legalCompanyName: null,
+        address: null,
+        city: null,
+        country: null,
+        state: null,
+        phoneNumber: null,
+        zipCode: null,
+        brandName: null,
+        brandDescription: null,
+        businessType: null,
+        businessIndustry: null,
+        preferredSocialMediaPlatforms: [],
+        preferredInfluencerCountries: [],
+        agreedToTerms: false,
+        finishedOnboarding: false,
+      },
+    }),
   },
 });
 
-export const { setCurrentStep, nextStep, previousStep, updateFormData } =
+export const { setCurrentStep, nextStep, previousStep, updateFormData,resetStepper } =
   StepperSlice.actions;
 
 export default StepperSlice.reducer;
