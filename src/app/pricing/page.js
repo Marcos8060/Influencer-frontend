@@ -6,6 +6,8 @@ import {
   setCurrentStep,
   previousStep,
 } from "@/redux/features/stepper";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 const plans = [
   {
@@ -176,28 +178,27 @@ const plans = [
 
 const Pricing = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   useEffect(() => {
     dispatch(setCurrentStep(17));
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-white py-12 px-2 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-white to-secondary/20 py-12 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Plan Cards */}
         <div className="mb-10 text-center">
-          <h2 className="text-3xl font-extrabold text-gray mb-2">
-            Choose a plan that's right for you
-          </h2>
-          <p className="text-lg text-muted mb-10">
-            We believe influencer marketing should be accessible to all
-            companies, no matter the size of your startup.
-          </p>
+          <h2 className="text-3xl font-extrabold text-gray mb-2 tracking-tight drop-shadow-sm">Choose a plan that's right for you</h2>
+          <p className="text-lg text-muted mb-10">We believe influencer marketing should be accessible to all companies, no matter the size of your startup.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {plans.map((plan) => (
-            <div
+          {plans.map((plan, idx) => (
+            <motion.div
               key={plan.name}
-              className={`relative flex flex-col justify-between p-7 rounded-3xl border bg-white shadow transition-all duration-300 hover:shadow-lg ${
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`relative flex flex-col justify-between p-7 rounded-3xl bg-white shadow transition-all duration-300 hover:shadow-2xl hover:scale-105 ${
                 plan.popular ? "border-2 border-secondary" : "border-input"
               }`}
             >
@@ -230,24 +231,28 @@ const Pricing = () => {
                     ? "bg-secondary hover:bg-secondary/90 shadow-lg shadow-secondary/20"
                     : "bg-primary hover:bg-primary/90 shadow-md"
                 }`}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem("selectedPlan", JSON.stringify(plan));
+                  }
+                  router.push("/pricing/payment");
+                }}
               >
                 {plan.cta}
               </button>
-            </div>
+            </motion.div>
           ))}
         </div>
         {/* Comparison Table */}
-        <div className="overflow-x-auto rounded-2xl border border-input bg-white mb-16">
+        <div className="overflow-x-auto rounded-2xl border border-input bg-white/80 mb-16 shadow-2xl backdrop-blur-md">
           <table className="min-w-full text-sm md:text-base">
             <thead>
-              <tr className="bg-background">
-                <th className="py-5 px-4 text-left font-bold text-gray text-lg">
-                  Overview
-                </th>
+              <tr className="bg-gradient-to-r from-white/90 via-secondary/10 to-white/80">
+                <th className="py-5 px-4 text-left font-bold text-gray text-lg tracking-wide">Overview</th>
                 {plans.map((plan, idx) => (
                   <th
                     key={plan.name}
-                    className="py-5 px-4 text-center font-bold text-lg text-gray relative"
+                    className="py-5 px-4 text-center font-bold text-lg text-gray relative drop-shadow-sm"
                   >
                     {plan.name.replace(" plan", "")}
                     {plan.popular && (
@@ -263,7 +268,7 @@ const Pricing = () => {
               {plans[0].features.map((feature, rowIdx) => (
                 <tr
                   key={feature}
-                  className={rowIdx % 2 === 0 ? "bg-white" : "bg-background"}
+                  className={rowIdx % 2 === 0 ? "bg-white/70" : "bg-white/40"}
                 >
                   <td className="py-4 px-4 font-medium text-gray-700 border-t border-input w-56">
                     {feature}
