@@ -104,18 +104,6 @@ const BrandDetails = () => {
     );
   };
 
-  const handlePhoneCodeSearch = (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    setFilteredPhoneCodes(
-      countryPhoneData.filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchTerm) ||
-          item.code.toLowerCase().includes(searchTerm) ||
-          item.dial_code.toLowerCase().includes(searchTerm)
-      )
-    );
-  };
-
   const fetchLocationData = async (countryCode) => {
     setIsLoadingLocation(true);
     try {
@@ -212,10 +200,10 @@ const BrandDetails = () => {
     if (!details.legalCompanyName) missingFields.push("Legal Company Name");
     if (!details.brandName) missingFields.push("Brand Name");
     if (!details.country.name) missingFields.push("Country");
-    if (!details.state) missingFields.push("State");
+    // if (!details.state) missingFields.push("State");
     if (!details.city) missingFields.push("City");
     if (!details.address) missingFields.push("Address");
-    if (!details.zipCode) missingFields.push("Zip Code");
+    // if (!details.zipCode) missingFields.push("Zip Code");
     if (!details.brandDescription) missingFields.push("Brand Description");
     if (!details.phoneNumber.code) missingFields.push("Phone Country Code");
 
