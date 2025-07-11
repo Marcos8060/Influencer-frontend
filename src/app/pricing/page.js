@@ -238,17 +238,33 @@ const Pricing = () => {
             </div>
           ))}
         </div>
-        {/* Single Plan Details Table */}
-        <div className="overflow-x-auto rounded-2xl border border-input bg-white/80 mb-16 shadow-2xl backdrop-blur-md max-w-3xl mx-auto animate-fade-in text-xs sm:text-base">
+        {/* Multi-Plan Comparison Table with Highlighted Column */}
+        <div className="overflow-x-auto rounded-2xl border border-input bg-white/80 mb-16 shadow-2xl backdrop-blur-md max-w-5xl mx-auto animate-fade-in text-xs sm:text-base">
           <table className="min-w-full text-xs sm:text-base">
             <thead>
               <tr className="bg-gradient-to-r from-white/90 via-secondary/10 to-white/80">
                 <th className="py-5 px-4 text-left font-bold text-gray text-base sm:text-lg tracking-wide">Feature</th>
-                <th className="py-5 px-4 text-center font-bold text-base sm:text-lg text-gray relative drop-shadow-sm">{plans[selectedPlanIdx].name.replace(' plan', '')}</th>
+                {plans.map((plan, idx) => (
+                  <th
+                    key={plan.name}
+                    className={`py-5 px-4 text-center font-bold text-base sm:text-lg text-gray relative drop-shadow-sm transition-all duration-200 ${
+                      idx === selectedPlanIdx ? 'bg-primary/10 text-primary ring-2 ring-primary/30' : ''
+                    }`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <span>{plan.name.replace(' plan', '')}</span>
+                      <span className="text-lg font-extrabold">{plan.price}</span>
+                      {plan.priceValue !== 0 && <span className="text-xs text-gray font-medium">/month</span>}
+                      {plan.popular && (
+                        <span className="mt-2 px-2 py-0.5 text-xs font-bold uppercase bg-yellow text-white rounded-full">Most Popular</span>
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {plans[selectedPlanIdx].features.map((feature, rowIdx) => (
+              {plans[0].features.map((feature, rowIdx) => (
                 <tr
                   key={feature}
                   className={rowIdx % 2 === 0 ? "bg-white/70" : "bg-white/40"}
@@ -256,14 +272,21 @@ const Pricing = () => {
                   <td className="py-4 px-4 font-medium text-gray-700 border-t border-input w-40 sm:w-56">
                     {feature}
                   </td>
-                  <td className="py-4 px-4 text-center border-t border-input">
-                    {typeof plans[selectedPlanIdx].values[rowIdx] === "string" ||
-                    typeof plans[selectedPlanIdx].values[rowIdx] === "number" ? (
-                      <span>{plans[selectedPlanIdx].values[rowIdx]}</span>
-                    ) : (
-                      plans[selectedPlanIdx].values[rowIdx]
-                    )}
-                  </td>
+                  {plans.map((plan, colIdx) => (
+                    <td
+                      key={plan.name + feature}
+                      className={`py-4 px-4 text-center border-t border-input transition-all duration-200 ${
+                        colIdx === selectedPlanIdx ? 'bg-primary/10 text-primary font-bold ring-2 ring-primary/30' : ''
+                      }`}
+                    >
+                      {typeof plan.values[rowIdx] === "string" ||
+                      typeof plan.values[rowIdx] === "number" ? (
+                        <span>{plan.values[rowIdx]}</span>
+                      ) : (
+                        plan.values[rowIdx]
+                      )}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
