@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   nextStep,
@@ -179,6 +179,10 @@ const plans = [
 const Pricing = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [selectedPlanIdx, setSelectedPlanIdx] = useState(() => {
+    const popularIdx = plans.findIndex(p => p.popular);
+    return popularIdx !== -1 ? popularIdx : 0;
+  });
   useEffect(() => {
     dispatch(setCurrentStep(17));
   }, [dispatch]);
@@ -189,103 +193,77 @@ const Pricing = () => {
         {/* Plan Cards */}
         <div className="mb-10 text-center">
           <h2 className="text-3xl font-extrabold text-gray mb-2 tracking-tight drop-shadow-sm">Choose a plan that's right for you</h2>
-          <p className="text-lg text-muted mb-10">We believe influencer marketing should be accessible to all companies, no matter the size of your startup.</p>
+          <p className="text-lg text-color mb-10">We believe influencer marketing should be accessible to all companies, no matter the size of your startup.</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-12 w-full px-2 md:px-0">
           {plans.map((plan, idx) => (
-            <motion.div
+            <div
               key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`relative flex flex-col justify-between p-7 rounded-3xl bg-white shadow transition-all duration-300 hover:shadow-2xl hover:scale-105 ${
-                plan.popular ? "border-2 border-secondary" : "border-input"
+              className={`flex flex-col items-center bg-white/90 rounded-2xl border-2 p-6 sm:p-8 w-full max-w-xs shadow-lg transition-all duration-300 cursor-pointer hover:shadow-2xl hover:scale-105 mx-auto ${
+                idx === selectedPlanIdx ? 'border-primary scale-105 shadow-2xl ring-2 ring-primary/20' : 'border-input'
               }`}
+              onClick={() => setSelectedPlanIdx(idx)}
+              style={{ minWidth: 0 }}
             >
-              {plan.popular && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <span className="px-4 py-1.5 text-xs font-semibold tracking-wide text-white uppercase bg-yellow rounded-full shadow-md">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray mb-2">
-                  {plan.name.replace(" plan", "")}
-                </h2>
-                <p className="text-muted text-base mb-4">{plan.description}</p>
-                <div className="flex items-end justify-center gap-2 mb-2">
-                  <span className="text-5xl font-extrabold text-primary">
-                    {plan.price}
-                  </span>
-                  {plan.priceValue !== 0 && (
-                    <span className="text-base text-gray font-medium mb-1">
-                      /month
-                    </span>
-                  )}
-                </div>
+              <div className="flex items-center gap-2 mb-2 text-base sm:text-2xl">
+                <span className="font-bold text-gray-800">{plan.name.replace(' plan', '')}</span>
+                {plan.popular && (
+                  <span className="px-2 py-0.5 text-xs font-bold uppercase bg-yellow text-white rounded-full">Most Popular</span>
+                )}
               </div>
+              <div className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">{plan.price}</div>
+              {plan.priceValue !== 0 && <div className="text-xs text-gray font-medium mb-2">/month</div>}
+              <ul className="text-xs sm:text-sm text-gray-700 mb-4 w-full list-disc list-inside">
+                {plan.features.slice(0, 3).map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+                {plan.features.length > 3 && <li className="text-link cursor-pointer" onClick={e => {e.stopPropagation(); setSelectedPlanIdx(idx);}}>+{plan.features.length - 3} more</li>}
+              </ul>
               <button
-                className={`w-full px-6 py-3.5 rounded-xl text-base font-semibold text-white transition-all duration-300 mt-auto ${
-                  plan.popular
-                    ? "bg-secondary hover:bg-secondary/90 shadow-lg shadow-secondary/20"
-                    : "bg-primary hover:bg-primary/90 shadow-md"
+                className={`mt-auto w-full px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow text-sm sm:text-base ${
+                  idx === selectedPlanIdx
+                    ? 'bg-primary text-white hover:bg-primary/90'
+                    : 'bg-secondary text-white hover:bg-secondary/90'
                 }`}
-                onClick={() => {
+                onClick={e => {
+                  e.stopPropagation();
                   if (typeof window !== 'undefined') {
                     localStorage.setItem("selectedPlan", JSON.stringify(plan));
                   }
                   router.push("/pricing/payment");
                 }}
               >
-                {plan.cta}
+                Get started
               </button>
-            </motion.div>
+            </div>
           ))}
         </div>
-        {/* Comparison Table */}
-        <div className="overflow-x-auto rounded-2xl border border-input bg-white/80 mb-16 shadow-2xl backdrop-blur-md">
-          <table className="min-w-full text-sm md:text-base">
+        {/* Single Plan Details Table */}
+        <div className="overflow-x-auto rounded-2xl border border-input bg-white/80 mb-16 shadow-2xl backdrop-blur-md max-w-3xl mx-auto animate-fade-in text-xs sm:text-base">
+          <table className="min-w-full text-xs sm:text-base">
             <thead>
               <tr className="bg-gradient-to-r from-white/90 via-secondary/10 to-white/80">
-                <th className="py-5 px-4 text-left font-bold text-gray text-lg tracking-wide">Overview</th>
-                {plans.map((plan, idx) => (
-                  <th
-                    key={plan.name}
-                    className="py-5 px-4 text-center font-bold text-lg text-gray relative drop-shadow-sm"
-                  >
-                    {plan.name.replace(" plan", "")}
-                    {plan.popular && (
-                      <span className="absolute top-2 left-1/2 -translate-x-1/2 bg-yellow text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
-                        Most Popular
-                      </span>
-                    )}
-                  </th>
-                ))}
+                <th className="py-5 px-4 text-left font-bold text-gray text-base sm:text-lg tracking-wide">Feature</th>
+                <th className="py-5 px-4 text-center font-bold text-base sm:text-lg text-gray relative drop-shadow-sm">{plans[selectedPlanIdx].name.replace(' plan', '')}</th>
               </tr>
             </thead>
             <tbody>
-              {plans[0].features.map((feature, rowIdx) => (
+              {plans[selectedPlanIdx].features.map((feature, rowIdx) => (
                 <tr
                   key={feature}
                   className={rowIdx % 2 === 0 ? "bg-white/70" : "bg-white/40"}
                 >
-                  <td className="py-4 px-4 font-medium text-gray-700 border-t border-input w-56">
+                  <td className="py-4 px-4 font-medium text-gray-700 border-t border-input w-40 sm:w-56">
                     {feature}
                   </td>
-                  {plans.map((plan, colIdx) => (
-                    <td
-                      key={plan.name + feature}
-                      className="py-4 px-4 text-center border-t border-input"
-                    >
-                      {typeof plan.values[rowIdx] === "string" ||
-                      typeof plan.values[rowIdx] === "number" ? (
-                        <span>{plan.values[rowIdx]}</span>
-                      ) : (
-                        plan.values[rowIdx]
-                      )}
-                    </td>
-                  ))}
+                  <td className="py-4 px-4 text-center border-t border-input">
+                    {typeof plans[selectedPlanIdx].values[rowIdx] === "string" ||
+                    typeof plans[selectedPlanIdx].values[rowIdx] === "number" ? (
+                      <span>{plans[selectedPlanIdx].values[rowIdx]}</span>
+                    ) : (
+                      plans[selectedPlanIdx].values[rowIdx]
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
