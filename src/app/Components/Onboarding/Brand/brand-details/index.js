@@ -167,6 +167,43 @@ const BrandDetails = () => {
     }
   };
 
+  // Add phone validation logic and code-only dropdown
+  const phoneFormats = {
+    '+254': { length: 9, regex: /^([17][0-9]{8})$/ }, // Kenya: 9 digits, starts with 1 or 7
+    '+1': { length: 10, regex: /^[2-9][0-9]{9}$/ }, // US/Canada: 10 digits
+    '+44': { length: 10, regex: /^[1-9][0-9]{9}$/ }, // UK: 10 digits (simplified)
+    // Add more as needed
+  };
+  const getPhoneFormat = (code) => phoneFormats[code] || { length: 10, regex: /^\d+$/ };
+
+  const [phoneError, setPhoneError] = useState("");
+
+  const CountryCodeDropdown = ({ value, onChange }) => (
+    <Select
+      showSearch
+      value={value}
+      onChange={onChange}
+      style={{ width: 100, height: 40 }}
+      optionFilterProp="label"
+      filterOption={(input, option) =>
+        option.value.toLowerCase().includes(input.toLowerCase())
+      }
+      dropdownStyle={{ zIndex: 2000 }}
+      size="large"
+      className="h-12"
+    >
+      {countryPhoneData.map((country) => (
+        <Select.Option
+          key={`${country.code}-${country.dial_code}`}
+          value={country.dial_code}
+          label={country.dial_code}
+        >
+          {country.dial_code}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+
   const handleCountrySelect = async (country) => {
     const phoneData = countryPhoneData.find(
       (item) => item.code === country.code
@@ -212,45 +249,17 @@ const BrandDetails = () => {
       return;
     }
 
+    const { length, regex } = getPhoneFormat(details.phoneNumber.code);
+    if (details.phoneNumber.number.length !== length || !regex.test(details.phoneNumber.number)) {
+      toast.error(`Phone number must be exactly ${length} digits and match the format for this country.`);
+      return;
+    }
+
     dispatch(updateFormData(details));
     dispatch(nextStep());
   };
 
   const descriptionLength = details.brandDescription?.length || 0;
-
-  // CountryCodeDropdown for phone number
-  const CountryCodeDropdown = ({ value, onChange }) => (
-    <Select
-      showSearch
-      value={value}
-      onChange={onChange}
-      style={{ width: 100, height: 40 }}
-      optionFilterProp="label"
-      filterOption={(input, option) =>
-        option.label.toLowerCase().includes(input.toLowerCase())
-      }
-      dropdownStyle={{ zIndex: 2000 }}
-      size="large"
-      className="h-12"
-    >
-      {countryPhoneData.map((country) => (
-        <Select.Option
-          key={`${country.code}-${country.dial_code}`}
-          value={country.dial_code}
-          label={`${country.name} ${country.dial_code}`}
-        >
-          <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
-            <img
-              src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
-              alt={country.code}
-              style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
-            />
-          </span>
-          {country.name} {country.dial_code}
-        </Select.Option>
-      ))}
-    </Select>
-  );
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-color">
@@ -443,7 +452,15 @@ const BrandDetails = () => {
                   <InputComponent
                     value={details.phoneNumber.number}
                     onChange={(e) => {
-                      const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+                      const digitsOnly = e.target.value.replace(/\D/g, "");
+                      const { length, regex } = getPhoneFormat(details.phoneNumber.code);
+                      let error = "";
+                      if (digitsOnly.length > length) {
+                        error = `Phone number should be exactly ${length} digits for this country.`;
+                      } else if (digitsOnly && !regex.test(digitsOnly)) {
+                        error = `Invalid phone number format for this country.`;
+                      }
+                      setPhoneError(error);
                       setDetails({
                         ...details,
                         phoneNumber: {
@@ -452,10 +469,19 @@ const BrandDetails = () => {
                         },
                       });
                     }}
-                    placeholder="Phone number"
+                    placeholder={
+                      details.phoneNumber.code === '+254'
+                        ? '716743291'
+                        : details.phoneNumber.code === '+1'
+                        ? '4155552671'
+                        : 'Phone number'
+                    }
                     className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
                   />
                 </div>
+                {phoneError && (
+                  <div className="text-red text-xs mt-1">{phoneError}</div>
+                )}
               </div>
 
               {/* Address */}

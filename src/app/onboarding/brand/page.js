@@ -15,7 +15,6 @@ import BrandSocialConnectStep from "@/app/Components/Onboarding/Brand/brand-soci
 
 const BrandOnboarding = () => {
   const { currentStep } = useSelector((store) => store.stepper);
-  const totalSteps = 5; // Total number of steps (0-5)
 
   const steps = [
     {
