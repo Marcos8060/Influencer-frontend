@@ -13,6 +13,15 @@ import { FaBuilding } from "react-icons/fa";
 import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-details/countryPhoneData";
 import { Select } from "antd";
 
+// Phone validation logic and code-only dropdown
+const phoneFormats = {
+  '+254': { length: 9, regex: /^([17][0-9]{8})$/ }, // Kenya: 9 digits, starts with 1 or 7
+  '+1': { length: 10, regex: /^[2-9][0-9]{9}$/ }, // US/Canada: 10 digits
+  '+44': { length: 10, regex: /^[1-9][0-9]{9}$/ }, // UK: 10 digits (simplified)
+  // Add more as needed
+};
+const getPhoneFormat = (code) => phoneFormats[code] || { length: 10, regex: /^\d+$/ };
+
 const CountryCodeDropdown = ({ value, onChange }) => (
   <Select
     showSearch
@@ -21,7 +30,7 @@ const CountryCodeDropdown = ({ value, onChange }) => (
     style={{ width: 100 }}
     optionFilterProp="label"
     filterOption={(input, option) =>
-      option.label.toLowerCase().includes(input.toLowerCase())
+      option.value.toLowerCase().includes(input.toLowerCase())
     }
     dropdownStyle={{ zIndex: 2000 }}
   >
@@ -29,16 +38,9 @@ const CountryCodeDropdown = ({ value, onChange }) => (
       <Select.Option
         key={country.dial_code}
         value={country.dial_code}
-        label={`${country.name} ${country.dial_code}`}
+        label={country.dial_code}
       >
-        <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
-          <img
-            src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
-            alt={country.code}
-            style={{ width: 20, height: 14, borderRadius: 2, objectFit: "cover", display: "inline-block", marginRight: 6 }}
-          />
-        </span>
-        {country.name} {country.dial_code}
+        {country.dial_code}
       </Select.Option>
     ))}
   </Select>
@@ -57,6 +59,7 @@ const BrandRegister = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [countryCode, setCountryCode] = useState("+1");
+  const [phoneError, setPhoneError] = useState("");
   const router = useRouter();
 
   const handleChange = (event) => {
@@ -70,9 +73,11 @@ const BrandRegister = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const fullPhone = `${countryCode}${formData.phoneNumber.replace(/^0+/, "")}`;
-    if (!validatePhoneNumber(fullPhone)) {
-      toast.error("Please enter a valid phone number");
+    const { length, regex } = getPhoneFormat(countryCode);
+    const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
+    const fullPhone = `${countryCode}${digitsOnly}`;
+    if (digitsOnly.length !== length || !regex.test(digitsOnly)) {
+      toast.error(`Phone number must be exactly ${length} digits and match the format for this country.`);
       return;
     }
     
@@ -300,24 +305,39 @@ const BrandRegister = () => {
               <label className="block text-sm font-medium text-gray-700">
                 Phone Number
                   </label>
-              <div className="mt-1 relative flex items-center">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FiPhone className="text-gray-400" />
-                    </div>
-                    <InputComponent
-                      type="tel"
-                      name="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={handleChange}
-                      required
-                      className="pl-28 block w-full rounded-lg border-gray-300"
-                      placeholder="(555) 123-4567"
-                      prefix={
-                        <CountryCodeDropdown value={countryCode} onChange={setCountryCode} />
-                      }
-                    />
-                  </div>
-                </div>
+              <div className="mt-1 flex gap-2">
+                <CountryCodeDropdown value={countryCode} onChange={setCountryCode} />
+                <InputComponent
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value.replace(/\D/g, "");
+                    const { length, regex } = getPhoneFormat(countryCode);
+                    let error = "";
+                    if (digitsOnly.length > length) {
+                      error = `Phone number should be exactly ${length} digits for this country.`;
+                    } else if (digitsOnly && !regex.test(digitsOnly)) {
+                      error = `Invalid phone number format for this country.`;
+                    }
+                    setPhoneError(error);
+                    setFormData({ ...formData, phoneNumber: digitsOnly });
+                  }}
+                  required
+                  className="w-full rounded-lg border-gray-300"
+                  placeholder={
+                    countryCode === '+254'
+                      ? '716743291'
+                      : countryCode === '+1'
+                      ? '4155552671'
+                      : 'Phone number'
+                  }
+                />
+              </div>
+              {phoneError && (
+                <div className="text-red text-xs mt-1">{phoneError}</div>
+              )}
+            </div>
 
                 <div>
               <label className="block text-sm font-medium text-gray-700">
