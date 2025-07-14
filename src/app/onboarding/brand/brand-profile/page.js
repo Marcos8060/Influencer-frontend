@@ -4,1074 +4,517 @@ import {
   Card,
   Avatar,
   Button,
-  Tabs,
   Tag,
-  Table,
-  Tooltip,
-  Badge,
-  message,
-  Progress,
-  Space,
-  Statistic,
-  Spin,
   Collapse,
-  Modal,
+  Typography,
+  Space,
+  Badge,
+  Spin,
+  Tooltip,
+  Divider,
+  Row,
+  Col,
   Form,
   Input,
   Select,
-  Upload,
-  DatePicker,
-  Switch,
-  InputNumber,
+  message,
+  Tabs,
 } from 'antd';
-import {
-  Building2,
-  MapPin,
-  Globe,
-  Users,
-  Calendar,
-  Clock,
-  CheckCircle,
-  Video,
-  Package,
-  Target,
-  Plus,
-  Edit,
-  Trash2,
-  Upload as UploadIcon,
-  Play,
-  Pause,
-  Save,
-  X,
-} from 'lucide-react';
-import { FaInstagram, FaTiktok, FaFacebookF, FaYoutube } from "react-icons/fa";
-import Image from 'next/image';
+import { CheckCircleFilled, GlobalOutlined, PhoneOutlined, EnvironmentOutlined, InfoCircleOutlined, EditOutlined, HomeOutlined, ApartmentOutlined, TeamOutlined, CalendarOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const { Panel } = Collapse;
-const { TextArea } = Input;
-const { RangePicker } = DatePicker;
+const { Title, Text, Paragraph } = Typography;
+const { Option } = Select;
+
+const industryOptions = [
+  "Automotive, Transport & EVs",
+  "Beauty & Personal Care",
+  "Business, Finance & Career",
+  "Dating, Relationships & Adult Interests",
+  "Arts, Crafts & Creativity",
+  "Fashion",
+  "Technology",
+  "Food & Beverage",
+  "Sports & Fitness",
+  "Health & Wellness"
+];
+
+const socialMediaOptions = ["Instagram", "YouTube", "X(Twitter)", "TikTok"];
+const countryOptions = [
+  { code: "US", name: "United States" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "AE", name: "United Arab Emirates" },
+  { code: "KE", name: "Kenya" },
+  // Add more as needed
+];
+
+const phoneCodeOptions = [
+  { code: '+1', label: 'United States (+1)', length: 10, regex: /^[2-9][0-9]{9}$/ },
+  { code: '+44', label: 'United Kingdom (+44)', length: 10, regex: /^[1-9][0-9]{9}$/ },
+  { code: '+254', label: 'Kenya (+254)', length: 9, regex: /^([17][0-9]{8})$/ },
+  { code: '+91', label: 'India (+91)', length: 10, regex: /^[6-9][0-9]{9}$/ },
+  { code: '+61', label: 'Australia (+61)', length: 9, regex: /^[1-9][0-9]{8}$/ },
+  { code: '+81', label: 'Japan (+81)', length: 10, regex: /^\d{10}$/ },
+  { code: '+49', label: 'Germany (+49)', length: 11, regex: /^\d{11}$/ },
+  { code: '+33', label: 'France (+33)', length: 9, regex: /^\d{9}$/ },
+  { code: '+55', label: 'Brazil (+55)', length: 11, regex: /^\d{11}$/ },
+  { code: '+234', label: 'Nigeria (+234)', length: 10, regex: /^\d{10}$/ },
+  { code: '+27', label: 'South Africa (+27)', length: 9, regex: /^\d{9}$/ },
+  { code: '+7', label: 'Russia (+7)', length: 10, regex: /^\d{10}$/ },
+  { code: '+86', label: 'China (+86)', length: 11, regex: /^\d{11}$/ },
+  { code: '+62', label: 'Indonesia (+62)', length: 10, regex: /^\d{10}$/ },
+  { code: '+34', label: 'Spain (+34)', length: 9, regex: /^\d{9}$/ },
+  { code: '+39', label: 'Italy (+39)', length: 10, regex: /^\d{10}$/ },
+  { code: '+82', label: 'South Korea (+82)', length: 10, regex: /^\d{10}$/ },
+  { code: '+90', label: 'Turkey (+90)', length: 10, regex: /^\d{10}$/ },
+  { code: '+20', label: 'Egypt (+20)', length: 10, regex: /^\d{10}$/ },
+  // ... (add more as needed, or use a full country code dataset)
+];
+
+const phoneFormats = {
+  '+254': { length: 9, regex: /^([17][0-9]{8})$/ }, // Kenya: 9 digits, starts with 1 or 7
+  '+1': { length: 10, regex: /^[2-9][0-9]{9}$/ }, // US/Canada: 10 digits
+  '+44': { length: 10, regex: /^[1-9][0-9]{9}$/ }, // UK: 10 digits (simplified)
+  '+91': { length: 10, regex: /^[6-9][0-9]{9}$/ }, // India
+  // Add more as needed
+};
+const getPhoneFormat = (code) => phoneFormats[code] || { length: 10, regex: /^\d+$/ };
 
 const BrandProfile = () => {
-  const [activeTab, setActiveTab] = useState('active');
   const [loading, setLoading] = useState(true);
   const [brandData, setBrandData] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
-  const [uploading, setUploading] = useState(false);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [profileForm] = Form.useForm();
-  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
-    fetchBrandData();
+    setTimeout(() => {
+      setBrandData({
+        id: "859f9c6e-e034-430b-bb9b-0738467e5bc2",
+        name: "Youtube",
+        website: "https://www.youtube.com/",
+        legalCompanyName: "Google",
+        brandPhoneNumber: { code: "+254", number: "702854204" },
+        address: "40405",
+        city: "Gitaru ward",
+        state: "Nairobi",
+        country: null,
+        countryData: { code: "KE", name: "Kenya" },
+        zipCode: "12345",
+        description: "is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        uniqueness: null,
+        businessType: "E-Commerce",
+        industry: [
+          "Automotive, Transport & EVs",
+          "Beauty & Personal Care",
+          "Business, Finance & Career",
+          "Dating, Relationships & Adult Interests",
+          "Arts, Crafts & Creativity"
+        ],
+        companyType: null,
+        companySize: null,
+        geographicalScopeOfOperations: null,
+        userId: "d818b004-576c-43f6-aa93-427083243a63",
+        platformIntroductionSource: null,
+        agreedToTerms: false,
+        finishedOnboarding: false,
+        updatedAt: "2025-07-14T12:58:33.577906Z",
+        myUser: null,
+        dateJoined: "2025-07-14T12:53:45.133370Z",
+        preferences: {
+          id: "5524e510-18b6-400f-a49c-729fd7e1eb60",
+          monthlyNumberOfInfluencers: null,
+          preferredSocialMediaPlatforms: [
+            "Instagram",
+            "YouTube",
+            "X(Twitter)",
+            "TikTok"
+          ],
+          mostImportantCollaborationFactor: null,
+          preferredInfluencerMinimumFollowers: null,
+          preferredInfluencerGenders: null,
+          preferredInfluencerEthnicities: null,
+          preferredInfluencerAgeGroups: null,
+          preferredInfluencerCountries: [
+            { code: "US", name: "United States" },
+            { code: "GB", name: "United Kingdom" },
+            { code: "AE", name: "United Arab Emirates" }
+          ],
+          preferredInfluencerCategories: null,
+          preferredPaymentOption: null,
+          preferredPaidMinimumPay: null,
+          preferredPaidMaximumPay: null,
+          campaignGoal: null,
+          preferredContentFormats: null,
+          preferredVideoType: null,
+          createdAt: "2025-07-14T12:58:33.594536Z",
+          updatedAt: "2025-07-14T12:58:33.594554Z",
+          brand: "859f9c6e-e034-430b-bb9b-0738467e5bc2"
+        }
+      });
+      setLoading(false);
+    }, 500);
   }, []);
 
-  // CRUD Operations
-  const fetchBrandData = async () => {
-    try {
-      setLoading(true);
-      // Replace with actual API call
-      const response = await fetch('/api/brand/profile');
-      const data = await response.json();
-      setBrandData(data);
-    } catch (error) {
-      message.error('Failed to load brand profile');
-      // Using mock data as fallback
-      setBrandData(mockBrandData);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Helper for null/empty
+  const showValue = (val) => val ? val : <span style={{ color: '#bbb' }}>—</span>;
+  const industries = Array.isArray(brandData?.industry)
+    ? brandData.industry
+    : (typeof brandData?.industry === 'string' && brandData.industry.length > 0
+        ? brandData.industry.split(',').map(s => s.trim())
+        : []);
+  const pref = brandData?.preferences || {};
+  const prefPlatforms = pref.preferredSocialMediaPlatforms || [];
+  const prefCountries = pref.preferredInfluencerCountries || [];
 
-  const handleCreateCampaign = async (values) => {
-    try {
-      setUploading(true);
-      const { dateRange, ...rest } = values;
-      
-      const formData = {
-        ...rest,
-        startDate: dateRange[0].format('YYYY-MM-DD'),
-        endDate: dateRange[1].format('YYYY-MM-DD'),
-      };
-
-      // Replace with actual API call
-      const response = await fetch('/api/campaigns', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error('Failed to create campaign');
-
-      message.success('Campaign created successfully');
-      fetchBrandData();
-      setIsModalVisible(false);
-      form.resetFields();
-    } catch (error) {
-      message.error('Failed to create campaign');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleUpdateCampaign = async (values) => {
-    try {
-      setUploading(true);
-      const { dateRange, ...rest } = values;
-      
-      const formData = {
-        ...rest,
-        startDate: dateRange[0].format('YYYY-MM-DD'),
-        endDate: dateRange[1].format('YYYY-MM-DD'),
-      };
-
-      // Replace with actual API call
-      const response = await fetch(`/api/campaigns/${editingCampaign.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error('Failed to update campaign');
-
-      message.success('Campaign updated successfully');
-      fetchBrandData();
-      setIsModalVisible(false);
-      setEditingCampaign(null);
-      form.resetFields();
-    } catch (error) {
-      message.error('Failed to update campaign');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDeleteCampaign = async (campaignId) => {
-    try {
-      Modal.confirm({
-        title: 'Are you sure you want to delete this campaign?',
-        content: 'This action cannot be undone.',
-        okText: 'Yes',
-        okType: 'danger',
-        cancelText: 'No',
-        onOk: async () => {
-          // Replace with actual API call
-          const response = await fetch(`/api/campaigns/${campaignId}`, {
-            method: 'DELETE',
-          });
-
-          if (!response.ok) throw new Error('Failed to delete campaign');
-
-          message.success('Campaign deleted successfully');
-          fetchBrandData(); // Refresh data
-        },
-      });
-    } catch (error) {
-      message.error('Failed to delete campaign');
-    }
-  };
-
-  const handlePauseCampaign = async (campaignId, isPaused) => {
-    try {
-      // Replace with actual API call
-      const response = await fetch(`/api/campaigns/${campaignId}/pause`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isPaused }),
-      });
-
-      if (!response.ok) throw new Error('Failed to update campaign status');
-
-      message.success(`Campaign ${isPaused ? 'paused' : 'resumed'} successfully`);
-      fetchBrandData(); // Refresh data
-    } catch (error) {
-      message.error(`Failed to ${isPaused ? 'pause' : 'resume'} campaign`);
-    }
-  };
-
-  // Brand CRUD Operations
-  const handleUpdateBrandProfile = async (values) => {
-    try {
-      const formData = new FormData();
-      
-      // Append text fields
-      Object.keys(values).forEach(key => {
-        if (key !== 'logo') {
-          formData.append(key, values[key]);
-        }
-      });
-
-      // Append logo if changed
-      if (values.logo && values.logo[0]?.originFileObj) {
-        formData.append('logo', values.logo[0].originFileObj);
-      }
-
-      // Replace with actual API call
-      const response = await fetch('/api/brand/profile', {
-        method: 'PUT',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Failed to update profile');
-
-      const updatedData = await response.json();
-      setBrandData(updatedData);
-      message.success('Profile updated successfully');
-      setIsEditingProfile(false);
-    } catch (error) {
-      message.error('Failed to update profile');
-    }
-  };
-
-  const handleDeleteBrand = async () => {
-    Modal.confirm({
-      title: 'Are you sure you want to delete this brand profile?',
-      content: 'This action cannot be undone. All campaigns and data will be permanently deleted.',
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: async () => {
-        try {
-          // Replace with actual API call
-          const response = await fetch('/api/brand/profile', {
-            method: 'DELETE',
-          });
-
-          if (!response.ok) throw new Error('Failed to delete profile');
-
-          message.success('Profile deleted successfully');
-          // Redirect to home or login page
-          window.location.href = '/';
-        } catch (error) {
-          message.error('Failed to delete profile');
-        }
-      },
+  // Edit handlers
+  const handleEdit = () => {
+    setIsEditing(true);
+    form.setFieldsValue({
+      ...brandData,
+      industry: industries,
+      website: brandData.website?.replace(/^https?:\/\//, ''),
+      brandPhoneNumber: brandData.brandPhoneNumber?.number,
+      phoneCode: brandData.brandPhoneNumber?.code || '+1',
+      country: brandData.countryData?.name || '',
     });
   };
 
-  const handleEditProfile = () => {
-    profileForm.setFieldsValue({
-      name: brandData.name,
-      industry: brandData.industry,
-      location: brandData.location,
-      website: brandData.website,
-      description: brandData.description || '',
-    });
-    setIsEditingProfile(true);
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditingProfile(false);
-    profileForm.resetFields();
-  };
-
-  // UI Components
-  const showModal = (campaign = null) => {
-    if (campaign) {
-      setEditingCampaign(campaign);
-      form.setFieldsValue({
-        ...campaign,
-        dateRange: [dayjs(campaign.startDate), dayjs(campaign.endDate)],
-      });
-    } else {
-      form.resetFields();
-    }
-    setIsModalVisible(true);
-  };
-
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
-    setEditingCampaign(null);
+  const handleCancel = () => {
+    setIsEditing(false);
     form.resetFields();
   };
 
-  const campaignColumns = [
-    {
-      title: 'Campaign',
-      dataIndex: 'title',
-      key: 'title',
-      width: '30%',
-      render: (text, record) => (
-        <div className="flex items-center gap-3">
-          <div className="relative w-12 h-12 flex-shrink-0">
-            <Image
-              src={record.coverImageUrl || '/placeholder.jpg'}
-              alt={text}
-              fill
-              className="rounded-lg object-cover"
-              sizes="48px"
-            />
-          </div>
-          <div className="min-w-0">
-            <div className="font-medium truncate">{text}</div>
-            <div className="text-gray-500 text-sm truncate">{record.briefTitle}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Social Channels',
-      key: 'socialChannels',
-      width: '15%',
-      render: (_, record) => (
-        <Space size="small" wrap>
-          {record?.preferences?.socialChannels?.map((channel, index) => {
-            const icons = {
-              'Instagram Posts': <FaInstagram className="text-pink-500" />,
-              'Tiktok Posts': <FaTiktok className="text-black" />,
-              'Facebook Posts': <FaFacebookF className="text-blue-600" />,
-            };
-            return (
-              <Tooltip key={index} title={channel}>
-                {icons[channel]}
-              </Tooltip>
-            );
-          })}
-        </Space>
-      ),
-    },
-    {
-      title: 'Products',
-      key: 'products',
-      width: '20%',
-      render: (_, record) => (
-        <div className="flex flex-wrap gap-1">
-          {record.products.map((product, index) => (
-            <Tooltip key={index} title={product.description}>
-              <Tag color="blue" className="truncate max-w-[120px]">{product.name}</Tag>
-            </Tooltip>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: 'Duration',
-      key: 'duration',
-      width: '15%',
-      render: (_, record) => (
-        <div className="text-sm whitespace-nowrap">
-          <div>{new Date(record.startDate).toLocaleDateString()}</div>
-          <div className="text-gray-500">to</div>
-          <div>{new Date(record.endDate).toLocaleDateString()}</div>
-        </div>
-      ),
-    },
-    {
-      title: 'Collaborators',
-      key: 'collaborators',
-      width: '15%',
-      render: (_, record) => (
-        <div className="min-w-0">
-          <Tooltip title={`${record.collaborators.filter(c => c.status === 'approved').length} approved out of ${record.numberOfInfluencers} required`}>
-            <div className="flex flex-col gap-1">
-              <div className="text-sm font-medium whitespace-nowrap">
-                {record.numberOfInfluencers} Required
-              </div>
-              <Progress 
-                percent={(record.collaborators.filter(c => c.status === 'approved').length / record.numberOfInfluencers) * 100} 
-                size="small"
-                format={() => `${record.collaborators.filter(c => c.status === 'approved').length}`}
-                className="w-full"
-              />
-            </div>
-          </Tooltip>
-        </div>
-      ),
-    },
-    {
-      title: 'Status',
-      key: 'status',
-      width: '10%',
-      render: (_, record) => {
-        const colors = {
-          'Finished': 'blue',
-          'Active': 'green',
-          'Paused': 'gold',
-          'Draft': 'default',
-        };
-        return (
-          <Tag color={colors[record.status]} className="whitespace-nowrap">
-            {record.isPaused ? 'Paused' : record.status}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: '10%',
-      render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="text"
-            icon={<Edit size={16} />}
-            onClick={() => showModal(record)}
-          />
-          <Button
-            type="text"
-            danger
-            icon={<Trash2 size={16} />}
-            onClick={() => handleDeleteCampaign(record.id)}
-          />
-          <Button
-            type="text"
-            icon={record.isPaused ? <Play size={16} /> : <Pause size={16} />}
-            onClick={() => handlePauseCampaign(record.id, !record.isPaused)}
-          />
-        </Space>
-      ),
-    },
-  ];
-
-  const renderPreferences = (preferences) => (
-    <Collapse ghost className="bg-gray-50 rounded-lg">
-      <Panel header="Campaign Preferences" key="1">
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Video Style:</span>
-            <div className="flex gap-2">
-              {preferences.videoStyle.map((style, index) => (
-                <Tag key={index}>{style}</Tag>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Videos Per Creator:</span>
-            <span>{preferences.videosPerCreator}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Video Duration:</span>
-            <span>{preferences.videoDuration}s</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Video Format:</span>
-            <Tag>{preferences.videoFormat}</Tag>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Show Face:</span>
-            <span>{preferences.showFace ? 'Yes' : 'No'}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Languages:</span>
-            <div className="flex gap-2">
-              {preferences.contentLanguages.split(',').map((lang, index) => (
-                <Tag key={index}>{lang.toUpperCase()}</Tag>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Panel>
-    </Collapse>
-  );
-
-  const renderCampaignForm = () => (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={editingCampaign ? handleUpdateCampaign : handleCreateCampaign}
-    >
-      <Form.Item
-        name="title"
-        label="Campaign Title"
-        rules={[{ required: true }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="briefTitle"
-        label="Brief Title"
-        rules={[{ required: true }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        name="briefDescription"
-        label="Brief Description"
-        rules={[{ required: true }]}
-      >
-        <TextArea rows={4} />
-      </Form.Item>
-
-      <Form.Item
-        name="dateRange"
-        label="Campaign Duration"
-        rules={[{ required: true }]}
-      >
-        <RangePicker />
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'videoStyle']}
-        label="Video Styles"
-        rules={[{ required: true }]}
-      >
-        <Select mode="multiple">
-          <Select.Option value="Testimonials">Testimonials</Select.Option>
-          <Select.Option value="How To">How To</Select.Option>
-          <Select.Option value="Unboxing">Unboxing</Select.Option>
-          <Select.Option value="Up to the creator">Up to the creator</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'socialChannels']}
-        label="Social Channels"
-        rules={[{ required: true }]}
-      >
-        <Select mode="multiple">
-          <Select.Option value="Instagram Posts">Instagram Posts</Select.Option>
-          <Select.Option value="Tiktok Posts">TikTok Posts</Select.Option>
-          <Select.Option value="Facebook Posts">Facebook Posts</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'videosPerCreator']}
-        label="Videos Per Creator"
-        rules={[{ required: true }]}
-      >
-        <InputNumber min={1} />
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'videoDuration']}
-        label="Video Duration (seconds)"
-        rules={[{ required: true }]}
-      >
-        <InputNumber min={15} />
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'showFace']}
-        label="Show Face Required"
-        valuePropName="checked"
-      >
-        <Switch />
-      </Form.Item>
-
-      <Form.Item
-        name={['preferences', 'videoFormat']}
-        label="Video Format"
-        rules={[{ required: true }]}
-      >
-        <Select>
-          <Select.Option value="square">Square</Select.Option>
-          <Select.Option value="vertical">Vertical</Select.Option>
-          <Select.Option value="horizontal">Horizontal</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="coverImage"
-        label="Cover Image"
-        valuePropName="fileList"
-        getValueFromEvent={(e) => {
-          if (Array.isArray(e)) return e;
-          return e?.fileList;
-        }}
-      >
-        <Upload
-          listType="picture-card"
-          maxCount={1}
-          beforeUpload={() => false}
-        >
-          <div>
-            <UploadIcon size={20} />
-            <div className="mt-2">Upload</div>
-          </div>
-        </Upload>
-      </Form.Item>
-    </Form>
-  );
-
-  const tabItems = [
-    {
-      key: 'active',
-      label: 'Active Campaigns',
-      children: (
-        <Table 
-          columns={campaignColumns} 
-          dataSource={brandData?.campaigns?.filter(c => !c.isPaused && c.status !== 'Finished')}
-          rowKey="id"
-          expandable={{
-            expandedRowRender: (record) => renderPreferences(record.preferences),
-          }}
-        />
-      ),
-    },
-    {
-      key: 'completed',
-      label: 'Completed Campaigns',
-      children: (
-        <Table 
-          columns={campaignColumns} 
-          dataSource={brandData?.campaigns?.filter(c => c.status === 'Finished')}
-          rowKey="id"
-          expandable={{
-            expandedRowRender: (record) => renderPreferences(record.preferences),
-          }}
-        />
-      ),
-    },
-  ];
-
-  const StatCard = ({ icon: Icon, title, value, trend, color = 'blue', details }) => {
-    const [showDetails, setShowDetails] = useState(false);
-
-    const gradients = {
-      blue: 'from-blue-50 to-white hover:from-blue-100',
-      green: 'from-green-50 to-white hover:from-green-100',
-      purple: 'from-purple-50 to-white hover:from-purple-100',
-      orange: 'from-orange-50 to-white hover:from-orange-100'
+  const handleSave = (values) => {
+    // Simulate API update
+    const updatedPreferences = {
+      ...brandData.preferences,
+      ...values.preferences,
+      preferredSocialMediaPlatforms: values.preferences?.preferredSocialMediaPlatforms || [],
+      preferredInfluencerCountries: (values.preferences?.preferredInfluencerCountries || []).map(c => {
+        if (typeof c === 'object' && c.code && c.name) return c;
+        const found = countryOptions.find(opt => opt.code === (c.key || c.value || c));
+        return found ? { code: found.code, name: found.name } : { code: c.key || c.value || c, name: c.label || c };
+      }),
     };
-
-    const iconColors = {
-      blue: 'text-blue-600 bg-blue-100',
-      green: 'text-green-600 bg-green-100',
-      purple: 'text-purple-600 bg-purple-100',
-      orange: 'text-orange-600 bg-orange-100'
+    const updated = {
+      ...brandData,
+      ...values,
+      website: values.website.startsWith('http') ? values.website : `https://${values.website}`,
+      industry: values.industry,
+      brandPhoneNumber: { code: values.phoneCode, number: values.brandPhoneNumber },
+      countryData: { ...brandData.countryData, name: values.country },
+      preferences: updatedPreferences,
     };
-
-    const trendColors = {
-      increase: 'text-green-600 bg-green-50',
-      decrease: 'text-red-600 bg-red-50',
-      neutral: 'text-gray-600 bg-gray-50'
-    };
-
-    return (
-      <div 
-        className="group cursor-pointer transform transition-all duration-300 hover:scale-102"
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        <Card 
-          className={`relative overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-br ${gradients[color]}`}
-        >
-          {/* Background Pattern */}
-          <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
-            <div className="relative w-full h-full">
-              <div className="absolute inset-0 transform rotate-45 translate-x-6 -translate-y-6">
-                <Icon size={128} />
-              </div>
-            </div>
-          </div>
-
-          <div className="relative z-10">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-2 rounded-xl ${iconColors[color]}`}>
-                <Icon size={20} />
-              </div>
-              {trend && (
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${trendColors[trend.type]}`}>
-                  {trend.type === 'increase' ? '↑' : trend.type === 'decrease' ? '↓' : '•'} {trend.value}%
-                </div>
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-gray-900">{value}</span>
-                {trend && (
-                  <span className="text-sm text-gray-500">
-                    vs last month
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Details Section */}
-            {details && (
-              <div className={`mt-4 pt-4 border-t border-input transition-all duration-300 ${showDetails ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
-                <div className="space-y-3">
-                  {details.map((detail, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{detail.label}</span>
-                      <span className="font-medium text-gray-900">{detail.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Interaction Hint */}
-            {details && (
-              <div className="absolute bottom-2 right-2 text-gray-400 opacity-50 group-hover:opacity-100 transition-opacity">
-                <div className="text-xs">{!showDetails && 'Click to expand'}</div>
-              </div>
-            )}
-          </div>
-        </Card>
-      </div>
-    );
+    setBrandData(updated);
+    setIsEditing(false);
+    message.success('Profile updated!');
   };
 
-  // Profile Section Component
-  const renderProfileSection = () => {
-    if (isEditingProfile) {
-      return (
-        <Form
-          form={profileForm}
-          layout="vertical"
-          onFinish={handleUpdateBrandProfile}
-          className="w-full max-w-2xl"
-        >
-          <div className="flex items-start gap-6">
-            <Form.Item
-              name="logo"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => {
-                if (Array.isArray(e)) return e;
-                return e?.fileList || [];
-              }}
-            >
-              <Upload
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                beforeUpload={() => false}
-              >
-                {brandData.logo ? (
-                  <div className="relative w-[100px] h-[100px]">
-                    <Image
-                      src={brandData.logo}
-                      alt="Brand Logo"
-                      fill
-                      className="rounded-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center">
-                    <UploadIcon size={24} />
-                    <span className="mt-2">Upload</span>
-                  </div>
-                )}
-              </Upload>
-            </Form.Item>
-
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Form.Item
-                  name="name"
-                  label="Brand Name"
-                  rules={[{ required: true, message: 'Please enter brand name' }]}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name="industry"
-                  label="Industry"
-                  rules={[{ required: true, message: 'Please select industry' }]}
-                >
-                  <Select>
-                    <Select.Option value="Fashion">Fashion</Select.Option>
-                    <Select.Option value="Technology">Technology</Select.Option>
-                    <Select.Option value="Beauty">Beauty</Select.Option>
-                    <Select.Option value="Food & Beverage">Food & Beverage</Select.Option>
-                    <Select.Option value="Sports & Fitness">Sports & Fitness</Select.Option>
-                    <Select.Option value="Health & Wellness">Health & Wellness</Select.Option>
-                  </Select>
-                </Form.Item>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Form.Item
-                  name="location"
-                  label="Location"
-                  rules={[{ required: true, message: 'Please enter location' }]}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name="website"
-                  label="Website"
-                  rules={[
-                    { required: true, message: 'Please enter website' },
-                    { type: 'url', message: 'Please enter a valid URL' }
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </div>
-
-              <Form.Item
-                name="description"
-                label="Description"
-              >
-                <Input.TextArea rows={4} />
-              </Form.Item>
-
-              <div className="flex justify-end gap-3">
-                <Button onClick={handleCancelEdit} icon={<X size={16} />}>
-                  Cancel
-                </Button>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<Save size={16} />}
-                  className="bg-primary hover:bg-blue-700"
-                >
-                  Save Changes
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Form>
-      );
-    }
-
-    return (
-      <div className="flex items-start gap-6">
-        <div className="relative">
-          <Avatar
-            size={100}
-            src={brandData.logo}
-            className="border-4 border-white shadow-lg"
-          />
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-            <CheckCircle size={14} className="text-white" />
-          </div>
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">{brandData.name}</h1>
-              <Badge 
-                status="success" 
-                text={<span className="text-sm font-medium">Verified</span>} 
-                className="relative top-[1px]"
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                icon={<Edit size={16} />}
-                onClick={handleEditProfile}
-                className="border-primary text-primary hover:bg-blue-50"
-              >
-                Edit Profile
-              </Button>
-              {/* <Button
-                icon={<Trash2 size={16} />}
-                danger
-                onClick={handleDeleteBrand}
-              >
-                Delete Profile
-              </Button> */}
-            </div>
-          </div>
-          <div className="flex items-center gap-6 text-gray-600 mt-3">
-            <span className="flex items-center gap-2">
-              <Building2 size={16} />
-              {brandData.industry}
-            </span>
-            <span className="flex items-center gap-2">
-              <MapPin size={16} />
-              {brandData.location}
-            </span>
-            <a 
-              href={`https://${brandData.website}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-blue-600 transition-colors"
-            >
-              <Globe size={16} />
-              {brandData.website}
-            </a>
-          </div>
-          {brandData.description && (
-            <p className="mt-4 text-gray-600">{brandData.description}</p>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
+  if (loading || !brandData) {
+    return <div className="flex items-center justify-center min-h-screen"><Spin size="large" /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-white shadow-md rounded">
-      <div className="container mx-auto px-4 py-6">
-        {/* Profile Header */}
-        <div className="mb-8">
-          {renderProfileSection()}
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f4f6fb 0%, #e9ecf7 100%)',
+      padding: 0,
+      width: '100%',
+    }}>
+      <div style={{ width: '100%', padding: '48px 0 64px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Title level={1} style={{ marginBottom: 0, fontWeight: 800, letterSpacing: '-1px' }}>Brand Profile</Title>
+          <Text type="secondary" style={{ fontSize: 18 }}>Manage your brand’s public information</Text>
         </div>
-
-        {/* Campaign Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 border-t border-b border-input py-4">
-          <StatCard
-            icon={Calendar}
-            title="Total Campaigns"
-            value={brandData.stats.totalCampaigns}
-            trend={{ type: 'increase', value: 12 }}
-            color="blue"
-            details={[
-              { label: 'Active', value: brandData.stats.activeCampaigns },
-              { label: 'Completed', value: brandData.stats.totalCampaigns - brandData.stats.activeCampaigns },
-              { label: 'Success Rate', value: '87%' }
-            ]}
-          />
-          <StatCard
-            icon={Clock}
-            title="Active Campaigns"
-            value={brandData.stats.activeCampaigns}
-            trend={{ type: 'increase', value: 8 }}
-            color="green"
-            details={[
-              { label: 'In Progress', value: Math.floor(brandData.stats.activeCampaigns * 0.7) },
-              { label: 'Pending Start', value: Math.floor(brandData.stats.activeCampaigns * 0.3) },
-              { label: 'Avg. Duration', value: '45 days' }
-            ]}
-          />
-          <StatCard
-            icon={Package}
-            title="Total Products"
-            value={brandData.stats.totalProducts}
-            trend={{ type: 'decrease', value: 3 }}
-            color="purple"
-            details={[
-              { label: 'Featured', value: Math.floor(brandData.stats.totalProducts * 0.2) },
-              { label: 'Categories', value: '5' },
-              { label: 'Avg. Price', value: '$89.99' }
-            ]}
-          />
-          <StatCard
-            icon={Users}
-            title="Total Collaborators"
-            value={brandData.stats.totalCollaborators}
-            trend={{ type: 'increase', value: 15 }}
-            color="orange"
-            details={[
-              { label: 'Active', value: Math.floor(brandData.stats.totalCollaborators * 0.6) },
-              { label: 'Top Performers', value: Math.floor(brandData.stats.totalCollaborators * 0.1) },
-              { label: 'Avg. Engagement', value: '8.2%' }
-            ]}
-          />
-        </div>
-
-        {/* Tabs */}
-        <Tabs 
-          activeKey={activeTab} 
-          onChange={setActiveTab}
-          items={tabItems}
-        />
-
-        {/* Campaign Modal */}
-        <Modal
-          title={editingCampaign ? 'Edit Campaign' : 'Create Campaign'}
-          open={isModalVisible}
-          onCancel={handleModalCancel}
-          footer={[
-            <Button key="cancel" onClick={handleModalCancel}>
-              Cancel
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              loading={uploading}
-              onClick={() => form.submit()}
-              className="bg-primary"
-            >
-              {editingCampaign ? 'Update' : 'Create'}
-            </Button>,
-          ]}
-          width={720}
+        <Divider style={{ margin: '0 0 40px 0', borderColor: '#e0e3ea' }} />
+        <Card
+          style={{ borderRadius: 18, boxShadow: '0 8px 32px #0002', padding: 0, background: '#fff', width: '100%' }}
+          bodyStyle={{ padding: 0 }}
         >
-          {renderCampaignForm()}
-        </Modal>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '32px 32px 0 32px', gap: 32 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+              <Avatar size={96} style={{ background: '#eee', fontSize: 36 }}>
+                {brandData.name ? brandData.name[0] : '?'}
+              </Avatar>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Title level={2} style={{ margin: 0 }}>{brandData.name}</Title>
+                  <Badge status="success" text={<span style={{ color: '#52c41a', fontWeight: 500 }}>Verified</span>} />
+                </div>
+                <div style={{ margin: '12px 0 0 0', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {industries.length > 0 ? industries.map((ind, i) => <Tag key={i} color="blue" style={{ fontSize: 13 }}>{ind}</Tag>) : <span style={{ color: '#bbb' }}>—</span>}
+                </div>
+                <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 24, color: '#555', fontSize: 15 }}>
+                  <span><EnvironmentOutlined /> {brandData.city}, {brandData.state}, {brandData.countryData?.name || '—'}</span>
+                  <span><PhoneOutlined /> {brandData.brandPhoneNumber?.code} {brandData.brandPhoneNumber?.number}</span>
+                  <a href={brandData.website} target="_blank" rel="noopener noreferrer" style={{ color: '#1677ff' }}><GlobalOutlined /> {brandData.website.replace(/^https?:\/\//, '')}</a>
+                </div>
+              </div>
+            </div>
+            {!isEditing && (
+              <Button type="primary" icon={<EditOutlined />} size="large" onClick={handleEdit} style={{ marginLeft: 16, marginTop: 8 }}>
+                Edit Profile
+              </Button>
+            )}
+          </div>
+
+          {/* Main Content: Display or Edit */}
+          <div style={{ padding: '32px', width: '100%' }}>
+            {isEditing ? (
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSave}
+                initialValues={{ ...brandData, industry: industries }}
+              >
+                <Tabs defaultActiveKey="general" type="card" style={{ marginBottom: 24 }}>
+                  <Tabs.TabPane tab="General Info" key="general">
+                    <Row gutter={32}>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="name" label="Brand Name" rules={[{ required: true, message: 'Please enter brand name' }]}> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="legalCompanyName" label="Legal Company Name" rules={[{ required: true, message: 'Please enter legal company name' }]}> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="website" label="Website" rules={[{ required: true, message: 'Please enter website' }]}> <Input addonBefore="https://" /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="businessType" label="Business Type"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="industry" label="Industry" rules={[{ required: true, message: 'Please select industry' }]}> <Select mode="tags" style={{ width: '100%' }} placeholder="Select or type industries"> {industryOptions.map(opt => <Option key={opt} value={opt}>{opt}</Option>)} </Select> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="companyType" label="Company Type"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="companySize" label="Company Size"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="geographicalScopeOfOperations" label="Geographical Scope"> <Input /> </Form.Item>
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane tab="Contact & Location" key="contact">
+                    <Row gutter={32}>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="address" label="Address"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="city" label="City"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="state" label="State"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name="zipCode" label="Zip Code"> <Input /> </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item
+                          label="Phone Number"
+                          required
+                          validateStatus={phoneError ? 'error' : ''}
+                          help={phoneError}
+                        >
+                          <Input
+                            addonBefore={
+                              <Form.Item name="phoneCode" noStyle initialValue={brandData.brandPhoneNumber?.code || '+1'}>
+                                <Select
+                                  showSearch
+                                  optionFilterProp="children"
+                                  style={{ width: 180 }}
+                                  filterOption={(input, option) =>
+                                    option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                  }
+                                >
+                                  {phoneCodeOptions.map(opt => (
+                                    <Option key={opt.code} value={opt.code}>{opt.label}</Option>
+                                  ))}
+                                </Select>
+                              </Form.Item>
+                            }
+                            name="brandPhoneNumber"
+                            onChange={e => {
+                              const code = form.getFieldValue('phoneCode') || '+1';
+                              const val = e.target.value.replace(/\D/g, '');
+                              const { length, regex } = getPhoneFormat(code);
+                              let error = '';
+                              if (val.length > length) {
+                                error = `Phone number should be exactly ${length} digits for this country.`;
+                              } else if (val && !regex.test(val)) {
+                                error = `Invalid phone number format for this country.`;
+                              }
+                              setPhoneError(error);
+                              form.setFieldsValue({ brandPhoneNumber: val });
+                            }}
+                            value={form.getFieldValue('brandPhoneNumber')}
+                            placeholder={(() => {
+                              const code = form.getFieldValue('phoneCode') || '+1';
+                              if (code === '+254') return '716743291';
+                              if (code === '+1') return '4155552671';
+                              if (code === '+44') return '7123456789';
+                              if (code === '+91') return '9876543210';
+                              return 'Phone number';
+                            })()}
+                            className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane tab="Preferences" key="preferences">
+                    <Row gutter={32}>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredSocialMediaPlatforms"]} label="Preferred Social Media Platforms">
+                          <Select mode="multiple" allowClear placeholder="Select platforms">
+                            {socialMediaOptions.map(opt => <Option key={opt} value={opt}>{opt}</Option>)}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerCountries"]} label="Preferred Influencer Countries">
+                          <Select
+                            mode="multiple"
+                            labelInValue
+                            allowClear
+                            placeholder="Select countries"
+                            optionLabelProp="label"
+                          >
+                            {countryOptions.map(opt => (
+                              <Option key={opt.code} value={opt.code} label={opt.name}>{opt.name}</Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "monthlyNumberOfInfluencers"]} label="Monthly Number of Influencers">
+                          <Input type="number" min={0} placeholder="e.g. 10" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "mostImportantCollaborationFactor"]} label="Most Important Collaboration Factor">
+                          <Input placeholder="e.g. Engagement Rate" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerMinimumFollowers"]} label="Min Influencer Followers">
+                          <Input type="number" min={0} placeholder="e.g. 1000" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerGenders"]} label="Preferred Influencer Genders">
+                          <Input placeholder="e.g. Male, Female" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerEthnicities"]} label="Preferred Influencer Ethnicities">
+                          <Input placeholder="e.g. Asian, African" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerAgeGroups"]} label="Preferred Influencer Age Groups">
+                          <Input placeholder="e.g. 18-24, 25-34" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredInfluencerCategories"]} label="Preferred Influencer Categories">
+                          <Input placeholder="e.g. Fashion, Tech" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredPaymentOption"]} label="Preferred Payment Option">
+                          <Input placeholder="e.g. PayPal, Bank Transfer" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredPaidMinimumPay"]} label="Preferred Paid Minimum Pay">
+                          <Input type="number" min={0} placeholder="e.g. 100" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredPaidMaximumPay"]} label="Preferred Paid Maximum Pay">
+                          <Input type="number" min={0} placeholder="e.g. 1000" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "campaignGoal"]} label="Campaign Goal">
+                          <Input placeholder="e.g. Brand Awareness" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredContentFormats"]} label="Preferred Content Formats">
+                          <Input placeholder="e.g. Video, Image" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={12}>
+                        <Form.Item name={["preferences", "preferredVideoType"]} label="Preferred Video Type">
+                          <Input placeholder="e.g. Testimonial, Unboxing" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                </Tabs>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginTop: 32 }}>
+                  <Button onClick={handleCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">Save</Button>
+                </div>
+              </Form>
+            ) : (
+              <>
+                <Row gutter={[32, 24]} style={{ marginBottom: 16 }}>
+                  <Col xs={24} md={12}><Text strong>Legal Company Name:</Text> <br />{showValue(brandData.legalCompanyName)}</Col>
+                  <Col xs={24} md={12}><Text strong>Business Type:</Text> <br />{showValue(brandData.businessType)}</Col>
+                  <Col xs={24} md={12}><Text strong>Company Type:</Text> <br />{showValue(brandData.companyType)}</Col>
+                  <Col xs={24} md={12}><Text strong>Company Size:</Text> <br />{showValue(brandData.companySize)}</Col>
+                  <Col xs={24} md={12}><Text strong>Geographical Scope:</Text> <br />{showValue(brandData.geographicalScopeOfOperations)}</Col>
+                  <Col xs={24} md={12}><Text strong>Address:</Text> <br />{showValue(`${brandData.address}, ${brandData.city}, ${brandData.state}, ${brandData.zipCode}`)}</Col>
+                  <Col xs={24} md={12}><Text strong>Date Joined:</Text> <br />{showValue(dayjs(brandData.dateJoined).format('MMM D, YYYY'))}</Col>
+                </Row>
+                <Paragraph style={{ fontSize: 16, color: '#444', marginBottom: 24 }}>
+                  <InfoCircleOutlined style={{ color: '#1677ff', marginRight: 8 }} />
+                  {showValue(brandData.description)}
+                </Paragraph>
+                <Collapse bordered={false} style={{ background: '#fafbfc', borderRadius: 8 }}>
+                  <Panel header={<span style={{ fontWeight: 600 }}>Preferences</span>} key="1">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 12 }}>
+                      <div>
+                        <Text strong>Preferred Platforms:</Text><br />
+                        {prefPlatforms.length ? prefPlatforms.map((p, i) => <Tag key={i} color="purple" style={{ fontSize: 13 }}>{p}</Tag>) : showValue(null)}
+                      </div>
+                      <div>
+                        <Text strong>Preferred Countries:</Text><br />
+                        {prefCountries.length ? prefCountries.map((c, i) => <Tag key={i} color="geekblue" style={{ fontSize: 13 }}>{c.name}</Tag>) : showValue(null)}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+                      <div><Text strong>Monthly Influencers:</Text> {showValue(pref.monthlyNumberOfInfluencers)}</div>
+                      <div><Text strong>Collaboration Factor:</Text> {showValue(pref.mostImportantCollaborationFactor)}</div>
+                      <div><Text strong>Min Followers:</Text> {showValue(pref.preferredInfluencerMinimumFollowers)}</div>
+                      <div><Text strong>Genders:</Text> {showValue(pref.preferredInfluencerGenders)}</div>
+                      <div><Text strong>Ethnicities:</Text> {showValue(pref.preferredInfluencerEthnicities)}</div>
+                      <div><Text strong>Age Groups:</Text> {showValue(pref.preferredInfluencerAgeGroups)}</div>
+                      <div><Text strong>Categories:</Text> {showValue(pref.preferredInfluencerCategories)}</div>
+                      <div><Text strong>Payment Option:</Text> {showValue(pref.preferredPaymentOption)}</div>
+                      <div><Text strong>Min Pay:</Text> {showValue(pref.preferredPaidMinimumPay)}</div>
+                      <div><Text strong>Max Pay:</Text> {showValue(pref.preferredPaidMaximumPay)}</div>
+                      <div><Text strong>Campaign Goal:</Text> {showValue(pref.campaignGoal)}</div>
+                      <div><Text strong>Content Formats:</Text> {showValue(pref.preferredContentFormats)}</div>
+                      <div><Text strong>Video Type:</Text> {showValue(pref.preferredVideoType)}</div>
+                    </div>
+                  </Panel>
+                </Collapse>
+              </>
+            )}
+          </div>
+        </Card>
+        <Divider style={{ margin: '40px 0 0 0', borderColor: '#e0e3ea' }} />
       </div>
     </div>
   );
-};
-
-const mockBrandData = {
-  name: 'Nike Sportswear',
-  logo: 'https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=200&h=200',
-  industry: 'Sports & Fitness',
-  location: 'Portland, Oregon',
-  website: 'www.nike.com',
-  description: 'Leading innovator in athletic footwear, apparel, and sports equipment. Committed to inspiring and bringing innovation to every athlete in the world.',
-  stats: {
-    totalCampaigns: 24,
-    activeCampaigns: 8,
-    totalProducts: 45,
-    totalCollaborators: 156,
-  },
-  campaigns: [
-    {
-      id: "4271353b-47dd-4067-96da-4305493bb66b",
-      status: "Finished",
-      preferences: {
-        id: "25b1c94c-1f06-4120-acea-b9c00d4c0b30",
-        videoStyle: [
-          "Testimonials",
-          "How To",
-          "Up to the creator",
-          "Unboxing"
-        ],
-        videosPerCreator: 4,
-        videoDuration: 60,
-        showFace: true,
-        videoFormat: "square",
-        socialChannels: [
-          "Facebook Posts",
-          "Tiktok Posts"
-        ],
-        collaborationType: [],
-        campaignObjective: "",
-        contentLanguages: "en,es,fr"
-      },
-      products: [
-        {
-          id: "fa9d0beb-31e8-4127-9147-02982a9491c8",
-          name: "Basil the Cat",
-          description: "30 Jewellery Influencers to Collaborate with in 2025",
-          price: "12.00",
-          productImages: [
-            {
-              url: "http://res.cloudinary.com/dqjnaukdk/image/upload/v1744723502/1cdbd0a3-03d8-4cda-bdbb-d7dde1eb4ab4/products/rminxumlvvdjuss31alf.jpg"
-            }
-          ]
-        }
-      ],
-      numberOfInfluencers: 3,
-      coverImageUrl: "http://res.cloudinary.com/dqjnaukdk/image/upload/v1745578358/1cdbd0a3-03d8-4cda-bdbb-d7dde1eb4ab4/campaignCoverPhoto/muyav41qnzhsfvaec0s4.jpg",
-      title: "Summer Skin Glow Campaign",
-      briefTitle: "Promote Our Glow Kit!",
-      briefDescription: "We're seeking vibrant creators to showcase our Summer Glow Kit across social platforms.",
-      startDate: "2025-04-25",
-      endDate: "2025-05-15",
-      isPaused: false,
-      collaborators: [
-        {
-          id: "7d015e2f-dd35-4879-b4b6-ee1d9efdde29",
-          status: "approved"
-        },
-        {
-          id: "de3c04a4-f124-4888-bed8-57decb951878",
-          status: "approved"
-        }
-      ]
-    }
-  ]
 };
 
 export default BrandProfile;
