@@ -60,7 +60,7 @@ const InstagramProfile = () => {
   const handleRefresh = async () => {
     try {
       setLoadingPosts(true);
-      await dispatch(getAllPosts(auth, userId));
+      await dispatch(getAllPosts(auth));
     } catch (error) {
       toast.error("Failed to refresh posts");
     } finally {
@@ -72,7 +72,7 @@ const InstagramProfile = () => {
     const fetchData = async () => {
       try {
         setLoadingPosts(true);
-        await dispatch(getAllPosts(auth, userId));
+        await dispatch(getAllPosts(auth));
       } catch (error) {
         // Optional: handle error here
       } finally {

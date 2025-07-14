@@ -4,11 +4,11 @@ import { API_URL } from "@/assets/api-endpoints";
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("user_id")?.trim();
+    // const userId = searchParams.get("user_id")?.trim();
 
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "Missing user id" }), { status: 400 });
-    }
+    // if (!userId) {
+    //   return new Response(JSON.stringify({ error: "Missing user id" }), { status: 400 });
+    // }
 
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
@@ -17,7 +17,7 @@ export async function GET(req) {
 
     const response = await backendAxiosInstance.get(`${API_URL.FETCH_POSTS}`, {
       headers: { Authorization: authHeader },
-      params: { user_id: userId },
+      // params: { user_id: userId },
     });
 
     return new Response(JSON.stringify(response.data), {

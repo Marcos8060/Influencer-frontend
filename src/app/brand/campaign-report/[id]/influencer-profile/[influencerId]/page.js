@@ -95,7 +95,7 @@ const InfluencerProfile = () => {
   const fetchData = async () => {
     try {
       setLoadingPosts(true);
-      await dispatch(getAllPosts(auth, userId));
+      await dispatch(getAllPosts(auth));
     } catch (error) {
       // Optional: handle error here
     } finally {

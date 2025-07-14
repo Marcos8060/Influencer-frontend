@@ -213,9 +213,9 @@ export const getAllProducts = (auth) => async (dispatch) => {
   }
 };
 
-export const getAllPosts = (auth, userId) => async (dispatch) => {
+export const getAllPosts = (auth) => async (dispatch) => {
   try {
-    const data = await fetchMedia(auth, userId);
+    const data = await fetchMedia(auth);
     dispatch(setPosts(data));
     return data;
   } catch (error) {
