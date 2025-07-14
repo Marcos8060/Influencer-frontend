@@ -387,17 +387,14 @@ const InfluencerProfilePage = () => {
 
       // Now send the payload
       const response = await updateInfluencerProfile(auth, base);
-      console.log("PROFILE_RESPONSE ",response)
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
         setIsEditing(false);
         fetchUpdateProfile();
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      message.error(
-        error.response?.data?.message || "Failed to update profile"
-      );
+      console.error("Error updating profile:", error.errorFields[0].errors[0]);
+      toast.error(error.errorFields[0].errors[0] || "Failed to update profile");
     } finally {
       setSubmitting(false);
     }
@@ -407,52 +404,6 @@ const InfluencerProfilePage = () => {
     setIsEditing(false);
     form.resetFields();
     setFileList([]);
-  };
-
-  // ... (keep existing upload and other helper functions)
-  const parsePhoneNumber = (phoneString) => {
-    if (!phoneString) return { code: "+1", number: "" };
-
-    console.log("Parsing phone number:", phoneString);
-
-    // Handle different formats of phone numbers from API
-    // Format 1: "+254(070) 285-4204"
-    const formatOne = phoneString.match(/^(\+\d+)\((\d+)\)\s*(.+)$/);
-    if (formatOne) {
-      const code = formatOne[1];
-      const number = `(${formatOne[2]}) ${formatOne[3]}`;
-      console.log("Format 1 parsed:", { code, number });
-      return { code, number };
-    }
-
-    // Format 2: "+254 1234567890"
-    const formatTwo = phoneString.match(/^(\+\d+)\s+(.+)$/);
-    if (formatTwo) {
-      const code = formatTwo[1];
-      // Try to format the number if possible
-      const digits = formatTwo[2].replace(/\D/g, "");
-      let number = formatTwo[2];
-      if (digits.length === 10) {
-        // US format
-        number = `(${digits.substring(0, 3)}) ${digits.substring(
-          3,
-          6
-        )}-${digits.substring(6)}`;
-      }
-      console.log("Format 2 parsed:", { code, number });
-      return { code, number };
-    }
-
-    // Default case: just a number, assume US format
-    if (phoneString.startsWith("+")) {
-      const code = phoneString.match(/^(\+\d+)/)[1] || "+1";
-      const number = phoneString.replace(code, "").trim();
-      console.log("Default format parsed:", { code, number });
-      return { code, number };
-    }
-
-    // Just a number without code
-    return { code: "+1", number: phoneString };
   };
 
   // Update the useEffect for phone number initialization
