@@ -59,7 +59,7 @@ export const API_URL = {
   TIKTOK_PROFILE_DETAILS: `${baseUrl}/socialAccounts/tiktok/profile/get/`,
   INSTAGRAM_LOGIN: `${baseUrl}/auth/instagram/loginUrl/`,
   INSTAGRAM_ACCESS_TOKEN: `${baseUrl}/auth/instagram/accessToken/`,
-  INSTAGRAM_PROFILE_DETAILS: `${baseUrl}/socialAccounts/instagram/media/list/`,
+  INSTAGRAM_PROFILE_DETAILS: `${baseUrl}/socialAccounts/instagram/profile/get/`,
   FETCH_POSTS: `${baseUrl}/socialAccounts/instagram/media/list/`,
   FETCH_TIKTOK_POSTS: `${baseUrl}/socialAccounts/tiktok/media/list/`,
   FETCH_BRAND_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`,

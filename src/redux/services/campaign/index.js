@@ -146,7 +146,7 @@ export const fetchProducts = async (auth) => {
 };
 
 
-export const fetchMedia = async (auth, userId) => {
+export const fetchMedia = async (auth) => {
     try {
         const url = `${APP_API_URL.FETCH_POSTS}`;
         
@@ -154,7 +154,7 @@ export const fetchMedia = async (auth, userId) => {
             headers: {
                 Authorization: auth ? `Bearer ${auth}` : undefined,
             },
-            params: { user_id: userId },
+            // params: { user_id: userId },
         });
 
         return response.data;
