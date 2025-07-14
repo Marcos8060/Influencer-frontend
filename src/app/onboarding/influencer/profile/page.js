@@ -19,6 +19,7 @@ import {
   Skeleton,
   Tabs,
   DatePicker,
+  Progress,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -76,6 +77,62 @@ const formatPhoneNumber = (value) => {
     }
   }
   return formatted;
+};
+
+// Helper to calculate profile completion
+const getProfileCompletion = (profile) => {
+  if (!profile) return { percent: 0, missing: [] };
+  // Define required fields for completion
+  const requiredFields = [
+    { key: "profilePicture", label: "Profile Picture" },
+    { key: "fullName", label: "Full Name" },
+    { key: "dateOfBirth", label: "Date of Birth" },
+    { key: "gender", label: "Gender" },
+    { key: "bio", label: "Bio" },
+    { key: "ethnicBackground", label: "Ethnic Background" },
+    { key: "addressLine1", label: "Address Line 1" },
+    { key: "city", label: "City" },
+    { key: "country", label: "Country" },
+    { key: "zipCode", label: "Zip Code" },
+    { key: "phoneNumber", label: "Phone Number" },
+    { key: "languages", label: "Languages" },
+    { key: "contentCategories", label: "Content Categories" },
+    { key: "keywords", label: "Keywords" },
+    { key: "isAvailableForCollaboration", label: "Collaboration Status" },
+    { key: "influencerPreference", label: "Collaboration Preferences" },
+    { key: "instagram", label: "Instagram Connected" },
+    { key: "tiktok", label: "TikTok Connected" },
+  ];
+  let filled = 0;
+  let missing = [];
+  requiredFields.forEach((field) => {
+    let value = profile[field.key];
+    if (field.key === "phoneNumber") {
+      value = value && value.number && value.code;
+    }
+    if (field.key === "country") {
+      value = profile.country && profile.country.name;
+    }
+    if (field.key === "instagram") {
+      value = profile.isInstagramConnected;
+    }
+    if (field.key === "tiktok") {
+      value = profile.isTiktokConnected;
+    }
+    if (Array.isArray(value)) {
+      if (value.length > 0) filled++;
+      else missing.push(field.label);
+    } else if (typeof value === "object" && value !== null) {
+      if (Object.keys(value).length > 0) filled++;
+      else missing.push(field.label);
+    } else if (value) {
+      filled++;
+    } else {
+      missing.push(field.label);
+    }
+  });
+  const percent = Math.round((filled / requiredFields.length) * 100);
+  return { percent, missing };
 };
 
 const InfluencerProfilePage = () => {
@@ -457,8 +514,41 @@ const InfluencerProfilePage = () => {
     return null;
   }
 
+  const completion = getProfileCompletion(influencerProfile);
+  let progressColor = "#f5222d";
+  let progressText = "Let's get started! Complete your profile for better discovery.";
+  if (completion.percent >= 80) {
+    progressColor = "#52c41a";
+    progressText = "Awesome! Your profile is almost complete. You're more likely to get collaborations.";
+  } else if (completion.percent >= 60) {
+    progressColor = "#faad14";
+    progressText = "Great progress! Complete a few more sections for better results.";
+  } else if (completion.percent >= 40) {
+    progressColor = "#1890ff";
+    progressText = "Keep going! The more complete your profile, the more you'll be discovered.";
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto mb-6">
+        <div className="flex flex-col items-center justify-center p-4 bg-white/80 rounded-lg shadow border border-primary/10">
+          <div className="w-full flex items-center gap-4">
+            <Progress
+              percent={completion.percent}
+              showInfo={false}
+              strokeColor={progressColor}
+              trailColor="#f0f0f0"
+              style={{ flex: 1 }}
+              size="default"
+            />
+            <span className="font-semibold text-lg" style={{ color: progressColor }}>{completion.percent}%</span>
+          </div>
+          <div className="mt-2 text-sm text-gray-700 text-center font-medium">{progressText}</div>
+          {completion.percent < 100 && (
+            <div className="mt-1 text-xs text-gray text-center">Missing: {completion.missing.join(", ")}</div>
+          )}
+        </div>
+      </div>
       {loading ? (
         <Skeleton active paragraph={{ rows: 15 }} />
       ) : (
