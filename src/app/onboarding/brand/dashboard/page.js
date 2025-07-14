@@ -13,6 +13,7 @@ import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-steppe
 import ApplicantsStatusChart from "@/app/Components/Brand/DashboardStats/ApplicantsStatusChart";
 import ProductsPerCampaignChart from "@/app/Components/Brand/DashboardStats/ProductsPerCampaignChart";
 import ApplicantsPerCampaignChart from "@/app/Components/Brand/DashboardStats/ApplicantsPerCampaignChart";
+import { Skeleton } from "antd";
 
 const Dashboard = () => {
   const { brandCampaigns } = useSelector((store) => store.campaign);
@@ -20,8 +21,6 @@ const Dashboard = () => {
   const isAuthorized = useProtectedRoute();
   const auth = useAuth();
   const dispatch = useDispatch();
-
-  console.log("brand_campaigns ",brandCampaigns)
 
   // Calculate stats
   const totalCampaigns = Array.isArray(brandCampaigns) ? brandCampaigns.length : 0;
@@ -68,17 +67,17 @@ const Dashboard = () => {
       <div className="space-y-8">
         <div className="grid md:grid-cols-4 grid-cols-1 md:gap-8 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-32" />
+            <Skeleton.Button key={i} active block style={{ height: 128, borderRadius: 16 }} />
           ))}
         </div>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-80 w-full" />
+            <Skeleton active key={i} paragraph={{ rows: 8 }} style={{ borderRadius: 16, height: 320 }} />
           ))}
         </div>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-8 mt-8">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="bg-gray-200 animate-pulse rounded-2xl h-80 w-full" />
+            <Skeleton active key={i} paragraph={{ rows: 8 }} style={{ borderRadius: 16, height: 320 }} />
           ))}
         </div>
       </div>
