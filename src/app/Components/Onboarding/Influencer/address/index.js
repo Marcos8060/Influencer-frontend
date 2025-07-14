@@ -48,6 +48,7 @@ const Address = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const countryDropdownRef = useRef(null);
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
@@ -186,6 +187,12 @@ const Address = () => {
       return;
     }
 
+    const { length, regex } = getPhoneFormat(details.influencerPhoneNumber.code);
+    if (details.influencerPhoneNumber.number.length !== length || !regex.test(details.influencerPhoneNumber.number)) {
+      toast.error(`Phone number must be exactly ${length} digits and match the format for this country.`);
+      return;
+    }
+
     // Normalize influencerPhoneNumber to only have code and number
     let normalizedPhone = details.influencerPhoneNumber;
     if (
@@ -216,7 +223,16 @@ const Address = () => {
     }
   };
 
-  // CountryCodeDropdown for phone number
+  // Replace CountryCodeDropdown with a code-only dropdown and add phone validation logic
+  const phoneFormats = {
+    '+254': { length: 9, regex: /^([17][0-9]{8})$/ }, // Kenya: 9 digits, starts with 1 or 7
+    '+1': { length: 10, regex: /^[2-9][0-9]{9}$/ }, // US/Canada: 10 digits
+    '+44': { length: 10, regex: /^[1-9][0-9]{9}$/ }, // UK: 10 digits (simplified)
+    // Add more as needed
+  };
+
+  const getPhoneFormat = (code) => phoneFormats[code] || { length: 10, regex: /^\d+$/ };
+
   const CountryCodeDropdown = ({ value, onChange }) => (
     <Select
       showSearch
@@ -225,7 +241,7 @@ const Address = () => {
       style={{ width: 100, height: 40 }}
       optionFilterProp="label"
       filterOption={(input, option) =>
-        option.label.toLowerCase().includes(input.toLowerCase())
+        option.value.toLowerCase().includes(input.toLowerCase())
       }
       dropdownStyle={{ zIndex: 2000 }}
       size="large"
@@ -235,23 +251,9 @@ const Address = () => {
         <Select.Option
           key={`${country.code}-${country.dial_code}`}
           value={country.dial_code}
-          label={`${country.name} ${country.dial_code}`}
+          label={country.dial_code}
         >
-          <span role="img" aria-label={country.code} style={{ marginRight: 8 }}>
-            <img
-              src={`https://flagcdn.com/24x18/${country.code.toLowerCase()}.png`}
-              alt={country.code}
-              style={{
-                width: 20,
-                height: 14,
-                borderRadius: 2,
-                objectFit: "cover",
-                display: "inline-block",
-                marginRight: 6,
-              }}
-            />
-          </span>
-          {country.name} {country.dial_code}
+          {country.dial_code}
         </Select.Option>
       ))}
     </Select>
@@ -436,9 +438,15 @@ const Address = () => {
                     <InputComponent
                       value={details.influencerPhoneNumber.number}
                       onChange={(e) => {
-                        const digitsOnly = e.target.value
-                          .replace(/\D/g, "")
-                          .slice(0, 15);
+                        const digitsOnly = e.target.value.replace(/\D/g, "");
+                        const { length, regex } = getPhoneFormat(details.influencerPhoneNumber.code);
+                        let error = "";
+                        if (digitsOnly.length > length) {
+                          error = `Phone number should be exactly ${length} digits for this country.`;
+                        } else if (digitsOnly && !regex.test(digitsOnly)) {
+                          error = `Invalid phone number format for this country.`;
+                        }
+                        setPhoneError(error);
                         setDetails({
                           ...details,
                           influencerPhoneNumber: {
@@ -447,10 +455,19 @@ const Address = () => {
                           },
                         });
                       }}
-                      placeholder="Phone number"
+                      placeholder={
+                        details.influencerPhoneNumber.code === '+254'
+                          ? '716743291'
+                          : details.influencerPhoneNumber.code === '+1'
+                          ? '4155552671'
+                          : 'Phone number'
+                      }
                       className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
                     />
                   </div>
+                  {phoneError && (
+                    <div className="text-red text-xs mt-1">{phoneError}</div>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
