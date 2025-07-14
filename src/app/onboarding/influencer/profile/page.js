@@ -1076,8 +1076,8 @@ const InfluencerProfilePage = () => {
                   </div>
 
                   <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
+                    <div className="flex justify-between items-start flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 text-center sm:text-left">
+                      <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
                         <Title level={2} className="mb-0">
                           {influencerProfile.fullName}
                         </Title>
@@ -1089,13 +1089,13 @@ const InfluencerProfilePage = () => {
                           {influencerProfile?.ethnicBackground?.[0]}
                         </Tag>
                       </div>
-
                       <Tag
                         color={
                           influencerProfile.isAvailableForCollaboration
                             ? "green"
                             : "red"
                         }
+                        className="mt-2 sm:mt-0"
                       >
                         {influencerProfile.isAvailableForCollaboration ? (
                           <Space>
