@@ -18,6 +18,7 @@ import {
   message,
   Skeleton,
   Tabs,
+  DatePicker,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -34,6 +35,7 @@ import { useProtectedRoute } from "@/assets/hooks/authGuard";
 import { updateInfluencerProfile } from "@/redux/services/socials";
 import { countryOptions } from "@/assets/utils/countryData";
 import moment from "moment";
+import dayjs from "dayjs";
 // PrimeReact Components
 import { Calendar } from "primereact/calendar";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -600,55 +602,26 @@ const InfluencerProfilePage = () => {
                                 rules={[
                                   {
                                     required: true,
-                                    message:
-                                      "Please select your date of birth!",
+                                    message: "Please select your date of birth!",
                                   },
                                 ]}
                               >
-                                <div className="w-full">
-                                  <Calendar
-                                    value={dateOfBirth}
-                                    onChange={(e) => {
-                                      setDateOfBirth(e.value);
-                                      form.setFieldValue(
-                                        "dateOfBirth",
-                                        moment(e.value)
-                                      );
-                                    }}
-                                    dateFormat="MM dd, yy"
-                                    showIcon
-                                    monthNavigator
-                                    yearNavigator
-                                    yearRange={`${moment()
-                                      .subtract(100, "years")
-                                      .year()}:${moment()
-                                      .subtract(13, "years")
-                                      .year()}`}
-                                    maxDate={moment()
-                                      .subtract(13, "years")
-                                      .toDate()}
-                                    minDate={moment()
-                                      .subtract(100, "years")
-                                      .toDate()}
-                                    className="w-full"
-                                    placeholder="Select Date of Birth"
-                                    readOnlyInput
-                                    touchUI
-                                    style={{ width: "100%" }}
-                                    inputClassName="w-full p-2 border border-gray-300 rounded-md"
-                                    panelClassName="date-picker-panel"
-                                  />
-                                  {dateOfBirth && (
-                                    <div className="text-xs text-primary mt-1">
-                                      Age:{" "}
-                                      {moment().diff(
-                                        moment(dateOfBirth),
-                                        "years"
-                                      )}{" "}
-                                      years old
-                                    </div>
-                                  )}
-                                </div>
+                                <DatePicker
+                                  className="w-full"
+                                  placeholder="Select date of birth"
+                                  value={dateOfBirth ? dayjs(dateOfBirth) : null}
+                                  onChange={(date, dateString) => {
+                                    setDateOfBirth(date ? date.toDate() : null);
+                                    form.setFieldValue("dateOfBirth", dateString);
+                                  }}
+                                  format="YYYY-MM-DD"
+                                  disabledDate={(current) => current && current > dayjs().endOf("day")}
+                                />
+                                {dateOfBirth && (
+                                  <div className="text-xs text-primary mt-1">
+                                    Age: {dayjs().diff(dayjs(dateOfBirth), "years")} years old
+                                  </div>
+                                )}
                               </Form.Item>
                             </Col>
                             <Col xs={24} md={12}>
