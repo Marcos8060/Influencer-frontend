@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from "antd";
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +47,16 @@ const ApplicantsPerCampaignChart = ({ brandCampaigns }) => {
     },
     indexAxis: "y",
   };
-  if (!labels.length) return <div className="p-4">No campaign data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 flex flex-col items-center justify-center min-h-[220px]">
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={<span className="text-lg font-semibold text-gray-500">No campaign data yet</span>}
+      >
+        <div className="text-gray-400 text-sm mt-2">Start your first campaign to see stats here!</div>
+      </Empty>
+    </div>
+  );
   return (
     <div className="bg-white rounded-2xl p-4 shadow-lg mt-8">
       <Bar data={chartData} options={options} />

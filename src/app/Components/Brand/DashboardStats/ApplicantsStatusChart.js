@@ -6,6 +6,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Empty } from "antd";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -49,7 +50,16 @@ const ApplicantsStatusChart = ({ brandCampaigns }) => {
       title: { display: true, text: "Applicants by Status" },
     },
   };
-  if (!labels.length) return <div className="p-4">No applicant data available.</div>;
+  if (!labels.length) return (
+    <div className="bg-white rounded-2xl p-8 shadow-lg mt-8 flex flex-col items-center justify-center min-h-[220px]">
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={<span className="text-lg font-semibold text-gray-500">No applicant data yet</span>}
+      >
+        <div className="text-gray-400 text-sm mt-2">Invite creators to your campaigns to see applicant stats!</div>
+      </Empty>
+    </div>
+  );
   return (
     <div className="bg-white rounded-2xl h-[50vh] p-4 shadow-lg mt-8 w-full flex items-center justify-center">
       <Doughnut data={chartData} options={options} />
