@@ -1,6 +1,7 @@
 //------------------------ Backend APIs ----------------------//
 //------------------------ Backend APIs ----------------------//
 const baseUrl = 'http://147.78.141.96:8075/api';
+const paymentBaseUrl = 'http://147.78.141.96:8095';
 
 export const API_URL = {
   /***************** AUTH APIS **********************/
@@ -66,7 +67,11 @@ export const API_URL = {
   FETCH_INFLUENCER_DISCOVERY_PROFILE: `${baseUrl}/influencers/get/`,
   FETCH_INFLUENCER_PROFILE: `${baseUrl}/influencers/get/`,
   UPDATE_INFLUENCER_PROFILE: `${baseUrl}/influencers/update/`,
-  INSTAGRAM_METRICS_LIFETIME: `${baseUrl}/socialAccounts/instagram/profile/insights/lifetime/`
+  INSTAGRAM_METRICS_LIFETIME: `${baseUrl}/socialAccounts/instagram/profile/insights/lifetime/`,
+
+
+    /***************** PAYMENT SERVICE **********************/
+  FETCH_PAYMENT_PLANS: `${paymentBaseUrl}/products`,
 };
 
 
@@ -142,6 +147,10 @@ export const APP_API_URL = {
   FETCH_INFLUENCER_PROFILE: '/api/socials/influencer-profile',
   UPDATE_INFLUENCER_PROFILE: '/api/socials/update-influencer-profile',
   INSTAGRAM_METRICS_LIFETIME: '/api/socials/instagram-metrics-lifetime',
+
+
+    /***************** PAYMENT SERVICE **********************/
+  FETCH_PAYMENT_PLANS: "/api/payment-service/fetch-payment-plans",
 
 };
 
