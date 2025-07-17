@@ -6,6 +6,7 @@ import filterReducer from "./features/influencer/filter";
 import influencerProfileReducer from "./features/influencer/profile";
 import campaignReducer from "./features/stepper/campaign-stepper";
 import socialsReducer from "./features/socials";
+import paymentReducer from "./features/payment-service";
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -33,6 +34,7 @@ export const store = configureStore({
     filterResults: filterReducer,
     influencerProfile: influencerProfileReducer,
     socials: socialsReducer,
+    paymentService: paymentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
