@@ -72,6 +72,7 @@ export const API_URL = {
 
     /***************** PAYMENT SERVICE **********************/
   FETCH_PAYMENT_PLANS: `${paymentBaseUrl}/products`,
+  CREATE_CHECKOUT_SESSION: `${paymentBaseUrl}/create-checkout-session`,
 };
 
 
@@ -151,6 +152,7 @@ export const APP_API_URL = {
 
     /***************** PAYMENT SERVICE **********************/
   FETCH_PAYMENT_PLANS: "/api/payment-service/fetch-payment-plans",
+  CREATE_CHECKOUT_SESSION: "/api/payment-service/checkout-session",
 
 };
 

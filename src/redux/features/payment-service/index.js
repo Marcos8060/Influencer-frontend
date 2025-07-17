@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   paymentPlans: [],
+  checkoutResponse: {}
 };
 
 const PaymentSlice = createSlice({
@@ -12,12 +13,16 @@ const PaymentSlice = createSlice({
     setPaymentPlans: (state, action) => {
       state.paymentPlans = action.payload;
     },
+    setCheckoutResponse: (state, action) => {
+      state.checkoutResponse = action.payload;
+    },
     
   },
 });
 
 export const {
   setPaymentPlans,
+  setCheckoutResponse
 } = PaymentSlice.actions;
 
 export const fetchAllPaymentPlans = () => async (dispatch) => {
