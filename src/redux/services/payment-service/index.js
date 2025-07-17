@@ -13,3 +13,16 @@ export const fetchPaymentPlans = async () => {
     return error.response?.data || error.message;
   }
 };
+
+export const createCheckoutSession = async (payload) => {
+  try {
+    const url = `${APP_API_URL.CREATE_CHECKOUT_SESSION}`;
+
+    const response = await axios.post(url, payload);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payment plans:", error);
+    return error.response?.data || error.message;
+  }
+};
