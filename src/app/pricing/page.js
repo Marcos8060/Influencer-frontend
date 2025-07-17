@@ -236,6 +236,16 @@ const plans = [
   },
 ];
 
+function reorderPlansToPopularSecond(plansArr) {
+  if (!Array.isArray(plansArr) || plansArr.length < 2) return plansArr;
+  const popularIdx = plansArr.findIndex((p) => p.popular);
+  if (popularIdx === -1 || popularIdx === 1) return plansArr;
+  const reordered = [...plansArr];
+  const [popularPlan] = reordered.splice(popularIdx, 1);
+  reordered.splice(1, 0, popularPlan);
+  return reordered;
+}
+
 const getSerializablePlan = (plan) => {
   // Remove React elements and any non-serializable fields
   const { values, icon, raw, ...rest } = plan;
@@ -250,7 +260,22 @@ const Pricing = () => {
   const dispatch = useDispatch();
   const { paymentPlans, loading } = useSelector((store) => store.paymentService);
   const router = useRouter();
-  const [selectedPlanIdx, setSelectedPlanIdx] = useState(0);
+  // Set default to Local plan or most popular or 0 on first mount only
+  const [selectedPlanIdx, setSelectedPlanIdx] = useState(() => {
+    const backendPlans = Array.isArray(paymentPlans) && paymentPlans.length > 0
+      ? mapBackendPlans(paymentPlans)
+      : null;
+    const plansToShow = reorderPlansToPopularSecond(
+      backendPlans && backendPlans.length > 0 ? backendPlans : plans
+    );
+    let initialIdx = plansToShow.findIndex((p) =>
+      p.name.toLowerCase().includes("local")
+    );
+    if (initialIdx === -1) {
+      initialIdx = plansToShow.findIndex((p) => p.popular);
+    }
+    return initialIdx !== -1 ? initialIdx : 0;
+  });
 
   useEffect(() => {
     dispatch(fetchAllPaymentPlans());
@@ -259,14 +284,9 @@ const Pricing = () => {
   const backendPlans = Array.isArray(paymentPlans) && paymentPlans.length > 0
     ? mapBackendPlans(paymentPlans)
     : null;
-  const plansToShow = backendPlans && backendPlans.length > 0 ? backendPlans : plans;
-
-  useEffect(() => {
-    if (plansToShow) {
-      const popularIdx = plansToShow.findIndex((p) => p.popular);
-      setSelectedPlanIdx(popularIdx !== -1 ? popularIdx : 0);
-    }
-  }, [plansToShow]);
+  const plansToShow = reorderPlansToPopularSecond(
+    backendPlans && backendPlans.length > 0 ? backendPlans : plans
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-white to-secondary/20 py-12 font-sans">
@@ -284,23 +304,25 @@ const Pricing = () => {
                 className={`flex flex-col items-center bg-white/90 rounded-2xl border-2 p-6 sm:p-8 w-full max-w-xs shadow-lg transition-all duration-300 cursor-pointer hover:shadow-2xl hover:scale-105 mx-auto ${
                   idx === selectedPlanIdx ? 'border-primary scale-105 shadow-2xl ring-2 ring-primary/20' : 'border-input'
                 }`}
-                onClick={() => setSelectedPlanIdx(idx)}
                 style={{ minWidth: 0 }}
+                onClick={() => setSelectedPlanIdx(idx)}
               >
-                <div className="flex items-center gap-2 mb-2 text-base sm:text-2xl">
-                  <span className="font-bold text-gray-800">{plan.name}</span>
-                  {plan.popular && (
-                    <span className="px-2 py-0.5 text-xs font-bold uppercase bg-yellow text-white rounded-full">Most Popular</span>
-                  )}
+                <div style={{ width: '100%' }}>
+                  <div className="flex items-center gap-2 mb-2 text-base sm:text-2xl">
+                    <span className="font-bold text-gray-800">{plan.name}</span>
+                    {plan.popular && (
+                      <span className="px-2 py-0.5 text-xs font-bold uppercase bg-yellow text-white rounded-full">Most Popular</span>
+                    )}
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">{plan.price}</div>
+                  {plan.priceValue !== 0 && <div className="text-xs text-gray font-medium mb-2">/month</div>}
+                  <ul className="text-xs sm:text-sm text-gray-700 mb-4 w-full list-disc list-inside">
+                    {plan.features.slice(0, 3).map((f, i) => (
+                      <li key={i}>{f}</li>
+                    ))}
+                    {plan.features.length > 3 && <li className="text-link cursor-pointer" onClick={e => {e.stopPropagation(); setSelectedPlanIdx(idx);}}>+{plan.features.length - 3} more</li>}
+                  </ul>
                 </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">{plan.price}</div>
-                {plan.priceValue !== 0 && <div className="text-xs text-gray font-medium mb-2">/month</div>}
-                <ul className="text-xs sm:text-sm text-gray-700 mb-4 w-full list-disc list-inside">
-                  {plan.features.slice(0, 3).map((f, i) => (
-                    <li key={i}>{f}</li>
-                  ))}
-                  {plan.features.length > 3 && <li className="text-link cursor-pointer" onClick={e => {e.stopPropagation(); setSelectedPlanIdx(idx);}}>+{plan.features.length - 3} more</li>}
-                </ul>
                 <button
                   className={`mt-auto w-full px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow text-sm sm:text-base ${
                     idx === selectedPlanIdx
