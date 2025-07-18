@@ -37,6 +37,7 @@ const initialState = {
     products: [],
     services: [],
     exampleVideoUrl: null,
+    isDraft: false, // <--- Added for draft support
     campaignPreferences: {
       videoStyle: [],
       videosPerCreator: null,

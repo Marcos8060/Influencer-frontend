@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { Table, Input, Button, Badge, Skeleton, Pagination, Tooltip, Tag } from "antd";
+import { Table, Input, Button, Badge, Skeleton, Pagination, Tooltip, Tag, Tabs, Badge as AntBadge } from "antd";
 import { FiEye } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +17,7 @@ const CampaignsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [sorter, setSorter] = useState({});
+  const [activeTab, setActiveTab] = useState("active");
   const itemsPerPage = 8;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -38,16 +40,33 @@ const CampaignsTable = () => {
     }
   };
 
-  const processedCampaigns = useMemo(() => {
-    let filtered = [...brandCampaigns];
+  // Split campaigns by status and draft
+  const activeCampaigns = useMemo(() =>
+    brandCampaigns.filter((c) => !c.isDraft && String(c.status).toLowerCase() === 'active'),
+    [brandCampaigns]
+  );
+  const upcomingCampaigns = useMemo(() =>
+    brandCampaigns.filter((c) => !c.isDraft && String(c.status).toLowerCase() === 'upcoming'),
+    [brandCampaigns]
+  );
+  const finishedCampaigns = useMemo(() =>
+    brandCampaigns.filter((c) => !c.isDraft && String(c.status).toLowerCase() === 'finished'),
+    [brandCampaigns]
+  );
+  const draftCampaigns = useMemo(() =>
+    brandCampaigns.filter((c) => c.isDraft),
+    [brandCampaigns]
+  );
 
+  // Filter and sort for the current tab
+  const getProcessedCampaigns = (campaigns) => {
+    let filtered = [...campaigns];
     if (searchTerm) {
       filtered = filtered.filter((campaign) =>
         campaign.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         campaign.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (sorter && sorter.field) {
       filtered.sort((a, b) => {
         if (a[sorter.field] < b[sorter.field]) return sorter.order === 'ascend' ? -1 : 1;
@@ -55,11 +74,22 @@ const CampaignsTable = () => {
         return 0;
       });
     }
-
     return filtered;
-  }, [brandCampaigns, searchTerm, sorter]);
+  };
 
-  const currentData = processedCampaigns.slice(
+  const processedActive = useMemo(() => getProcessedCampaigns(activeCampaigns), [activeCampaigns, searchTerm, sorter]);
+  const processedUpcoming = useMemo(() => getProcessedCampaigns(upcomingCampaigns), [upcomingCampaigns, searchTerm, sorter]);
+  const processedFinished = useMemo(() => getProcessedCampaigns(finishedCampaigns), [finishedCampaigns, searchTerm, sorter]);
+  const processedDrafts = useMemo(() => getProcessedCampaigns(draftCampaigns), [draftCampaigns, searchTerm, sorter]);
+
+  const tabData = {
+    active: processedActive,
+    upcoming: processedUpcoming,
+    finished: processedFinished,
+    drafts: processedDrafts,
+  };
+
+  const currentData = tabData[activeTab].slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -156,46 +186,183 @@ const CampaignsTable = () => {
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h2 className="text-3xl font-extrabold text-primary mb-1">Campaigns</h2>
-          <p className="text-color text-base">{processedCampaigns.length} campaigns found</p>
+          <p className="text-color text-base">{brandCampaigns.length} campaigns found</p>
         </div>
         <Search
-          placeholder="Search campaigns"
+          placeholder="Search campaigns by title or description"
           onChange={(e) => setSearchTerm(e.target.value)}
           allowClear
-          style={{ width: 300 }}
-          className="rounded-lg border border-input shadow-sm"
+          prefix={<FiSearch className="text-primary text-lg" />}
+          style={{ width: 340, fontSize: 16, borderRadius: 9999, background: '#f5f7f7', border: '1.5px solid #D1D5DB', boxShadow: '0 2px 8px 0 rgba(54,128,161,0.04)' }}
+          className="rounded-full focus:ring-2 focus:ring-primary/60 focus:border-primary/80 transition-all placeholder:text-gray-400 shadow-md"
         />
       </div>
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 6 }} />
-      ) : (
-        <Table
-          columns={columns}
-          dataSource={currentData}
-          pagination={false}
-          rowKey="id"
-          onChange={(pagination, filters, sorter) => {
-            if (!Array.isArray(sorter)) {
-              setSorter(sorter);
-            }
-          }}
-          scroll={{ x: true }}
-          className="custom-campaign-table"
-          rowClassName={() => "hover:bg-primary/5 transition-colors"}
-        />
-      )}
-      {!loading && (
-        <div className="mt-8 flex justify-end">
-          <Pagination
-            current={currentPage}
-            pageSize={itemsPerPage}
-            total={processedCampaigns.length}
-            onChange={(page) => setCurrentPage(page)}
-            showSizeChanger={false}
-            className="custom-pagination"
-          />
-        </div>
-      )}
+      <Tabs
+        activeKey={activeTab}
+        onChange={(key) => {
+          setActiveTab(key);
+          setCurrentPage(1);
+        }}
+        className="mb-4"
+        items={[
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                Active
+                <AntBadge count={processedActive.length} style={{ backgroundColor: '#309F41' }} />
+              </span>
+            ),
+            key: "active",
+            children: loading ? (
+              <Skeleton active paragraph={{ rows: 6 }} />
+            ) : (
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  rowKey="id"
+                  onChange={(pagination, filters, sorter) => {
+                    if (!Array.isArray(sorter)) {
+                      setSorter(sorter);
+                    }
+                  }}
+                  scroll={{ x: true }}
+                  className="custom-campaign-table"
+                  rowClassName={() => "hover:bg-green/10 transition-colors"}
+                />
+                <div className="mt-8 flex justify-end">
+                  <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={processedActive.length}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger={false}
+                    className="custom-pagination"
+                  />
+                </div>
+              </>
+            ),
+          },
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                Upcoming
+                <AntBadge count={processedUpcoming.length} style={{ backgroundColor: '#5373d4' }} />
+              </span>
+            ),
+            key: "upcoming",
+            children: loading ? (
+              <Skeleton active paragraph={{ rows: 6 }} />
+            ) : (
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  rowKey="id"
+                  onChange={(pagination, filters, sorter) => {
+                    if (!Array.isArray(sorter)) {
+                      setSorter(sorter);
+                    }
+                  }}
+                  scroll={{ x: true }}
+                  className="custom-campaign-table"
+                  rowClassName={() => "hover:bg-secondary/10 transition-colors"}
+                />
+                <div className="mt-8 flex justify-end">
+                  <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={processedUpcoming.length}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger={false}
+                    className="custom-pagination"
+                  />
+                </div>
+              </>
+            ),
+          },
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                Finished
+                <AntBadge count={processedFinished.length} style={{ backgroundColor: '#FFC250', color: '#404B52' }} />
+              </span>
+            ),
+            key: "finished",
+            children: loading ? (
+              <Skeleton active paragraph={{ rows: 6 }} />
+            ) : (
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  rowKey="id"
+                  onChange={(pagination, filters, sorter) => {
+                    if (!Array.isArray(sorter)) {
+                      setSorter(sorter);
+                    }
+                  }}
+                  scroll={{ x: true }}
+                  className="custom-campaign-table"
+                  rowClassName={() => "hover:bg-yellow/10 transition-colors"}
+                />
+                <div className="mt-8 flex justify-end">
+                  <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={processedFinished.length}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger={false}
+                    className="custom-pagination"
+                  />
+                </div>
+              </>
+            ),
+          },
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                Drafts
+                <AntBadge count={processedDrafts.length} style={{ backgroundColor: '#D1D5DB', color: '#404B52' }} />
+              </span>
+            ),
+            key: "drafts",
+            children: loading ? (
+              <Skeleton active paragraph={{ rows: 6 }} />
+            ) : (
+              <>
+                <Table
+                  columns={columns}
+                  dataSource={currentData}
+                  pagination={false}
+                  rowKey="id"
+                  onChange={(pagination, filters, sorter) => {
+                    if (!Array.isArray(sorter)) {
+                      setSorter(sorter);
+                    }
+                  }}
+                  scroll={{ x: true }}
+                  className="custom-campaign-table"
+                  rowClassName={() => "hover:bg-input/10 transition-colors"}
+                />
+                <div className="mt-8 flex justify-end">
+                  <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={processedDrafts.length}
+                    onChange={(page) => setCurrentPage(page)}
+                    showSizeChanger={false}
+                    className="custom-pagination"
+                  />
+                </div>
+              </>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 };
