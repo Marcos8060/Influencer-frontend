@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { motion } from "framer-motion";
-import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
+import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
 import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-details/countryPhoneData";
 import { Select } from "antd";
@@ -54,32 +54,17 @@ const BrandRegister = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    phoneNumber: "",
   });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [countryCode, setCountryCode] = useState("+1");
-  const [phoneError, setPhoneError] = useState("");
   const router = useRouter();
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^\+?(\d{1,3})?[-. ]?\(?\d{1,3}\)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
-    return phoneRegex.test(phone);
-  }
-
   const handleRegister = async (e) => {
     e.preventDefault();
-    const { length, regex } = getPhoneFormat(countryCode);
-    const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
-    if (digitsOnly.length !== length || !regex.test(digitsOnly)) {
-      toast.error(`Phone number must be exactly ${length} digits and match the format for this country.`);
-      return;
-    }
-    
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       return;
@@ -87,21 +72,18 @@ const BrandRegister = () => {
 
     setLoading(true);
     const { confirmPassword, ...registrationData } = formData;
-    registrationData.phoneNumber = { code: countryCode, number: digitsOnly };
     try {
       const response = await RegisterBrand(registrationData);
 
       if (response?.status === 200) {
         localStorage.removeItem("brand_token");
         localStorage.removeItem("influencer_token");
-        
         setFormData({
           firstName: "",
           lastName: "",
           email: "",
           password: "",
           confirmPassword: "",
-          phoneNumber: "",
         });
 
         if (response?.data?.email && typeof response.data.email === "string") {
@@ -299,44 +281,6 @@ const BrandRegister = () => {
                     />
                   </div>
                 </div>
-
-                <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Phone Number
-                  </label>
-              <div className="mt-1 flex gap-2">
-                <CountryCodeDropdown value={countryCode} onChange={setCountryCode} />
-                <InputComponent
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={(e) => {
-                    const digitsOnly = e.target.value.replace(/\D/g, "");
-                    const { length, regex } = getPhoneFormat(countryCode);
-                    let error = "";
-                    if (digitsOnly.length > length) {
-                      error = `Phone number should be exactly ${length} digits for this country.`;
-                    } else if (digitsOnly && !regex.test(digitsOnly)) {
-                      error = `Invalid phone number format for this country.`;
-                    }
-                    setPhoneError(error);
-                    setFormData({ ...formData, phoneNumber: digitsOnly });
-                  }}
-                  required
-                  className="w-full rounded-lg border-gray-300"
-                  placeholder={
-                    countryCode === '+254'
-                      ? '716743291'
-                      : countryCode === '+1'
-                      ? '4155552671'
-                      : 'Phone number'
-                  }
-                />
-              </div>
-              {phoneError && (
-                <div className="text-red text-xs mt-1">{phoneError}</div>
-              )}
-            </div>
 
                 <div>
               <label className="block text-sm font-medium text-gray-700">
