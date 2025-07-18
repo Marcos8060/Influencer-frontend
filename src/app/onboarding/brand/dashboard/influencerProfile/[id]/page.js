@@ -485,8 +485,8 @@ export default function InfluencerProfile() {
                     },
                     {
                       icon: <PhoneOutlined />,
-                      content: discoveryProfile.phoneNumber,
-                      link: `tel:${discoveryProfile.phoneNumber}`,
+                      content: `(${discoveryProfile.phoneNumber?.code}) ${discoveryProfile.phoneNumber?.number}`,
+                      link: `tel:${discoveryProfile.phoneNumber?.code} ${discoveryProfile.phoneNumber?.number}`,
                     },
                     ...(discoveryProfile.website
                       ? [
