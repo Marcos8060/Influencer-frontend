@@ -252,13 +252,6 @@ export const getSerializablePlan = (plan) => {
 
 // Helper to get the price id from the plan (assume plan.raw.prices[0].id or similar)
 export const getPlanPriceId = (plan) => {
-  if (plan && plan.raw && Array.isArray(plan.raw.prices) && plan.raw.prices.length > 0) {
-    // Find the monthly recurring price
-    const priceObj = plan.raw.prices.find(
-      (p) => p.recurring && p.recurring.interval === "month" && p.active
-    );
-    return priceObj ? priceObj.id : plan.raw.prices[0].id;
-  }
-  // fallback for static plans
-  return "pc-689hffjjgfkkkkdcbe00";
+  // In the new structure, plan is a price object or a mapped plan with .id
+  return plan && plan.id ? plan.id : undefined;
 };
