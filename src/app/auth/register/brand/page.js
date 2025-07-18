@@ -75,7 +75,6 @@ const BrandRegister = () => {
     e.preventDefault();
     const { length, regex } = getPhoneFormat(countryCode);
     const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
-    const fullPhone = `${countryCode}${digitsOnly}`;
     if (digitsOnly.length !== length || !regex.test(digitsOnly)) {
       toast.error(`Phone number must be exactly ${length} digits and match the format for this country.`);
       return;
@@ -88,7 +87,7 @@ const BrandRegister = () => {
 
     setLoading(true);
     const { confirmPassword, ...registrationData } = formData;
-    registrationData.phoneNumber = fullPhone;
+    registrationData.phoneNumber = { code: countryCode, number: digitsOnly };
     try {
       const response = await RegisterBrand(registrationData);
 
