@@ -57,6 +57,7 @@ const InfluencerStepperSlice = createSlice({
         influencerAddressLine1: null,
         influencerAddressLine2: null,
         influencerCity: null,
+        influencerState: null,
         influencerCountry: null,
         influencerZipCode: null,
         influencerPhoneNumber: null,

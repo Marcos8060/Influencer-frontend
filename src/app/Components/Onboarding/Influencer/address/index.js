@@ -16,6 +16,7 @@ import { Select, DatePicker } from "antd";
 import dayjs from "dayjs";
 import countries from "country-list";
 import { useLocation } from "@/app/layout";
+import { Country, State, City } from 'country-state-city';
 
 const countryData = countries.getData();
 
@@ -29,17 +30,12 @@ const Address = () => {
     influencerAddressLine1: influencerData.influencerAddressLine1 || "",
     influencerAddressLine2: influencerData.influencerAddressLine2 || "",
     influencerCity: influencerData.influencerCity || "",
-    influencerCountry: influencerData.influencerCountry || {
-      name: "",
-      code: "",
-    },
+    influencerState: influencerData.influencerState || "",
+    influencerCountry: influencerData.influencerCountry || { name: "", code: "" },
     influencerZipCode: influencerData.influencerZipCode || "",
+    influencerPhoneNumber: influencerData.influencerPhoneNumber || { code: "", number: "" },
     gender: influencerData.gender || "",
     dateOfBirth: influencerData.dateOfBirth || "",
-    influencerPhoneNumber: influencerData.influencerPhoneNumber || {
-      code: "",
-      number: "",
-    },
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
@@ -49,6 +45,23 @@ const Address = () => {
 
   const countryDropdownRef = useRef(null);
   const [phoneError, setPhoneError] = useState("");
+
+  // Dynamic dropdown state
+  const [selectedCountryCode, setSelectedCountryCode] = useState(details.influencerCountry.code || "");
+  const [selectedStateCode, setSelectedStateCode] = useState(() => {
+    if (details.influencerCountry.code && details.influencerState) {
+      const states = State.getStatesOfCountry(details.influencerCountry.code);
+      const found = states.find(s => s.name === details.influencerState);
+      return found ? found.isoCode : "";
+    }
+    return "";
+  });
+  const [selectedCityName, setSelectedCityName] = useState(details.influencerCity || "");
+
+  // Get all countries, states, and cities
+  const countriesList = Country.getAllCountries();
+  const statesList = selectedCountryCode ? State.getStatesOfCountry(selectedCountryCode) : [];
+  const citiesList = selectedCountryCode && selectedStateCode ? City.getCitiesOfState(selectedCountryCode, selectedStateCode) : [];
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
@@ -92,6 +105,25 @@ const Address = () => {
       setHasAutoFilled(true);
     }
   }, [location, hasAutoFilled, details]);
+
+  // When country changes, update phone code automatically
+  useEffect(() => {
+    if (selectedCountryCode) {
+      const phoneData = countryPhoneData.find(item => item.code === selectedCountryCode);
+      const newCode = phoneData?.dial_code || '+1';
+      if (details.influencerPhoneNumber.code !== newCode) {
+        const newDetails = {
+          ...details,
+          influencerPhoneNumber: {
+            ...details.influencerPhoneNumber,
+            code: newCode,
+          },
+        };
+        setDetails(newDetails);
+        dispatch(updateFormData(newDetails));
+      }
+    }
+  }, [selectedCountryCode]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -322,98 +354,113 @@ const Address = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Country Dropdown */}
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Country <span className="text-red-500">*</span>
+                  </label>
+                  <Select
+                    showSearch
+                    value={selectedCountryCode || undefined}
+                    onChange={value => {
+                      setSelectedCountryCode(value);
+                      setSelectedStateCode("");
+                      setSelectedCityName("");
+                      const countryObj = countriesList.find(c => c.isoCode === value);
+                      const newDetails = {
+                        ...details,
+                        influencerCountry: { name: countryObj?.name || "", code: value },
+                        influencerState: "",
+                        influencerCity: "",
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
+                    }}
+                    style={{ width: "100%" }}
+                    placeholder="Select Country"
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                      (option.label || '').toLowerCase().includes(input.toLowerCase())
+                    }
+                  >
+                    {countriesList.map(country => (
+                      <Select.Option key={country.isoCode} value={country.isoCode} label={country.name}>
+                        <span className="flex items-center gap-2">
+                          <ReactCountryFlag countryCode={country.isoCode} svg style={{ width: 22, height: 18 }} className="rounded-sm" />
+                          <span>{country.name}</span>
+                        </span>
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* State Dropdown */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    State <span className="text-red-500">*</span>
+                  </label>
+                  <Select
+                    showSearch
+                    value={selectedStateCode || undefined}
+                    onChange={value => {
+                      setSelectedStateCode(value);
+                      setSelectedCityName("");
+                      const stateObj = statesList.find(s => s.isoCode === value);
+                      const newDetails = {
+                        ...details,
+                        influencerState: stateObj?.name || "",
+                        influencerCity: "",
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
+                    }}
+                    style={{ width: "100%" }}
+                    placeholder="Select State"
+                    disabled={!selectedCountryCode}
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                      (option.label || '').toLowerCase().includes(input.toLowerCase())
+                    }
+                  >
+                    {statesList.map(state => (
+                      <Select.Option key={state.isoCode} value={state.isoCode} label={state.name}>
+                        {state.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* City Dropdown */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     City <span className="text-red-500">*</span>
                   </label>
-                  <InputComponent
-                    value={details.influencerCity}
-                    onChange={(e) =>
-                      setDetails({ ...details, influencerCity: e.target.value })
-                    }
-                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="City or town"
-                  />
-                </div>
-
-                {/* Country Select */}
-                <div className="relative" ref={countryDropdownRef}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Country <span className="text-red-500">*</span>
-                  </label>
-                  <div
-                    className="flex items-center border border-input text-sm rounded-md px-3 py-2 h-10 cursor-pointer hover:border-primary transition-colors"
-                    onClick={() => setIsCountryOpen(!isCountryOpen)}
-                  >
-                    {details.influencerCountry.name ? (
-                      <>
-                        <ReactCountryFlag
-                          countryCode={details.influencerCountry.code}
-                          svg
-                          className="w-5 h-5 mr-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                        />
-                        <span>{details.influencerCountry.name}</span>
-                      </>
-                    ) : (
-                      <span className="text-gray-400">Select country</span>
-                    )}
-                  </div>
-
-                  <AnimatePresence>
-                    {isCountryOpen && (
-                      <motion.div
-                        ref={countryDropdownRef}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
-                      >
-                        <div className="p-2 sticky top-0 bg-white border-b border-input">
-                          <input
-                            type="text"
-                            placeholder="Search countries..."
-                            className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                            onChange={handleCountrySearch}
-                            autoFocus
-                          />
-                        </div>
-                        <div className="max-h-60 overflow-y-auto">
-                          {filteredCountries.map((country) => (
-                            <div
-                              key={country.code}
-                              className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
-                              onClick={() => handleCountrySelect(country)}
-                            >
-                              <ReactCountryFlag
-                                countryCode={country.code}
-                                svg
-                                className="w-5 h-5 mr-2"
-                              />
-                              <span>{country.name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Postal/Zip Code <span className="text-red-500">*</span>
-                  </label>
-                  <InputComponent
-                    value={details.influencerZipCode}
-                    onChange={(e) =>
-                      setDetails({
+                  <Select
+                    showSearch
+                    value={selectedCityName || undefined}
+                    onChange={value => {
+                      setSelectedCityName(value);
+                      const newDetails = {
                         ...details,
-                        influencerZipCode: e.target.value,
-                      })
+                        influencerCity: value,
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
+                    }}
+                    style={{ width: "100%" }}
+                    placeholder="Select City"
+                    disabled={!selectedStateCode}
+                    optionFilterProp="label"
+                    filterOption={(input, option) =>
+                      (option.label || '').toLowerCase().includes(input.toLowerCase())
                     }
-                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="Postal code or ZIP code"
-                  />
+                  >
+                    {citiesList.map(city => (
+                      <Select.Option key={city.name} value={city.name} label={city.name}>
+                        {city.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </div>
 
                 {/* Phone Number */}
@@ -421,19 +468,12 @@ const Address = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Phone <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex gap-2">
-                    <CountryCodeDropdown
-                      value={details.influencerPhoneNumber.code}
-                      className="h-10"
-                      onChange={(val) =>
-                        setDetails({
-                          ...details,
-                          influencerPhoneNumber: {
-                            ...details.influencerPhoneNumber,
-                            code: val,
-                          },
-                        })
-                      }
+                  <div className="flex items-center">
+                    {/* Country Code Display (auto) */}
+                    <InputComponent
+                      value={details.influencerPhoneNumber.code || '+1'}
+                      disabled
+                      style={{ width: 80, background: '#f5f7f7', color: '#333', marginRight: 0 }}
                     />
                     <InputComponent
                       value={details.influencerPhoneNumber.number}
@@ -447,13 +487,15 @@ const Address = () => {
                           error = `Invalid phone number format for this country.`;
                         }
                         setPhoneError(error);
-                        setDetails({
+                        const newDetails = {
                           ...details,
                           influencerPhoneNumber: {
                             ...details.influencerPhoneNumber,
                             number: digitsOnly,
                           },
-                        });
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
                       }}
                       placeholder={
                         details.influencerPhoneNumber.code === '+254'
@@ -462,7 +504,8 @@ const Address = () => {
                           ? '4155552671'
                           : 'Phone number'
                       }
-                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
+                      className="flex-grow focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10 min-w-0"
+                      style={{ width: '100%' }}
                     />
                   </div>
                   {phoneError && (
