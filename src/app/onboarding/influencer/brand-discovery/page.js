@@ -296,7 +296,7 @@ const BrandDiscovery = () => {
       searchText === "" ||
       brandName.toLowerCase().includes(searchTerm) ||
       businessType.toLowerCase().includes(searchTerm);
-    const brandIndustry = brand?.industry ?? "";
+    const brandIndustry = typeof brand?.industry === "string" ? brand.industry : "";
     const matchesIndustry =
       selectedIndustry === undefined ||
       (brandIndustry &&
@@ -416,7 +416,7 @@ const BrandDiscovery = () => {
                       new Set(
                         brands
                           .flatMap((brand) =>
-                            (brand?.industry || "")
+                            (typeof brand?.industry === "string" ? brand.industry : "")
                               .split(",")
                               .map((i) => i.trim())
                               .filter(Boolean)
