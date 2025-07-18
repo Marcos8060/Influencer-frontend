@@ -340,36 +340,40 @@ export default function InfluencerProfile() {
               )}
 
               {/* Social Feeds */}
-              <Tabs defaultActiveKey="instagram" className="mb-4">
-                <TabPane
-                  tab={
-                    <span>
-                      <InstagramOutlined />
-                      Instagram Metrics
-                    </span>
-                  }
-                  key="instagram"
-                >
-                  <div>
-                    <InstagramMetricsFilter {...{ discoveryProfile }} />
-                  </div>
-                </TabPane>
-                {discoveryProfile.isTiktokConnected && (
-                  <TabPane
-                    tab={
+              <Tabs
+                defaultActiveKey="instagram"
+                className="mb-4"
+                items={[
+                  {
+                    label: (
                       <span>
-                        <FaTiktok />
-                        TikTok Metrics
+                        <InstagramOutlined />
+                        Instagram Metrics
                       </span>
-                    }
-                    key="tiktok"
-                  >
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                      Tiktok Metrics
-                    </div>
-                  </TabPane>
-                )}
-              </Tabs>
+                    ),
+                    key: "instagram",
+                    children: <InstagramMetricsFilter {...{ discoveryProfile }} />,
+                  },
+                  ...(discoveryProfile.isTiktokConnected
+                    ? [
+                        {
+                          label: (
+                            <span>
+                              <FaTiktok />
+                              TikTok Metrics
+                            </span>
+                          ),
+                          key: "tiktok",
+                          children: (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                              Tiktok Metrics
+                            </div>
+                          ),
+                        },
+                      ]
+                    : []),
+                ]}
+              />
             </Col>
 
             {/* Right Column */}
