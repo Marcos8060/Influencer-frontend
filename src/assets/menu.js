@@ -120,8 +120,8 @@ export const menu = [
   },
   {
     label: "Settings",
-    path: "/",
+    path: "/brand/settings",
     icon: <IoMdSettings />,
-    role: ["Influencer", "Brand"],
+    role: ["Brand"],
   },
 ];

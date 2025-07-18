@@ -43,9 +43,27 @@ const BrandTerms = () => {
         router.push('/onboarding/brand/dashboard');
         dispatch(resetStepper())
       }else{
-        toast.error(response.errorMessage || 'User has already onboarded')
+        console.log("ERROR ",response)
+        let errorMsg = 'User has already onboarded';
+        if (response.errorMessage) {
+          if (typeof response.errorMessage === 'string') {
+            errorMsg = response.errorMessage;
+          } else if (Array.isArray(response.errorMessage)) {
+            errorMsg = response.errorMessage.join(', ');
+          } else if (typeof response.errorMessage === 'object') {
+            if (response.errorMessage.nonFieldErrors) {
+              errorMsg = Array.isArray(response.errorMessage.nonFieldErrors)
+                ? response.errorMessage.nonFieldErrors.join(', ')
+                : String(response.errorMessage.nonFieldErrors);
+            } else {
+              errorMsg = JSON.stringify(response.errorMessage);
+            }
+          }
+        }
+        toast.error(errorMsg);
       }
     } catch (error) {
+      console.log("ERROR ",error)
       toast.error(error.response?.data?.errorMessage?.[0] || "An error occurred during onboarding");
     } finally {
       setLoading(false);

@@ -15,7 +15,8 @@ import countries from "country-list";
 import { countryPhoneData } from "./countryPhoneData";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from '@/app/layout';
-import { Select } from "antd";
+import { Select, Modal, Input } from "antd";
+import { Country, State, City } from 'country-state-city';
 
 const countryData = countries.getData();
 
@@ -28,7 +29,7 @@ const BrandDetails = () => {
     legalCompanyName: formData.legalCompanyName || "",
     country: formData.country || { name: "", code: "" },
     phoneNumber: formData.phoneNumber || { code: "", number: "" },
-    state: formData.state || "",
+    state: formData.state || undefined,
     city: formData.city || "",
     address: formData.address || "",
     zipCode: formData.zipCode || "",
@@ -43,6 +44,25 @@ const BrandDetails = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [filteredPhoneCodes, setFilteredPhoneCodes] =
     useState(countryPhoneData);
+  const [isPhoneCodeModalOpen, setIsPhoneCodeModalOpen] = useState(false);
+  const [phoneCodeSearch, setPhoneCodeSearch] = useState("");
+
+  // Dynamic dropdown state
+  const [selectedCountryCode, setSelectedCountryCode] = useState(details.country.code || "");
+  const [selectedStateCode, setSelectedStateCode] = useState(() => {
+    if (details.country.code && details.state) {
+      const states = State.getStatesOfCountry(details.country.code);
+      const found = states.find(s => s.name === details.state);
+      return found ? found.isoCode : "";
+    }
+    return "";
+  });
+  const [selectedCityName, setSelectedCityName] = useState(details.city || "");
+
+  // Get all countries, states, and cities
+  const countriesList = Country.getAllCountries();
+  const statesList = selectedCountryCode ? State.getStatesOfCountry(selectedCountryCode) : [];
+  const citiesList = selectedCountryCode && selectedStateCode ? City.getCitiesOfState(selectedCountryCode, selectedStateCode) : [];
 
   const countryDropdownRef = useRef(null);
   const phoneCodeDropdownRef = useRef(null);
@@ -94,6 +114,25 @@ const BrandDetails = () => {
       setHasAutoFilled(true);
     }
   }, [location, hasAutoFilled, details]);
+
+  // When country changes, update phoneNumber.code automatically
+  useEffect(() => {
+    if (selectedCountryCode) {
+      const phoneData = countryPhoneData.find(item => item.code === selectedCountryCode);
+      const newCode = phoneData?.dial_code || '+1';
+      if (details.phoneNumber.code !== newCode) {
+        const newDetails = {
+          ...details,
+          phoneNumber: {
+            ...details.phoneNumber,
+            code: newCode,
+          },
+        };
+        setDetails(newDetails);
+        dispatch(updateFormData(newDetails));
+      }
+    }
+  }, [selectedCountryCode]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -183,10 +222,10 @@ const BrandDetails = () => {
       showSearch
       value={value}
       onChange={onChange}
-      style={{ width: 100, height: 40 }}
+      style={{ width: 260, height: 40 }}
       optionFilterProp="label"
       filterOption={(input, option) =>
-        option.value.toLowerCase().includes(input.toLowerCase())
+        option.label.toLowerCase().includes(input.toLowerCase())
       }
       dropdownStyle={{ zIndex: 2000 }}
       size="large"
@@ -196,9 +235,18 @@ const BrandDetails = () => {
         <Select.Option
           key={`${country.code}-${country.dial_code}`}
           value={country.dial_code}
-          label={country.dial_code}
+          label={`${country.name} ${country.dial_code}`}
         >
-          {country.dial_code}
+          <span className="flex items-center gap-2">
+            <ReactCountryFlag
+              countryCode={country.code}
+              svg
+              style={{ width: 22, height: 18 }}
+              className="rounded-sm"
+            />
+            <span className="flex-1 truncate">{country.name}</span>
+            <span className="text-gray-500 ml-2">({country.dial_code})</span>
+          </span>
         </Select.Option>
       ))}
     </Select>
@@ -229,6 +277,16 @@ const BrandDetails = () => {
     }
   };
 
+  // Filtered phone codes for modal search
+  const filteredPhoneCodesModal = countryPhoneData.filter((country) => {
+    const search = phoneCodeSearch.toLowerCase();
+    return (
+      country.name.toLowerCase().includes(search) ||
+      country.dial_code.toLowerCase().includes(search) ||
+      country.code.toLowerCase().includes(search)
+    );
+  });
+
   const handleNext = (e) => {
     e.preventDefault();
 
@@ -238,7 +296,7 @@ const BrandDetails = () => {
     if (!details.brandName) missingFields.push("Brand Name");
     if (!details.country.name) missingFields.push("Country");
     // if (!details.state) missingFields.push("State");
-    if (!details.city) missingFields.push("City");
+    // if (!details.city) missingFields.push("City");
     if (!details.address) missingFields.push("Address");
     // if (!details.zipCode) missingFields.push("Zip Code");
     if (!details.brandDescription) missingFields.push("Brand Description");
@@ -262,7 +320,7 @@ const BrandDetails = () => {
   const descriptionLength = details.brandDescription?.length || 0;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-color">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 text-color">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -341,95 +399,108 @@ const BrandDetails = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Country <span className="text-red-500">*</span>
                 </label>
-                <div
-                  className="flex items-center border border-input text-sm rounded-md px-3 py-2 h-10 cursor-pointer hover:border-primary transition-colors"
-                  onClick={() => setIsCountryOpen(!isCountryOpen)}
+                <Select
+                  showSearch
+                  value={selectedCountryCode || undefined}
+                  onChange={value => {
+                    setSelectedCountryCode(value);
+                    setSelectedStateCode("");
+                    setSelectedCityName("");
+                    const countryObj = countriesList.find(c => c.isoCode === value);
+                    const newDetails = {
+                      ...details,
+                      country: { name: countryObj?.name || "", code: value },
+                      state: "",
+                      city: "",
+                    };
+                    setDetails(newDetails);
+                    dispatch(updateFormData(newDetails));
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder="Select Country"
+                  optionFilterProp="label"
+                  filterOption={(input, option) =>
+                    (option.label || '').toLowerCase().includes(input.toLowerCase())
+                  }
                 >
-                  {details.country.name ? (
-                    <>
-                      <ReactCountryFlag
-                        countryCode={details.country.code}
-                        svg
-                        className="w-5 h-5 mr-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      />
-                      <span>{details.country.name}</span>
-                    </>
-                  ) : (
-                    <span className="text-gray-400">Select country</span>
-                  )}
-                </div>
-
-                <AnimatePresence>
-                  {isCountryOpen && (
-                    <motion.div
-                      ref={countryDropdownRef}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute z-10 w-full mt-1 bg-white border border-input rounded-md shadow-lg overflow-hidden"
-                    >
-                      <div className="p-2 sticky top-0 bg-white border-b border-input">
-                        <input
-                          type="text"
-                          placeholder="Search countries..."
-                          className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                          onChange={handleCountrySearch}
-                          autoFocus
-                        />
-                      </div>
-                      <div className="max-h-60 overflow-y-auto">
-                        {filteredCountries.map((country) => (
-                          <div
-                            key={country.code}
-                            className="flex items-center p-2 hover:bg-gray-50 cursor-pointer"
-                            onClick={() => handleCountrySelect(country)}
-                          >
-                            <ReactCountryFlag
-                              countryCode={country.code}
-                              svg
-                              className="w-5 h-5 mr-2"
-                            />
-                            <span>{country.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  {countriesList.map(country => (
+                    <Select.Option key={country.isoCode} value={country.isoCode} label={country.name}>
+                      <span className="flex items-center gap-2">
+                        <ReactCountryFlag countryCode={country.isoCode} svg style={{ width: 22, height: 18 }} className="rounded-sm" />
+                        <span>{country.name}</span>
+                      </span>
+                    </Select.Option>
+                  ))}
+                </Select>
               </div>
 
-              {/* State */}
+              {/* State Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   State <span className="text-red-500">*</span>
-                  {isLoadingLocation && (
-                    <span className="ml-2 text-xs text-gray-500">
-                      (Auto-detecting...)
-                    </span>
-                  )}
                 </label>
-                <InputComponent
-                  value={details.state}
-                  onChange={(e) =>
-                    setDetails({ ...details, state: e.target.value })
+                <Select
+                  showSearch
+                  value={selectedStateCode || undefined}
+                  onChange={value => {
+                    setSelectedStateCode(value);
+                    setSelectedCityName("");
+                    const stateObj = statesList.find(s => s.isoCode === value);
+                    const newDetails = {
+                      ...details,
+                      state: stateObj?.name || "",
+                      city: "",
+                    };
+                    setDetails(newDetails);
+                    dispatch(updateFormData(newDetails));
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder="Select State"
+                  disabled={!selectedCountryCode}
+                  optionFilterProp="label"
+                  filterOption={(input, option) =>
+                    (option.label || '').toLowerCase().includes(input.toLowerCase())
                   }
-                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                />
+                >
+                  {statesList.map(state => (
+                    <Select.Option key={state.isoCode} value={state.isoCode} label={state.name}>
+                      {state.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </div>
 
-              {/* City */}
+              {/* City Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   City <span className="text-red-500">*</span>
                 </label>
-                <InputComponent
-                  value={details.city}
-                  onChange={(e) =>
-                    setDetails({ ...details, city: e.target.value })
+                <Select
+                  showSearch
+                  value={selectedCityName || undefined}
+                  onChange={value => {
+                    setSelectedCityName(value);
+                    const newDetails = {
+                      ...details,
+                      city: value,
+                    };
+                    setDetails(newDetails);
+                    dispatch(updateFormData(newDetails));
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder="Select City"
+                  disabled={!selectedStateCode}
+                  optionFilterProp="label"
+                  filterOption={(input, option) =>
+                    (option.label || '').toLowerCase().includes(input.toLowerCase())
                   }
-                  className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                />
+                >
+                  {citiesList.map(city => (
+                    <Select.Option key={city.name} value={city.name} label={city.name}>
+                      {city.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </div>
 
               {/* Phone Number */}
@@ -437,17 +508,12 @@ const BrandDetails = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Phone <span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-2">
-                  <CountryCodeDropdown
-                    value={details.phoneNumber.code}
-                    className="h-10"
-                    onChange={(val) => setDetails({
-                      ...details,
-                      phoneNumber: {
-                        ...details.phoneNumber,
-                        code: val,
-                      },
-                    })}
+                <div className="flex gap-2 items-center">
+                  {/* Country Code Display (auto) */}
+                  <Input
+                    value={details.phoneNumber.code || '+1'}
+                    disabled
+                    style={{ width: 80, background: '#f5f7f7', color: '#333' }}
                   />
                   <InputComponent
                     value={details.phoneNumber.number}
@@ -461,13 +527,15 @@ const BrandDetails = () => {
                         error = `Invalid phone number format for this country.`;
                       }
                       setPhoneError(error);
-                      setDetails({
+                      const newDetails = {
                         ...details,
                         phoneNumber: {
                           ...details.phoneNumber,
                           number: digitsOnly,
                         },
-                      });
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
                     }}
                     placeholder={
                       details.phoneNumber.code === '+254'

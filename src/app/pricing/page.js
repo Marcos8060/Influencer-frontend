@@ -20,6 +20,8 @@ import {
   getSerializablePlan,
   getPlanPriceId,
 } from "../Components/paymentService/plans";
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 const Pricing = () => {
   const dispatch = useDispatch();
@@ -271,6 +273,15 @@ const Pricing = () => {
                           // Find the value for this feature in this plan
                           const value = (plan.features || [])
                             .find((f) => f.startsWith(feature + ":"));
+                          const displayValue = value ? value.split(":").slice(1).join(":").trim() : "";
+                          let cellContent;
+                          if (displayValue.toLowerCase() === "true") {
+                            cellContent = <CheckOutlined style={{ color: '#309F41', fontSize: 18 }} />;
+                          } else if (displayValue.toLowerCase() === "false" || displayValue === "") {
+                            cellContent = <CloseOutlined style={{ color: '#FF4D4F', fontSize: 18 }} />;
+                          } else {
+                            cellContent = displayValue;
+                          }
                           return (
                             <td
                               key={plan.id + feature}
@@ -280,7 +291,7 @@ const Pricing = () => {
                                   : ""
                               }`}
                             >
-                              {value ? value.split(":").slice(1).join(":").trim() : <span className="text-gray-300">—</span>}
+                              {cellContent}
                             </td>
                           );
                         })}
