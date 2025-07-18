@@ -115,6 +115,25 @@ const BrandDetails = () => {
     }
   }, [location, hasAutoFilled, details]);
 
+  // When country changes, update phoneNumber.code automatically
+  useEffect(() => {
+    if (selectedCountryCode) {
+      const phoneData = countryPhoneData.find(item => item.code === selectedCountryCode);
+      const newCode = phoneData?.dial_code || '+1';
+      if (details.phoneNumber.code !== newCode) {
+        const newDetails = {
+          ...details,
+          phoneNumber: {
+            ...details.phoneNumber,
+            code: newCode,
+          },
+        };
+        setDetails(newDetails);
+        dispatch(updateFormData(newDetails));
+      }
+    }
+  }, [selectedCountryCode]);
+
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     setFilteredCountries(
@@ -490,14 +509,12 @@ const BrandDetails = () => {
                   Phone <span className="text-red-500">*</span>
                 </label>
                 <div className="flex gap-2 items-center">
-                  {/* Country Code Button */}
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 px-3 py-2 border border-input rounded-md bg-white text-gray-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all min-w-[80px]"
-                    onClick={() => setIsPhoneCodeModalOpen(true)}
-                  >
-                    {details.phoneNumber.code || "+1"}
-                  </button>
+                  {/* Country Code Display (auto) */}
+                  <Input
+                    value={details.phoneNumber.code || '+1'}
+                    disabled
+                    style={{ width: 80, background: '#f5f7f7', color: '#333' }}
+                  />
                   <InputComponent
                     value={details.phoneNumber.number}
                     onChange={(e) => {
@@ -510,13 +527,15 @@ const BrandDetails = () => {
                         error = `Invalid phone number format for this country.`;
                       }
                       setPhoneError(error);
-                      setDetails({
+                      const newDetails = {
                         ...details,
                         phoneNumber: {
                           ...details.phoneNumber,
                           number: digitsOnly,
                         },
-                      });
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
                     }}
                     placeholder={
                       details.phoneNumber.code === '+254'
@@ -531,53 +550,6 @@ const BrandDetails = () => {
                 {phoneError && (
                   <div className="text-red text-xs mt-1">{phoneError}</div>
                 )}
-                {/* Country Code Modal */}
-                <Modal
-                  open={isPhoneCodeModalOpen}
-                  onCancel={() => setIsPhoneCodeModalOpen(false)}
-                  footer={null}
-                  title="Select Country Code"
-                  width={420}
-                  styles={{ body: { padding: 0, maxHeight: 500, overflowY: 'auto' } }}
-                >
-                  <div className="p-4 border-b border-input sticky top-0 bg-white z-10">
-                    <Input
-                      placeholder="Search country, code, or dial code"
-                      value={phoneCodeSearch}
-                      onChange={e => setPhoneCodeSearch(e.target.value)}
-                      allowClear
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="max-h-80 overflow-y-auto">
-                    {filteredPhoneCodesModal.map((country) => (
-                      <div
-                        key={`${country.code}-${country.dial_code}`}
-                        className="flex items-center gap-3 px-4 py-2 hover:bg-primary/10 cursor-pointer border-b border-input last:border-b-0"
-                        onClick={() => {
-                          setDetails({
-                            ...details,
-                            phoneNumber: {
-                              ...details.phoneNumber,
-                              code: country.dial_code,
-                            },
-                          });
-                          setIsPhoneCodeModalOpen(false);
-                          setPhoneCodeSearch("");
-                        }}
-                      >
-                        <ReactCountryFlag
-                          countryCode={country.code}
-                          svg
-                          style={{ width: 22, height: 18 }}
-                          className="rounded-sm"
-                        />
-                        <span className="flex-1 truncate">{country.name}</span>
-                        <span className="text-gray-500 ml-2">({country.dial_code})</span>
-                      </div>
-                    ))}
-                  </div>
-                </Modal>
               </div>
 
               {/* Address */}
