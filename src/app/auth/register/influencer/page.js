@@ -7,12 +7,19 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import { SiTiktok } from "react-icons/si";
+import { InstagramOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import Image from "next/image";
+import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
 
 const InfluencerRegister = () => {
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState({
+    instagram: false,
+    tiktok: false,
+  });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
@@ -26,6 +33,30 @@ const InfluencerRegister = () => {
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleInstagramConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, instagram: true }));
+      const response = await instagramLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("Instagram connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, instagram: false }));
+    }
+  };
+
+  const handleTiktokConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, tiktok: true }));
+      const response = await tiktokLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("TikTok connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, tiktok: false }));
+    }
   };
 
   const handleRegister = async (e) => {
@@ -60,7 +91,6 @@ const InfluencerRegister = () => {
         toast.success("Please check your email for the OTP!");
         router.push("/auth/register/influencer/otp");
       } else {
-        console.log("RESPONSE ",response)
         const errorMessage =
           response?.errorMessage || response?.errorMessage?.[0] ||
           "Something went wrong. Please try again.";
@@ -209,6 +239,33 @@ const InfluencerRegister = () => {
                 <option value="en-US">English (US)</option>
               </select>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              // onClick={handleInstagramConnect}
+              disabled={socialLoading.instagram}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-semibold text-sm shadow hover:from-[#C13584] hover:to-[#F56040] transition-all disabled:opacity-60"
+            >
+              <InstagramOutlined className="text-xl" />
+              {socialLoading.instagram ? "Connecting..." : "Sign up with Instagram"}
+            </button>
+            <button
+              // onClick={handleTiktokConnect}
+              disabled={socialLoading.tiktok}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-black to-gray-800 text-white font-semibold text-sm shadow hover:from-gray-900 hover:to-black transition-all disabled:opacity-60"
+            >
+              <SiTiktok className="text-lg" />
+              {socialLoading.tiktok ? "Connecting..." : "Sign up with TikTok"}
+            </button>
+          </div>
+
+          <div className="flex items-center">
+            <hr className="flex-grow border-t border-gray-300" />
+            <span className="px-4 text-sm text-gray-500 bg-white">OR</span>
+            <hr className="flex-grow border-t border-gray-300" />
           </div>
 
           <form onSubmit={handleRegister} className="mt-8 space-y-6">

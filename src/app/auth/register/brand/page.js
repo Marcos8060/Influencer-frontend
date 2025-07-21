@@ -12,6 +12,9 @@ import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import { FaBuilding } from "react-icons/fa";
 import { countryPhoneData } from "@/app/Components/Onboarding/Brand/brand-details/countryPhoneData";
 import { Select } from "antd";
+import { SiTiktok } from "react-icons/si";
+import { InstagramOutlined } from "@ant-design/icons";
+import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
 
 // Phone validation logic and code-only dropdown
 const phoneFormats = {
@@ -48,6 +51,10 @@ const CountryCodeDropdown = ({ value, onChange }) => (
 
 const BrandRegister = () => {
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState({
+    instagram: false,
+    tiktok: false,
+  });
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -61,6 +68,30 @@ const BrandRegister = () => {
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleInstagramConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, instagram: true }));
+      const response = await instagramLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("Instagram connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, instagram: false }));
+    }
+  };
+
+  const handleTiktokConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, tiktok: true }));
+      const response = await tiktokLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("TikTok connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, tiktok: false }));
+    }
   };
 
   const handleRegister = async (e) => {
@@ -217,6 +248,35 @@ const BrandRegister = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">Register Your Brand</h2>
             <p className="mt-2 text-gray-600">Connect with creators who align with your brand</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              // onClick={handleInstagramConnect}
+              disabled={socialLoading.instagram}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-semibold text-sm shadow hover:from-[#C13584] hover:to-[#F56040] transition-all disabled:opacity-60"
+            >
+              <InstagramOutlined className="text-xl" />
+              {socialLoading.instagram
+                ? "Connecting..."
+                : "Sign up with Instagram"}
+            </button>
+            <button
+              // onClick={handleTiktokConnect}
+              disabled={socialLoading.tiktok}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-black to-gray-800 text-white font-semibold text-sm shadow hover:from-gray-900 hover:to-black transition-all disabled:opacity-60"
+            >
+              <SiTiktok className="text-lg" />
+              {socialLoading.tiktok ? "Connecting..." : "Sign up with TikTok"}
+            </button>
+          </div>
+
+          <div className="flex items-center">
+            <hr className="flex-grow border-t border-gray-300" />
+            <span className="px-4 text-sm text-gray-500 bg-white">OR</span>
+            <hr className="flex-grow border-t border-gray-300" />
           </div>
 
           <form onSubmit={handleRegister} className="mt-8 space-y-6">
