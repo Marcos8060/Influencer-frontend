@@ -47,7 +47,7 @@ const Address = () => {
   const [phoneError, setPhoneError] = useState("");
 
   // Dynamic dropdown state
-  const [selectedCountryCode, setSelectedCountryCode] = useState(details.influencerCountry.code || "");
+  const selectedCountryCode = details.influencerCountry?.code || "";
   const [selectedStateCode, setSelectedStateCode] = useState(() => {
     if (details.influencerCountry.code && details.influencerState) {
       const states = State.getStatesOfCountry(details.influencerCountry.code);
@@ -82,29 +82,49 @@ const Address = () => {
   }, []);
 
   useEffect(() => {
-    // Only auto-fill if location is available, not already filled, and fields are empty
-    if (
-      location &&
-      !hasAutoFilled &&
-      !details.influencerAddressLine1 &&
-      !details.influencerCity &&
-      !details.influencerCountry.name &&
-      !details.influencerZipCode
-    ) {
-      setDetails((prev) => ({
-        ...prev,
-        influencerAddressLine1: location.addressLine1 || "",
-        influencerAddressLine2: location.addressLine2 || "",
-        influencerCity: location.city || "",
-        influencerCountry: {
-          name: location.country || "",
-          code: location.countryCode || "",
-        },
-        influencerZipCode: location.zipCode || "",
-      }));
+    // Autofill form with location data
+    if (location && !hasAutoFilled) {
+      setDetails((prevDetails) => {
+        // Only autofill if the core fields are empty
+        if (
+          !prevDetails.influencerAddressLine1 &&
+          !prevDetails.influencerCity &&
+          !prevDetails.influencerCountry.name &&
+          !prevDetails.influencerZipCode
+        ) {
+          const countryCode = location.countryCode || "";
+          const stateName = location.raw?.state || "";
+
+          // Update the separate state for dropdowns
+          if (countryCode && stateName) {
+            const states = State.getStatesOfCountry(countryCode);
+            const stateInfo = states.find((s) => s.name === stateName);
+            if (stateInfo) {
+              setSelectedStateCode(stateInfo.isoCode);
+            }
+          }
+          setSelectedCityName(location.city || "");
+
+          // Return the new details for the main state object
+          return {
+            ...prevDetails,
+            influencerAddressLine1: location.addressLine1 || "",
+            influencerAddressLine2: location.addressLine2 || "",
+            influencerCity: location.city || "",
+            influencerState: stateName,
+            influencerCountry: {
+              name: location.country || "",
+              code: countryCode,
+            },
+            influencerZipCode: location.zipCode || "",
+          };
+        }
+        // If fields are already filled, return the existing state
+        return prevDetails;
+      });
       setHasAutoFilled(true);
     }
-  }, [location, hasAutoFilled, details]);
+  }, [location, hasAutoFilled]);
 
   // When country changes, update phone code automatically
   useEffect(() => {
@@ -123,7 +143,7 @@ const Address = () => {
         dispatch(updateFormData(newDetails));
       }
     }
-  }, [selectedCountryCode]);
+  }, [selectedCountryCode, details.influencerPhoneNumber, dispatch]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
