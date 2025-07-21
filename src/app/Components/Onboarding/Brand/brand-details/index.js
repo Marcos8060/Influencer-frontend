@@ -48,7 +48,7 @@ const BrandDetails = () => {
   const [phoneCodeSearch, setPhoneCodeSearch] = useState("");
 
   // Dynamic dropdown state
-  const [selectedCountryCode, setSelectedCountryCode] = useState(details.country.code || "");
+  const selectedCountryCode = details.country?.code || "";
   const [selectedStateCode, setSelectedStateCode] = useState(() => {
     if (details.country.code && details.state) {
       const states = State.getStatesOfCountry(details.country.code);
@@ -92,28 +92,46 @@ const BrandDetails = () => {
   }, []);
 
   useEffect(() => {
-    // Only auto-fill if location is available, not already filled, and fields are empty
-    if (
-      location &&
-      !hasAutoFilled &&
-      !details.address &&
-      !details.city &&
-      !details.country.name &&
-      !details.zipCode
-    ) {
-      setDetails((prev) => ({
-        ...prev,
-        address: location.addressLine1 || "",
-        city: location.city || "",
-        country: {
-          name: location.country || "",
-          code: location.countryCode || "",
-        },
-        zipCode: location.zipCode || "",
-      }));
+    if (location && !hasAutoFilled) {
+      setDetails((prev) => {
+        if (
+          !prev.address &&
+          !prev.city &&
+          !prev.country.name &&
+          !prev.zipCode
+        ) {
+          const countryCode = location.countryCode || "";
+          const stateName = location.raw?.state || "";
+          let stateCode = "";
+          
+          if (countryCode && stateName) {
+            const states = State.getStatesOfCountry(countryCode);
+            const stateInfo = states.find(s => s.name === stateName);
+            if (stateInfo) {
+              stateCode = stateInfo.isoCode;
+              setSelectedStateCode(stateCode);
+            }
+          }
+          
+          setSelectedCityName(location.city || "");
+
+          return {
+            ...prev,
+            address: location.addressLine1 || "",
+            city: location.city || "",
+            country: {
+              name: location.country || "",
+              code: countryCode,
+            },
+            state: stateName,
+            zipCode: location.zipCode || "",
+          };
+        }
+        return prev;
+      });
       setHasAutoFilled(true);
     }
-  }, [location, hasAutoFilled, details]);
+  }, [location, hasAutoFilled]);
 
   // When country changes, update phoneNumber.code automatically
   useEffect(() => {
@@ -132,7 +150,7 @@ const BrandDetails = () => {
         dispatch(updateFormData(newDetails));
       }
     }
-  }, [selectedCountryCode]);
+  }, [selectedCountryCode, details.phoneNumber, dispatch]);
 
   const handleCountrySearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -403,7 +421,6 @@ const BrandDetails = () => {
                   showSearch
                   value={selectedCountryCode || undefined}
                   onChange={value => {
-                    setSelectedCountryCode(value);
                     setSelectedStateCode("");
                     setSelectedCityName("");
                     const countryObj = countriesList.find(c => c.isoCode === value);

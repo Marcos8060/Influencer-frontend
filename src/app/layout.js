@@ -24,14 +24,25 @@ export function useLocation() {
   return useContext(LocationContext);
 }
 
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  if (lat1 === null || lon1 === null || lat2 === null || lon2 === null) return Infinity;
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance; // in km
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [location, setLocationState] = useState(null);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [locationError, setLocationError] = useState("");
 
   // Helper to set location in state and localStorage
   const setLocation = (loc) => {
@@ -44,20 +55,67 @@ export default function RootLayout({ children }) {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-      // On mount, check for location in localStorage
-      if (typeof window !== 'undefined') {
-        const stored = window.localStorage.getItem('userLocation');
-        if (stored) {
-          try {
-            setLocationState(JSON.parse(stored));
-          } catch {}
-        }
-        // Only prompt if not already set and not denied
-        if (!stored && !window.localStorage.getItem('locationDenied')) {
-          setShowLocationPrompt(true);
-        }
-      }
     }, 3000);
+
+    const requestUserLocation = () => {
+      if (typeof window === 'undefined' || !navigator.geolocation) {
+        return;
+      }
+
+      if (window.localStorage.getItem('locationDenied') === '1') {
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { latitude, longitude } = pos.coords;
+            const storedLocationRaw = window.localStorage.getItem('userLocation');
+
+            if (storedLocationRaw) {
+                const storedLocation = JSON.parse(storedLocationRaw);
+                const distance = calculateDistance(storedLocation.lat, storedLocation.lon, latitude, longitude);
+                if (distance < 1) { 
+                  return;
+                }
+            }
+
+            const data = await reverseGeocode(latitude, longitude);
+            const address = data.address || {};
+            const loc = {
+              addressLine1: address.road || "",
+              addressLine2: address.neighbourhood || "",
+              city: address.city || address.town || address.village || "",
+              country: address.country || "",
+              countryCode: address.country_code ? address.country_code.toUpperCase() : "",
+              zipCode: address.postcode || "",
+              lat: latitude,
+              lon: longitude,
+              raw: address,
+            };
+            setLocation(loc);
+          } catch (err) {
+            console.error("Could not determine your address.", err);
+          }
+        },
+        (err) => {
+          if (err.code === err.PERMISSION_DENIED) {
+            window.localStorage.setItem('locationDenied', '1');
+          }
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    };
+    
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('userLocation');
+      if (stored) {
+        try {
+          setLocationState(JSON.parse(stored));
+        } catch {}
+      }
+      requestUserLocation();
+    }
   }, []);
 
   // Reverse geocode function (OpenStreetMap Nominatim)
@@ -68,62 +126,14 @@ export default function RootLayout({ children }) {
     return res.json();
   }
 
-  const handleAllowLocation = () => {
-    setIsGettingLocation(true);
-    setLocationError("");
-    if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by your browser.");
-      setIsGettingLocation(false);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const data = await reverseGeocode(latitude, longitude);
-          // Extract address fields
-          const address = data.address || {};
-          const loc = {
-            addressLine1: address.road || "",
-            addressLine2: address.neighbourhood || "",
-            city: address.city || address.town || address.village || "",
-            country: address.country || "",
-            countryCode: address.country_code ? address.country_code.toUpperCase() : "",
-            zipCode: address.postcode || "",
-            lat: latitude,
-            lon: longitude,
-            raw: address,
-          };
-          setLocation(loc);
-          setShowLocationPrompt(false);
-        } catch (err) {
-          setLocationError("Could not determine your address.");
-        } finally {
-          setIsGettingLocation(false);
-        }
-      },
-      (err) => {
-        setLocationError("Location permission denied or unavailable.");
-        setIsGettingLocation(false);
-        window.localStorage.setItem('locationDenied', '1');
-        setShowLocationPrompt(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
-  const handleDenyLocation = () => {
-    setShowLocationPrompt(false);
-    window.localStorage.setItem('locationDenied', '1');
-  };
-
   return (
     <html lang="en" className={inter.className}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Influencer Platform</title>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <title>Grace Belgravia</title>
+        <link rel="icon" href="/favicon.ico" />
+        {/* <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> */}
       </head>
       <body>
         <PrimeReactProvider>
@@ -133,31 +143,6 @@ export default function RootLayout({ children }) {
                 <LocationContext.Provider value={{ location, setLocation }}>
                   <Toaster position="top-center" />
                   {isLoading ? <SplashScreen /> : null}
-                  {showLocationPrompt && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-                      <div className="bg-white rounded-xl shadow-xl p-8 max-w-sm w-full text-center">
-                        <h2 className="text-lg font-bold mb-2">Allow Location Access?</h2>
-                        <p className="text-gray-500 mb-4">We can auto-fill your address details for faster onboarding.</p>
-                        {locationError && <div className="text-red-500 mb-2">{locationError}</div>}
-                        <div className="flex gap-3 justify-center">
-                          <button
-                            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition"
-                            onClick={handleAllowLocation}
-                            disabled={isGettingLocation}
-                          >
-                            {isGettingLocation ? "Getting location..." : "Allow"}
-                          </button>
-                          <button
-                            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
-                            onClick={handleDenyLocation}
-                            disabled={isGettingLocation}
-                          >
-                            Deny
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                   {children}
                 </LocationContext.Provider>
               </AuthProvider>
