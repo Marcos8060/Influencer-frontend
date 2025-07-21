@@ -7,9 +7,17 @@ import { authContext } from "@/assets/context/use-context";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
 import { FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
+import { SiTiktok } from "react-icons/si";
+import { InstagramOutlined } from "@ant-design/icons";
+import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
+import toast from "react-hot-toast";
 
 const InfluencerLogin = () => {
   const [loading, setLoading] = useState(false);
+  const [socialLoading, setSocialLoading] = useState({
+    instagram: false,
+    tiktok: false,
+  });
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -18,6 +26,30 @@ const InfluencerLogin = () => {
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleInstagramConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, instagram: true }));
+      const response = await instagramLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("Instagram connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, instagram: false }));
+    }
+  };
+
+  const handleTiktokConnect = async () => {
+    try {
+      setSocialLoading((prev) => ({ ...prev, tiktok: true }));
+      const response = await tiktokLogin();
+      window.location.href = response.message;
+    } catch (error) {
+      toast.error("TikTok connection failed");
+    } finally {
+      setSocialLoading((prev) => ({ ...prev, tiktok: false }));
+    }
   };
 
   const handleLogin = async (e) => {
@@ -108,6 +140,35 @@ const InfluencerLogin = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
             <p className="mt-2 text-gray-600">Continue your creative journey</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              // onClick={handleInstagramConnect}
+              disabled={socialLoading.instagram}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-semibold text-sm shadow hover:from-[#C13584] hover:to-[#F56040] transition-all disabled:opacity-60"
+            >
+              <InstagramOutlined className="text-xl" />
+              {socialLoading.instagram
+                ? "Connecting..."
+                : "Sign in with Instagram"}
+            </button>
+            <button
+              // onClick={handleTiktokConnect}
+              disabled={socialLoading.tiktok}
+              type="button"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-black to-gray-800 text-white font-semibold text-sm shadow hover:from-gray-900 hover:to-black transition-all disabled:opacity-60"
+            >
+              <SiTiktok className="text-lg" />
+              {socialLoading.tiktok ? "Connecting..." : "Sign in with TikTok"}
+            </button>
+          </div>
+
+          <div className="flex items-center">
+            <hr className="flex-grow border-t border-gray-300" />
+            <span className="px-4 text-sm text-gray-500 bg-white">OR</span>
+            <hr className="flex-grow border-t border-gray-300" />
           </div>
 
           <form onSubmit={handleLogin} className="mt-8 space-y-6">
