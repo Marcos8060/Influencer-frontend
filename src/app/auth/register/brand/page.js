@@ -105,7 +105,6 @@ const BrandRegister = () => {
     const { confirmPassword, ...registrationData } = formData;
     try {
       const response = await RegisterBrand(registrationData);
-
       if (response?.status === 200) {
         localStorage.removeItem("brand_token");
         localStorage.removeItem("influencer_token");
@@ -127,11 +126,12 @@ const BrandRegister = () => {
         router.push("/auth/register/brand/otp");
       } else {
         const errorMessage =
-          response?.errorMessage?.[0] ||
+          response?.errorMessage?.[0] || response?.errorMessage?.nonFieldErrors[0] ||
           "Something went wrong. Please try again.";
         toast.error(errorMessage);
       }
     } catch (error) {
+      console.log("BRAND_ERROR ",error)
       let errorMessage = "Something went wrong. Please try again.";
 
       if (error.response && error.response.data) {
