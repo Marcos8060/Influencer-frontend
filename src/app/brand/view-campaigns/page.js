@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import { Table, Input, Button, Badge, Skeleton, Pagination, Tooltip, Tag, Tabs, Badge as AntBadge } from "antd";
+import { Table, Input, Button, Badge, Skeleton, Pagination, Tooltip, Tag, Tabs, Badge as AntBadge, Modal, message } from "antd";
 import { FiEye } from "react-icons/fi";
 import { FiSearch } from "react-icons/fi";
 import { useAuth } from "@/assets/hooks/use-auth";
@@ -8,6 +8,8 @@ import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-steppe
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { publishDraft } from "@/redux/services/campaign";
+import toast from "react-hot-toast";
 
 const { Search } = Input;
 
@@ -22,6 +24,8 @@ const CampaignsTable = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const auth = useAuth();
+  const [publishingId, setPublishingId] = useState(null);
+  const [publishModal, setPublishModal] = useState({ visible: false, campaign: null });
 
   useEffect(() => {
     if (auth) {
@@ -134,6 +138,27 @@ const CampaignsTable = () => {
     );
   };
 
+  // Handler to publish a draft campaign
+  const handlePublishDraft = async (campaign) => {
+    setPublishingId(campaign.id);
+    try {
+      // Call the API to publish (set isDraft to false)
+      const payload = { ...campaign, isDraft: false };
+      const response = await publishDraft(auth, payload);
+      if (response.status === 200) {
+        toast.success("Campaign published successfully!");
+        setPublishModal({ visible: false, campaign: null });
+        fetchCampaigns();
+      } else {
+        toast.error(response.response?.data?.errorMessage?.[0] || "Failed to publish campaign.");
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.errorMessage?.[0] || "Failed to publish campaign.");
+    } finally {
+      setPublishingId(null);
+    }
+  };
+
   const columns = [
     {
       title: "Title",
@@ -169,14 +194,25 @@ const CampaignsTable = () => {
       title: "Actions",
       dataIndex: "actions",
       render: (_, record) => (
-        <Button
-          type="link"
-          icon={<FiEye />}
-          onClick={() => router.push(`/brand/campaign-report/${record.id}`)}
-          className="text-primary font-semibold hover:underline"
-        >
-          View
-        </Button>
+        <>
+          <Button
+            type="link"
+            icon={<FiEye />}
+            onClick={() => router.push(`/brand/campaign-report/${record.id}`)}
+            className="text-primary font-semibold hover:underline"
+          >
+            View
+          </Button>
+          {activeTab === "drafts" && (
+            <button
+              className="bg-gradient-to-r from-primary to-secondary px-3 py-2 rounded-xl text-white text-xs"
+              onClick={() => setPublishModal({ visible: true, campaign: record })}
+              style={{ marginLeft: 8 }}
+            >
+              Publish
+            </button>
+          )}
+        </>
       ),
     },
   ];
@@ -358,6 +394,19 @@ const CampaignsTable = () => {
                     className="custom-pagination"
                   />
                 </div>
+                {/* Publish Confirmation Modal */}
+                <Modal
+                  open={publishModal.visible}
+                  onCancel={() => setPublishModal({ visible: false, campaign: null })}
+                  onOk={() => handlePublishDraft(publishModal.campaign)}
+                  okText={publishingId === publishModal.campaign?.id ? "Publishing..." : "Publish"}
+                  okButtonProps={{ loading: publishingId === publishModal.campaign?.id }}
+                  cancelButtonProps={{ disabled: publishingId === publishModal.campaign?.id }}
+                  title="Publish Campaign"
+                  centered
+                >
+                  <p className="text-center">Are you sure you want to publish this draft campaign? It will become visible to creators.</p>
+                </Modal>
               </>
             ),
           },

@@ -6,11 +6,14 @@ import Link from "next/link";
 import { authContext } from "@/assets/context/use-context";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { FaBuilding } from "react-icons/fa";
 import { SiTiktok } from "react-icons/si";
 import { InstagramOutlined } from "@ant-design/icons";
 import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
 import toast from "react-hot-toast";
+import { Modal } from 'antd';
+import { forgotPassword } from "@/redux/services/auth";
 
 const BrandLogin = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +25,13 @@ const BrandLogin = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [forgotModalOpen, setForgotModalOpen] = useState(false);
+  const [forgotForm, setForgotForm] = useState({ email: '', password: '', confirm: '' });
+  const [forgotLoading, setForgotLoading] = useState(false);
   const { loginUser } = useContext(authContext);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showForgotConfirm, setShowForgotConfirm] = useState(false);
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -65,6 +74,26 @@ const BrandLogin = () => {
       // Error handling can be added here
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotChange = (e) => {
+    setForgotForm({ ...forgotForm, [e.target.name]: e.target.value });
+  };
+
+  const handleForgotSubmit = async () => {
+    setForgotLoading(true);
+    try {
+      const response = await forgotPassword({
+        email: forgotForm.email,
+        newPassword: forgotForm.password,
+      });
+      toast.success(response?.data?.message);
+      setForgotModalOpen(false);
+    } catch (error) {
+      toast.error(error?.response?.data?.errorMessage?.[0] || "Failed to reset password.");
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -219,26 +248,33 @@ const BrandLogin = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link
-                  href="/auth/forgot-password"
-                  className="text-sm font-medium text-primary hover:text-primary-dark"
+                <button
+                  type="button"
+                  className="text-sm font-medium text-primary hover:text-primary-dark bg-transparent border-none outline-none"
+                  onClick={() => setForgotModalOpen(true)}
                 >
                   Forgot password?
-                </Link>
+                </button>
               </div>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <FiLock className="text-gray-400" />
                 </div>
                 <InputComponent
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="pl-10 block w-full rounded-lg border-gray-300"
+                  className="pl-10 pr-10 block w-full rounded-lg border-gray-300"
                   placeholder="••••••••"
                 />
+                <span
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </span>
               </div>
             </div>
 
@@ -309,17 +345,64 @@ const BrandLogin = () => {
               </p>
             </div>
           </form>
-
-          <div className="text-center text-xs text-gray-500">
-            By continuing, you agree to our{" "}
-            <Link href="/terms" className="text-primary hover:underline">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="text-primary hover:underline">
-              Privacy Policy
-            </Link>
-          </div>
+          <Modal
+            open={forgotModalOpen}
+            onCancel={() => setForgotModalOpen(false)}
+            footer={null}
+            centered
+            title="Reset Password"
+          >
+            <div className="space-y-4">
+              <InputComponent
+                type="email"
+                name="email"
+                value={forgotForm.email}
+                onChange={handleForgotChange}
+                placeholder="Enter your email"
+                required
+              />
+              <div className="relative">
+                <InputComponent
+                  type={showForgotPassword ? 'text' : 'password'}
+                  name="password"
+                  value={forgotForm.password}
+                  onChange={handleForgotChange}
+                  placeholder="New password"
+                  required
+                  className="pr-10"
+                />
+                <span
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                  onClick={() => setShowForgotPassword((v) => !v)}
+                >
+                  {showForgotPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </span>
+              </div>
+              <div className="relative">
+                <InputComponent
+                  type={showForgotConfirm ? 'text' : 'password'}
+                  name="confirm"
+                  value={forgotForm.confirm}
+                  onChange={handleForgotChange}
+                  placeholder="Confirm new password"
+                  required
+                  className="pr-10"
+                />
+                <span
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                  onClick={() => setShowForgotConfirm((v) => !v)}
+                >
+                  {showForgotConfirm ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                </span>
+              </div>
+              <ButtonComponent
+                label={forgotLoading ? 'Resetting...' : 'Reset Password'}
+                className="w-full bg-primary text-white"
+                onClick={handleForgotSubmit}
+                disabled={forgotLoading || !forgotForm.email || !forgotForm.password || forgotForm.password !== forgotForm.confirm}
+              />
+            </div>
+          </Modal>
         </div>
       </div>
     </div>

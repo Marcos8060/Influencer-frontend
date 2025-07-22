@@ -6,6 +6,7 @@ const paymentBaseUrl = 'http://147.78.141.96:8095';
 export const API_URL = {
   /***************** AUTH APIS **********************/
   LOGIN: `${baseUrl}/auth/login/`,
+  FORGOT_PASSWORD: `${baseUrl}/auth/password/reset/`,
   LOGOUT: `${baseUrl}/auth/logout/`,
   REFRESH_TOKEN: `${baseUrl}/auth/token/refresh/`,
   REGISTER_BRAND: `${baseUrl}/auth/register/brand/`,
@@ -53,6 +54,7 @@ export const API_URL = {
   CAMPAIGN_REPORT: `${baseUrl}/campaigns/report/get/`,
   CAMPAIGN_POST: `${baseUrl}/campaigns/posts/list/`,
   CAMPAIGN_COLLABORATOR_POSTS: `${baseUrl}/campaigns/report/collaborators/`,
+  PUBLISH_DRAFT: `${baseUrl}/campaigns/draft/publish/`,
 
   /***************** SOCIALS APIS **********************/
   TIKTOK_LOGIN: `${baseUrl}/auth/tiktok/loginUrl/`,
@@ -81,6 +83,7 @@ export const API_URL = {
 export const APP_API_URL = {
   /***************** AUTH APIs **********************/
   LOGIN: "/api/auth/login",
+  FORGOT_PASSWORD: "/api/auth/forgot-password",
   LOGOUT: "/api/auth/logout",
   REFRESH_TOKEN: "/api/auth/refresh-token",
   REGISTER_BRAND: "/api/auth/register-brand",
@@ -124,6 +127,7 @@ export const APP_API_URL = {
   CAMPAIGN_REPORT: '/api/campaign/campaign-report',
   CAMPAIGN_POST: '/api/campaign/campaign-posts',
   CAMPAIGN_COLLABORATOR_POSTS: '/api/campaign/campaign-collaborator-posts',
+  PUBLISH_DRAFT: '/api/campaign/publish-draft',
 
 
   /***************** BUCKET LIST APIs **********************/

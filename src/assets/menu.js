@@ -100,12 +100,12 @@ export const menu = [
   //   icon: <FaCarAlt />,
   //   role: ["Influencer", "Brand"],
   // },
-  {
-    label: "Collaboration",
-    path: "/",
-    icon: <FaUsers />,
-    role: ["Influencer", "Brand"],
-  },
+  // {
+  //   label: "Collaboration",
+  //   path: "/",
+  //   icon: <FaUsers />,
+  //   role: ["Influencer", "Brand"],
+  // },
   {
     label: "Inbox",
     path: "/onboarding/brand/chat-box",
