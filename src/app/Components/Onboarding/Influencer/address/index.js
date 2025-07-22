@@ -451,12 +451,13 @@ const Address = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Phone <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center">
+                  <div className="flex gap-2 items-center">
                     {/* Country Code Display (auto) */}
-                    <InputComponent
+                    <input
                       value={details.influencerPhoneNumber.code || '+1'}
                       disabled
-                      style={{ width: 80, background: '#f5f7f7', color: '#333', marginRight: 0 }}
+                      style={{ width: 80, background: '#f5f7f7', color: '#333' }}
+                      className="rounded border border-input px-4 py-2 text-sm"
                     />
                     <InputComponent
                       value={details.influencerPhoneNumber.number}
@@ -487,8 +488,7 @@ const Address = () => {
                           ? '4155552671'
                           : 'Phone number'
                       }
-                      className="flex-grow focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10 min-w-0"
-                      style={{ width: '100%' }}
+                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
                     />
                   </div>
                   {phoneError && (
