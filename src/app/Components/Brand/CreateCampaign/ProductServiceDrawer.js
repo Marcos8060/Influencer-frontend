@@ -9,7 +9,8 @@ import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
 import ExistingProducts from "./ExistingProducts";
 import { createProduct } from "@/redux/services/campaign";
 import toast from "react-hot-toast";
-import ProductCoverImageModal from "./productCoverImage";
+import ImageUploadInline from "../../SharedComponents/ImageUploadModal";
+import { editProfilePhoto } from "@/redux/services/influencer/profile";
 import Select from "react-select";
 import { currencyData } from "./currencyData";
 
@@ -190,7 +191,26 @@ export default function ProductServiceDrawer({
                     Product | Service Image
                   </h2>
                 </div>
-                <ProductCoverImageModal setDetails={setDetails} />
+                <ImageUploadInline
+                  buttonLabel="Upload Product Image"
+                  shape="rect"
+                  onUpload={async (file) => {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("file_section", "products");
+                    const res = await editProfilePhoto(auth, formData);
+                    if (res.status === 200 && res.data?.url) {
+                      return res.data.url;
+                    }
+                    throw new Error("Failed to upload product image");
+                  }}
+                  onUploadSuccess={(url) => {
+                    setDetails((prev) => ({
+                      ...prev,
+                      productImages: [...(prev.productImages || []), { url }],
+                    }));
+                  }}
+                />
               </section>
               <form className="my-4">
                 <div className="space-y-4">
