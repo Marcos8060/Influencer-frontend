@@ -25,16 +25,15 @@ const BrandDetails = () => {
   const dispatch = useDispatch();
   const { location } = useLocation();
   const [details, setDetails] = useState({
-    brandWebsite: formData.brandWebsite || "",
-    legalCompanyName: formData.legalCompanyName || "",
+    brandWebsite: formData.brandWebsite || undefined,
+    legalCompanyName: formData.legalCompanyName || undefined,
     country: formData.country || { name: "", code: "" },
     phoneNumber: formData.phoneNumber || { code: "", number: "" },
-    state: formData.state || undefined,
-    city: formData.city || "",
-    address: formData.address || "",
-    zipCode: formData.zipCode || "",
-    brandName: formData.brandName || "",
-    brandDescription: formData.brandDescription || "",
+    city: formData.city || undefined,
+    address: formData.address || undefined,
+    zipCode: formData.zipCode || undefined,
+    brandName: formData.brandName || undefined,
+    brandDescription: formData.brandDescription || undefined,
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
@@ -49,20 +48,22 @@ const BrandDetails = () => {
 
   // Dynamic dropdown state
   const selectedCountryCode = details.country?.code || "";
-  const [selectedStateCode, setSelectedStateCode] = useState(() => {
-    if (details.country.code && details.state) {
-      const states = State.getStatesOfCountry(details.country.code);
-      const found = states.find(s => s.name === details.state);
-      return found ? found.isoCode : "";
-    }
-    return "";
-  });
   const [selectedCityName, setSelectedCityName] = useState(details.city || "");
 
-  // Get all countries, states, and cities
+  // Get all countries and cities (no states)
   const countriesList = Country.getAllCountries();
-  const statesList = selectedCountryCode ? State.getStatesOfCountry(selectedCountryCode) : [];
-  const citiesList = selectedCountryCode && selectedStateCode ? City.getCitiesOfState(selectedCountryCode, selectedStateCode) : [];
+  let dropdownList = [];
+  let dropdownType = 'city';
+  if (selectedCountryCode === 'US') {
+    dropdownList = State.getStatesOfCountry('US');
+    dropdownType = 'state';
+  } else if (selectedCountryCode === 'GB') {
+    dropdownList = State.getStatesOfCountry('GB');
+    dropdownType = 'county';
+  } else {
+    dropdownList = selectedCountryCode ? City.getCitiesOfCountry(selectedCountryCode) : [];
+    dropdownType = 'city';
+  }
 
   const countryDropdownRef = useRef(null);
   const phoneCodeDropdownRef = useRef(null);
@@ -101,18 +102,6 @@ const BrandDetails = () => {
           !prev.zipCode
         ) {
           const countryCode = location.countryCode || "";
-          const stateName = location.raw?.state || "";
-          let stateCode = "";
-          
-          if (countryCode && stateName) {
-            const states = State.getStatesOfCountry(countryCode);
-            const stateInfo = states.find(s => s.name === stateName);
-            if (stateInfo) {
-              stateCode = stateInfo.isoCode;
-              setSelectedStateCode(stateCode);
-            }
-          }
-          
           setSelectedCityName(location.city || "");
 
           return {
@@ -123,7 +112,6 @@ const BrandDetails = () => {
               name: location.country || "",
               code: countryCode,
             },
-            state: stateName,
             zipCode: location.zipCode || "",
           };
         }
@@ -188,8 +176,6 @@ const BrandDetails = () => {
             location.address.village ||
             location.address.county ||
             prev.city,
-          state:
-            location.address.state || location.address.region || prev.state,
           address: location.address.road
             ? `${location.address.road}${
                 location.address.house_number
@@ -421,13 +407,11 @@ const BrandDetails = () => {
                   showSearch
                   value={selectedCountryCode || undefined}
                   onChange={value => {
-                    setSelectedStateCode("");
                     setSelectedCityName("");
                     const countryObj = countriesList.find(c => c.isoCode === value);
                     const newDetails = {
                       ...details,
                       country: { name: countryObj?.name || "", code: value },
-                      state: "",
                       city: "",
                     };
                     setDetails(newDetails);
@@ -451,42 +435,6 @@ const BrandDetails = () => {
                 </Select>
               </div>
 
-              {/* State Dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  State <span className="text-red-500">*</span>
-                </label>
-                <Select
-                  showSearch
-                  value={selectedStateCode || undefined}
-                  onChange={value => {
-                    setSelectedStateCode(value);
-                    setSelectedCityName("");
-                    const stateObj = statesList.find(s => s.isoCode === value);
-                    const newDetails = {
-                      ...details,
-                      state: stateObj?.name || "",
-                      city: "",
-                    };
-                    setDetails(newDetails);
-                    dispatch(updateFormData(newDetails));
-                  }}
-                  style={{ width: "100%" }}
-                  placeholder="Select State"
-                  disabled={!selectedCountryCode}
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    (option.label || '').toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {statesList.map(state => (
-                    <Select.Option key={state.isoCode} value={state.isoCode} label={state.name}>
-                      {state.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </div>
-
               {/* City Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -505,18 +453,30 @@ const BrandDetails = () => {
                     dispatch(updateFormData(newDetails));
                   }}
                   style={{ width: "100%" }}
-                  placeholder="Select City"
-                  disabled={!selectedStateCode}
+                  placeholder={`Select ${dropdownType.charAt(0).toUpperCase() + dropdownType.slice(1)}`}
+                  disabled={!selectedCountryCode}
                   optionFilterProp="label"
                   filterOption={(input, option) =>
                     (option.label || '').toLowerCase().includes(input.toLowerCase())
                   }
                 >
-                  {citiesList.map(city => (
-                    <Select.Option key={city.name} value={city.name} label={city.name}>
-                      {city.name}
-                    </Select.Option>
-                  ))}
+                  {dropdownList.map((item, idx) => {
+                    let key, value, label;
+                    if (dropdownType === 'city') {
+                      key = item.name + (item.latitude ? `-${item.latitude}-${item.longitude}` : `-${idx}`);
+                      value = item.name;
+                      label = item.name;
+                    } else {
+                      key = item.isoCode;
+                      value = item.name;
+                      label = item.name;
+                    }
+                    return (
+                      <Select.Option key={key} value={value} label={label}>
+                        {label}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </div>
 
