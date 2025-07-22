@@ -27,15 +27,14 @@ const Address = () => {
   const dispatch = useDispatch();
   const { location } = useLocation();
   const [details, setDetails] = useState({
-    influencerAddressLine1: influencerData.influencerAddressLine1 || "",
-    influencerAddressLine2: influencerData.influencerAddressLine2 || "",
-    influencerCity: influencerData.influencerCity || "",
-    influencerState: influencerData.influencerState || "",
+    influencerAddressLine1: influencerData.influencerAddressLine1 || undefined,
+    influencerAddressLine2: influencerData.influencerAddressLine2 || undefined,
+    influencerCity: influencerData.influencerCity || undefined,
     influencerCountry: influencerData.influencerCountry || { name: "", code: "" },
-    influencerZipCode: influencerData.influencerZipCode || "",
+    influencerZipCode: influencerData.influencerZipCode || undefined,
     influencerPhoneNumber: influencerData.influencerPhoneNumber || { code: "", number: "" },
-    gender: influencerData.gender || "",
-    dateOfBirth: influencerData.dateOfBirth || "",
+    gender: influencerData.gender || undefined,
+    dateOfBirth: influencerData.dateOfBirth || undefined,
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
@@ -48,20 +47,22 @@ const Address = () => {
 
   // Dynamic dropdown state
   const selectedCountryCode = details.influencerCountry?.code || "";
-  const [selectedStateCode, setSelectedStateCode] = useState(() => {
-    if (details.influencerCountry.code && details.influencerState) {
-      const states = State.getStatesOfCountry(details.influencerCountry.code);
-      const found = states.find(s => s.name === details.influencerState);
-      return found ? found.isoCode : "";
-    }
-    return "";
-  });
   const [selectedCityName, setSelectedCityName] = useState(details.influencerCity || "");
 
-  // Get all countries, states, and cities
+  // Get all countries and cities (no states)
   const countriesList = Country.getAllCountries();
-  const statesList = selectedCountryCode ? State.getStatesOfCountry(selectedCountryCode) : [];
-  const citiesList = selectedCountryCode && selectedStateCode ? City.getCitiesOfState(selectedCountryCode, selectedStateCode) : [];
+  let dropdownList = [];
+  let dropdownType = 'city';
+  if (selectedCountryCode === 'US') {
+    dropdownList = State.getStatesOfCountry('US');
+    dropdownType = 'state';
+  } else if (selectedCountryCode === 'GB') {
+    dropdownList = State.getStatesOfCountry('GB');
+    dropdownType = 'county';
+  } else {
+    dropdownList = selectedCountryCode ? City.getCitiesOfCountry(selectedCountryCode) : [];
+    dropdownType = 'city';
+  }
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
@@ -93,16 +94,6 @@ const Address = () => {
           !prevDetails.influencerZipCode
         ) {
           const countryCode = location.countryCode || "";
-          const stateName = location.raw?.state || "";
-
-          // Update the separate state for dropdowns
-          if (countryCode && stateName) {
-            const states = State.getStatesOfCountry(countryCode);
-            const stateInfo = states.find((s) => s.name === stateName);
-            if (stateInfo) {
-              setSelectedStateCode(stateInfo.isoCode);
-            }
-          }
           setSelectedCityName(location.city || "");
 
           // Return the new details for the main state object
@@ -111,7 +102,6 @@ const Address = () => {
             influencerAddressLine1: location.addressLine1 || "",
             influencerAddressLine2: location.addressLine2 || "",
             influencerCity: location.city || "",
-            influencerState: stateName,
             influencerCountry: {
               name: location.country || "",
               code: countryCode,
@@ -383,14 +373,11 @@ const Address = () => {
                     showSearch
                     value={selectedCountryCode || undefined}
                     onChange={value => {
-                      setSelectedCountryCode(value);
-                      setSelectedStateCode("");
                       setSelectedCityName("");
                       const countryObj = countriesList.find(c => c.isoCode === value);
                       const newDetails = {
                         ...details,
                         influencerCountry: { name: countryObj?.name || "", code: value },
-                        influencerState: "",
                         influencerCity: "",
                       };
                       setDetails(newDetails);
@@ -414,42 +401,6 @@ const Address = () => {
                   </Select>
                 </div>
 
-                {/* State Dropdown */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State <span className="text-red-500">*</span>
-                  </label>
-                  <Select
-                    showSearch
-                    value={selectedStateCode || undefined}
-                    onChange={value => {
-                      setSelectedStateCode(value);
-                      setSelectedCityName("");
-                      const stateObj = statesList.find(s => s.isoCode === value);
-                      const newDetails = {
-                        ...details,
-                        influencerState: stateObj?.name || "",
-                        influencerCity: "",
-                      };
-                      setDetails(newDetails);
-                      dispatch(updateFormData(newDetails));
-                    }}
-                    style={{ width: "100%" }}
-                    placeholder="Select State"
-                    disabled={!selectedCountryCode}
-                    optionFilterProp="label"
-                    filterOption={(input, option) =>
-                      (option.label || '').toLowerCase().includes(input.toLowerCase())
-                    }
-                  >
-                    {statesList.map(state => (
-                      <Select.Option key={state.isoCode} value={state.isoCode} label={state.name}>
-                        {state.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </div>
-
                 {/* City Dropdown */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -468,18 +419,30 @@ const Address = () => {
                       dispatch(updateFormData(newDetails));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select City"
-                    disabled={!selectedStateCode}
+                    placeholder={`Select ${dropdownType.charAt(0).toUpperCase() + dropdownType.slice(1)}`}
+                    disabled={!selectedCountryCode}
                     optionFilterProp="label"
                     filterOption={(input, option) =>
                       (option.label || '').toLowerCase().includes(input.toLowerCase())
                     }
                   >
-                    {citiesList.map(city => (
-                      <Select.Option key={city.name} value={city.name} label={city.name}>
-                        {city.name}
-                      </Select.Option>
-                    ))}
+                    {dropdownList.map((item, idx) => {
+                      let key, value, label;
+                      if (dropdownType === 'city') {
+                        key = item.name + (item.latitude ? `-${item.latitude}-${item.longitude}` : `-${idx}`);
+                        value = item.name;
+                        label = item.name;
+                      } else {
+                        key = item.isoCode;
+                        value = item.name;
+                        label = item.name;
+                      }
+                      return (
+                        <Select.Option key={key} value={value} label={label}>
+                          {label}
+                        </Select.Option>
+                      );
+                    })}
                   </Select>
                 </div>
 
@@ -488,12 +451,13 @@ const Address = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Phone <span className="text-red-500">*</span>
                   </label>
-                  <div className="flex items-center">
+                  <div className="flex gap-2 items-center">
                     {/* Country Code Display (auto) */}
-                    <InputComponent
+                    <input
                       value={details.influencerPhoneNumber.code || '+1'}
                       disabled
-                      style={{ width: 80, background: '#f5f7f7', color: '#333', marginRight: 0 }}
+                      style={{ width: 80, background: '#f5f7f7', color: '#333' }}
+                      className="rounded border border-input px-4 py-2 text-sm"
                     />
                     <InputComponent
                       value={details.influencerPhoneNumber.number}
@@ -524,8 +488,7 @@ const Address = () => {
                           ? '4155552671'
                           : 'Phone number'
                       }
-                      className="flex-grow focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10 min-w-0"
-                      style={{ width: '100%' }}
+                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
                     />
                   </div>
                   {phoneError && (
