@@ -62,3 +62,12 @@ export const RequestOtp = async (payload) => {
     return error.response?.data || error.message;
   }
 };
+
+export const forgotPassword = async (payload) => {
+  try {
+    const response = await axios.post(`${APP_API_URL.FORGOT_PASSWORD}`, payload);
+    return response;
+  } catch (error) {
+    return error.response?.data || error.message;
+  }
+};

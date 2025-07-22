@@ -266,3 +266,17 @@ export const moveToCampaign = async (auth,payload) => {
         return error.response?.data || error.message;
     }
 };
+
+export const publishDraft = async (auth,payload) => {
+    try {
+        const response = await axios.post(`${APP_API_URL.PUBLISH_DRAFT}`, payload,{
+            headers:{
+                Authorization: auth ? `Bearer ${auth}` : undefined,
+            }
+        });
+        return response
+    } catch (error) {
+        console.error("Error publishing draft:", error);
+        return error.response?.data || error.message;
+    }
+};
