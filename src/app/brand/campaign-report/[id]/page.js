@@ -309,7 +309,7 @@ const CampaignDetails = () => {
                       <Title level={3} className="m-0">
                         {campaignDetails.title}
                       </Title>
-                      <Badge status="success" text="Active" />
+                      {/* <Badge status="success" text="Active" /> */}
                     </div>
                     <Paragraph className="text-gray-600">
                       {campaignDetails.description}

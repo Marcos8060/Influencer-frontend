@@ -199,10 +199,10 @@ const CampaignPreview = () => {
                 </svg>
               </div>
               <h2 className="text-2xl font-extrabold text-primary mb-2">
-                {isDraft ?  'Campaign Created as draft!' : 'Campaign created successfully'}
+                {isDraftMode ?  'Campaign Created as draft!' : 'Campaign created successfully'}
               </h2>
               <p className="text-gray-600 mb-8">
-                {isDraft ? 'Your draft campaign is saved' : 'Your campaign is now live and ready for creators to discover.What would you like to do next?'}
+                {isDraftMode ? 'Your draft campaign is saved' : 'Your campaign is now live and ready for creators to discover.What would you like to do next?'}
                 
               </p>
               <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
