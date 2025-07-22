@@ -6,13 +6,14 @@ import Link from "next/link";
 import { authContext } from "@/assets/context/use-context";
 import { motion } from "framer-motion";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
-import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 import { SiTiktok } from "react-icons/si";
 import { InstagramOutlined } from "@ant-design/icons";
 import { instagramLogin, tiktokLogin } from "@/redux/services/auth/socials";
 import toast from "react-hot-toast";
-import { Modal } from 'antd';
+import { Modal } from "antd";
+import { forgotPassword } from "@/redux/services/auth";
 
 const InfluencerLogin = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,11 @@ const InfluencerLogin = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
-  const [forgotForm, setForgotForm] = useState({ email: '', password: '', confirm: '' });
+  const [forgotForm, setForgotForm] = useState({
+    email: "",
+    password: "",
+    confirm: "",
+  });
   const [forgotLoading, setForgotLoading] = useState(false);
   const { logInfluencer } = useContext(authContext);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -82,12 +87,20 @@ const InfluencerLogin = () => {
 
   const handleForgotSubmit = async () => {
     setForgotLoading(true);
-    // TODO: Add your forgot password API call here
-    setTimeout(() => {
-      setForgotLoading(false);
+    try {
+      const response = await forgotPassword({
+        email: forgotForm.email,
+        newPassword: forgotForm.password,
+      });
+      toast.success(response?.data?.message);
       setForgotModalOpen(false);
-      toast.success('Password reset successful!');
-    }, 1200);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.errorMessage?.[0] || "Failed to reset password."
+      );
+    } finally {
+      setForgotLoading(false);
+    }
   };
 
   return (
@@ -147,11 +160,25 @@ const InfluencerLogin = () => {
 
           <div className="flex items-center space-x-4">
             <div className="flex -space-x-2">
-              <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
-              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=faces" className="w-8 h-8 rounded-full border-2 border-white" alt="Creator" />
+              <img
+                src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=50&h=50&fit=crop&crop=faces"
+                className="w-8 h-8 rounded-full border-2 border-white"
+                alt="Creator"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=faces"
+                className="w-8 h-8 rounded-full border-2 border-white"
+                alt="Creator"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=faces"
+                className="w-8 h-8 rounded-full border-2 border-white"
+                alt="Creator"
+              />
             </div>
-            <p className="text-sm opacity-80">Join successful creators on our platform</p>
+            <p className="text-sm opacity-80">
+              Join successful creators on our platform
+            </p>
           </div>
         </div>
       </div>
@@ -232,7 +259,7 @@ const InfluencerLogin = () => {
                   <FiLock className="text-gray-400" />
                 </div>
                 <InputComponent
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
@@ -249,10 +276,7 @@ const InfluencerLogin = () => {
               </div>
             </div>
 
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
               <ButtonComponent
                 type="submit"
                 label={
@@ -325,7 +349,7 @@ const InfluencerLogin = () => {
               />
               <div className="relative">
                 <InputComponent
-                  type={showForgotPassword ? 'text' : 'password'}
+                  type={showForgotPassword ? "text" : "password"}
                   name="password"
                   value={forgotForm.password}
                   onChange={handleForgotChange}
@@ -337,12 +361,16 @@ const InfluencerLogin = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                   onClick={() => setShowForgotPassword((v) => !v)}
                 >
-                  {showForgotPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                  {showForgotPassword ? (
+                    <EyeInvisibleOutlined />
+                  ) : (
+                    <EyeOutlined />
+                  )}
                 </span>
               </div>
               <div className="relative">
                 <InputComponent
-                  type={showForgotConfirm ? 'text' : 'password'}
+                  type={showForgotConfirm ? "text" : "password"}
                   name="confirm"
                   value={forgotForm.confirm}
                   onChange={handleForgotChange}
@@ -354,14 +382,23 @@ const InfluencerLogin = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                   onClick={() => setShowForgotConfirm((v) => !v)}
                 >
-                  {showForgotConfirm ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                  {showForgotConfirm ? (
+                    <EyeInvisibleOutlined />
+                  ) : (
+                    <EyeOutlined />
+                  )}
                 </span>
               </div>
               <ButtonComponent
-                label={forgotLoading ? 'Resetting...' : 'Reset Password'}
+                label={forgotLoading ? "Resetting..." : "Reset Password"}
                 className="w-full bg-primary text-white"
                 onClick={handleForgotSubmit}
-                disabled={forgotLoading || !forgotForm.email || !forgotForm.password || forgotForm.password !== forgotForm.confirm}
+                disabled={
+                  forgotLoading ||
+                  !forgotForm.email ||
+                  !forgotForm.password ||
+                  forgotForm.password !== forgotForm.confirm
+                }
               />
             </div>
           </Modal>

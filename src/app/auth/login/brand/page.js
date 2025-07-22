@@ -30,7 +30,6 @@ const BrandLogin = () => {
   const [forgotForm, setForgotForm] = useState({ email: '', password: '', confirm: '' });
   const [forgotLoading, setForgotLoading] = useState(false);
   const { loginUser } = useContext(authContext);
-  // const auth = useAuth();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showForgotConfirm, setShowForgotConfirm] = useState(false);
 
@@ -84,17 +83,12 @@ const BrandLogin = () => {
 
   const handleForgotSubmit = async () => {
     setForgotLoading(true);
-    // const payload = {
-    //   auth,
-
-    // }
     try {
       const response = await forgotPassword({
         email: forgotForm.email,
-        password: forgotForm.password,
+        newPassword: forgotForm.password,
       });
-      console.log("reset_response ", response)
-      toast.success('Password reset successful!');
+      toast.success(response?.data?.message);
       setForgotModalOpen(false);
     } catch (error) {
       toast.error(error?.response?.data?.errorMessage?.[0] || "Failed to reset password.");
