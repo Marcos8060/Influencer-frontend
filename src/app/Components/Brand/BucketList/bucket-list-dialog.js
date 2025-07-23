@@ -72,7 +72,7 @@ export default function BucketListDialog() {
             <Input.TextArea placeholder="Description..." rows={4} />
           </Form.Item>
           <Form.Item>
-            <button
+            <Button
               type="primary"
               htmlType="submit"
               loading={loading}
@@ -80,7 +80,7 @@ export default function BucketListDialog() {
               className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 w-full rounded"
             >
               {loading ? "Processing..." : "Create New List"}
-            </button>
+            </Button>
           </Form.Item>
         </Form>
       </Modal>
