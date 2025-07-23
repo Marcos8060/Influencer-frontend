@@ -88,7 +88,7 @@ export default function AddToBucketListModal({ data, open, onClose }) {
             filterOption={(input, option) =>
               option?.title?.toLowerCase().includes(input.toLowerCase())
             }
-            options={excludedBuckets.map((bucket) => ({
+            options={Array.isArray(excludedBuckets) && excludedBuckets.map((bucket) => ({
               value: bucket.id,
               label: (
                 <Space>
@@ -105,14 +105,15 @@ export default function AddToBucketListModal({ data, open, onClose }) {
           <BucketListDialog />
 
           <Space>
-            <button
-              className="bg-gradient-to-r from-primary to-secondary text-white font-light px-4 py-2 text-xs rounded"
+            <Button
+              type="primary"
               htmlType="submit"
               loading={loading}
               disabled={loading}
+              className="bg-gradient-to-r from-primary to-secondary text-white font-light px-4 py-2 text-xs rounded border-none"
             >
               {loading ? "Adding..." : "Add to Bucket"}
-            </button>
+            </Button>
           </Space>
         </div>
       </Form>

@@ -36,7 +36,7 @@ export default function InfluencerCard({
   const country = getDisplayName(influencer.country);
 
   // Count buckets and campaigns
-  const bucketCount = bucketList.filter((bucket) =>
+  const bucketCount = Array.isArray(bucketList) && bucketList.filter((bucket) =>
     bucket.influencers.some((inf) => inf.id === influencer.influencerId)
   ).length;
 

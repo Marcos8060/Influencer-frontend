@@ -146,7 +146,6 @@ const SearchInfluencers = () => {
   const dispatch = useDispatch();
   const auth = useAuth();
   const { searchResults } = useSelector((store) => store.filterResults);
-  console.log("SEARCH_RESULTS ",searchResults);
   const [selectedFollowerGenders, setSelectedFollowerGenders] = useState([]);
   const [selectedFollowerAgeRanges, setSelectedFollowerAgeRanges] = useState(
     []
@@ -440,7 +439,7 @@ const SearchInfluencers = () => {
                     onChange={(val) => handleFilterChange("selectedBucket", val)}
                     style={{ minWidth: "200px" }}
                     allowClear
-                    options={bucketList.map((bucket) => ({
+                    options={Array.isArray(bucketList) && bucketList.map((bucket) => ({
                       value: bucket.id,
                       label: bucket.name,
                     }))}
