@@ -25,6 +25,7 @@ import { HiOutlineDocumentText, HiOutlineUserGroup, HiOutlineVideoCamera, HiOutl
 
 const CampaignPreview = () => {
   const { campaignData } = useSelector((store) => store.campaign);
+  console.log("CAMPAIGN_DATA ",campaignData)
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -103,135 +104,54 @@ const CampaignPreview = () => {
     dispatch(resetCampaignData());
   };
 
-  // Helper to update isDraft in Redux and then call addCampaign
-  const handleCampaignAction = async (draft) => {
-    // Update Redux state
-    await dispatch({
-      type: 'campaign/updateFormData',
-      payload: { isDraft: draft },
-    });
-    // Wait for Redux to update, then call addCampaign
-    setTimeout(() => {
-      addCampaign(draft);
-    }, 0);
-  };
-
   return (
     <div className="relative min-h-[80vh] bg-gradient-to-br from-background via-white to-secondary/10 px-2 py-8 md:py-12 flex flex-col items-center justify-center">
       {success ? (
-        <div className="flex items-center justify-center min-h-[60vh] w-full">
-          <section className="relative bg-white/90 rounded-2xl shadow-2xl p-10 max-w-lg w-full text-center border border-primary/10 overflow-hidden">
-            {/* Confetti SVG */}
-            <div className="absolute inset-0 pointer-events-none z-0">
-              <svg
-                className="w-full h-full"
-                viewBox="0 0 400 200"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="50" cy="30" r="6" fill="#fbbf24" fillOpacity=".7" />
-                <circle
-                  cx="350"
-                  cy="60"
-                  r="5"
-                  fill="#34d399"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="200"
-                  cy="20"
-                  r="4"
-                  fill="#60a5fa"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="100"
-                  cy="120"
-                  r="7"
-                  fill="#f472b6"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="300"
-                  cy="150"
-                  r="6"
-                  fill="#f87171"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="370"
-                  cy="110"
-                  r="4"
-                  fill="#a78bfa"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="30"
-                  cy="170"
-                  r="5"
-                  fill="#34d399"
-                  fillOpacity=".7"
-                />
-                <circle
-                  cx="180"
-                  cy="180"
-                  r="6"
-                  fill="#fbbf24"
-                  fillOpacity=".7"
-                />
+        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full bg-white">
+          <div className="max-w-md w-full mx-auto flex flex-col items-center justify-center p-8 rounded-2xl shadow-xl border border-primary/10 bg-white">
+            {/* Trophy Illustration */}
+            <div className="mb-6">
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="60" fill="#F5F7FA"/>
+                <g>
+                  <rect x="40" y="80" width="40" height="12" rx="6" fill="#FBBF24"/>
+                  <rect x="48" y="92" width="24" height="8" rx="4" fill="#F59E42"/>
+                  <path d="M60 84c-8-2-14-8-14-16V44h28v24c0 8-6 14-14 16z" fill="#FBBF24" stroke="#F59E42" strokeWidth="2"/>
+                  <circle cx="60" cy="56" r="8" fill="#fff" stroke="#F59E42" strokeWidth="2"/>
+                  <path d="M60 50l2.47 5.01 5.53.8-4 3.89.94 5.48L60 62l-4.94 2.6.94-5.48-4-3.89 5.53-.8L60 50z" fill="#FBBF24" stroke="#F59E42" strokeWidth="1.2"/>
+                  <path d="M40 44c-6 0-10 4-10 10 0 7 6 13 14 14" stroke="#F59E42" strokeWidth="2"/>
+                  <path d="M80 44c6 0 10 4 10 10 0 7-6 13-14 14" stroke="#F59E42" strokeWidth="2"/>
+                </g>
+                <g>
+                  <circle cx="30" cy="30" r="2" fill="#60A5FA"/>
+                  <circle cx="90" cy="36" r="2" fill="#F472B6"/>
+                  <circle cx="100" cy="80" r="2" fill="#34D399"/>
+                  <circle cx="20" cy="80" r="2" fill="#F87171"/>
+                  <circle cx="60" cy="20" r="2" fill="#FBBF24"/>
+                </g>
               </svg>
             </div>
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-br from-primary to-secondary shadow-lg mb-6 animate-bounce">
-                <svg
-                  className="h-12 w-12 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-extrabold text-primary mb-2">
-                {isDraftMode ?  'Campaign Created as draft!' : 'Campaign created successfully'}
-              </h2>
-              <p className="text-gray-600 mb-8">
-                {isDraftMode ? 'Your draft campaign is saved' : 'Your campaign is now live and ready for creators to discover.What would you like to do next?'}
-                
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                <button
-                  onClick={() => {
-                    setSuccess(false);
-                    dispatch(resetCampaignData());
-                    dispatch(setCurrentStep(0));
-                  }}
-                  className="flex-1 px-2 text-sm py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow hover:from-primary-dark hover:to-secondary-dark transition-all duration-200"
-                >
-                  Create Another Campaign
-                </button>
-                <Link
-                  href="/brand/view-campaigns"
-                  onClick={handleViewCampaigns}
-                  className="flex-1 px-2 text-sm py-3 rounded-lg border-2 border-primary text-primary font-semibold bg-white shadow hover:bg-primary/10 transition-all duration-200 flex items-center justify-center"
-                >
-                  View My Campaigns
-                </Link>
-              </div>
-            </div>
-          </section>
+            <h2 className="text-2xl font-bold text-primary mb-2">
+              {isDraftMode ? 'Campaign Saved as Draft!' : 'Campaign Published Successfully!'}
+            </h2>
+            <p className="text-gray-600 mb-6 text-center">
+              {isDraftMode
+                ? 'Your campaign draft has been saved. You can edit or publish it anytime from your campaigns dashboard.'
+                : 'Your campaign is now live and ready for creators to discover. You can manage it from your campaigns dashboard.'}
+            </p>
+            <button
+              onClick={handleViewCampaigns}
+              className="px-8 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow hover:from-primary-dark hover:to-secondary-dark transition-all duration-200"
+            >
+              Go home
+            </button>
+          </div>
         </div>
       ) : (
         <>
           <div className="w-full max-w-4xl mx-auto">
             {/* Header Card */}
-            <div className="relative rounded-3xl shadow-xl bg-white/90 border border-primary/10 overflow-hidden mb-8">
+            <div className="relative rounded-xl shadow-xl bg-white/90 border border-primary/10 overflow-hidden mb-8">
               {/* Cover Image as Hero Banner */}
               <div className="relative h-48 md:h-64 w-full overflow-hidden">
                 <img
@@ -240,12 +160,6 @@ const CampaignPreview = () => {
                   className="object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent" />
-                {/* Status Badge */}
-                <div className="absolute top-4 left-4">
-                  <Tag color={campaignData.isDraft ? 'orange' : 'green'} className="text-xs font-semibold px-3 py-1 rounded-full shadow">
-                    {campaignData.isDraft ? 'Draft' : 'Live'}
-                  </Tag>
-                </div>
               </div>
               {/* Title & Description */}
               <div className="px-8 py-6">
@@ -261,34 +175,32 @@ const CampaignPreview = () => {
 
             {/* Info Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* Timeline Card */}
-              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-6 shadow border border-input">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineCalendar className="text-primary text-xl" />
-                  <span className="font-semibold text-color">Timeline</span>
+              {/* Unified Card Style */}
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineCalendar className="text-primary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-primary text-lg tracking-tight">Timeline</span>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Start: <span className="font-medium text-color">{formatDate(campaignData.startDate) || 'N/A'}</span></span>
-                  <span className="text-sm text-gray-500">End: <span className="font-medium text-color">{formatDate(campaignData.endDate) || 'N/A'}</span></span>
-                </div>
-              </div>
-              {/* Video Requirements Card */}
-              <div className="bg-gradient-to-br from-secondary/10 to-primary/10 rounded-2xl p-6 shadow border border-input">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineVideoCamera className="text-secondary text-xl" />
-                  <span className="font-semibold text-color">Video Requirements</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Videos per Creator: <span className="font-medium text-color">{campaignData.campaignPreferences.videosPerCreator || 'N/A'}</span></span>
-                  <span className="text-sm text-gray-500">Duration: <span className="font-medium text-color">{campaignData.campaignPreferences.videoDuration ? `${campaignData.campaignPreferences.videoDuration}s` : 'N/A'}</span></span>
-                  <span className="text-sm text-gray-500">Format: <span className="font-medium text-color capitalize">{campaignData.campaignPreferences.videoFormat || 'N/A'}</span></span>
+                <div className="flex flex-col gap-1 text-base">
+                  <span className="text-gray-600">Start: <span className="font-semibold text-primary">{formatDate(campaignData.startDate) || 'N/A'}</span></span>
+                  <span className="text-gray-600">End: <span className="font-semibold text-primary">{formatDate(campaignData.endDate) || 'N/A'}</span></span>
                 </div>
               </div>
-              {/* Social Channels Card */}
-              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-6 shadow border border-input">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineUserGroup className="text-primary text-xl" />
-                  <span className="font-semibold text-color">Social Channels</span>
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineVideoCamera className="text-secondary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-secondary text-lg tracking-tight">Video Requirements</span>
+                </div>
+                <div className="flex flex-col gap-1 text-base">
+                  <span className="text-gray-600">Videos per Creator: <span className="font-semibold text-secondary">{campaignData.campaignPreferences.videosPerCreator || 'N/A'}</span></span>
+                  <span className="text-gray-600">Duration: <span className="font-semibold text-secondary">{campaignData.campaignPreferences.videoDuration ? `${campaignData.campaignPreferences.videoDuration}s` : 'N/A'}</span></span>
+                  <span className="text-gray-600">Format: <span className="font-semibold text-secondary capitalize">{campaignData.campaignPreferences.videoFormat || 'N/A'}</span></span>
+                </div>
+              </div>
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineUserGroup className="text-primary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-primary text-lg tracking-tight">Social Channels</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {campaignData.campaignPreferences.socialChannels.length > 0 ? (
@@ -302,11 +214,10 @@ const CampaignPreview = () => {
                   )}
                 </div>
               </div>
-              {/* Video Styles Card */}
-              <div className="bg-gradient-to-br from-secondary/10 to-primary/10 rounded-2xl p-6 shadow border border-input">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineCheckCircle className="text-secondary text-xl" />
-                  <span className="font-semibold text-color">Video Styles</span>
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineCheckCircle className="text-secondary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-secondary text-lg tracking-tight">Video Styles</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {campaignData.campaignPreferences.videoStyle.length > 0 ? (
@@ -324,20 +235,18 @@ const CampaignPreview = () => {
 
             {/* Creative Brief & Example Video */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* Creative Brief Card */}
-              <div className="bg-white rounded-2xl p-6 shadow border border-input flex flex-col gap-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineDocumentText className="text-primary text-xl" />
-                  <span className="font-semibold text-color">Creative Brief</span>
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 flex flex-col gap-2 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineDocumentText className="text-primary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-primary text-lg tracking-tight">Creative Brief</span>
                 </div>
-                <span className="text-sm text-gray-500 font-semibold">{campaignData.briefTitle || <span className="text-gray-400">No brief title.</span>}</span>
-                <p className="text-gray-600 font-light whitespace-pre-line text-sm">{campaignData.briefDescription || <span className="text-gray-400">No brief description provided.</span>}</p>
+                <span className="text-base text-gray-600 font-semibold">{campaignData.briefTitle || <span className="text-gray-400">No brief title.</span>}</span>
+                <p className="text-gray-700 font-light whitespace-pre-line text-base">{campaignData.briefDescription || <span className="text-gray-400">No brief description provided.</span>}</p>
               </div>
-              {/* Example Video Card */}
-              <div className="bg-white rounded-2xl p-6 shadow border border-input flex flex-col gap-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <HiOutlineVideoCamera className="text-secondary text-xl" />
-                  <span className="font-semibold text-color">Example Video</span>
+              <div className="rounded-2xl shadow-lg border border-primary/20 bg-gradient-to-br from-white via-primary/5 to-secondary/5 p-6 flex flex-col gap-2 hover:shadow-xl transition-all group">
+                <div className="flex items-center gap-2 mb-3">
+                  <HiOutlineVideoCamera className="text-secondary text-2xl group-hover:scale-110 transition-transform" />
+                  <span className="font-bold text-secondary text-lg tracking-tight">Example Video</span>
                 </div>
                 {campaignData.exampleVideoUrl ? (
                   <a href={campaignData.exampleVideoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-link hover:underline">

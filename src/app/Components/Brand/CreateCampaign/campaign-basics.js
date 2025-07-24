@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import InputComponent from "../../SharedComponents/InputComponent";
 import TextAreaComponent from "../../SharedComponents/TextAreaComponent";
-import DateFieldComponent from "../../SharedComponents/DateFieldComponent";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
 import ImageUploadInline from "../../SharedComponents/ImageUploadModal";
 import ButtonComponent from "../../SharedComponents/ButtonComponent";
 import {
@@ -198,12 +199,12 @@ const CampaignBasics = () => {
               >
                 Start Date <span className="text-red-500">*</span>
               </label>
-              <DateFieldComponent
-                value={details.startDate}
-                minDate={today}
-                onChange={(date) => handleDateChange("startDate", date)}
-                placeholder="Select start date"
+              <DatePicker
                 className="w-full px-4 py-2 border border-input rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                placeholder="Select start date"
+                value={details.startDate ? dayjs(details.startDate) : null}
+                onChange={(date, dateString) => handleDateChange("startDate", date ? date.toDate() : null)}
+                disabledDate={current => current && current < dayjs().startOf('day')}
                 id="startDate"
               />
             </div>
@@ -216,12 +217,12 @@ const CampaignBasics = () => {
                 End Date{" "}
                 <span className="text-gray-400 text-xs">(optional)</span>
               </label>
-              <DateFieldComponent
-                value={details.endDate}
-                minDate={details.startDate || today}
-                onChange={(date) => handleDateChange("endDate", date)}
-                placeholder="Select end date"
+              <DatePicker
                 className="w-full px-4 py-2 border border-input text-sm rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                placeholder="Select end date"
+                value={details.endDate ? dayjs(details.endDate) : null}
+                onChange={(date, dateString) => handleDateChange("endDate", date ? date.toDate() : null)}
+                disabledDate={current => current && (details.startDate ? current < dayjs(details.startDate).startOf('day') : current < dayjs().startOf('day'))}
                 id="endDate"
               />
             </div>

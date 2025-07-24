@@ -46,7 +46,7 @@ const CampaignsTable = () => {
 
   // Split campaigns by status and draft
   const activeCampaigns = useMemo(() =>
-    brandCampaigns.filter((c) => !c.isDraft && String(c.status).toLowerCase() === 'active'),
+    brandCampaigns.filter((c) => !c.isDraft && String(c.status).toLowerCase() === 'live'),
     [brandCampaigns]
   );
   const upcomingCampaigns = useMemo(() =>
