@@ -239,7 +239,7 @@ const CampaignBasics = () => {
         </section>
 
         {/* Cover Image Section */}
-        <section className="bg-white rounded-xl shadow-sm p-6">
+        <section className="bg-white rounded-xl shadow-sm p-4">
           <div className="flex items-center mb-4">
             <div className="bg-amber-100 p-2 rounded-full mr-4">
               <FiImage className="text-amber-600 text-lg" />
