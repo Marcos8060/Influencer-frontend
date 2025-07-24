@@ -17,8 +17,8 @@ import dayjs from "dayjs";
 import countries from "country-list";
 import { useLocation } from "@/app/layout";
 import { Country, State, City } from 'country-state-city';
-
 const countryData = countries.getData();
+import { usStates,ukCitiesJson,ukCountiesJson,ukCountryParts } from "@/assets/utils/locations";
 
 const Address = () => {
   const influencerData = useSelector(
@@ -30,6 +30,7 @@ const Address = () => {
     influencerAddressLine1: influencerData.influencerAddressLine1 || undefined,
     influencerAddressLine2: influencerData.influencerAddressLine2 || undefined,
     influencerCity: influencerData.influencerCity || undefined,
+    influencerState: influencerData.influencerState || undefined, // <-- Add this
     influencerCountry: influencerData.influencerCountry || { name: "", code: "" },
     influencerZipCode: influencerData.influencerZipCode || undefined,
     influencerPhoneNumber: influencerData.influencerPhoneNumber || { code: "", number: "" },
@@ -48,21 +49,30 @@ const Address = () => {
   // Dynamic dropdown state
   const selectedCountryCode = details.influencerCountry?.code || "";
   const [selectedCityName, setSelectedCityName] = useState(details.influencerCity || "");
+  const [selectedCountyCode, setSelectedCountyCode] = useState(details.influencerState || "");
 
-  // Get all countries and cities (no states)
+  // Get all countries
   const countriesList = Country.getAllCountries();
-  let dropdownList = [];
-  let dropdownType = 'city';
-  if (selectedCountryCode === 'US') {
-    dropdownList = State.getStatesOfCountry('US');
-    dropdownType = 'state';
-  } else if (selectedCountryCode === 'GB') {
-    dropdownList = State.getStatesOfCountry('GB');
-    dropdownType = 'county';
-  } else {
-    dropdownList = selectedCountryCode ? City.getCitiesOfCountry(selectedCountryCode) : [];
-    dropdownType = 'city';
-  }
+
+  // For UK: counties and cities within county
+  const ukCounties = selectedCountryCode === 'GB' ? State.getStatesOfCountry('GB') : [];
+  const ukCities = (selectedCountryCode === 'GB' && selectedCountyCode)
+    ? City.getCitiesOfState('GB', selectedCountyCode)
+    : [];
+
+  // For other countries: cities
+  const otherCities = (selectedCountryCode && selectedCountryCode !== 'GB')
+    ? City.getCitiesOfCountry(selectedCountryCode)
+    : [];
+
+ 
+
+  const [selectedUkCountry, setSelectedUkCountry] = useState(details.influencerUkCountry || "");
+  const [selectedCounty, setSelectedCounty] = useState(details.influencerState || "");
+  const [selectedCity, setSelectedCity] = useState(details.influencerCity || "");
+
+  
+  const [selectedUsState, setSelectedUsState] = useState(details.influencerState || "");
 
   useEffect(() => {
     dispatch(setCurrentStep(0));
@@ -82,11 +92,10 @@ const Address = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Autofill logic: also autofill influencerState if UK and county present
   useEffect(() => {
-    // Autofill form with location data
     if (location && !hasAutoFilled) {
       setDetails((prevDetails) => {
-        // Only autofill if the core fields are empty
         if (
           !prevDetails.influencerAddressLine1 &&
           !prevDetails.influencerCity &&
@@ -95,13 +104,15 @@ const Address = () => {
         ) {
           const countryCode = location.countryCode || "";
           setSelectedCityName(location.city || "");
-
-          // Return the new details for the main state object
+          if (countryCode === 'GB' && location.stateCode) {
+            setSelectedCountyCode(location.stateCode);
+          }
           return {
             ...prevDetails,
             influencerAddressLine1: location.addressLine1 || "",
             influencerAddressLine2: location.addressLine2 || "",
             influencerCity: location.city || "",
+            influencerState: location.stateCode || undefined,
             influencerCountry: {
               name: location.country || "",
               code: countryCode,
@@ -109,7 +120,6 @@ const Address = () => {
             influencerZipCode: location.zipCode || "",
           };
         }
-        // If fields are already filled, return the existing state
         return prevDetails;
       });
       setHasAutoFilled(true);
@@ -215,6 +225,7 @@ const Address = () => {
   const handleNext = () => {
     const missingFields = [];
     if (!details.influencerAddressLine1) missingFields.push("Address Line 1");
+    if (selectedCountryCode === 'GB' && !details.influencerState) missingFields.push("County");
     if (!details.influencerCity) missingFields.push("City");
     if (!details.influencerCountry.name) missingFields.push("Country");
     if (!details.influencerZipCode) missingFields.push("Zip code");
@@ -374,11 +385,13 @@ const Address = () => {
                     value={selectedCountryCode || undefined}
                     onChange={value => {
                       setSelectedCityName("");
+                      setSelectedCountyCode("");
                       const countryObj = countriesList.find(c => c.isoCode === value);
                       const newDetails = {
                         ...details,
                         influencerCountry: { name: countryObj?.name || "", code: value },
                         influencerCity: "",
+                        influencerState: undefined,
                       };
                       setDetails(newDetails);
                       dispatch(updateFormData(newDetails));
@@ -401,50 +414,184 @@ const Address = () => {
                   </Select>
                 </div>
 
-                {/* City Dropdown */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                  <Select
-                    showSearch
-                    value={selectedCityName || undefined}
-                    onChange={value => {
-                      setSelectedCityName(value);
-                      const newDetails = {
-                        ...details,
-                        influencerCity: value,
-                      };
-                      setDetails(newDetails);
-                      dispatch(updateFormData(newDetails));
-                    }}
-                    style={{ width: "100%" }}
-                    placeholder={`Select ${dropdownType.charAt(0).toUpperCase() + dropdownType.slice(1)}`}
-                    disabled={!selectedCountryCode}
-                    optionFilterProp="label"
-                    filterOption={(input, option) =>
-                      (option.label || '').toLowerCase().includes(input.toLowerCase())
-                    }
-                  >
-                    {dropdownList.map((item, idx) => {
-                      let key, value, label;
-                      if (dropdownType === 'city') {
-                        key = item.name + (item.latitude ? `-${item.latitude}-${item.longitude}` : `-${idx}`);
-                        value = item.name;
-                        label = item.name;
-                      } else {
-                        key = item.isoCode;
-                        value = item.name;
-                        label = item.name;
+                {/* UK: Country within UK Dropdown */}
+                {selectedCountryCode === 'GB' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Country within UK <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      showSearch
+                      value={selectedUkCountry || undefined}
+                      onChange={value => {
+                        setSelectedUkCountry(value);
+                        setSelectedCounty("");
+                        setSelectedCity("");
+                        const newDetails = {
+                          ...details,
+                          influencerUkCountry: value,
+                          influencerState: "",
+                          influencerCity: "",
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      style={{ width: "100%" }}
+                      placeholder="Select England, Scotland, Wales, or Northern Ireland"
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option.label || '').toLowerCase().includes(input.toLowerCase())
                       }
-                      return (
-                        <Select.Option key={key} value={value} label={label}>
-                          {label}
+                    >
+                      {ukCountryParts.map(part => (
+                        <Select.Option key={part.value} value={part.value} label={part.label}>
+                          {part.label}
                         </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+                {/* UK: County Dropdown */}
+                {selectedCountryCode === 'GB' && selectedUkCountry && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      County <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      showSearch
+                      value={selectedCounty || undefined}
+                      onChange={value => {
+                        setSelectedCounty(value);
+                        setSelectedCity("");
+                        const newDetails = {
+                          ...details,
+                          influencerState: value,
+                          influencerCity: "",
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      style={{ width: "100%" }}
+                      placeholder="Select County"
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option.label || '').toLowerCase().includes(input.toLowerCase())
+                      }
+                    >
+                      {(ukCountiesJson[selectedUkCountry] || []).map(county => (
+                        <Select.Option key={county} value={county} label={county}>
+                          {county}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+                {/* UK: City Dropdown */}
+                {selectedCountryCode === 'GB' && selectedUkCountry && selectedCounty && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      showSearch
+                      value={selectedCity || undefined}
+                      onChange={value => {
+                        setSelectedCity(value);
+                        const newDetails = {
+                          ...details,
+                          influencerCity: value,
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      style={{ width: "100%" }}
+                      placeholder="Select City"
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option.label || '').toLowerCase().includes(input.toLowerCase())
+                      }
+                    >
+                      {(ukCitiesJson[selectedUkCountry] || []).map(city => (
+                        <Select.Option key={city} value={city} label={city}>
+                          {city}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+                {/* Non-UK: City Dropdown */}
+                {selectedCountryCode !== 'GB' && selectedCountryCode !== 'US' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      showSearch
+                      value={selectedCityName || undefined}
+                      onChange={value => {
+                        setSelectedCityName(value);
+                        const newDetails = {
+                          ...details,
+                          influencerCity: value,
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      style={{ width: "100%" }}
+                      placeholder={`Select City`}
+                      disabled={!selectedCountryCode}
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option.label || '').toLowerCase().includes(input.toLowerCase())
+                      }
+                    >
+                      {otherCities.map((item, idx) => {
+                        let key = item.name + (item.latitude ? `-${item.latitude}-${item.longitude}` : `-${idx}`);
+                        let value = item.name;
+                        let label = item.name;
+                        return (
+                          <Select.Option key={key} value={value} label={label}>
+                            {label}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </div>
+                )}
+
+                {/* US: State Dropdown */}
+                {selectedCountryCode === 'US' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      State <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      showSearch
+                      value={selectedUsState || undefined}
+                      onChange={value => {
+                        setSelectedUsState(value);
+                        const newDetails = {
+                          ...details,
+                          influencerState: value,
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      style={{ width: "100%" }}
+                      placeholder="Select State"
+                      optionFilterProp="label"
+                      filterOption={(input, option) =>
+                        (option.label || '').toLowerCase().includes(input.toLowerCase())
+                      }
+                    >
+                      {usStates.map(state => (
+                        <Select.Option key={state} value={state} label={state}>
+                          {state}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
 
                 {/* Phone Number */}
                 <div>
