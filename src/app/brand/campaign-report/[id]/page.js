@@ -49,7 +49,6 @@ const CampaignDetails = () => {
   const router = useRouter();
   const auth = useAuth();
   const [inviteDrawerOpen, setInviteDrawerOpen] = useState(false);
-  console.log("DETAILS ", campaignDetails);
 
   const segments = pathname.split("/");
   const id = segments[segments.length - 1];
