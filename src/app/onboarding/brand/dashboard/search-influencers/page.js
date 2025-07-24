@@ -46,6 +46,7 @@ import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import { contentCategories } from "@/assets/utils/categories";
 
+
 const { Title, Text } = Typography;
 
 // Define genders array
@@ -129,13 +130,14 @@ const SearchInfluencers = () => {
   // Get bucket list and campaigns for status checking
   const { bucketList } = useSelector((store) => store.bucket);
   const { brandCampaigns } = useSelector((store) => store.campaign);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch results from backend
-  const fetchResults = (customCursor = null) => {
+  // Helper for offset-based pagination (if supported)
+  const fetchResultsWithOffset = (offset) => {
     setLoading(true);
     const payload = {
       ...filters,
-      cursor: customCursor || cursor,
+      offset,
       page_size: filters.page_size,
     };
     // Remove empty values and null values
@@ -151,7 +153,6 @@ const SearchInfluencers = () => {
         delete payload[key];
       }
     });
-    // Map fullName to full_name for backend, remove keywords and fullName
     if (payload.fullName) {
       payload.full_name = payload.fullName;
       delete payload.fullName;
@@ -168,7 +169,7 @@ const SearchInfluencers = () => {
 
       setNextCursor(getCursorParam(response?.next));
       setPrevCursor(getCursorParam(response?.previous));
-      setCursor(customCursor || null);
+      setCursor(null);
       setLoading(false);
     });
   };
@@ -181,7 +182,7 @@ const SearchInfluencers = () => {
 
   // Fetch on filters or auth change
   useEffect(() => {
-    if (auth) fetchResults();
+    if (auth) fetchResultsWithOffset(0); // Fetch with offset 0 for the first page
     // eslint-disable-next-line
   }, [filters, auth]);
 
@@ -1344,7 +1345,7 @@ const SearchInfluencers = () => {
             </div>
             <Row gutter={[24, 24]}>
               {filteredResults.map((influencer) => (
-                <Col xs={24} sm={12} md={12} lg={8} key={influencer.id}>
+                <Col xs={24} sm={12} md={12} lg={8} key={influencer.influencerId}>
                   <InfluencerCard
                     influencer={influencer}
                     onAddToBucket={() => setBucketModalData([influencer])}
@@ -1360,19 +1361,20 @@ const SearchInfluencers = () => {
                 </Col>
               ))}
             </Row>
-            <div className="text-center mt-6 flex justify-center gap-4">
-              <Button
-                onClick={() => fetchResults(prevCursor)}
-                disabled={!prevCursor}
-              >
-                Previous
-              </Button>
-              <Button
-                onClick={() => fetchResults(nextCursor)}
-                disabled={!nextCursor}
-              >
-                Next
-              </Button>
+            <div className="text-center mt-6 flex justify-center">
+              <Pagination
+                current={currentPage}
+                pageSize={filters.page_size || 20}
+                total={searchResults?.count || filteredResults.length}
+                onChange={page => {
+                  setCurrentPage(page);
+                  // If backend supports offset:
+                  const offset = (page - 1) * (filters.page_size || 20);
+                  fetchResultsWithOffset(offset);
+                  // If only cursor-based, you may need to adjust this logic.
+                }}
+                showSizeChanger={false}
+              />
             </div>
             {/* Modals for add to bucket/campaign */}
             <AddToBucketListModal
