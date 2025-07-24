@@ -9,10 +9,7 @@ import { useAuth } from "@/assets/hooks/use-auth";
 import { applyCampaign } from "@/redux/services/campaign";
 import toast from "react-hot-toast";
 import { 
-  FaUsers, 
   FaBoxOpen, 
-  FaFilter, 
-  FaTimes,
   FaCalendarAlt,
   FaClock,
   FaVideo,
@@ -22,10 +19,8 @@ import {
   FaEye,
   FaPlay,
   FaStar,
-  FaMapMarkerAlt
 } from "react-icons/fa";
-import { AiOutlineShopping, AiOutlineClear } from "react-icons/ai";
-import { MdCampaign, MdOutlineCategory } from "react-icons/md";
+import { MdOutlineCategory } from "react-icons/md";
 import AppliedCampaignsTable from "@/app/Components/Influencer/Applied-Campaigns";
 import ApprovedCampaignsTable from "@/app/Components/Influencer/Approved-Campaigns";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
@@ -210,9 +205,6 @@ const Campaigns = () => {
     <div className="p-4 md:p-6 lg:p-8 mx-auto text-color">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
-          Campaign Dashboard
-        </h1>
         <p className="text-gray-500 mt-2 text-lg">
           {currentTab === 1
             ? "Discover and apply to exciting campaigns"
