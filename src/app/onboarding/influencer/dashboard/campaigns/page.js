@@ -26,13 +26,13 @@ import {
 } from "react-icons/fa";
 import { AiOutlineShopping, AiOutlineClear } from "react-icons/ai";
 import { MdCampaign, MdOutlineCategory } from "react-icons/md";
-import { BiTime } from "react-icons/bi";
 import AppliedCampaignsTable from "@/app/Components/Influencer/Applied-Campaigns";
 import ApprovedCampaignsTable from "@/app/Components/Influencer/Approved-Campaigns";
 import { useProtectedRoute } from "@/assets/hooks/authGuard";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input, Select, Button, Tag, Checkbox, Space, Typography } from "antd";
 import { SearchOutlined, FilterOutlined, ClearOutlined } from "@ant-design/icons";
+import { FaTrophy } from "react-icons/fa6";
 
 const { Text } = Typography;
 
@@ -40,9 +40,6 @@ const Campaigns = () => {
   const { allCampaigns } = useSelector((store) => store.campaign);
   const dispatch = useDispatch();
   const auth = useAuth();
-
-  console.log("Campaigns ",allCampaigns)
-
   const [loading, setLoading] = useState(true);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applied, setApplied] = useState(false);
@@ -228,9 +225,9 @@ const Campaigns = () => {
       {/* Tabs */}
       <div className="flex overflow-x-auto pb-1 scrollbar-hide mb-6">
         <div className="flex border-b border-input space-x-2">
-          {renderTab(1, FaUsers, "All Campaigns")}
-          {renderTab(2, AiOutlineShopping, "Applied Campaigns")}
-          {renderTab(3, MdCampaign, "Approved Campaigns")}
+          {renderTab(1, FaTrophy, "All Campaigns")}
+          {renderTab(2, FaTrophy, "Applied Campaigns")}
+          {renderTab(3, FaTrophy, "Approved Campaigns")}
         </div>
       </div>
 
