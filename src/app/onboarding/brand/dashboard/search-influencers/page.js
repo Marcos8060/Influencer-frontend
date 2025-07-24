@@ -44,43 +44,9 @@ import AddToBucketListModal from "@/app/Components/Influencer/All-Influencers/ad
 import AddToCampaignModal from "@/app/Components/Influencer/All-Influencers/add-to-campaign-modal";
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
+import { contentCategories } from "@/assets/utils/categories";
 
 const { Title, Text } = Typography;
-
-// Define categories array
-const categories = [
-  "Adult & 18+",
-  "Apparel & Fashion",
-  "Arts & Culture",
-  "Beauty & Skincare",
-  "Business & Finance",
-  "Crypto & Web3",
-  "Dating & Relationships",
-  "Education & Learning",
-  "E-commerce & Startups",
-  "Entertainment & Pop Culture",
-  "Fitness & Sports",
-  "Food & Drink",
-  "Gaming & Esports",
-  "Health & Wellness",
-  "Home & Lifestyle",
-  "Lifestyle & Self-Development",
-  "Luxury & Aspirational Living",
-  "Men's Interests",
-  "Music & Audio",
-  "Other / Miscellaneous",
-  "Parenting & Family",
-  "Pets & Animals",
-  "Photography & Visual Media",
-  "Politics & Society",
-  "Spirituality & Mindfulness",
-  "Sustainability & Green Living",
-  "Tech & Gadgets",
-  "Toys, Crafts & Hobbies",
-  "Travel & Leisure",
-  "Vegan & Plant-Based",
-  "Women's Interests",
-];
 
 // Define genders array
 const genders = ["Male", "Female"];
@@ -358,7 +324,7 @@ const SearchInfluencers = () => {
                     onChange={(val) => handleFilterChange("categories", val)}
                     style={{ minWidth: "200px" }}
                     maxTagCount={2}
-                    options={categories.map((category) => ({
+                    options={contentCategories.map((category) => ({
                       value: category,
                       label: category,
                     }))}

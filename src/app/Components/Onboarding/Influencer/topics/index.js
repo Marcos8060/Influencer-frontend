@@ -12,46 +12,13 @@ import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBa
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Select, Divider } from "antd";
+import { contentCategories } from "@/assets/utils/categories";
 
 const Topics = () => {
   const influencerData = useSelector((store) => store.influencerStepper.influencerData);
   const [influencerTopics, setTopics] = useState(influencerData.influencerTopics || []);
   const [categories, setCategories] = useState(influencerData.contentCategories || []);
   const dispatch = useDispatch();
-
-  const contentCategories = [
-    "Adult & 18+",
-    "Apparel & Fashion",
-    "Arts & Culture",
-    "Beauty & Skincare",
-    "Business & Finance",
-    "Crypto & Web3",
-    "Dating & Relationships",
-    "Education & Learning",
-    "E-commerce & Startups",
-    "Entertainment & Pop Culture",
-    "Fitness & Sports",
-    "Food & Drink",
-    "Gaming & Esports",
-    "Health & Wellness",
-    "Home & Lifestyle",
-    "Lifestyle & Self-Development",
-    "Luxury & Aspirational Living",
-    "Men's Interests",
-    "Music & Audio",
-    "Other / Miscellaneous",
-    "Parenting & Family",
-    "Pets & Animals",
-    "Photography & Visual Media",
-    "Politics & Society",
-    "Spirituality & Mindfulness",
-    "Sustainability & Green Living",
-    "Tech & Gadgets",
-    "Toys, Crafts & Hobbies",
-    "Travel & Leisure",
-    "Vegan & Plant-Based",
-    "Women's Interests"
-  ];
 
   const handleNext = () => {
     if (influencerTopics.length === 0 && categories.length === 0) {
