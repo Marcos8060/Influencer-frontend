@@ -30,11 +30,12 @@ import {
 import "../../../../app/chat.css";
 import { authContext } from "@/assets/context/use-context";
 import { useAuth } from "@/assets/hooks/use-auth";
-import ChatLayout from '@/app/Components/Chat/ChatLayout';
-import ChatSidebar from '@/app/Components/Chat/ChatSidebar';
-import ChatMessages from '@/app/Components/Chat/ChatMessages';
-import ChatInput from '@/app/Components/Chat/ChatInput';
-import useWindowSize from '@/assets/hooks/use-window-size';
+import ChatLayout from "@/app/Components/Chat/ChatLayout";
+import ChatSidebar from "@/app/Components/Chat/ChatSidebar";
+import ChatMessages from "@/app/Components/Chat/ChatMessages";
+import ChatInput from "@/app/Components/Chat/ChatInput";
+import useWindowSize from "@/assets/hooks/use-window-size";
+import AuthGuard from "@/assets/hooks/authGuard";
 
 const InfluencerChat = () => {
   // State management
@@ -86,7 +87,7 @@ const InfluencerChat = () => {
     const connectWebSocket = () => {
       if (socketRef.current?.readyState === WebSocket.OPEN) return;
 
-    const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
+      const wsUrl = `ws://147.78.141.96:8075/nexus/?token=${auth}`;
       const ws = new WebSocket(wsUrl);
       socketRef.current = ws;
 
@@ -96,13 +97,15 @@ const InfluencerChat = () => {
 
         // Request all chats on connection
         ws.send(JSON.stringify({ type: "chats.all" }));
-        
+
         // Join specific chat if active
         if (activeChat) {
-          ws.send(JSON.stringify({
-            type: "chat.join",
-            user_id: activeChat
-          }));
+          ws.send(
+            JSON.stringify({
+              type: "chat.join",
+              user_id: activeChat,
+            })
+          );
         }
       };
 
@@ -154,171 +157,209 @@ const InfluencerChat = () => {
   }, []);
 
   // Message handlers
-  const handleChatHistory = useCallback((data) => {
-    if (!data.messages?.length) return;
+  const handleChatHistory = useCallback(
+    (data) => {
+      if (!data.messages?.length) return;
 
-    const sortedMessages = [...data.messages].sort(
-      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-    );
+      const sortedMessages = [...data.messages].sort(
+        (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+      );
 
-    setSelectedChatMessages(sortedMessages);
-    
-    // Update last message in chat list
-    const lastMessage = sortedMessages[sortedMessages.length - 1];
-    setChats(prev => prev.map(chat => {
-      if (chat.id === activeChat) {
-        return {
-          ...chat,
-          lastMessage: lastMessage.message,
-          time: formatTime(lastMessage.timestamp)
-        };
-      }
-      return chat;
-    }));
+      setSelectedChatMessages(sortedMessages);
 
-    // Scroll to bottom
-    setTimeout(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }, [activeChat, formatTime]);
+      // Update last message in chat list
+      const lastMessage = sortedMessages[sortedMessages.length - 1];
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id === activeChat) {
+            return {
+              ...chat,
+              lastMessage: lastMessage.message,
+              time: formatTime(lastMessage.timestamp),
+            };
+          }
+          return chat;
+        })
+      );
 
-  const handleNewMessage = useCallback((data) => {
-    const messageData = data.body || data;
-    
-    // Skip if message is invalid
-    if (!messageData.sender || !messageData.recipient) {
-      console.error('Invalid message format:', messageData);
-      return;
-    }
-
-    const isMe = messageData.sender === userId;
-    const chatId = isMe ? messageData.recipient : messageData.sender;
-
-    // Update messages if this is the active chat
-    if (chatId === activeChat) {
-      setSelectedChatMessages(prev => {
-        // Check for duplicates
-        const isDuplicate = prev.some(m => 
-          (m.id && m.id === messageData.id) || 
-          (m.tempId && messageData.temp_id && m.tempId === messageData.temp_id)
-        );
-        
-        if (isDuplicate) {
-          return prev.map(m => {
-            if ((m.tempId && m.tempId === messageData.temp_id) || m.id === messageData.id) {
-              return { ...m, status: 'delivered', id: messageData.id };
-            }
-            return m;
-          });
-        }
-        
-        return [...prev, {
-          ...messageData,
-          status: isMe ? 'delivered' : 'received'
-        }];
-      });
-    }
-
-    // Update chat list
-    setChats(prev => {
-      const existingChat = prev.find(chat => chat.id === chatId);
-      
-      if (!existingChat) {
-        // New chat
-        return [...prev, {
-          id: chatId,
-          name: isMe ? messageData.recipient_name : messageData.sender_name,
-          avatar: (isMe ? messageData.recipient_name : messageData.sender_name)?.charAt(0) || 'U',
-          lastMessage: messageData.message,
-          time: formatTime(messageData.timestamp),
-          unread: isMe ? 0 : 1
-        }];
-      }
-
-      // Existing chat
-      return prev.map(chat => {
-        if (chat.id === chatId) {
-          return {
-            ...chat,
-            lastMessage: messageData.message,
-            time: formatTime(messageData.timestamp),
-            unread: isMe || activeChat === chatId ? 0 : chat.unread + 1
-          };
-        }
-        return chat;
-      });
-    });
-
-    // Scroll to bottom for new messages in active chat
-    if (chatId === activeChat) {
+      // Scroll to bottom
       setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
-    }
-  }, [userId, activeChat, formatTime]);
+    },
+    [activeChat, formatTime]
+  );
 
-  const handleAllChats = useCallback((data) => {
-    if (!data.messages?.length) {
-      antdMessage.info("No chat history yet");
-      return;
-    }
+  const handleNewMessage = useCallback(
+    (data) => {
+      const messageData = data.body || data;
 
-    const formattedChats = data.messages
-      .map(chatGroup => {
-        if (!chatGroup.user) return null;
+      // Skip if message is invalid
+      if (!messageData.sender || !messageData.recipient) {
+        console.error("Invalid message format:", messageData);
+        return;
+      }
 
-        return {
-          id: chatGroup.user.user_id,
-          name: chatGroup.user.user_name,
-          chatGroupId: chatGroup.chatGroupId,
-          avatar: chatGroup.user.user_photo || chatGroup.user.user_name?.charAt(0) || "U",
-          lastMessage: "",
-          time: formatTime(chatGroup.created_at),
-          unread: 0,
-          messages: []
-        };
-      })
-      .filter(chat => chat !== null);
+      const isMe = messageData.sender === userId;
+      const chatId = isMe ? messageData.recipient : messageData.sender;
 
-    setChats(formattedChats);
-  }, [formatTime]);
+      // Update messages if this is the active chat
+      if (chatId === activeChat) {
+        setSelectedChatMessages((prev) => {
+          // Check for duplicates
+          const isDuplicate = prev.some(
+            (m) =>
+              (m.id && m.id === messageData.id) ||
+              (m.tempId &&
+                messageData.temp_id &&
+                m.tempId === messageData.temp_id)
+          );
+
+          if (isDuplicate) {
+            return prev.map((m) => {
+              if (
+                (m.tempId && m.tempId === messageData.temp_id) ||
+                m.id === messageData.id
+              ) {
+                return { ...m, status: "delivered", id: messageData.id };
+              }
+              return m;
+            });
+          }
+
+          return [
+            ...prev,
+            {
+              ...messageData,
+              status: isMe ? "delivered" : "received",
+            },
+          ];
+        });
+      }
+
+      // Update chat list
+      setChats((prev) => {
+        const existingChat = prev.find((chat) => chat.id === chatId);
+
+        if (!existingChat) {
+          // New chat
+          return [
+            ...prev,
+            {
+              id: chatId,
+              name: isMe ? messageData.recipient_name : messageData.sender_name,
+              avatar:
+                (isMe
+                  ? messageData.recipient_name
+                  : messageData.sender_name
+                )?.charAt(0) || "U",
+              lastMessage: messageData.message,
+              time: formatTime(messageData.timestamp),
+              unread: isMe ? 0 : 1,
+            },
+          ];
+        }
+
+        // Existing chat
+        return prev.map((chat) => {
+          if (chat.id === chatId) {
+            return {
+              ...chat,
+              lastMessage: messageData.message,
+              time: formatTime(messageData.timestamp),
+              unread: isMe || activeChat === chatId ? 0 : chat.unread + 1,
+            };
+          }
+          return chat;
+        });
+      });
+
+      // Scroll to bottom for new messages in active chat
+      if (chatId === activeChat) {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    },
+    [userId, activeChat, formatTime]
+  );
+
+  const handleAllChats = useCallback(
+    (data) => {
+      if (!data.messages?.length) {
+        antdMessage.info("No chat history yet");
+        return;
+      }
+
+      const formattedChats = data.messages
+        .map((chatGroup) => {
+          if (!chatGroup.user) return null;
+
+          return {
+            id: chatGroup.user.user_id,
+            name: chatGroup.user.user_name,
+            chatGroupId: chatGroup.chatGroupId,
+            avatar:
+              chatGroup.user.user_photo ||
+              chatGroup.user.user_name?.charAt(0) ||
+              "U",
+            lastMessage: "",
+            time: formatTime(chatGroup.created_at),
+            unread: 0,
+            messages: [],
+          };
+        })
+        .filter((chat) => chat !== null);
+
+      setChats(formattedChats);
+    },
+    [formatTime]
+  );
 
   // Chat actions
-  const handleChatSelect = useCallback((chatId) => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      antdMessage.warning("Connection not ready. Please try again.");
-      return;
-    }
+  const handleChatSelect = useCallback(
+    (chatId) => {
+      if (
+        !socketRef.current ||
+        socketRef.current.readyState !== WebSocket.OPEN
+      ) {
+        antdMessage.warning("Connection not ready. Please try again.");
+        return;
+      }
 
-    setActiveChat(chatId);
-    setSelectedChatMessages([]);
-    if (isMobile) setShowSidebar(false);
+      setActiveChat(chatId);
+      setSelectedChatMessages([]);
+      if (isMobile) setShowSidebar(false);
 
-    socketRef.current.send(JSON.stringify({
-      type: "chat.join",
-      user_id: chatId
-    }));
-  }, [isMobile]);
+      socketRef.current.send(
+        JSON.stringify({
+          type: "chat.join",
+          user_id: chatId,
+        })
+      );
+    },
+    [isMobile]
+  );
 
   const handleSendMessage = useCallback(() => {
     if (!activeChat || (!inputMessage && !selectedPhoto)) return;
 
     if (socketRef.current?.readyState !== WebSocket.OPEN) {
-      antdMessage.error('Connection lost. Please try again.');
+      antdMessage.error("Connection lost. Please try again.");
       return;
     }
 
     const tempId = Date.now().toString();
     const messageData = {
-      type: 'chat.message',
+      type: "chat.message",
       user_id: activeChat,
       message: inputMessage,
       temp_id: tempId,
       sender: userId,
-      sender_name: user?.firstName || 'Me',
+      sender_name: user?.firstName || "Me",
       recipient: activeChat,
-      recipient_name: chats.find(c => c.id === activeChat)?.name || 'User',
-      timestamp: new Date().toISOString()
+      recipient_name: chats.find((c) => c.id === activeChat)?.name || "User",
+      timestamp: new Date().toISOString(),
     };
 
     // Add message to UI immediately
@@ -328,18 +369,18 @@ const InfluencerChat = () => {
       recipient: activeChat,
       message: inputMessage,
       timestamp: new Date().toISOString(),
-      status: 'sent'
+      status: "sent",
     };
 
-    setSelectedChatMessages(prev => [...prev, tempMessage]);
+    setSelectedChatMessages((prev) => [...prev, tempMessage]);
     socketRef.current.send(JSON.stringify(messageData));
-    
-    setInputMessage('');
+
+    setInputMessage("");
     if (selectedPhoto) setSelectedPhoto(null);
-    
+
     // Scroll to bottom
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [activeChat, inputMessage, selectedPhoto, userId, user, chats]);
 
@@ -374,7 +415,7 @@ const InfluencerChat = () => {
       }
       mainContent={
         <div className="flex flex-col h-full">
-      {activeChat ? (
+          {activeChat ? (
             <>
               <ChatMessages
                 messages={selectedChatMessages}
@@ -410,10 +451,14 @@ const InfluencerChat = () => {
 
 export default function InfluencerChatPage() {
   return (
-    <Suspense fallback={
-      <div className="p-4 text-center">Loading InfluencerChat chat...</div>
-    }>
-      <InfluencerChat />
-    </Suspense>
+    <AuthGuard>
+      <Suspense
+        fallback={
+          <div className="p-4 text-center">Loading InfluencerChat chat...</div>
+        }
+      >
+        <InfluencerChat />
+      </Suspense>
+    </AuthGuard>
   );
 }

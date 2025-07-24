@@ -1,19 +1,25 @@
 'use client'
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
-export function useProtectedRoute() {
+
+export default function AuthGuard({ children, redirectTo = "/auth/login/brand" }) {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(null);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const influencerToken = localStorage.getItem('influencer_token');
     const brandToken = localStorage.getItem('brand_token');
-
     if (!influencerToken && !brandToken) {
-      router.push('/');
+      router.replace(redirectTo);
+    } else {
+      setChecked(true);
     }
-    setIsAuthorized(!!influencerToken || !!brandToken); // Explicitly set true/false
-  }, [router]);
+  }, [router, redirectTo]);
 
-  return isAuthorized;
+  if (!checked) {
+    // Optionally, return a loader here
+    return null;
+  }
+
+  return children;
 }

@@ -45,7 +45,7 @@ import AddToCampaignModal from "@/app/Components/Influencer/All-Influencers/add-
 import { fetchAllBuckets } from "@/redux/features/bucket-list";
 import { fetchAllBrandCampaigns } from "@/redux/features/stepper/campaign-stepper";
 import { contentCategories } from "@/assets/utils/categories";
-
+import AuthGuard from "@/assets/hooks/authGuard";
 
 const { Title, Text } = Typography;
 
@@ -120,9 +120,7 @@ const SearchInfluencers = () => {
   const [selectedFollowerCountries, setSelectedFollowerCountries] = useState(
     []
   );
-  const [selectedFollowerCities, setSelectedFollowerCities] = useState(
-    []
-  );
+  const [selectedFollowerCities, setSelectedFollowerCities] = useState([]);
   const [bucketModalData, setBucketModalData] = useState(null);
   const [campaignModalData, setCampaignModalData] = useState(null);
   const [selectedInfluencers, setSelectedInfluencers] = useState([]);
@@ -202,34 +200,40 @@ const SearchInfluencers = () => {
     // Only apply hide options, do not restrict to selected campaign/bucket
     // Hide influencers in any campaign if hideInCampaign is true and no specific campaign is selected
     if (filters.hideInCampaign && !filters.selectedCampaign) {
-      const isInAnyCampaign = brandCampaigns.some(campaign =>
-        campaign.collaborators.some(collab => collab.influencer === influencer.influencerId)
+      const isInAnyCampaign = brandCampaigns.some((campaign) =>
+        campaign.collaborators.some(
+          (collab) => collab.influencer === influencer.influencerId
+        )
       );
       if (isInAnyCampaign) return false;
     }
 
     // Hide influencers in any bucket if hideInBucket is true and no specific bucket is selected
     if (filters.hideInBucket && !filters.selectedBucket) {
-      const isInAnyBucket = bucketList.some(bucket =>
-        bucket.influencers.some(inf => inf.id === influencer.influencerId)
+      const isInAnyBucket = bucketList.some((bucket) =>
+        bucket.influencers.some((inf) => inf.id === influencer.influencerId)
       );
       if (isInAnyBucket) return false;
     }
 
     // If hideInCampaign is true and a specific campaign is selected, hide those in that campaign
     if (filters.hideInCampaign && filters.selectedCampaign) {
-      const selectedCampaign = brandCampaigns.find(c => c.id === filters.selectedCampaign);
+      const selectedCampaign = brandCampaigns.find(
+        (c) => c.id === filters.selectedCampaign
+      );
       const isInSelectedCampaign = selectedCampaign?.collaborators?.some(
-        collab => collab.influencer === influencer.influencerId
+        (collab) => collab.influencer === influencer.influencerId
       );
       if (isInSelectedCampaign) return false;
     }
 
     // If hideInBucket is true and a specific bucket is selected, hide those in that bucket
     if (filters.hideInBucket && filters.selectedBucket) {
-      const selectedBucket = bucketList.find(b => b.id === filters.selectedBucket);
+      const selectedBucket = bucketList.find(
+        (b) => b.id === filters.selectedBucket
+      );
       const isInSelectedBucket = selectedBucket?.influencers?.some(
-        inf => inf.id === influencer.influencerId
+        (inf) => inf.id === influencer.influencerId
       );
       if (isInSelectedBucket) return false;
     }
@@ -282,1125 +286,434 @@ const SearchInfluencers = () => {
   }, [selectedInfluencers]);
   // Render
   return (
-    <div className="w-full text-color p-4 md:p-6">
-      {/* Header Section */}
-      <div className="search-header mb-6">
-        <Title level={2} className="mb-2">
-          Discover Influencers
-        </Title>
-        <Text type="secondary" className="block mb-6">
-          Find the perfect influencers for your brand campaigns. Filter by
-          category, audience demographics, and more.
-        </Text>
+    <AuthGuard>
+      <div className="w-full text-color p-4 md:p-6">
+        {/* Header Section */}
+        <div className="search-header mb-6">
+          <Title level={2} className="mb-2">
+            Discover Influencers
+          </Title>
+          <Text type="secondary" className="block mb-6">
+            Find the perfect influencers for your brand campaigns. Filter by
+            category, audience demographics, and more.
+          </Text>
 
-        {/* Search and Quick Filters Bar */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex flex-col gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
-              <Input
-                placeholder="Search influencers by name..."
-                prefix={<SearchOutlined />}
-                size="large"
-                value={filters.fullName || ""}
-                onChange={(e) => handleFilterChange("fullName", e.target.value)}
-                allowClear
-              />
-            </div>
-
-            {/* Quick Filters */}
+          {/* Search and Quick Filters Bar */}
+          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-col gap-4">
-              {/* Influencer Quick Filters */}
-              <div>
-                <Tooltip title="Filter influencers based on their personal characteristics like content categories, gender, location, and age">
-                  <Text strong className="block mb-2 text-primary cursor-help">
-                    Influencer Filters
-                  </Text>
-                </Tooltip>
-                <div className="flex flex-wrap gap-3">
-                  <Select
-                    mode="multiple"
-                    placeholder="Content Categories"
-                    value={filters.categories}
-                    onChange={(val) => handleFilterChange("categories", val)}
-                    style={{ minWidth: "200px" }}
-                    maxTagCount={2}
-                    options={contentCategories.map((category) => ({
-                      value: category,
-                      label: category,
-                    }))}
-                  />
-                  <Select
-                    mode="multiple"
-                    placeholder="Gender"
-                    value={filters.gender ? [filters.gender] : []}
-                    onChange={(val) =>
-                      handleFilterChange("gender", val[0] || "")
-                    }
-                    style={{ minWidth: "150px" }}
-                    options={genders.map((gender) => ({
-                      value: gender,
-                      label: gender,
-                    }))}
-                  />
-                  <Select
-                    mode="multiple"
-                    placeholder="Country"
-                    value={filters.country ? [filters.country] : []}
-                    onChange={(val) =>
-                      handleFilterChange("country", val[0] || "")
-                    }
-                    style={{ minWidth: "150px" }}
-                    maxTagCount={1}
-                    options={availableCountries.map((country) => ({
-                      value: country,
-                      label: country,
-                    }))}
-                  />
-                  <Select
-                    mode="multiple"
-                    placeholder="City"
-                    value={filters.city ? [filters.city] : []}
-                    onChange={(val) => handleFilterChange("city", val[0] || "")}
-                    style={{ minWidth: "150px" }}
-                    maxTagCount={1}
-                    options={cities.map((city) => ({
-                      value: city,
-                      label: city,
-                    }))}
-                  />
-                  <Tooltip title="Filter influencers based on their audience demographics - the age, gender, and location of their followers on social media platforms">
-                    <button
-                      className="bg-gradient-to-r rounded px-4 py-2 text-sm from-primary to-secondary text-white cursor-help"
-                      // icon={<TeamOutlined />}
-                      onClick={() => setDrawerVisible(true)}
-                    >
-                      Follower Demographics
-                    </button>
-                  </Tooltip>
-                </div>
+              {/* Search Bar */}
+              <div className="flex-1">
+                <Input
+                  placeholder="Search influencers by name..."
+                  prefix={<SearchOutlined />}
+                  size="large"
+                  value={filters.fullName || ""}
+                  onChange={(e) =>
+                    handleFilterChange("fullName", e.target.value)
+                  }
+                  allowClear
+                />
               </div>
 
-              {/* Campaign & Bucket Filters */}
-              <div>
-                <Tooltip title="Filter and organize influencers by specific campaigns or buckets to manage your influencer discovery process">
-                  <Text strong className="block mb-2 text-primary cursor-help">
-                    Campaign & Bucket Organization
-                  </Text>
-                </Tooltip>
-                <div className="flex flex-wrap gap-3 items-center">
-                  <Select
-                    placeholder="Filter by Campaign"
-                    value={filters.selectedCampaign}
-                    onChange={(val) => handleFilterChange("selectedCampaign", val)}
-                    style={{ minWidth: "200px" }}
-                    allowClear
-                    options={brandCampaigns.map((campaign) => ({
-                      value: campaign.id,
-                      label: campaign.title,
-                    }))}
-                  />
-                  <Select
-                    placeholder="Filter by Bucket"
-                    value={filters.selectedBucket}
-                    onChange={(val) => handleFilterChange("selectedBucket", val)}
-                    style={{ minWidth: "200px" }}
-                    allowClear
-                    options={Array.isArray(bucketList) && bucketList.map((bucket) => ({
-                      value: bucket.id,
-                      label: bucket.name,
-                    }))}
-                  />
-                  <Checkbox
-                    checked={filters.hideInCampaign}
-                    onChange={(e) => handleFilterChange("hideInCampaign", e.target.checked)}
-                  >
-                    Hide influencers in campaigns
-                  </Checkbox>
-                  <Checkbox
-                    checked={filters.hideInBucket}
-                    onChange={(e) => handleFilterChange("hideInBucket", e.target.checked)}
-                  >
-                    Hide influencers in buckets
-                  </Checkbox>
+              {/* Quick Filters */}
+              <div className="flex flex-col gap-4">
+                {/* Influencer Quick Filters */}
+                <div>
+                  <Tooltip title="Filter influencers based on their personal characteristics like content categories, gender, location, and age">
+                    <Text
+                      strong
+                      className="block mb-2 text-primary cursor-help"
+                    >
+                      Influencer Filters
+                    </Text>
+                  </Tooltip>
+                  <div className="flex flex-wrap gap-3">
+                    <Select
+                      mode="multiple"
+                      placeholder="Content Categories"
+                      value={filters.categories}
+                      onChange={(val) => handleFilterChange("categories", val)}
+                      style={{ minWidth: "200px" }}
+                      maxTagCount={2}
+                      options={contentCategories.map((category) => ({
+                        value: category,
+                        label: category,
+                      }))}
+                    />
+                    <Select
+                      mode="multiple"
+                      placeholder="Gender"
+                      value={filters.gender ? [filters.gender] : []}
+                      onChange={(val) =>
+                        handleFilterChange("gender", val[0] || "")
+                      }
+                      style={{ minWidth: "150px" }}
+                      options={genders.map((gender) => ({
+                        value: gender,
+                        label: gender,
+                      }))}
+                    />
+                    <Select
+                      mode="multiple"
+                      placeholder="Country"
+                      value={filters.country ? [filters.country] : []}
+                      onChange={(val) =>
+                        handleFilterChange("country", val[0] || "")
+                      }
+                      style={{ minWidth: "150px" }}
+                      maxTagCount={1}
+                      options={availableCountries.map((country) => ({
+                        value: country,
+                        label: country,
+                      }))}
+                    />
+                    <Select
+                      mode="multiple"
+                      placeholder="City"
+                      value={filters.city ? [filters.city] : []}
+                      onChange={(val) =>
+                        handleFilterChange("city", val[0] || "")
+                      }
+                      style={{ minWidth: "150px" }}
+                      maxTagCount={1}
+                      options={cities.map((city) => ({
+                        value: city,
+                        label: city,
+                      }))}
+                    />
+                    <Tooltip title="Filter influencers based on their audience demographics - the age, gender, and location of their followers on social media platforms">
+                      <button
+                        className="bg-gradient-to-r rounded px-4 py-2 text-sm from-primary to-secondary text-white cursor-help"
+                        // icon={<TeamOutlined />}
+                        onClick={() => setDrawerVisible(true)}
+                      >
+                        Follower Demographics
+                      </button>
+                    </Tooltip>
+                  </div>
+                </div>
+
+                {/* Campaign & Bucket Filters */}
+                <div>
+                  <Tooltip title="Filter and organize influencers by specific campaigns or buckets to manage your influencer discovery process">
+                    <Text
+                      strong
+                      className="block mb-2 text-primary cursor-help"
+                    >
+                      Campaign & Bucket Organization
+                    </Text>
+                  </Tooltip>
+                  <div className="flex flex-wrap gap-3 items-center">
+                    <Select
+                      placeholder="Filter by Campaign"
+                      value={filters.selectedCampaign}
+                      onChange={(val) =>
+                        handleFilterChange("selectedCampaign", val)
+                      }
+                      style={{ minWidth: "200px" }}
+                      allowClear
+                      options={brandCampaigns.map((campaign) => ({
+                        value: campaign.id,
+                        label: campaign.title,
+                      }))}
+                    />
+                    <Select
+                      placeholder="Filter by Bucket"
+                      value={filters.selectedBucket}
+                      onChange={(val) =>
+                        handleFilterChange("selectedBucket", val)
+                      }
+                      style={{ minWidth: "200px" }}
+                      allowClear
+                      options={
+                        Array.isArray(bucketList) &&
+                        bucketList.map((bucket) => ({
+                          value: bucket.id,
+                          label: bucket.name,
+                        }))
+                      }
+                    />
+                    <Checkbox
+                      checked={filters.hideInCampaign}
+                      onChange={(e) =>
+                        handleFilterChange("hideInCampaign", e.target.checked)
+                      }
+                    >
+                      Hide influencers in campaigns
+                    </Checkbox>
+                    <Checkbox
+                      checked={filters.hideInBucket}
+                      onChange={(e) =>
+                        handleFilterChange("hideInBucket", e.target.checked)
+                      }
+                    >
+                      Hide influencers in buckets
+                    </Checkbox>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Selected Filters Display */}
-      {Object.keys(filters).some((key) => {
-        const value = filters[key];
-        return (
-          (value && typeof value === "string" && value !== "") ||
-          (Array.isArray(value) && value.length > 0) ||
-          (typeof value === "boolean" && value === true) ||
-          (typeof value === "object" &&
-            value !== null &&
-            Object.keys(value).length > 0)
-        );
-      }) && (
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <section className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Text strong className="text-primary">
-                Active Filters:
-              </Text>
-              <div className="flex flex-wrap gap-2">
-                {/* Search term */}
-                {filters.fullName && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("fullName", "")}
-                    className="flex items-center gap-1"
-                    color="blue"
-                  >
-                    Search: {filters.fullName}
-                  </Tag>
-                )}
-
-                {/* Categories */}
-                {filters.categories &&
-                  filters.categories.length > 0 &&
-                  filters.categories.map((category, index) => (
+        {/* Selected Filters Display */}
+        {Object.keys(filters).some((key) => {
+          const value = filters[key];
+          return (
+            (value && typeof value === "string" && value !== "") ||
+            (Array.isArray(value) && value.length > 0) ||
+            (typeof value === "boolean" && value === true) ||
+            (typeof value === "object" &&
+              value !== null &&
+              Object.keys(value).length > 0)
+          );
+        }) && (
+          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <section className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Text strong className="text-primary">
+                  Active Filters:
+                </Text>
+                <div className="flex flex-wrap gap-2">
+                  {/* Search term */}
+                  {filters.fullName && (
                     <Tag
-                      key={`category-${index}`}
+                      closable
+                      onClose={() => handleFilterChange("fullName", "")}
+                      className="flex items-center gap-1"
+                      color="blue"
+                    >
+                      Search: {filters.fullName}
+                    </Tag>
+                  )}
+
+                  {/* Categories */}
+                  {filters.categories &&
+                    filters.categories.length > 0 &&
+                    filters.categories.map((category, index) => (
+                      <Tag
+                        key={`category-${index}`}
+                        closable
+                        onClose={() => {
+                          const newCategories = filters.categories.filter(
+                            (_, i) => i !== index
+                          );
+                          handleFilterChange("categories", newCategories);
+                        }}
+                        className="flex items-center gap-1"
+                        color="purple"
+                      >
+                        {category}
+                      </Tag>
+                    ))}
+
+                  {/* Gender */}
+                  {filters.gender && (
+                    <Tag
+                      closable
+                      onClose={() => handleFilterChange("gender", "")}
+                      className="flex items-center gap-1"
+                      color="green"
+                    >
+                      Gender: {filters.gender}
+                    </Tag>
+                  )}
+
+                  {/* Country */}
+                  {filters.country && (
+                    <Tag
+                      closable
+                      onClose={() => handleFilterChange("country", "")}
+                      className="flex items-center gap-1"
+                      color="orange"
+                    >
+                      Country: {filters.country}
+                    </Tag>
+                  )}
+
+                  {/* City */}
+                  {filters.city && (
+                    <Tag
+                      closable
+                      onClose={() => handleFilterChange("city", "")}
+                      className="flex items-center gap-1"
+                      color="cyan"
+                    >
+                      City: {filters.city}
+                    </Tag>
+                  )}
+
+                  {/* Social Media Platform */}
+                  {filters.social_media_platform_name && (
+                    <Tag
                       closable
                       onClose={() => {
-                        const newCategories = filters.categories.filter(
-                          (_, i) => i !== index
-                        );
-                        handleFilterChange("categories", newCategories);
+                        handleFilterChange("social_media_platform_name", null);
+                        setSelectedPlatform(null);
                       }}
                       className="flex items-center gap-1"
-                      color="purple"
+                      color="magenta"
                     >
-                      {category}
+                      Platform: {filters.social_media_platform_name}
                     </Tag>
-                  ))}
-
-                {/* Gender */}
-                {filters.gender && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("gender", "")}
-                    className="flex items-center gap-1"
-                    color="green"
-                  >
-                    Gender: {filters.gender}
-                  </Tag>
-                )}
-
-                {/* Country */}
-                {filters.country && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("country", "")}
-                    className="flex items-center gap-1"
-                    color="orange"
-                  >
-                    Country: {filters.country}
-                  </Tag>
-                )}
-
-                {/* City */}
-                {filters.city && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("city", "")}
-                    className="flex items-center gap-1"
-                    color="cyan"
-                  >
-                    City: {filters.city}
-                  </Tag>
-                )}
-
-                {/* Social Media Platform */}
-                {filters.social_media_platform_name && (
-                  <Tag
-                    closable
-                    onClose={() => {
-                      handleFilterChange("social_media_platform_name", null);
-                      setSelectedPlatform(null);
-                    }}
-                    className="flex items-center gap-1"
-                    color="magenta"
-                  >
-                    Platform: {filters.social_media_platform_name}
-                  </Tag>
-                )}
-
-                {/* Campaign Filter */}
-                {filters.selectedCampaign && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("selectedCampaign", null)}
-                    className="flex items-center gap-1"
-                    color="lime"
-                  >
-                    Campaign: {(() => {
-                      const name = brandCampaigns.find(c => c.id === filters.selectedCampaign)?.title || '';
-                      return name.length > 27 ? name.slice(0, 27) + '...' : name;
-                    })()}
-                  </Tag>
-                )}
-                
-                {/* Bucket Filter */}
-                {filters.selectedBucket && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("selectedBucket", null)}
-                    className="flex items-center gap-1"
-                    color="gold"
-                  >
-                    Bucket: {(() => {
-                      const name = bucketList.find(b => b.id === filters.selectedBucket)?.name || '';
-                      return name.length > 27 ? name.slice(0, 27) + '...' : name;
-                    })()}
-                  </Tag>
-                )}
-                
-                {/* Hide Options */}
-                {filters.hideInCampaign && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("hideInCampaign", false)}
-                    className="flex items-center gap-1"
-                    color="red"
-                  >
-                    Hide Campaign Influencers
-                  </Tag>
-                )}
-                
-                {filters.hideInBucket && (
-                  <Tag
-                    closable
-                    onClose={() => handleFilterChange("hideInBucket", false)}
-                    className="flex items-center gap-1"
-                    color="red"
-                  >
-                    Hide Bucket Influencers
-                  </Tag>
-                )}
-
-                {/* Follower Demographics */}
-                {filters.social_media_followers_gender && (
-                  <Tag
-                    closable
-                    onClose={() => {
-                      handleFilterChange("social_media_followers_gender", null);
-                      handleFilterChange(
-                        "social_media_followers_gender_percentage",
-                        null
-                      );
-                      setSelectedFollowerGenders([]);
-                    }}
-                    className="flex items-center gap-1"
-                    color="red"
-                  >
-                    Follower Gender:{" "}
-                    {filters.social_media_followers_gender_percentage}%
-                  </Tag>
-                )}
-
-                {filters.social_media_followers_age && (
-                  <Tag
-                    closable
-                    onClose={() => {
-                      handleFilterChange("social_media_followers_age", null);
-                      handleFilterChange(
-                        "social_media_followers_age_percentage",
-                        null
-                      );
-                      setSelectedFollowerAgeRanges([]);
-                    }}
-                    className="flex items-center gap-1"
-                    color="volcano"
-                  >
-                    Follower Age: {filters.social_media_followers_age} (
-                    {filters.social_media_followers_age_percentage}%)
-                  </Tag>
-                )}
-
-                {filters.social_media_followers_country && (
-                  <Tag
-                    closable
-                    onClose={() => {
-                      handleFilterChange(
-                        "social_media_followers_country",
-                        null
-                      );
-                      handleFilterChange(
-                        "social_media_followers_country_percentage",
-                        null
-                      );
-                      setSelectedFollowerCountries(null);
-                    }}
-                    className="flex items-center gap-1"
-                    color="geekblue"
-                  >
-                    Follower Country: {filters.social_media_followers_country} (
-                    {filters.social_media_followers_country_percentage}%)
-                  </Tag>
-                )}
-
-                {filters.social_media_followers_city && (
-                  <Tag
-                    closable
-                    onClose={() => {
-                      handleFilterChange(
-                        "social_media_followers_city",
-                        null
-                      );
-                      handleFilterChange(
-                        "social_media_followers_city_percentage",
-                        null
-                      );
-                      setSelectedFollowerCities(null);
-                    }}
-                    className="flex items-center gap-1"
-                    color="blue"
-                  >
-                    Follower City: {filters.social_media_followers_city} (
-                    {filters.social_media_followers_city_percentage}%)
-                  </Tag>
-                )}
-              </div>
-            </div>
-            <Button
-              size="small"
-              onClick={() => {
-                setFilters({
-                  bio: "",
-                  platform_verified: null,
-                  race: "",
-                  country: "",
-                  city: "",
-                  categories: [],
-                  age_start: null,
-                  age_end: null,
-                  gender: "",
-                  fullName: "",
-                  page_size: 20,
-                  social_media_followers_age: null,
-                  social_media_followers_age_percentage: null,
-                  social_media_followers_city: null,
-                  social_media_followers_city_percentage: null,
-                  social_media_followers_country: null,
-                  social_media_followers_country_percentage: null,
-                  social_media_followers_gender: null,
-                  social_media_followers_gender_percentage: null,
-                  social_media_platform_name: null,
-                  selectedCampaign: null,
-                  selectedBucket: null,
-                  hideInCampaign: false,
-                  hideInBucket: false,
-                });
-                setSelectedFollowerCities([]);
-              }}
-              className="text-xs"
-            >
-              Clear All
-            </Button>
-          </section>
-        </div>
-      )}
-
-      {/* Follower Demographics Drawer */}
-      <Drawer
-        title="Follower Demographics"
-        placement="right"
-        onClose={() => setDrawerVisible(false)}
-        open={drawerVisible}
-        width={450}
-        extra={
-          <Space>
-            <Button
-              onClick={() => {
-                setSelectedFollowerGenders([]);
-                setSelectedFollowerAgeRanges([]);
-                setSelectedFollowerCountries([]);
-                setSelectedFollowerCities([]);
-                setSelectedPlatform(null);
-                // Reset follower demographics filters to null
-                handleFilterChange("social_media_followers_gender", null);
-                handleFilterChange("social_media_followers_gender_percentage", null);
-                handleFilterChange("social_media_followers_age", null);
-                handleFilterChange("social_media_followers_age_percentage", null);
-                handleFilterChange("social_media_followers_country", null);
-                handleFilterChange("social_media_followers_country_percentage", null);
-                handleFilterChange("social_media_followers_city", null);
-                handleFilterChange("social_media_followers_city_percentage", null);
-                handleFilterChange("social_media_platform_name", null);
-              }}
-            >
-              Clear
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                if (!selectedPlatform) {
-                  toast.error("Please select a platform first");
-                  return;
-                }
-
-                // Only validate filters that are actually selected
-                if (
-                  selectedFollowerAgeRanges.length > 0 &&
-                  !filters.social_media_followers_age_percentage
-                ) {
-                  toast.error(
-                    "Please enter a percentage for the selected age range"
-                  );
-                  return;
-                }
-                if (
-                  selectedFollowerGenders.length > 0 &&
-                  !filters.social_media_followers_gender_percentage
-                ) {
-                  toast.error(
-                    "Please enter a percentage for the selected gender"
-                  );
-                  return;
-                }
-                if (
-                  selectedFollowerCountries && selectedFollowerCountries.length > 0 &&
-                  !filters.social_media_followers_country_percentage
-                ) {
-                  toast.error(
-                    "Please enter a percentage for the selected country"
-                  );
-                  return;
-                }
-                if (
-                  selectedFollowerCities && selectedFollowerCities.length > 0 &&
-                  !filters.social_media_followers_city_percentage
-                ) {
-                  toast.error(
-                    "Please enter a percentage for the selected city"
-                  );
-                  return;
-                }
-
-                // Always set the platform first
-                handleFilterChange(
-                  "social_media_platform_name",
-                  selectedPlatform
-                );
-
-                // Then set other filters if they exist
-                if (selectedFollowerGenders.length > 0) {
-                  const selectedGender = selectedFollowerGenders[0];
-                  handleFilterChange(
-                    "social_media_followers_gender",
-                    genderMapping[selectedGender]
-                  );
-                } else {
-                  handleFilterChange("social_media_followers_gender", null);
-                  handleFilterChange("social_media_followers_gender_percentage", null);
-                }
-                if (selectedFollowerAgeRanges.length > 0) {
-                  handleFilterChange(
-                    "social_media_followers_age",
-                    selectedFollowerAgeRanges[0]
-                  );
-                } else {
-                  handleFilterChange("social_media_followers_age", null);
-                  handleFilterChange("social_media_followers_age_percentage", null);
-                }
-                if (selectedFollowerCountries && selectedFollowerCountries.length > 0) {
-                  handleFilterChange(
-                    "social_media_followers_country",
-                    selectedFollowerCountries
-                  );
-                } else {
-                  handleFilterChange("social_media_followers_country", null);
-                  handleFilterChange("social_media_followers_country_percentage", null);
-                }
-                if (selectedFollowerCities && selectedFollowerCities.length > 0) {
-                  handleFilterChange(
-                    "social_media_followers_city",
-                    selectedFollowerCities
-                  );
-                } else {
-                  handleFilterChange("social_media_followers_city", null);
-                  handleFilterChange("social_media_followers_city_percentage", null);
-                }
-                setDrawerVisible(false);
-              }}
-            >
-              Apply
-            </Button>
-          </Space>
-        }
-      >
-        <div className="mb-6">
-          <Tooltip title="Select the social media platform to filter followers by (Instagram, TikTok, or Facebook)">
-            <Title level={5} className="mb-3 cursor-help">
-              Select Platform
-            </Title>
-          </Tooltip>
-          <Radio.Group
-            value={selectedPlatform}
-            onChange={(e) => {
-              const platform = e.target.value;
-              setSelectedPlatform(platform);
-              // Set the platform immediately when selected
-              handleFilterChange("social_media_platform_name", platform);
-              // Reset other filters when platform changes
-              setSelectedFollowerGenders([]);
-              setSelectedFollowerAgeRanges([]);
-              setSelectedFollowerCountries([]);
-              setSelectedFollowerCities([]);
-              handleFilterChange("social_media_followers_gender", null);
-              handleFilterChange(
-                "social_media_followers_gender_percentage",
-                null
-              );
-              handleFilterChange("social_media_followers_age", null);
-              handleFilterChange("social_media_followers_age_percentage", null);
-              handleFilterChange("social_media_followers_country", null);
-              handleFilterChange(
-                "social_media_followers_country_percentage",
-                null
-              );
-              handleFilterChange("social_media_followers_city", null);
-              handleFilterChange(
-                "social_media_followers_city_percentage",
-                null
-              );
-            }}
-            className="w-full"
-          >
-            <Space direction="vertical" className="w-full">
-              <Radio.Button
-                value="instagram"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <InstagramOutlined style={{ color: "#E1306C" }} />
-                Instagram
-              </Radio.Button>
-              <Radio.Button
-                value="tiktok"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <TikTokOutlined />
-                TikTok
-              </Radio.Button>
-              <Radio.Button
-                value="facebook"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <FacebookOutlined style={{ color: "#4267B2" }} />
-                Facebook
-              </Radio.Button>
-            </Space>
-          </Radio.Group>
-        </div>
-
-        <Divider />
-
-        <div className="mb-6">
-          <Tooltip title="Filter influencers whose followers fall within specific age ranges with the specified percentage">
-            <Title level={5} className="mb-3 cursor-help">
-              Follower Age Range
-            </Title>
-          </Tooltip>
-          <Text type="secondary" className="block mb-3 text-sm">
-            Select an age range and specify the percentage of followers in that
-            range
-          </Text>
-          <div className="space-y-4">
-            {ageRanges.map((range) => (
-              <div
-                key={range.value}
-                className="flex items-center justify-between"
-              >
-                <Checkbox
-                  checked={selectedFollowerAgeRanges.includes(range.value)}
-                  onChange={(e) => {
-                    if (!selectedPlatform) {
-                      toast.error("Please select a platform first");
-                      return;
-                    }
-                    const newRanges = e.target.checked ? [range.value] : [];
-                    setSelectedFollowerAgeRanges(newRanges);
-                    if (e.target.checked) {
-                      handleFilterChange(
-                        "social_media_followers_age",
-                        range.value
-                      );
-                    } else {
-                      handleFilterChange("social_media_followers_age", null);
-                      handleFilterChange(
-                        "social_media_followers_age_percentage",
-                        null
-                      );
-                    }
-                  }}
-                  disabled={!selectedPlatform}
-                >
-                  {range.label}
-                </Checkbox>
-                <Tooltip title="Enter the minimum percentage of followers in this age range">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="%"
-                    style={{ width: "100px" }}
-                    onKeyDown={(e) => {
-                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
-                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
-                        return;
-                      }
-                      // Allow: numbers and decimal point
-                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
-                        // Check if adding this digit would exceed 100
-                        const currentValue = e.target.value;
-                        const newValue = currentValue + e.key;
-                        if (parseFloat(newValue) > 100) {
-                          e.preventDefault();
-                        }
-                        return;
-                      }
-                      e.preventDefault();
-                    }}
-                    onChange={(e) => {
-                      if (!selectedPlatform) {
-                        toast.error("Please select a platform first");
-                        return;
-                      }
-                      const percentage = e.target.value;
-                      const numValue = parseFloat(percentage);
-                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-                        return; // Simply ignore invalid values
-                      }
-                      handleFilterChange(
-                        "social_media_followers_age_percentage",
-                        percentage
-                      );
-                    }}
-                    disabled={
-                      !selectedPlatform ||
-                      !selectedFollowerAgeRanges.includes(range.value)
-                    }
-                  />
-                </Tooltip>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <Tooltip title="Filter influencers whose followers are predominantly of a specific gender with the specified percentage">
-            <Title level={5} className="mb-3 cursor-help">
-              Follower Gender
-            </Title>
-          </Tooltip>
-          <Text type="secondary" className="block mb-3 text-sm">
-            Select a gender and specify the percentage of followers of that
-            gender
-          </Text>
-          <div className="space-y-4">
-            {genders.map((gender) => (
-              <div key={gender} className="flex items-center justify-between">
-                <Checkbox
-                  checked={selectedFollowerGenders.includes(gender)}
-                  onChange={(e) => {
-                    if (!selectedPlatform) {
-                      toast.error("Please select a platform first");
-                      return;
-                    }
-                    const newGenders = e.target.checked ? [gender] : [];
-                    setSelectedFollowerGenders(newGenders);
-                    if (e.target.checked) {
-                      handleFilterChange(
-                        "social_media_followers_gender",
-                        genderMapping[gender]
-                      );
-                    } else {
-                      handleFilterChange("social_media_followers_gender", null);
-                      handleFilterChange(
-                        "social_media_followers_gender_percentage",
-                        null
-                      );
-                    }
-                  }}
-                  disabled={!selectedPlatform}
-                >
-                  {gender}
-                </Checkbox>
-                <Tooltip title="Enter the minimum percentage of followers of this gender">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="%"
-                    style={{ width: "100px" }}
-                    onKeyDown={(e) => {
-                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
-                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
-                        return;
-                      }
-                      // Allow: numbers and decimal point
-                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
-                        // Check if adding this digit would exceed 100
-                        const currentValue = e.target.value;
-                        const newValue = currentValue + e.key;
-                        if (parseFloat(newValue) > 100) {
-                          e.preventDefault();
-                        }
-                        return;
-                      }
-                      e.preventDefault();
-                    }}
-                    onChange={(e) => {
-                      if (!selectedPlatform) {
-                        toast.error("Please select a platform first");
-                        return;
-                      }
-                      const percentage = e.target.value;
-                      const numValue = parseFloat(percentage);
-                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-                        return; // Simply ignore invalid values
-                      }
-                      handleFilterChange(
-                        "social_media_followers_gender_percentage",
-                        percentage
-                      );
-                    }}
-                    disabled={
-                      !selectedPlatform ||
-                      !selectedFollowerGenders.includes(gender)
-                    }
-                  />
-                </Tooltip>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Tooltip title="Filter influencers whose followers are predominantly from specific countries with the specified percentage">
-            <Title level={5} className="mb-3 cursor-help">
-              Top Follower Countries
-            </Title>
-          </Tooltip>
-          <Text type="secondary" className="block mb-3 text-sm">
-            Select a country and specify the percentage of followers from that
-            country
-          </Text>
-          <div className="space-y-4">
-            <Select
-              showSearch
-              placeholder="Search and select a country"
-              value={selectedFollowerCountries}
-              onChange={(value) => {
-                if (!selectedPlatform) {
-                  toast.error("Please select a platform first");
-                  return;
-                }
-                setSelectedFollowerCountries(value);
-                if (value) {
-                  handleFilterChange("social_media_followers_country", value);
-                } else {
-                  handleFilterChange("social_media_followers_country", null);
-                  handleFilterChange(
-                    "social_media_followers_country_percentage",
-                    null
-                  );
-                }
-              }}
-              className="w-full mb-4"
-              options={country_names.map((country) => ({
-                value: country.name,
-                label: country.name,
-              }))}
-              disabled={!selectedPlatform}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            />
-            {selectedFollowerCountries && (
-              <div className="flex items-center justify-between gap-4">
-                <Text className="flex-1">{selectedFollowerCountries}</Text>
-                <Tooltip title="Enter the minimum percentage of followers from this country">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="%"
-                    style={{ width: "100px" }}
-                    onKeyDown={(e) => {
-                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
-                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
-                        return;
-                      }
-                      // Allow: numbers and decimal point
-                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
-                        // Check if adding this digit would exceed 100
-                        const currentValue = e.target.value;
-                        const newValue = currentValue + e.key;
-                        if (parseFloat(newValue) > 100) {
-                          e.preventDefault();
-                        }
-                        return;
-                      }
-                      e.preventDefault();
-                    }}
-                    onChange={(e) => {
-                      if (!selectedPlatform) {
-                        toast.error("Please select a platform first");
-                        return;
-                      }
-                      const percentage = e.target.value;
-                      const numValue = parseFloat(percentage);
-                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-                        return; // Simply ignore invalid values
-                      }
-                      handleFilterChange(
-                        "social_media_followers_country_percentage",
-                        percentage
-                      );
-                    }}
-                    disabled={!selectedPlatform}
-                  />
-                </Tooltip>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <Divider />
-
-        <div>
-          <Tooltip title="Filter influencers whose followers are predominantly from specific cities with the specified percentage - especially useful for local businesses">
-            <Title level={5} className="mb-3 cursor-help">
-              Top Follower Cities
-            </Title>
-          </Tooltip>
-          <Text type="secondary" className="block mb-3 text-sm">
-            Select a city and specify the percentage of followers from that
-            city. Perfect for local business campaigns.
-          </Text>
-          <div className="space-y-4">
-            <Select
-              showSearch
-              placeholder="Search and select a city"
-              value={selectedFollowerCities}
-              onChange={(value) => {
-                if (!selectedPlatform) {
-                  toast.error("Please select a platform first");
-                  return;
-                }
-                setSelectedFollowerCities(value);
-                if (value) {
-                  handleFilterChange("social_media_followers_city", value);
-                } else {
-                  handleFilterChange("social_media_followers_city", null);
-                  handleFilterChange(
-                    "social_media_followers_city_percentage",
-                    null
-                  );
-                }
-              }}
-              className="w-full mb-4"
-              options={cities.map((city) => ({
-                value: city,
-                label: city,
-              }))}
-              disabled={!selectedPlatform}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            />
-            {selectedFollowerCities && (
-              <div className="flex items-center justify-between gap-4">
-                <Text className="flex-1">{selectedFollowerCities}</Text>
-                <Tooltip title="Enter the minimum percentage of followers from this city">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="%"
-                    style={{ width: "100px" }}
-                    onKeyDown={(e) => {
-                      // Allow: backspace, delete, tab, escape, enter, and navigation keys
-                      if ([8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)) {
-                        return;
-                      }
-                      // Allow: numbers and decimal point
-                      if ((e.keyCode >= 48 && e.keyCode <= 57) || e.keyCode === 190) {
-                        // Check if adding this digit would exceed 100
-                        const currentValue = e.target.value;
-                        const newValue = currentValue + e.key;
-                        if (parseFloat(newValue) > 100) {
-                          e.preventDefault();
-                        }
-                        return;
-                      }
-                      e.preventDefault();
-                    }}
-                    onChange={(e) => {
-                      if (!selectedPlatform) {
-                        toast.error("Please select a platform first");
-                        return;
-                      }
-                      const percentage = e.target.value;
-                      const numValue = parseFloat(percentage);
-                      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-                        return; // Simply ignore invalid values
-                      }
-                      handleFilterChange(
-                        "social_media_followers_city_percentage",
-                        percentage
-                      );
-                    }}
-                    disabled={!selectedPlatform}
-                  />
-                </Tooltip>
-              </div>
-            )}
-          </div>
-        </div>
-      </Drawer>
-
-      {/* Results Section */}
-      <div className="results-section">
-        {loading ? (
-          <Row gutter={[24, 24]}>
-            {[...Array(6)].map((_, i) => (
-              <Col xs={24} sm={12} lg={8} key={i}>
-                <Card className="h-full">
-                  <Skeleton active avatar paragraph={{ rows: 3 }} />
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        ) : results.length > 0 ? (
-          <>
-            <div className="results-header mb-4">
-              <div className="flex justify-between items-center">
-                <Text strong>Showing {filteredResults.length} influencers</Text>
-                <div className="flex items-center gap-4">
-                  {/* Select All Checkbox */}
-                  {filteredResults.length > 0 && (
-                    <Checkbox
-                      indeterminate={
-                        selectedInfluencers.length > 0 &&
-                        selectedInfluencers.length < filteredResults.length
-                      }
-                      checked={
-                        filteredResults.length > 0 &&
-                        selectedInfluencers.length === filteredResults.length
-                      }
-                      onChange={e => {
-                        if (e.target.checked) {
-                          setSelectedInfluencers(filteredResults.map(i => i.influencerId));
-                        } else {
-                          setSelectedInfluencers([]);
-                        }
-                      }}
-                    >
-                      Select All
-                    </Checkbox>
                   )}
-                  {showBulkActions && (
-                    <div className="flex gap-2">
-                      <Button
-                        className="bg-gradient-to-r from-primary to-secondary"
-                        type="primary"
-                        size="small"
-                        onClick={handleBulkAddToBucket}
-                        icon={<TeamOutlined />}
-                      >
-                        Add {selectedInfluencers.length} to Bucket
-                      </Button>
-                      <Button
-                        className="bg-gradient-to-r from-secondary to-primary"
-                        type="primary"
-                        size="small"
-                        onClick={handleBulkAddToCampaign}
-                        icon={<ShoppingOutlined />}
-                      >
-                        Add {selectedInfluencers.length} to Campaign
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => setSelectedInfluencers([])}
-                      >
-                        Clear Selection
-                      </Button>
-                    </div>
+
+                  {/* Campaign Filter */}
+                  {filters.selectedCampaign && (
+                    <Tag
+                      closable
+                      onClose={() =>
+                        handleFilterChange("selectedCampaign", null)
+                      }
+                      className="flex items-center gap-1"
+                      color="lime"
+                    >
+                      Campaign:{" "}
+                      {(() => {
+                        const name =
+                          brandCampaigns.find(
+                            (c) => c.id === filters.selectedCampaign
+                          )?.title || "";
+                        return name.length > 27
+                          ? name.slice(0, 27) + "..."
+                          : name;
+                      })()}
+                    </Tag>
+                  )}
+
+                  {/* Bucket Filter */}
+                  {filters.selectedBucket && (
+                    <Tag
+                      closable
+                      onClose={() => handleFilterChange("selectedBucket", null)}
+                      className="flex items-center gap-1"
+                      color="gold"
+                    >
+                      Bucket:{" "}
+                      {(() => {
+                        const name =
+                          bucketList.find(
+                            (b) => b.id === filters.selectedBucket
+                          )?.name || "";
+                        return name.length > 27
+                          ? name.slice(0, 27) + "..."
+                          : name;
+                      })()}
+                    </Tag>
+                  )}
+
+                  {/* Hide Options */}
+                  {filters.hideInCampaign && (
+                    <Tag
+                      closable
+                      onClose={() =>
+                        handleFilterChange("hideInCampaign", false)
+                      }
+                      className="flex items-center gap-1"
+                      color="red"
+                    >
+                      Hide Campaign Influencers
+                    </Tag>
+                  )}
+
+                  {filters.hideInBucket && (
+                    <Tag
+                      closable
+                      onClose={() => handleFilterChange("hideInBucket", false)}
+                      className="flex items-center gap-1"
+                      color="red"
+                    >
+                      Hide Bucket Influencers
+                    </Tag>
+                  )}
+
+                  {/* Follower Demographics */}
+                  {filters.social_media_followers_gender && (
+                    <Tag
+                      closable
+                      onClose={() => {
+                        handleFilterChange(
+                          "social_media_followers_gender",
+                          null
+                        );
+                        handleFilterChange(
+                          "social_media_followers_gender_percentage",
+                          null
+                        );
+                        setSelectedFollowerGenders([]);
+                      }}
+                      className="flex items-center gap-1"
+                      color="red"
+                    >
+                      Follower Gender:{" "}
+                      {filters.social_media_followers_gender_percentage}%
+                    </Tag>
+                  )}
+
+                  {filters.social_media_followers_age && (
+                    <Tag
+                      closable
+                      onClose={() => {
+                        handleFilterChange("social_media_followers_age", null);
+                        handleFilterChange(
+                          "social_media_followers_age_percentage",
+                          null
+                        );
+                        setSelectedFollowerAgeRanges([]);
+                      }}
+                      className="flex items-center gap-1"
+                      color="volcano"
+                    >
+                      Follower Age: {filters.social_media_followers_age} (
+                      {filters.social_media_followers_age_percentage}%)
+                    </Tag>
+                  )}
+
+                  {filters.social_media_followers_country && (
+                    <Tag
+                      closable
+                      onClose={() => {
+                        handleFilterChange(
+                          "social_media_followers_country",
+                          null
+                        );
+                        handleFilterChange(
+                          "social_media_followers_country_percentage",
+                          null
+                        );
+                        setSelectedFollowerCountries(null);
+                      }}
+                      className="flex items-center gap-1"
+                      color="geekblue"
+                    >
+                      Follower Country: {filters.social_media_followers_country}{" "}
+                      ({filters.social_media_followers_country_percentage}%)
+                    </Tag>
+                  )}
+
+                  {filters.social_media_followers_city && (
+                    <Tag
+                      closable
+                      onClose={() => {
+                        handleFilterChange("social_media_followers_city", null);
+                        handleFilterChange(
+                          "social_media_followers_city_percentage",
+                          null
+                        );
+                        setSelectedFollowerCities(null);
+                      }}
+                      className="flex items-center gap-1"
+                      color="blue"
+                    >
+                      Follower City: {filters.social_media_followers_city} (
+                      {filters.social_media_followers_city_percentage}%)
+                    </Tag>
                   )}
                 </div>
               </div>
-            </div>
-            <Row gutter={[24, 24]}>
-              {filteredResults.map((influencer) => (
-                <Col xs={24} sm={12} md={12} lg={8} key={influencer.influencerId}>
-                  <InfluencerCard
-                    influencer={influencer}
-                    onAddToBucket={() => setBucketModalData([influencer])}
-                    onAddToCampaign={() => setCampaignModalData([influencer])}
-                    isSelected={selectedInfluencers.includes(
-                      influencer.influencerId
-                    )}
-                    onSelect={handleInfluencerSelect}
-                    showCheckbox={true}
-                    bucketList={bucketList}
-                    brandCampaigns={brandCampaigns}
-                  />
-                </Col>
-              ))}
-            </Row>
-            <div className="text-center mt-6 flex justify-center">
-              <Pagination
-                current={currentPage}
-                pageSize={filters.page_size || 20}
-                total={searchResults?.count || filteredResults.length}
-                onChange={page => {
-                  setCurrentPage(page);
-                  // If backend supports offset:
-                  const offset = (page - 1) * (filters.page_size || 20);
-                  fetchResultsWithOffset(offset);
-                  // If only cursor-based, you may need to adjust this logic.
-                }}
-                showSizeChanger={false}
-              />
-            </div>
-            {/* Modals for add to bucket/campaign */}
-            <AddToBucketListModal
-              data={bucketModalData || []}
-              open={!!bucketModalData}
-              onClose={() => setBucketModalData(null)}
-            />
-            <AddToCampaignModal
-              data={campaignModalData || []}
-              open={!!campaignModalData}
-              onClose={() => setCampaignModalData(null)}
-            />
-          </>
-        ) : (
-          <Card>
-            <Empty
-              description={
-                <span>
-                  No influencers found matching your criteria. Try adjusting
-                  your filters.
-                </span>
-              }
-            >
               <Button
-                type="primary"
-                onClick={() =>
+                size="small"
+                onClick={() => {
                   setFilters({
                     bio: "",
                     platform_verified: null,
@@ -1411,19 +724,817 @@ const SearchInfluencers = () => {
                     age_start: null,
                     age_end: null,
                     gender: "",
-                    keywords: "",
+                    fullName: "",
                     page_size: 20,
-                  })
-                }
-                className="mt-4"
+                    social_media_followers_age: null,
+                    social_media_followers_age_percentage: null,
+                    social_media_followers_city: null,
+                    social_media_followers_city_percentage: null,
+                    social_media_followers_country: null,
+                    social_media_followers_country_percentage: null,
+                    social_media_followers_gender: null,
+                    social_media_followers_gender_percentage: null,
+                    social_media_platform_name: null,
+                    selectedCampaign: null,
+                    selectedBucket: null,
+                    hideInCampaign: false,
+                    hideInBucket: false,
+                  });
+                  setSelectedFollowerCities([]);
+                }}
+                className="text-xs"
               >
-                Clear all filters
+                Clear All
               </Button>
-            </Empty>
-          </Card>
+            </section>
+          </div>
         )}
+
+        {/* Follower Demographics Drawer */}
+        <Drawer
+          title="Follower Demographics"
+          placement="right"
+          onClose={() => setDrawerVisible(false)}
+          open={drawerVisible}
+          width={450}
+          extra={
+            <Space>
+              <Button
+                onClick={() => {
+                  setSelectedFollowerGenders([]);
+                  setSelectedFollowerAgeRanges([]);
+                  setSelectedFollowerCountries([]);
+                  setSelectedFollowerCities([]);
+                  setSelectedPlatform(null);
+                  // Reset follower demographics filters to null
+                  handleFilterChange("social_media_followers_gender", null);
+                  handleFilterChange(
+                    "social_media_followers_gender_percentage",
+                    null
+                  );
+                  handleFilterChange("social_media_followers_age", null);
+                  handleFilterChange(
+                    "social_media_followers_age_percentage",
+                    null
+                  );
+                  handleFilterChange("social_media_followers_country", null);
+                  handleFilterChange(
+                    "social_media_followers_country_percentage",
+                    null
+                  );
+                  handleFilterChange("social_media_followers_city", null);
+                  handleFilterChange(
+                    "social_media_followers_city_percentage",
+                    null
+                  );
+                  handleFilterChange("social_media_platform_name", null);
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (!selectedPlatform) {
+                    toast.error("Please select a platform first");
+                    return;
+                  }
+
+                  // Only validate filters that are actually selected
+                  if (
+                    selectedFollowerAgeRanges.length > 0 &&
+                    !filters.social_media_followers_age_percentage
+                  ) {
+                    toast.error(
+                      "Please enter a percentage for the selected age range"
+                    );
+                    return;
+                  }
+                  if (
+                    selectedFollowerGenders.length > 0 &&
+                    !filters.social_media_followers_gender_percentage
+                  ) {
+                    toast.error(
+                      "Please enter a percentage for the selected gender"
+                    );
+                    return;
+                  }
+                  if (
+                    selectedFollowerCountries &&
+                    selectedFollowerCountries.length > 0 &&
+                    !filters.social_media_followers_country_percentage
+                  ) {
+                    toast.error(
+                      "Please enter a percentage for the selected country"
+                    );
+                    return;
+                  }
+                  if (
+                    selectedFollowerCities &&
+                    selectedFollowerCities.length > 0 &&
+                    !filters.social_media_followers_city_percentage
+                  ) {
+                    toast.error(
+                      "Please enter a percentage for the selected city"
+                    );
+                    return;
+                  }
+
+                  // Always set the platform first
+                  handleFilterChange(
+                    "social_media_platform_name",
+                    selectedPlatform
+                  );
+
+                  // Then set other filters if they exist
+                  if (selectedFollowerGenders.length > 0) {
+                    const selectedGender = selectedFollowerGenders[0];
+                    handleFilterChange(
+                      "social_media_followers_gender",
+                      genderMapping[selectedGender]
+                    );
+                  } else {
+                    handleFilterChange("social_media_followers_gender", null);
+                    handleFilterChange(
+                      "social_media_followers_gender_percentage",
+                      null
+                    );
+                  }
+                  if (selectedFollowerAgeRanges.length > 0) {
+                    handleFilterChange(
+                      "social_media_followers_age",
+                      selectedFollowerAgeRanges[0]
+                    );
+                  } else {
+                    handleFilterChange("social_media_followers_age", null);
+                    handleFilterChange(
+                      "social_media_followers_age_percentage",
+                      null
+                    );
+                  }
+                  if (
+                    selectedFollowerCountries &&
+                    selectedFollowerCountries.length > 0
+                  ) {
+                    handleFilterChange(
+                      "social_media_followers_country",
+                      selectedFollowerCountries
+                    );
+                  } else {
+                    handleFilterChange("social_media_followers_country", null);
+                    handleFilterChange(
+                      "social_media_followers_country_percentage",
+                      null
+                    );
+                  }
+                  if (
+                    selectedFollowerCities &&
+                    selectedFollowerCities.length > 0
+                  ) {
+                    handleFilterChange(
+                      "social_media_followers_city",
+                      selectedFollowerCities
+                    );
+                  } else {
+                    handleFilterChange("social_media_followers_city", null);
+                    handleFilterChange(
+                      "social_media_followers_city_percentage",
+                      null
+                    );
+                  }
+                  setDrawerVisible(false);
+                }}
+              >
+                Apply
+              </Button>
+            </Space>
+          }
+        >
+          <div className="mb-6">
+            <Tooltip title="Select the social media platform to filter followers by (Instagram, TikTok, or Facebook)">
+              <Title level={5} className="mb-3 cursor-help">
+                Select Platform
+              </Title>
+            </Tooltip>
+            <Radio.Group
+              value={selectedPlatform}
+              onChange={(e) => {
+                const platform = e.target.value;
+                setSelectedPlatform(platform);
+                // Set the platform immediately when selected
+                handleFilterChange("social_media_platform_name", platform);
+                // Reset other filters when platform changes
+                setSelectedFollowerGenders([]);
+                setSelectedFollowerAgeRanges([]);
+                setSelectedFollowerCountries([]);
+                setSelectedFollowerCities([]);
+                handleFilterChange("social_media_followers_gender", null);
+                handleFilterChange(
+                  "social_media_followers_gender_percentage",
+                  null
+                );
+                handleFilterChange("social_media_followers_age", null);
+                handleFilterChange(
+                  "social_media_followers_age_percentage",
+                  null
+                );
+                handleFilterChange("social_media_followers_country", null);
+                handleFilterChange(
+                  "social_media_followers_country_percentage",
+                  null
+                );
+                handleFilterChange("social_media_followers_city", null);
+                handleFilterChange(
+                  "social_media_followers_city_percentage",
+                  null
+                );
+              }}
+              className="w-full"
+            >
+              <Space direction="vertical" className="w-full">
+                <Radio.Button
+                  value="instagram"
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <InstagramOutlined style={{ color: "#E1306C" }} />
+                  Instagram
+                </Radio.Button>
+                <Radio.Button
+                  value="tiktok"
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <TikTokOutlined />
+                  TikTok
+                </Radio.Button>
+                <Radio.Button
+                  value="facebook"
+                  className="w-full flex items-center justify-center gap-2"
+                >
+                  <FacebookOutlined style={{ color: "#4267B2" }} />
+                  Facebook
+                </Radio.Button>
+              </Space>
+            </Radio.Group>
+          </div>
+
+          <Divider />
+
+          <div className="mb-6">
+            <Tooltip title="Filter influencers whose followers fall within specific age ranges with the specified percentage">
+              <Title level={5} className="mb-3 cursor-help">
+                Follower Age Range
+              </Title>
+            </Tooltip>
+            <Text type="secondary" className="block mb-3 text-sm">
+              Select an age range and specify the percentage of followers in
+              that range
+            </Text>
+            <div className="space-y-4">
+              {ageRanges.map((range) => (
+                <div
+                  key={range.value}
+                  className="flex items-center justify-between"
+                >
+                  <Checkbox
+                    checked={selectedFollowerAgeRanges.includes(range.value)}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error("Please select a platform first");
+                        return;
+                      }
+                      const newRanges = e.target.checked ? [range.value] : [];
+                      setSelectedFollowerAgeRanges(newRanges);
+                      if (e.target.checked) {
+                        handleFilterChange(
+                          "social_media_followers_age",
+                          range.value
+                        );
+                      } else {
+                        handleFilterChange("social_media_followers_age", null);
+                        handleFilterChange(
+                          "social_media_followers_age_percentage",
+                          null
+                        );
+                      }
+                    }}
+                    disabled={!selectedPlatform}
+                  >
+                    {range.label}
+                  </Checkbox>
+                  <Tooltip title="Enter the minimum percentage of followers in this age range">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      placeholder="%"
+                      style={{ width: "100px" }}
+                      onKeyDown={(e) => {
+                        // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                        if (
+                          [8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)
+                        ) {
+                          return;
+                        }
+                        // Allow: numbers and decimal point
+                        if (
+                          (e.keyCode >= 48 && e.keyCode <= 57) ||
+                          e.keyCode === 190
+                        ) {
+                          // Check if adding this digit would exceed 100
+                          const currentValue = e.target.value;
+                          const newValue = currentValue + e.key;
+                          if (parseFloat(newValue) > 100) {
+                            e.preventDefault();
+                          }
+                          return;
+                        }
+                        e.preventDefault();
+                      }}
+                      onChange={(e) => {
+                        if (!selectedPlatform) {
+                          toast.error("Please select a platform first");
+                          return;
+                        }
+                        const percentage = e.target.value;
+                        const numValue = parseFloat(percentage);
+                        if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                          return; // Simply ignore invalid values
+                        }
+                        handleFilterChange(
+                          "social_media_followers_age_percentage",
+                          percentage
+                        );
+                      }}
+                      disabled={
+                        !selectedPlatform ||
+                        !selectedFollowerAgeRanges.includes(range.value)
+                      }
+                    />
+                  </Tooltip>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <Tooltip title="Filter influencers whose followers are predominantly of a specific gender with the specified percentage">
+              <Title level={5} className="mb-3 cursor-help">
+                Follower Gender
+              </Title>
+            </Tooltip>
+            <Text type="secondary" className="block mb-3 text-sm">
+              Select a gender and specify the percentage of followers of that
+              gender
+            </Text>
+            <div className="space-y-4">
+              {genders.map((gender) => (
+                <div key={gender} className="flex items-center justify-between">
+                  <Checkbox
+                    checked={selectedFollowerGenders.includes(gender)}
+                    onChange={(e) => {
+                      if (!selectedPlatform) {
+                        toast.error("Please select a platform first");
+                        return;
+                      }
+                      const newGenders = e.target.checked ? [gender] : [];
+                      setSelectedFollowerGenders(newGenders);
+                      if (e.target.checked) {
+                        handleFilterChange(
+                          "social_media_followers_gender",
+                          genderMapping[gender]
+                        );
+                      } else {
+                        handleFilterChange(
+                          "social_media_followers_gender",
+                          null
+                        );
+                        handleFilterChange(
+                          "social_media_followers_gender_percentage",
+                          null
+                        );
+                      }
+                    }}
+                    disabled={!selectedPlatform}
+                  >
+                    {gender}
+                  </Checkbox>
+                  <Tooltip title="Enter the minimum percentage of followers of this gender">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      placeholder="%"
+                      style={{ width: "100px" }}
+                      onKeyDown={(e) => {
+                        // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                        if (
+                          [8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)
+                        ) {
+                          return;
+                        }
+                        // Allow: numbers and decimal point
+                        if (
+                          (e.keyCode >= 48 && e.keyCode <= 57) ||
+                          e.keyCode === 190
+                        ) {
+                          // Check if adding this digit would exceed 100
+                          const currentValue = e.target.value;
+                          const newValue = currentValue + e.key;
+                          if (parseFloat(newValue) > 100) {
+                            e.preventDefault();
+                          }
+                          return;
+                        }
+                        e.preventDefault();
+                      }}
+                      onChange={(e) => {
+                        if (!selectedPlatform) {
+                          toast.error("Please select a platform first");
+                          return;
+                        }
+                        const percentage = e.target.value;
+                        const numValue = parseFloat(percentage);
+                        if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                          return; // Simply ignore invalid values
+                        }
+                        handleFilterChange(
+                          "social_media_followers_gender_percentage",
+                          percentage
+                        );
+                      }}
+                      disabled={
+                        !selectedPlatform ||
+                        !selectedFollowerGenders.includes(gender)
+                      }
+                    />
+                  </Tooltip>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Tooltip title="Filter influencers whose followers are predominantly from specific countries with the specified percentage">
+              <Title level={5} className="mb-3 cursor-help">
+                Top Follower Countries
+              </Title>
+            </Tooltip>
+            <Text type="secondary" className="block mb-3 text-sm">
+              Select a country and specify the percentage of followers from that
+              country
+            </Text>
+            <div className="space-y-4">
+              <Select
+                showSearch
+                placeholder="Search and select a country"
+                value={selectedFollowerCountries}
+                onChange={(value) => {
+                  if (!selectedPlatform) {
+                    toast.error("Please select a platform first");
+                    return;
+                  }
+                  setSelectedFollowerCountries(value);
+                  if (value) {
+                    handleFilterChange("social_media_followers_country", value);
+                  } else {
+                    handleFilterChange("social_media_followers_country", null);
+                    handleFilterChange(
+                      "social_media_followers_country_percentage",
+                      null
+                    );
+                  }
+                }}
+                className="w-full mb-4"
+                options={country_names.map((country) => ({
+                  value: country.name,
+                  label: country.name,
+                }))}
+                disabled={!selectedPlatform}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              />
+              {selectedFollowerCountries && (
+                <div className="flex items-center justify-between gap-4">
+                  <Text className="flex-1">{selectedFollowerCountries}</Text>
+                  <Tooltip title="Enter the minimum percentage of followers from this country">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      placeholder="%"
+                      style={{ width: "100px" }}
+                      onKeyDown={(e) => {
+                        // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                        if (
+                          [8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)
+                        ) {
+                          return;
+                        }
+                        // Allow: numbers and decimal point
+                        if (
+                          (e.keyCode >= 48 && e.keyCode <= 57) ||
+                          e.keyCode === 190
+                        ) {
+                          // Check if adding this digit would exceed 100
+                          const currentValue = e.target.value;
+                          const newValue = currentValue + e.key;
+                          if (parseFloat(newValue) > 100) {
+                            e.preventDefault();
+                          }
+                          return;
+                        }
+                        e.preventDefault();
+                      }}
+                      onChange={(e) => {
+                        if (!selectedPlatform) {
+                          toast.error("Please select a platform first");
+                          return;
+                        }
+                        const percentage = e.target.value;
+                        const numValue = parseFloat(percentage);
+                        if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                          return; // Simply ignore invalid values
+                        }
+                        handleFilterChange(
+                          "social_media_followers_country_percentage",
+                          percentage
+                        );
+                      }}
+                      disabled={!selectedPlatform}
+                    />
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Divider />
+
+          <div>
+            <Tooltip title="Filter influencers whose followers are predominantly from specific cities with the specified percentage - especially useful for local businesses">
+              <Title level={5} className="mb-3 cursor-help">
+                Top Follower Cities
+              </Title>
+            </Tooltip>
+            <Text type="secondary" className="block mb-3 text-sm">
+              Select a city and specify the percentage of followers from that
+              city. Perfect for local business campaigns.
+            </Text>
+            <div className="space-y-4">
+              <Select
+                showSearch
+                placeholder="Search and select a city"
+                value={selectedFollowerCities}
+                onChange={(value) => {
+                  if (!selectedPlatform) {
+                    toast.error("Please select a platform first");
+                    return;
+                  }
+                  setSelectedFollowerCities(value);
+                  if (value) {
+                    handleFilterChange("social_media_followers_city", value);
+                  } else {
+                    handleFilterChange("social_media_followers_city", null);
+                    handleFilterChange(
+                      "social_media_followers_city_percentage",
+                      null
+                    );
+                  }
+                }}
+                className="w-full mb-4"
+                options={cities.map((city) => ({
+                  value: city,
+                  label: city,
+                }))}
+                disabled={!selectedPlatform}
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              />
+              {selectedFollowerCities && (
+                <div className="flex items-center justify-between gap-4">
+                  <Text className="flex-1">{selectedFollowerCities}</Text>
+                  <Tooltip title="Enter the minimum percentage of followers from this city">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      placeholder="%"
+                      style={{ width: "100px" }}
+                      onKeyDown={(e) => {
+                        // Allow: backspace, delete, tab, escape, enter, and navigation keys
+                        if (
+                          [8, 9, 27, 13, 46, 37, 38, 39, 40].includes(e.keyCode)
+                        ) {
+                          return;
+                        }
+                        // Allow: numbers and decimal point
+                        if (
+                          (e.keyCode >= 48 && e.keyCode <= 57) ||
+                          e.keyCode === 190
+                        ) {
+                          // Check if adding this digit would exceed 100
+                          const currentValue = e.target.value;
+                          const newValue = currentValue + e.key;
+                          if (parseFloat(newValue) > 100) {
+                            e.preventDefault();
+                          }
+                          return;
+                        }
+                        e.preventDefault();
+                      }}
+                      onChange={(e) => {
+                        if (!selectedPlatform) {
+                          toast.error("Please select a platform first");
+                          return;
+                        }
+                        const percentage = e.target.value;
+                        const numValue = parseFloat(percentage);
+                        if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                          return; // Simply ignore invalid values
+                        }
+                        handleFilterChange(
+                          "social_media_followers_city_percentage",
+                          percentage
+                        );
+                      }}
+                      disabled={!selectedPlatform}
+                    />
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          </div>
+        </Drawer>
+
+        {/* Results Section */}
+        <div className="results-section">
+          {loading ? (
+            <Row gutter={[24, 24]}>
+              {[...Array(6)].map((_, i) => (
+                <Col xs={24} sm={12} lg={8} key={i}>
+                  <Card className="h-full">
+                    <Skeleton active avatar paragraph={{ rows: 3 }} />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          ) : results.length > 0 ? (
+            <>
+              <div className="results-header mb-4">
+                <div className="flex justify-between items-center">
+                  <Text strong>
+                    Showing {filteredResults.length} influencers
+                  </Text>
+                  <div className="flex items-center gap-4">
+                    {/* Select All Checkbox */}
+                    {filteredResults.length > 0 && (
+                      <Checkbox
+                        indeterminate={
+                          selectedInfluencers.length > 0 &&
+                          selectedInfluencers.length < filteredResults.length
+                        }
+                        checked={
+                          filteredResults.length > 0 &&
+                          selectedInfluencers.length === filteredResults.length
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedInfluencers(
+                              filteredResults.map((i) => i.influencerId)
+                            );
+                          } else {
+                            setSelectedInfluencers([]);
+                          }
+                        }}
+                      >
+                        Select All
+                      </Checkbox>
+                    )}
+                    {showBulkActions && (
+                      <div className="flex gap-2">
+                        <Button
+                          className="bg-gradient-to-r from-primary to-secondary"
+                          type="primary"
+                          size="small"
+                          onClick={handleBulkAddToBucket}
+                          icon={<TeamOutlined />}
+                        >
+                          Add {selectedInfluencers.length} to Bucket
+                        </Button>
+                        <Button
+                          className="bg-gradient-to-r from-secondary to-primary"
+                          type="primary"
+                          size="small"
+                          onClick={handleBulkAddToCampaign}
+                          icon={<ShoppingOutlined />}
+                        >
+                          Add {selectedInfluencers.length} to Campaign
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => setSelectedInfluencers([])}
+                        >
+                          Clear Selection
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Row gutter={[24, 24]}>
+                {filteredResults.map((influencer) => (
+                  <Col
+                    xs={24}
+                    sm={12}
+                    md={12}
+                    lg={8}
+                    key={influencer.influencerId}
+                  >
+                    <InfluencerCard
+                      influencer={influencer}
+                      onAddToBucket={() => setBucketModalData([influencer])}
+                      onAddToCampaign={() => setCampaignModalData([influencer])}
+                      isSelected={selectedInfluencers.includes(
+                        influencer.influencerId
+                      )}
+                      onSelect={handleInfluencerSelect}
+                      showCheckbox={true}
+                      bucketList={bucketList}
+                      brandCampaigns={brandCampaigns}
+                    />
+                  </Col>
+                ))}
+              </Row>
+              <div className="text-center mt-6 flex justify-center">
+                <Pagination
+                  current={currentPage}
+                  pageSize={filters.page_size || 20}
+                  total={searchResults?.count || filteredResults.length}
+                  onChange={(page) => {
+                    setCurrentPage(page);
+                    // If backend supports offset:
+                    const offset = (page - 1) * (filters.page_size || 20);
+                    fetchResultsWithOffset(offset);
+                    // If only cursor-based, you may need to adjust this logic.
+                  }}
+                  showSizeChanger={false}
+                />
+              </div>
+              {/* Modals for add to bucket/campaign */}
+              <AddToBucketListModal
+                data={bucketModalData || []}
+                open={!!bucketModalData}
+                onClose={() => setBucketModalData(null)}
+              />
+              <AddToCampaignModal
+                data={campaignModalData || []}
+                open={!!campaignModalData}
+                onClose={() => setCampaignModalData(null)}
+              />
+            </>
+          ) : (
+            <Card>
+              <Empty
+                description={
+                  <span>
+                    No influencers found matching your criteria. Try adjusting
+                    your filters.
+                  </span>
+                }
+              >
+                <Button
+                  type="primary"
+                  onClick={() =>
+                    setFilters({
+                      bio: "",
+                      platform_verified: null,
+                      race: "",
+                      country: "",
+                      city: "",
+                      categories: [],
+                      age_start: null,
+                      age_end: null,
+                      gender: "",
+                      keywords: "",
+                      page_size: 20,
+                    })
+                  }
+                  className="mt-4"
+                >
+                  Clear all filters
+                </Button>
+              </Empty>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 };
 

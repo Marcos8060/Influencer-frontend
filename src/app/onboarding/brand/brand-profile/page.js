@@ -26,6 +26,7 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import AuthGuard from "@/assets/hooks/authGuard";
 
 const { Panel } = Collapse;
 const { Title, Text, Paragraph } = Typography;
@@ -255,600 +256,644 @@ const BrandProfile = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#f4f6fb] to-[#e9ecf7]">
-      <div className="w-11/12 mx-auto py-12">
-        <Card bodyStyle={{ padding: 0 }} className="rounded-md shadow-xl bg-white">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row items-start justify-between px-8 pt-8 gap-6 md:gap-4">
-            <div className="flex items-center gap-8">
-              <Avatar size={96} className="bg-gray-200 text-4xl">
-                {brandData.name ? brandData.name[0] : "?"}
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <Title level={2} className="!mb-0 !font-bold">
-                    {brandData.name}
-                  </Title>
-                  <Badge
-                    status="success"
-                    text={<span className="text-green-600 font-medium">Verified</span>}
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {industries.length > 0 ? (
-                    industries.map((ind, i) => (
-                      <Tag key={i} color="blue" className="text-[13px]">{ind}</Tag>
-                    ))
-                  ) : (
-                    <span className="text-gray-400">—</span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-6 text-gray-600 text-[15px] mt-3">
-                  <span className="flex items-center gap-1"><EnvironmentOutlined /> {brandData.city}, {brandData.state}, {brandData.countryData?.name || "—"}</span>
-                  <span className="flex items-center gap-1"><PhoneOutlined /> {brandData.brandPhoneNumber?.code} {brandData.brandPhoneNumber?.number}</span>
-                  <a href={brandData.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline"><GlobalOutlined /> {brandData.website.replace(/^https?:\/\//, "")}</a>
+    <AuthGuard>
+      <div className="min-h-screen w-full bg-gradient-to-br from-[#f4f6fb] to-[#e9ecf7]">
+        <div className="w-11/12 mx-auto py-12">
+          <Card
+            bodyStyle={{ padding: 0 }}
+            className="rounded-md shadow-xl bg-white"
+          >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row items-start justify-between px-8 pt-8 gap-6 md:gap-4">
+              <div className="flex items-center gap-8">
+                <Avatar size={96} className="bg-gray-200 text-4xl">
+                  {brandData.name ? brandData.name[0] : "?"}
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <Title level={2} className="!mb-0 !font-bold">
+                      {brandData.name}
+                    </Title>
+                    <Badge
+                      status="success"
+                      text={
+                        <span className="text-green-600 font-medium">
+                          Verified
+                        </span>
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {industries.length > 0 ? (
+                      industries.map((ind, i) => (
+                        <Tag key={i} color="blue" className="text-[13px]">
+                          {ind}
+                        </Tag>
+                      ))
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-6 text-gray-600 text-[15px] mt-3">
+                    <span className="flex items-center gap-1">
+                      <EnvironmentOutlined /> {brandData.city},{" "}
+                      {brandData.state}, {brandData.countryData?.name || "—"}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <PhoneOutlined /> {brandData.brandPhoneNumber?.code}{" "}
+                      {brandData.brandPhoneNumber?.number}
+                    </span>
+                    <a
+                      href={brandData.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-blue-600 hover:underline"
+                    >
+                      <GlobalOutlined />{" "}
+                      {brandData.website.replace(/^https?:\/\//, "")}
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-            {!isEditing && (
-              <button
-                onClick={handleEdit}
-                className="flex items-center gap-2 whitespace-nowrap text-white bg-gradient-to-r from-primary to-secondary px-6 py-2 rounded text-sm font-medium shadow hover:from-blue-700 hover:to-blue-500 transition-colors"
-              >
-                <EditOutlined className="text-base" />
-                <span>Edit Profile</span>
-              </button>
-            )}
-          </div>
-
-          {/* Main Content: Display or Edit */}
-          <div className="p-8 w-full">
-            {isEditing ? (
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSave}
-                initialValues={{ ...brandData, industry: industries }}
-              >
-                <Tabs
-                  defaultActiveKey="general"
-                  type="card"
-                  style={{ marginBottom: 24 }}
+              {!isEditing && (
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center gap-2 whitespace-nowrap text-white bg-gradient-to-r from-primary to-secondary px-6 py-2 rounded text-sm font-medium shadow hover:from-blue-700 hover:to-blue-500 transition-colors"
                 >
-                  <Tabs.TabPane tab="General Info" key="general">
-                    <Row gutter={32}>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name="name"
-                          label="Brand Name"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter brand name",
-                            },
-                          ]}
-                        >
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name="legalCompanyName"
-                          label="Legal Company Name"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please enter legal company name",
-                            },
-                          ]}
-                        >
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name="website"
-                          label="Website"
-                          rules={[
-                            { required: true, message: "Please enter website" },
-                          ]}
-                        >
-                          {" "}
-                          <Input addonBefore="https://" />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="businessType" label="Business Type">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name="industry"
-                          label="Industry"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please select industry",
-                            },
-                          ]}
-                        >
-                          {" "}
-                          <Select
-                            mode="tags"
-                            style={{ width: "100%" }}
-                            placeholder="Select or type industries"
+                  <EditOutlined className="text-base" />
+                  <span>Edit Profile</span>
+                </button>
+              )}
+            </div>
+
+            {/* Main Content: Display or Edit */}
+            <div className="p-8 w-full">
+              {isEditing ? (
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={handleSave}
+                  initialValues={{ ...brandData, industry: industries }}
+                >
+                  <Tabs
+                    defaultActiveKey="general"
+                    type="card"
+                    style={{ marginBottom: 24 }}
+                  >
+                    <Tabs.TabPane tab="General Info" key="general">
+                      <Row gutter={32}>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name="name"
+                            label="Brand Name"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter brand name",
+                              },
+                            ]}
                           >
                             {" "}
-                            {industryOptions.map((opt) => (
-                              <Option key={opt} value={opt}>
-                                {opt}
-                              </Option>
-                            ))}{" "}
-                          </Select>{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="companyType" label="Company Type">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="companySize" label="Company Size">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name="geographicalScopeOfOperations"
-                          label="Geographical Scope"
-                        >
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Contact & Location" key="contact">
-                    <Row gutter={32}>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="address" label="Address">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="city" label="City">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="state" label="State">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item name="zipCode" label="Zip Code">
-                          {" "}
-                          <Input />{" "}
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          label="Phone Number"
-                          required
-                          validateStatus={phoneError ? "error" : ""}
-                          help={phoneError}
-                        >
-                          <Input
-                            addonBefore={
-                              <Form.Item
-                                name="phoneCode"
-                                noStyle
-                                initialValue={
-                                  brandData.brandPhoneNumber?.code || "+1"
-                                }
-                              >
-                                <Select
-                                  showSearch
-                                  optionFilterProp="children"
-                                  style={{ width: 180 }}
-                                  filterOption={(input, option) =>
-                                    option?.children
-                                      ?.toLowerCase()
-                                      .indexOf(input.toLowerCase()) >= 0
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name="legalCompanyName"
+                            label="Legal Company Name"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter legal company name",
+                              },
+                            ]}
+                          >
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name="website"
+                            label="Website"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please enter website",
+                              },
+                            ]}
+                          >
+                            {" "}
+                            <Input addonBefore="https://" />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="businessType" label="Business Type">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name="industry"
+                            label="Industry"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please select industry",
+                              },
+                            ]}
+                          >
+                            {" "}
+                            <Select
+                              mode="tags"
+                              style={{ width: "100%" }}
+                              placeholder="Select or type industries"
+                            >
+                              {" "}
+                              {industryOptions.map((opt) => (
+                                <Option key={opt} value={opt}>
+                                  {opt}
+                                </Option>
+                              ))}{" "}
+                            </Select>{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="companyType" label="Company Type">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="companySize" label="Company Size">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name="geographicalScopeOfOperations"
+                            label="Geographical Scope"
+                          >
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Contact & Location" key="contact">
+                      <Row gutter={32}>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="address" label="Address">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="city" label="City">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="state" label="State">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item name="zipCode" label="Zip Code">
+                            {" "}
+                            <Input />{" "}
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label="Phone Number"
+                            required
+                            validateStatus={phoneError ? "error" : ""}
+                            help={phoneError}
+                          >
+                            <Input
+                              addonBefore={
+                                <Form.Item
+                                  name="phoneCode"
+                                  noStyle
+                                  initialValue={
+                                    brandData.brandPhoneNumber?.code || "+1"
                                   }
                                 >
-                                  {phoneCodeOptions.map((opt) => (
-                                    <Option key={opt.code} value={opt.code}>
-                                      {opt.label}
-                                    </Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-                            }
-                            name="brandPhoneNumber"
-                            onChange={(e) => {
-                              const code =
-                                form.getFieldValue("phoneCode") || "+1";
-                              const val = e.target.value.replace(/\D/g, "");
-                              const { length, regex } = getPhoneFormat(code);
-                              let error = "";
-                              if (val.length > length) {
-                                error = `Phone number should be exactly ${length} digits for this country.`;
-                              } else if (val && !regex.test(val)) {
-                                error = `Invalid phone number format for this country.`;
+                                  <Select
+                                    showSearch
+                                    optionFilterProp="children"
+                                    style={{ width: 180 }}
+                                    filterOption={(input, option) =>
+                                      option?.children
+                                        ?.toLowerCase()
+                                        .indexOf(input.toLowerCase()) >= 0
+                                    }
+                                  >
+                                    {phoneCodeOptions.map((opt) => (
+                                      <Option key={opt.code} value={opt.code}>
+                                        {opt.label}
+                                      </Option>
+                                    ))}
+                                  </Select>
+                                </Form.Item>
                               }
-                              setPhoneError(error);
-                              form.setFieldsValue({ brandPhoneNumber: val });
-                            }}
-                            value={form.getFieldValue("brandPhoneNumber")}
-                            placeholder={(() => {
-                              const code =
-                                form.getFieldValue("phoneCode") || "+1";
-                              if (code === "+254") return "716743291";
-                              if (code === "+1") return "4155552671";
-                              if (code === "+44") return "7123456789";
-                              if (code === "+91") return "9876543210";
-                              return "Phone number";
-                            })()}
-                            className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Preferences" key="preferences">
-                    <Row gutter={32}>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={[
-                            "preferences",
-                            "preferredSocialMediaPlatforms",
-                          ]}
-                          label="Preferred Social Media Platforms"
-                        >
-                          <Select
-                            mode="multiple"
-                            allowClear
-                            placeholder="Select platforms"
+                              name="brandPhoneNumber"
+                              onChange={(e) => {
+                                const code =
+                                  form.getFieldValue("phoneCode") || "+1";
+                                const val = e.target.value.replace(/\D/g, "");
+                                const { length, regex } = getPhoneFormat(code);
+                                let error = "";
+                                if (val.length > length) {
+                                  error = `Phone number should be exactly ${length} digits for this country.`;
+                                } else if (val && !regex.test(val)) {
+                                  error = `Invalid phone number format for this country.`;
+                                }
+                                setPhoneError(error);
+                                form.setFieldsValue({ brandPhoneNumber: val });
+                              }}
+                              value={form.getFieldValue("brandPhoneNumber")}
+                              placeholder={(() => {
+                                const code =
+                                  form.getFieldValue("phoneCode") || "+1";
+                                if (code === "+254") return "716743291";
+                                if (code === "+1") return "4155552671";
+                                if (code === "+44") return "7123456789";
+                                if (code === "+91") return "9876543210";
+                                return "Phone number";
+                              })()}
+                              className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all h-10"
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Preferences" key="preferences">
+                      <Row gutter={32}>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredSocialMediaPlatforms",
+                            ]}
+                            label="Preferred Social Media Platforms"
                           >
-                            {socialMediaOptions.map((opt) => (
-                              <Option key={opt} value={opt}>
-                                {opt}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredInfluencerCountries"]}
-                          label="Preferred Influencer Countries"
-                        >
-                          <Select
-                            mode="multiple"
-                            labelInValue
-                            allowClear
-                            placeholder="Select countries"
-                            optionLabelProp="label"
+                            <Select
+                              mode="multiple"
+                              allowClear
+                              placeholder="Select platforms"
+                            >
+                              {socialMediaOptions.map((opt) => (
+                                <Option key={opt} value={opt}>
+                                  {opt}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredInfluencerCountries",
+                            ]}
+                            label="Preferred Influencer Countries"
                           >
-                            {countryOptions.map((opt) => (
-                              <Option
-                                key={opt.code}
-                                value={opt.code}
-                                label={opt.name}
-                              >
-                                {opt.name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "monthlyNumberOfInfluencers"]}
-                          label="Monthly Number of Influencers"
-                        >
-                          <Input type="number" min={0} placeholder="e.g. 10" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={[
-                            "preferences",
-                            "mostImportantCollaborationFactor",
-                          ]}
-                          label="Most Important Collaboration Factor"
-                        >
-                          <Input placeholder="e.g. Engagement Rate" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={[
-                            "preferences",
-                            "preferredInfluencerMinimumFollowers",
-                          ]}
-                          label="Min Influencer Followers"
-                        >
-                          <Input
-                            type="number"
-                            min={0}
-                            placeholder="e.g. 1000"
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredInfluencerGenders"]}
-                          label="Preferred Influencer Genders"
-                        >
-                          <Input placeholder="e.g. Male, Female" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={[
-                            "preferences",
-                            "preferredInfluencerEthnicities",
-                          ]}
-                          label="Preferred Influencer Ethnicities"
-                        >
-                          <Input placeholder="e.g. Asian, African" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredInfluencerAgeGroups"]}
-                          label="Preferred Influencer Age Groups"
-                        >
-                          <Input placeholder="e.g. 18-24, 25-34" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={[
-                            "preferences",
-                            "preferredInfluencerCategories",
-                          ]}
-                          label="Preferred Influencer Categories"
-                        >
-                          <Input placeholder="e.g. Fashion, Tech" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredPaymentOption"]}
-                          label="Preferred Payment Option"
-                        >
-                          <Input placeholder="e.g. PayPal, Bank Transfer" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredPaidMinimumPay"]}
-                          label="Preferred Paid Minimum Pay"
-                        >
-                          <Input type="number" min={0} placeholder="e.g. 100" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredPaidMaximumPay"]}
-                          label="Preferred Paid Maximum Pay"
-                        >
-                          <Input
-                            type="number"
-                            min={0}
-                            placeholder="e.g. 1000"
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "campaignGoal"]}
-                          label="Campaign Goal"
-                        >
-                          <Input placeholder="e.g. Brand Awareness" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredContentFormats"]}
-                          label="Preferred Content Formats"
-                        >
-                          <Input placeholder="e.g. Video, Image" />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} md={12}>
-                        <Form.Item
-                          name={["preferences", "preferredVideoType"]}
-                          label="Preferred Video Type"
-                        >
-                          <Input placeholder="e.g. Testimonial, Unboxing" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Tabs.TabPane>
-                </Tabs>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 16,
-                    marginTop: 32,
-                  }}
-                >
-                  <Button onClick={handleCancel}>Cancel</Button>
-                  <Button type="primary" htmlType="submit">
-                    Save
-                  </Button>
-                </div>
-              </Form>
-            ) : (
-              <>
-                <Row gutter={[32, 24]} style={{ marginBottom: 16 }}>
-                  <Col xs={24} md={12}>
-                    <Text strong>Legal Company Name:</Text> <br />
-                    {showValue(brandData.legalCompanyName)}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Business Type:</Text> <br />
-                    {showValue(brandData.businessType)}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Company Type:</Text> <br />
-                    {showValue(brandData.companyType)}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Company Size:</Text> <br />
-                    {showValue(brandData.companySize)}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Geographical Scope:</Text> <br />
-                    {showValue(brandData.geographicalScopeOfOperations)}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Address:</Text> <br />
-                    {showValue(
-                      `${brandData.address}, ${brandData.city}, ${brandData.state}, ${brandData.zipCode}`
-                    )}
-                  </Col>
-                  <Col xs={24} md={12}>
-                    <Text strong>Date Joined:</Text> <br />
-                    {showValue(
-                      dayjs(brandData.dateJoined).format("MMM D, YYYY")
-                    )}
-                  </Col>
-                </Row>
-                <Paragraph
-                  style={{ fontSize: 16, color: "#444", marginBottom: 24 }}
-                >
-                  <InfoCircleOutlined
-                    style={{ color: "#1677ff", marginRight: 8 }}
-                  />
-                  {showValue(brandData.description)}
-                </Paragraph>
-                <Collapse
-                  bordered={false}
-                  style={{ background: "#fafbfc", borderRadius: 8 }}
-                >
-                  <Panel
-                    header={
-                      <span style={{ fontWeight: 600 }}>Preferences</span>
-                    }
-                    key="1"
+                            <Select
+                              mode="multiple"
+                              labelInValue
+                              allowClear
+                              placeholder="Select countries"
+                              optionLabelProp="label"
+                            >
+                              {countryOptions.map((opt) => (
+                                <Option
+                                  key={opt.code}
+                                  value={opt.code}
+                                  label={opt.name}
+                                >
+                                  {opt.name}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "monthlyNumberOfInfluencers"]}
+                            label="Monthly Number of Influencers"
+                          >
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="e.g. 10"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "mostImportantCollaborationFactor",
+                            ]}
+                            label="Most Important Collaboration Factor"
+                          >
+                            <Input placeholder="e.g. Engagement Rate" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredInfluencerMinimumFollowers",
+                            ]}
+                            label="Min Influencer Followers"
+                          >
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="e.g. 1000"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredInfluencerGenders"]}
+                            label="Preferred Influencer Genders"
+                          >
+                            <Input placeholder="e.g. Male, Female" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredInfluencerEthnicities",
+                            ]}
+                            label="Preferred Influencer Ethnicities"
+                          >
+                            <Input placeholder="e.g. Asian, African" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredInfluencerAgeGroups",
+                            ]}
+                            label="Preferred Influencer Age Groups"
+                          >
+                            <Input placeholder="e.g. 18-24, 25-34" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={[
+                              "preferences",
+                              "preferredInfluencerCategories",
+                            ]}
+                            label="Preferred Influencer Categories"
+                          >
+                            <Input placeholder="e.g. Fashion, Tech" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredPaymentOption"]}
+                            label="Preferred Payment Option"
+                          >
+                            <Input placeholder="e.g. PayPal, Bank Transfer" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredPaidMinimumPay"]}
+                            label="Preferred Paid Minimum Pay"
+                          >
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="e.g. 100"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredPaidMaximumPay"]}
+                            label="Preferred Paid Maximum Pay"
+                          >
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="e.g. 1000"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "campaignGoal"]}
+                            label="Campaign Goal"
+                          >
+                            <Input placeholder="e.g. Brand Awareness" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredContentFormats"]}
+                            label="Preferred Content Formats"
+                          >
+                            <Input placeholder="e.g. Video, Image" />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            name={["preferences", "preferredVideoType"]}
+                            label="Preferred Video Type"
+                          >
+                            <Input placeholder="e.g. Testimonial, Unboxing" />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Tabs.TabPane>
+                  </Tabs>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 16,
+                      marginTop: 32,
+                    }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: 16,
-                        marginBottom: 12,
-                      }}
+                    <Button onClick={handleCancel}>Cancel</Button>
+                    <Button type="primary" htmlType="submit">
+                      Save
+                    </Button>
+                  </div>
+                </Form>
+              ) : (
+                <>
+                  <Row gutter={[32, 24]} style={{ marginBottom: 16 }}>
+                    <Col xs={24} md={12}>
+                      <Text strong>Legal Company Name:</Text> <br />
+                      {showValue(brandData.legalCompanyName)}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Business Type:</Text> <br />
+                      {showValue(brandData.businessType)}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Company Type:</Text> <br />
+                      {showValue(brandData.companyType)}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Company Size:</Text> <br />
+                      {showValue(brandData.companySize)}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Geographical Scope:</Text> <br />
+                      {showValue(brandData.geographicalScopeOfOperations)}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Address:</Text> <br />
+                      {showValue(
+                        `${brandData.address}, ${brandData.city}, ${brandData.state}, ${brandData.zipCode}`
+                      )}
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Text strong>Date Joined:</Text> <br />
+                      {showValue(
+                        dayjs(brandData.dateJoined).format("MMM D, YYYY")
+                      )}
+                    </Col>
+                  </Row>
+                  <Paragraph
+                    style={{ fontSize: 16, color: "#444", marginBottom: 24 }}
+                  >
+                    <InfoCircleOutlined
+                      style={{ color: "#1677ff", marginRight: 8 }}
+                    />
+                    {showValue(brandData.description)}
+                  </Paragraph>
+                  <Collapse
+                    bordered={false}
+                    style={{ background: "#fafbfc", borderRadius: 8 }}
+                  >
+                    <Panel
+                      header={
+                        <span style={{ fontWeight: 600 }}>Preferences</span>
+                      }
+                      key="1"
                     >
-                      <div>
-                        <Text strong>Preferred Platforms:</Text>
-                        <br />
-                        {prefPlatforms.length
-                          ? prefPlatforms.map((p, i) => (
-                              <Tag
-                                key={i}
-                                color="purple"
-                                style={{ fontSize: 13 }}
-                              >
-                                {p}
-                              </Tag>
-                            ))
-                          : showValue(null)}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 16,
+                          marginBottom: 12,
+                        }}
+                      >
+                        <div>
+                          <Text strong>Preferred Platforms:</Text>
+                          <br />
+                          {prefPlatforms.length
+                            ? prefPlatforms.map((p, i) => (
+                                <Tag
+                                  key={i}
+                                  color="purple"
+                                  style={{ fontSize: 13 }}
+                                >
+                                  {p}
+                                </Tag>
+                              ))
+                            : showValue(null)}
+                        </div>
+                        <div>
+                          <Text strong>Preferred Countries:</Text>
+                          <br />
+                          {prefCountries.length
+                            ? prefCountries.map((c, i) => (
+                                <Tag
+                                  key={i}
+                                  color="geekblue"
+                                  style={{ fontSize: 13 }}
+                                >
+                                  {c.name}
+                                </Tag>
+                              ))
+                            : showValue(null)}
+                        </div>
                       </div>
-                      <div>
-                        <Text strong>Preferred Countries:</Text>
-                        <br />
-                        {prefCountries.length
-                          ? prefCountries.map((c, i) => (
-                              <Tag
-                                key={i}
-                                color="geekblue"
-                                style={{ fontSize: 13 }}
-                              >
-                                {c.name}
-                              </Tag>
-                            ))
-                          : showValue(null)}
+                      <div
+                        style={{ display: "flex", flexWrap: "wrap", gap: 16 }}
+                      >
+                        <div>
+                          <Text strong>Monthly Influencers:</Text>{" "}
+                          {showValue(pref.monthlyNumberOfInfluencers)}
+                        </div>
+                        <div>
+                          <Text strong>Collaboration Factor:</Text>{" "}
+                          {showValue(pref.mostImportantCollaborationFactor)}
+                        </div>
+                        <div>
+                          <Text strong>Min Followers:</Text>{" "}
+                          {showValue(pref.preferredInfluencerMinimumFollowers)}
+                        </div>
+                        <div>
+                          <Text strong>Genders:</Text>{" "}
+                          {showValue(pref.preferredInfluencerGenders)}
+                        </div>
+                        <div>
+                          <Text strong>Ethnicities:</Text>{" "}
+                          {showValue(pref.preferredInfluencerEthnicities)}
+                        </div>
+                        <div>
+                          <Text strong>Age Groups:</Text>{" "}
+                          {showValue(pref.preferredInfluencerAgeGroups)}
+                        </div>
+                        <div>
+                          <Text strong>Categories:</Text>{" "}
+                          {showValue(pref.preferredInfluencerCategories)}
+                        </div>
+                        <div>
+                          <Text strong>Payment Option:</Text>{" "}
+                          {showValue(pref.preferredPaymentOption)}
+                        </div>
+                        <div>
+                          <Text strong>Min Pay:</Text>{" "}
+                          {showValue(pref.preferredPaidMinimumPay)}
+                        </div>
+                        <div>
+                          <Text strong>Max Pay:</Text>{" "}
+                          {showValue(pref.preferredPaidMaximumPay)}
+                        </div>
+                        <div>
+                          <Text strong>Campaign Goal:</Text>{" "}
+                          {showValue(pref.campaignGoal)}
+                        </div>
+                        <div>
+                          <Text strong>Content Formats:</Text>{" "}
+                          {showValue(pref.preferredContentFormats)}
+                        </div>
+                        <div>
+                          <Text strong>Video Type:</Text>{" "}
+                          {showValue(pref.preferredVideoType)}
+                        </div>
                       </div>
-                    </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-                      <div>
-                        <Text strong>Monthly Influencers:</Text>{" "}
-                        {showValue(pref.monthlyNumberOfInfluencers)}
-                      </div>
-                      <div>
-                        <Text strong>Collaboration Factor:</Text>{" "}
-                        {showValue(pref.mostImportantCollaborationFactor)}
-                      </div>
-                      <div>
-                        <Text strong>Min Followers:</Text>{" "}
-                        {showValue(pref.preferredInfluencerMinimumFollowers)}
-                      </div>
-                      <div>
-                        <Text strong>Genders:</Text>{" "}
-                        {showValue(pref.preferredInfluencerGenders)}
-                      </div>
-                      <div>
-                        <Text strong>Ethnicities:</Text>{" "}
-                        {showValue(pref.preferredInfluencerEthnicities)}
-                      </div>
-                      <div>
-                        <Text strong>Age Groups:</Text>{" "}
-                        {showValue(pref.preferredInfluencerAgeGroups)}
-                      </div>
-                      <div>
-                        <Text strong>Categories:</Text>{" "}
-                        {showValue(pref.preferredInfluencerCategories)}
-                      </div>
-                      <div>
-                        <Text strong>Payment Option:</Text>{" "}
-                        {showValue(pref.preferredPaymentOption)}
-                      </div>
-                      <div>
-                        <Text strong>Min Pay:</Text>{" "}
-                        {showValue(pref.preferredPaidMinimumPay)}
-                      </div>
-                      <div>
-                        <Text strong>Max Pay:</Text>{" "}
-                        {showValue(pref.preferredPaidMaximumPay)}
-                      </div>
-                      <div>
-                        <Text strong>Campaign Goal:</Text>{" "}
-                        {showValue(pref.campaignGoal)}
-                      </div>
-                      <div>
-                        <Text strong>Content Formats:</Text>{" "}
-                        {showValue(pref.preferredContentFormats)}
-                      </div>
-                      <div>
-                        <Text strong>Video Type:</Text>{" "}
-                        {showValue(pref.preferredVideoType)}
-                      </div>
-                    </div>
-                  </Panel>
-                </Collapse>
-              </>
-            )}
-          </div>
-        </Card>
-        <Divider style={{ margin: "40px 0 0 0", borderColor: "#e0e3ea" }} />
+                    </Panel>
+                  </Collapse>
+                </>
+              )}
+            </div>
+          </Card>
+          <Divider style={{ margin: "40px 0 0 0", borderColor: "#e0e3ea" }} />
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 };
 
