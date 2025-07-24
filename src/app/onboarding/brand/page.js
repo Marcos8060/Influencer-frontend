@@ -61,7 +61,7 @@ const BrandOnboarding = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-white to-secondary/10 py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Progress Stepper Card */}
-        <div className="mb-10 rounded-lg shadow-sm bg-white/80 backdrop-blur-md border border-primary/10 p-8">
+        <div className="">
           {/* Steps Row */}
           <div
             className="hidden sm:flex flex-row w-full overflow-x-auto min-w-0 gap-x-6 sm:gap-x-10 items-center justify-between relative z-10 scrollbar-hide"
@@ -146,7 +146,7 @@ const BrandOnboarding = () => {
           </div>
         </div>
         {/* Current Step Content */}
-        <div className="mt-8">{steps[currentStep].component}</div>
+        <div className="mt-4">{steps[currentStep].component}</div>
       </div>
     </div>
   );
