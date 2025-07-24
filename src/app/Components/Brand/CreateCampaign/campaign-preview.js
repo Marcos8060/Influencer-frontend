@@ -107,7 +107,7 @@ const CampaignPreview = () => {
   return (
     <div className="relative min-h-[80vh] bg-gradient-to-br from-background via-white to-secondary/10 px-2 py-8 md:py-12 flex flex-col items-center justify-center">
       {success ? (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full bg-white">
+        <div className="flex flex-col items-center justify-center min-h-[40vh] w-full">
           <div className="max-w-md w-full mx-auto flex flex-col items-center justify-center p-8 rounded-2xl shadow-xl border border-primary/10 bg-white">
             {/* Trophy Illustration */}
             <div className="mb-6">
@@ -131,7 +131,7 @@ const CampaignPreview = () => {
                 </g>
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-primary mb-2">
+            <h2 className="text-2xl text-center font-bold text-primary mb-2">
               {isDraftMode ? 'Campaign Saved as Draft!' : 'Campaign Published Successfully!'}
             </h2>
             <p className="text-gray-600 mb-6 text-center">
