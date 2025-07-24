@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaRegEnvelope } from "react-icons/fa";
@@ -9,12 +8,14 @@ import { HiArrowNarrowLeft } from "react-icons/hi";
 import Link from "next/link";
 import "react-loading-skeleton/dist/skeleton.css";
 import { FaBoxOpen } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
 import { removeFromBucket } from "@/redux/services/influencer/bucket";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/assets/hooks/use-auth";
 import { fetchAllInfluencersInBucket } from "@/redux/features/bucket-list";
 import { Spin, Modal, Button, Tooltip, Tag, message } from "antd";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const BucketListInfluencers = ({ loading }) => {
   const { influencersInBucket } = useSelector((store) => store.bucket);
@@ -34,9 +35,9 @@ const BucketListInfluencers = ({ loading }) => {
     try {
       await removeFromBucket(auth,payload)
       dispatch(fetchAllInfluencersInBucket(auth,bucketId))
-      message.success('Influencer removed successfully')
+      toast.success('Influencer removed successfully')
     } catch (error) {
-      message.error(error?.response?.data?.errorMessage?.[0] || 'Failed to remove influencer')
+      toast.error(error?.response?.data?.errorMessage?.[0] || 'Failed to remove influencer')
       console.log(error)
     } finally {
       setRemovingId(null);
@@ -135,11 +136,17 @@ const BucketListInfluencers = ({ loading }) => {
               </section>
             ) : (
               <section className="h-[60vh] flex items-center justify-center">
-                <div className="flex flex-col items-center justify-center">
-                  <FaBoxOpen className="text-9xl text-gray-300" />
-                  <p className="mr-4 text-sm font-light">
-                    No Influencers available in this Bucket
+                <div className="flex flex-col items-center justify-center bg-white rounded-2xl shadow-md p-8">
+                  <FaUserFriends className="text-8xl text-primary mb-4" />
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">This bucket is empty!</h2>
+                  <p className="text-gray-500 text-sm mb-6 text-center max-w-xs">
+                    Start adding amazing influencers to organize your collaborations and manage your campaigns more efficiently.
                   </p>
+                  <Link href="/onboarding/brand/dashboard/search-influencers">
+                    <button className="bg-gradient-to-r from-primary to-secondary text-white text-sm rounded-2xl px-6 py-2 font-normal">
+                      Find Influencers
+                    </button>
+                  </Link>
                 </div>
               </section>
             )}
