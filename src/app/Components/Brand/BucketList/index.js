@@ -145,8 +145,6 @@ const BucketList = () => {
                     pageSize={itemsPerPage}
                     onChange={setCurrentPage}
                     showSizeChanger={false}
-                    prevIcon={<HiArrowLongLeft />}
-                    nextIcon={<HiArrowLongRight />}
                     className="ant-pagination-custom"
                   />
                 </div>
