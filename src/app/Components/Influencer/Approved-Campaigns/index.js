@@ -23,6 +23,8 @@ import {
   FaExternalLinkAlt
 } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { FaTrophy } from "react-icons/fa6";
+
 
 const ApprovedCampaignsTable = () => {
   const { approvedCampaigns } = useSelector((store) => store.campaign);
@@ -276,7 +278,7 @@ const ApprovedCampaignsTable = () => {
               animate={{ opacity: 1 }}
               className="h-[60vh] flex flex-col items-center justify-center text-center"
             >
-              <FaBoxOpen className="text-8xl text-gray-300 mb-4" />
+              <FaTrophy className="text-8xl text-gray mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 mb-2">
                 No Approved Campaigns
               </h3>
