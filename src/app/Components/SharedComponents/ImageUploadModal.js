@@ -21,22 +21,58 @@ export default function ImageUploadInline({
 
   const openFilePicker = () => fileInputRef.current.click();
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
       setPreviewImage(URL.createObjectURL(file));
-      setShowOverlay(true);
+      setLoading(true);
+      try {
+        let url;
+        if (onUpload) {
+          url = await onUpload(file);
+        }
+        setLoading(false);
+        if (url) {
+          toast.success("Image uploaded successfully");
+          setPreviewImage(url);
+          setImageFile(null);
+          onUploadSuccess(url);
+        } else {
+          toast.error("Failed to upload photo");
+        }
+      } catch (error) {
+        setLoading(false);
+        toast.error("Upload failed");
+      }
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file) {
       setImageFile(file);
       setPreviewImage(URL.createObjectURL(file));
-      setShowOverlay(true);
+      setLoading(true);
+      try {
+        let url;
+        if (onUpload) {
+          url = await onUpload(file);
+        }
+        setLoading(false);
+        if (url) {
+          toast.success("Image uploaded successfully");
+          setPreviewImage(url);
+          setImageFile(null);
+          onUploadSuccess(url);
+        } else {
+          toast.error("Failed to upload photo");
+        }
+      } catch (error) {
+        setLoading(false);
+        toast.error("Upload failed");
+      }
     }
   };
 
@@ -95,35 +131,10 @@ export default function ImageUploadInline({
       ) : (
         <FaCamera className="text-gray-500 text-4xl" />
       )}
-      {/* Edit icon overlay on hover (not in upload overlay mode) */}
-      {!showOverlay && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:bg-black/30 group-hover:pointer-events-auto transition-colors duration-200">
-          <FiEdit className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-        </div>
-      )}
-      {/* Overlay for Save/Cancel */}
-      {showOverlay && (
+      {/* Loading indicator overlay */}
+      {loading && (
         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10">
-          {loading ? (
-            <div className="text-white">Uploading...</div>
-          ) : (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleSave(); }}
-                className="bg-primary text-white px-4 py-2 rounded mb-2"
-                disabled={loading}
-              >
-                Save
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleCancel(); }}
-                className="bg-gray-300 text-white px-4 py-2 rounded"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-            </>
-          )}
+          <div className="text-white">Uploading...</div>
         </div>
       )}
       <input
@@ -132,6 +143,7 @@ export default function ImageUploadInline({
         className="hidden"
         ref={fileInputRef}
         onChange={handleFileChange}
+        disabled={loading}
       />
     </div>
   );

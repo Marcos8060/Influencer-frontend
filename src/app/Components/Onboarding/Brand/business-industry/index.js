@@ -5,49 +5,16 @@ import { setCurrentStep, nextStep, previousStep, updateFormData } from "@/redux/
 import ButtonComponent from "@/app/Components/SharedComponents/ButtonComponent";
 import CustomizedBackButton from "@/app/Components/SharedComponents/CustomizedBackComponent";
 import toast from "react-hot-toast";
-import MultiSelectDropdown from "@/app/Components/SharedComponents/MultiSelectDropdown";
+import { Select } from "antd";
 import { motion } from "framer-motion";
+import { contentCategories } from "@/assets/utils/categories";
+import { industries } from "@/assets/utils/categories";
 
 const BusinessIndustry = () => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
   const formData = useSelector((store) => store.stepper.formData);
   const dispatch = useDispatch();
-
-  const industries = [
-  { name: "Adult & 18+" },
-  { name: "Apparel & Fashion" },
-  { name: "Arts & Culture" },
-  { name: "Beauty & Skincare" },
-  { name: "Business & Finance" },
-  { name: "Crypto & Web3" },
-  { name: "Dating & Relationships" },
-  { name: "Education & Learning" },
-  { name: "E-commerce & Startups" },
-  { name: "Entertainment & Pop Culture" },
-  { name: "Fitness & Sports" },
-  { name: "Food & Drink" },
-  { name: "Gaming & Esports" },
-  { name: "Health & Wellness" },
-  { name: "Home & Lifestyle" },
-  { name: "Lifestyle & Self-Development" },
-  { name: "Luxury & Aspirational Living" },
-  { name: "Men's Interests" },
-  { name: "Music & Audio" },
-  { name: "Other / Miscellaneous" },
-  { name: "Parenting & Family" },
-  { name: "Pets & Animals" },
-  { name: "Photography & Visual Media" },
-  { name: "Politics & Society" },
-  { name: "Spirituality & Mindfulness" },
-  { name: "Sustainability & Green Living" },
-  { name: "Tech & Gadgets" },
-  { name: "Toys, Crafts & Hobbies" },
-  { name: "Travel & Leisure" },
-  { name: "Vegan & Plant-Based" },
-  { name: "Women's Interests" },
-];
-
 
   const businessTypes = [
     {
@@ -127,42 +94,31 @@ const BusinessIndustry = () => {
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
             Which industries match your business?
           </h2>
-         
-          
-          <MultiSelectDropdown
-            options={industries}
-            value={selectedOptions}
-            onChange={setSelectedOptions}
-            optionLabel="name"
-            placeholder="Search and select industries..."
-            className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            customOption={({ option, isSelected }) => (
-              <div className="flex items-center">
-                <span className="mr-2 text-lg">{option.icon}</span>
-                <span>{option.name}</span>
-              </div>
-            )}
-            styles={{
-              control: (base) => ({
-                ...base,
-                minHeight: '48px',
-                borderColor: '#e2e8f0',
-                '&:hover': {
-                  borderColor: '#6366f1'
-                }
-              }),
-              multiValue: (base) => ({
-                ...base,
-                backgroundColor: '#eef2ff',
-                borderRadius: '6px'
-              }),
-              multiValueLabel: (base) => ({
-                ...base,
-                color: '#4f46e5',
-                fontWeight: '500'
-              })
-            }}
-          />
+         <Select
+           mode="multiple"
+           allowClear
+           showSearch
+           placeholder="Search and select industries..."
+           value={selectedOptions.map(opt => opt.name)}
+           onChange={values => {
+             setSelectedOptions(
+               industries.filter(opt => values.includes(opt.name))
+             );
+           }}
+           className="w-full"
+           optionLabelProp="label"
+           maxTagCount={4}
+           filterOption={(input, option) =>
+             option.children.toLowerCase().includes(input.toLowerCase())
+           }
+         >
+           {industries.map((industry) => (
+             <Select.Option key={industry.name} value={industry.name} label={industry.name}>
+               <span className="mr-2 text-lg">{industry.icon}</span>
+               {industry.name}
+             </Select.Option>
+           ))}
+         </Select>
         </div>
 
         {/* Business Type Section */}

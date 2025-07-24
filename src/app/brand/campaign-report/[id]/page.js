@@ -235,13 +235,15 @@ const CampaignDetails = () => {
             >
               Invite Influencers
             </Button>
-            <Link
-              href={`/brand/campaign-report/report?id=${id}`}
-              className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
-            >
-              <EyeOutlined />
-              View Full Report
-            </Link>
+            {campaignDetails.status !== 'Draft' && (
+              <Link
+                href={`/brand/campaign-report/report?id=${id}`}
+                className="bg-primary text-white rounded-lg text-sm px-6 py-2 hover:bg-primary-dark transition-colors duration-200 flex items-center gap-2"
+              >
+                <EyeOutlined />
+                View Full Report
+              </Link>
+            )}
           </div>
         </div>
 

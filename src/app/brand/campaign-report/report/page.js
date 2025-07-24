@@ -261,93 +261,6 @@ const CampaignReporting = () => {
     },
   ];
 
-  const influencers = [
-    {
-      id: 1,
-      name: "Alex Johnson",
-      username: "@alexjohnson",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      platform: "instagram",
-      reach: "450K",
-      engagement: "9.2%",
-      completion: 92,
-      tier: "premium",
-      posts: [
-        {
-          id: 1,
-          image: "https://picsum.photos/id/10/800/800",
-          likes: "45K",
-          comments: "1.2K",
-          shares: "850",
-          engagementRate: "8.7%",
-          date: "2 days ago",
-        },
-        {
-          id: 2,
-          image: "https://picsum.photos/id/11/800/800",
-          likes: "38K",
-          comments: "980",
-          shares: "720",
-          engagementRate: "7.2%",
-          date: "5 days ago",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Sarah Miller",
-      username: "@sarahmiller",
-      avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-      platform: "tiktok",
-      reach: "780K",
-      engagement: "12.5%",
-      completion: 100,
-      tier: "elite",
-      posts: [
-        {
-          id: 1,
-          image: "https://picsum.photos/id/12/800/800",
-          likes: "120K",
-          comments: "4.5K",
-          shares: "12K",
-          engagementRate: "14.2%",
-          date: "1 day ago",
-        },
-        {
-          id: 2,
-          image: "https://picsum.photos/id/13/800/800",
-          likes: "98K",
-          comments: "3.2K",
-          shares: "9.8K",
-          engagementRate: "11.8%",
-          date: "3 days ago",
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "James Wilson",
-      username: "@jameswilson",
-      avatar: "https://randomuser.me/api/portraits/men/75.jpg",
-      platform: "youtube",
-      reach: "1.2M",
-      engagement: "6.8%",
-      completion: 78,
-      tier: "standard",
-      posts: [
-        {
-          id: 1,
-          image: "https://picsum.photos/id/14/800/800",
-          likes: "210K",
-          comments: "8.2K",
-          shares: "15K",
-          engagementRate: "6.5%",
-          date: "4 days ago",
-        },
-      ],
-    },
-  ];
-
   const topMedia = [
     {
       id: 1,
@@ -518,12 +431,6 @@ const CampaignReporting = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-color to-secondary text-transparent bg-clip-text">
                   {campaignDetails?.title || "Campaign Report"}
                 </h1>
-                <Tag
-                  color="green"
-                  className="flex items-center gap-1 rounded-full px-3 py-1"
-                >
-                  <Clock size={14} /> Active
-                </Tag>
               </div>
               <div className="flex items-center gap-6 text-gray-500">
                 <div className="flex items-center gap-2">
