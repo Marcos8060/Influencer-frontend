@@ -56,6 +56,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReactCountryFlag } from "react-country-flag";
 import { motion } from "framer-motion";
 import { country_names } from "@/app/Components/country-names";
+import AuthGuard from "@/assets/hooks/authGuard";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -70,16 +71,16 @@ const fadeIn = {
 // Map industry/category names to icons
 const industryIcons = {
   "E-Commerce": <ShopOutlined />,
-  "Automotive": <CarOutlined />,
+  Automotive: <CarOutlined />,
   "Beauty & Personal Care": <SkinOutlined />,
   "Arts, Crafts & Creativity": <BulbOutlined />,
-  "Technology": <RocketOutlined />,
-  "Health": <HeartOutlined />,
-  "Gifts": <GiftOutlined />,
-  "Home": <HomeOutlined />,
+  Technology: <RocketOutlined />,
+  Health: <HeartOutlined />,
+  Gifts: <GiftOutlined />,
+  Home: <HomeOutlined />,
   "Food & Beverage": <CoffeeOutlined />,
   // fallback
-  "default": <AppstoreOutlined />,
+  default: <AppstoreOutlined />,
 };
 
 const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
@@ -134,7 +135,7 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
             )}
           </div>
         </div>
-        <Divider className="my-2" style={{ margin: '8px 0' }} />
+        <Divider className="my-2" style={{ margin: "8px 0" }} />
         <div className="grid grid-cols-2 gap-3">
           {brand.address && (
             <div className="flex items-center space-x-2 bg-white p-2 rounded-lg border border-input">
@@ -176,7 +177,7 @@ const BrandCard = ({ brand, isFavorite, onFavoriteToggle, menu }) => (
               )}
           </div>
         )}
-        <Divider className="my-2" style={{ margin: '8px 0' }} />
+        <Divider className="my-2" style={{ margin: "8px 0" }} />
         {/* --- Card Actions: View Campaigns & DM Brand --- */}
         <div className="flex flex-col gap-2 mt-2">
           {brand.campaignCount > 0 && (
@@ -247,8 +248,8 @@ const BrandDiscovery = () => {
   const platforms = Array.from(
     new Set(
       brands
-        .flatMap((brand) =>
-          (brand.preferences?.preferredSocialMediaPlatforms || [])
+        .flatMap(
+          (brand) => brand.preferences?.preferredSocialMediaPlatforms || []
         )
         .filter(Boolean)
     )
@@ -296,7 +297,8 @@ const BrandDiscovery = () => {
       searchText === "" ||
       brandName.toLowerCase().includes(searchTerm) ||
       businessType.toLowerCase().includes(searchTerm);
-    const brandIndustry = typeof brand?.industry === "string" ? brand.industry : "";
+    const brandIndustry =
+      typeof brand?.industry === "string" ? brand.industry : "";
     const matchesIndustry =
       selectedIndustry === undefined ||
       (brandIndustry &&
@@ -317,7 +319,9 @@ const BrandDiscovery = () => {
       selectedPlatform === undefined ||
       (brand.preferences &&
         Array.isArray(brand.preferences.preferredSocialMediaPlatforms) &&
-        brand.preferences.preferredSocialMediaPlatforms.includes(selectedPlatform));
+        brand.preferences.preferredSocialMediaPlatforms.includes(
+          selectedPlatform
+        ));
     const matchesCity =
       selectedCity === undefined || brand.city === selectedCity;
     const matchesDateRange = isWithinRange(brand.dateJoined, dateJoinedRange);
@@ -370,31 +374,32 @@ const BrandDiscovery = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      {/* Search and Filters Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="bg-white rounded-lg border border-input p-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Space direction="vertical" className="w-full">
-            <Input
-              size="large"
-              placeholder="Search brands by name..."
-              prefix={<SearchOutlined className="text-gray-400" />}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="mb-4"
-            />
+    <AuthGuard>
+      <div className="min-h-screen bg-white p-4">
+        {/* Search and Filters Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="bg-white rounded-lg border border-input p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Space direction="vertical" className="w-full">
+              <Input
+                size="large"
+                placeholder="Search brands by name..."
+                prefix={<SearchOutlined className="text-gray-400" />}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="mb-4"
+              />
 
-            <div className="flex flex-wrap gap-4 items-center">
-              <div style={{ minWidth: 200 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Select Industry
-                </div>
-                <Select
+              <div className="flex flex-wrap gap-4 items-center">
+                <div style={{ minWidth: 200 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Select Industry
+                  </div>
+                  <Select
                     size="large"
                     placeholder="Select Industry"
                     style={{ minWidth: 200 }}
@@ -405,7 +410,10 @@ const BrandDiscovery = () => {
                     filterOption={(input, option) => {
                       let label = "";
                       if (Array.isArray(option?.children)) {
-                        label = option.children.find(child => typeof child === "string") || "";
+                        label =
+                          option.children.find(
+                            (child) => typeof child === "string"
+                          ) || "";
                       } else if (typeof option?.children === "string") {
                         label = option.children;
                       }
@@ -416,7 +424,10 @@ const BrandDiscovery = () => {
                       new Set(
                         brands
                           .flatMap((brand) =>
-                            (typeof brand?.industry === "string" ? brand.industry : "")
+                            (typeof brand?.industry === "string"
+                              ? brand.industry
+                              : ""
+                            )
                               .split(",")
                               .map((i) => i.trim())
                               .filter(Boolean)
@@ -430,97 +441,111 @@ const BrandDiscovery = () => {
                       </Option>
                     ))}
                   </Select>
-              </div>
-
-              <div style={{ minWidth: 200 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Brand Country
                 </div>
-                <Select
-                  size="large"
-                  placeholder="Select Country"
-                  style={{ width: "100%" }}
-                  value={selectedCountry}
-                  onChange={setSelectedCountry}
-                  allowClear
-                  showSearch
-                  filterOption={(input, option) => {
-                    let label = "";
-                    if (Array.isArray(option?.children)) {
-                      label = option.children.find(child => typeof child === "string") || "";
-                    } else if (typeof option?.children === "string") {
-                      label = option.children;
-                    }
-                    return label.toLowerCase().includes(input.toLowerCase());
-                  }}
-                >
-                  {country_names.map((country) => (
-                    <Option key={country.name} value={country.name}>
-                      {country.code && (
-                        <ReactCountryFlag countryCode={country.code} svg style={{ marginRight: 8 }} />
-                      )}
-                      {country.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
 
-              <div style={{ minWidth: 220 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Preferred Influencer Country
+                <div style={{ minWidth: 200 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Brand Country
+                  </div>
+                  <Select
+                    size="large"
+                    placeholder="Select Country"
+                    style={{ width: "100%" }}
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    allowClear
+                    showSearch
+                    filterOption={(input, option) => {
+                      let label = "";
+                      if (Array.isArray(option?.children)) {
+                        label =
+                          option.children.find(
+                            (child) => typeof child === "string"
+                          ) || "";
+                      } else if (typeof option?.children === "string") {
+                        label = option.children;
+                      }
+                      return label.toLowerCase().includes(input.toLowerCase());
+                    }}
+                  >
+                    {country_names.map((country) => (
+                      <Option key={country.name} value={country.name}>
+                        {country.code && (
+                          <ReactCountryFlag
+                            countryCode={country.code}
+                            svg
+                            style={{ marginRight: 8 }}
+                          />
+                        )}
+                        {country.name}
+                      </Option>
+                    ))}
+                  </Select>
                 </div>
-                <Select
-                  size="large"
-                  placeholder="Preferred Influencer Country"
-                  style={{ width: "100%" }}
-                  value={selectedPrefInfluencerCountry}
-                  onChange={setSelectedPrefInfluencerCountry}
-                  allowClear
-                  showSearch
-                  filterOption={(input, option) => {
-                    let label = "";
-                    if (Array.isArray(option?.children)) {
-                      label = option.children.find(child => typeof child === "string") || "";
-                    } else if (typeof option?.children === "string") {
-                      label = option.children;
-                    }
-                    return label.toLowerCase().includes(input.toLowerCase());
-                  }}
-                >
-                  {country_names.map((country) => (
-                    <Option key={country.name} value={country.name}>
-                      {country.code && (
-                        <ReactCountryFlag countryCode={country.code} svg style={{ marginRight: 8 }} />
-                      )}
-                      {country.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
 
-              {/* Preferred Social Media Platform Filter */}
-              <div style={{ minWidth: 200 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Preferred Social Media Platform
+                <div style={{ minWidth: 220 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Preferred Influencer Country
+                  </div>
+                  <Select
+                    size="large"
+                    placeholder="Preferred Influencer Country"
+                    style={{ width: "100%" }}
+                    value={selectedPrefInfluencerCountry}
+                    onChange={setSelectedPrefInfluencerCountry}
+                    allowClear
+                    showSearch
+                    filterOption={(input, option) => {
+                      let label = "";
+                      if (Array.isArray(option?.children)) {
+                        label =
+                          option.children.find(
+                            (child) => typeof child === "string"
+                          ) || "";
+                      } else if (typeof option?.children === "string") {
+                        label = option.children;
+                      }
+                      return label.toLowerCase().includes(input.toLowerCase());
+                    }}
+                  >
+                    {country_names.map((country) => (
+                      <Option key={country.name} value={country.name}>
+                        {country.code && (
+                          <ReactCountryFlag
+                            countryCode={country.code}
+                            svg
+                            style={{ marginRight: 8 }}
+                          />
+                        )}
+                        {country.name}
+                      </Option>
+                    ))}
+                  </Select>
                 </div>
-                <Select
-                  size="large"
-                  placeholder="Select Platform"
-                  style={{ width: "100%" }}
-                  value={selectedPlatform}
-                  onChange={setSelectedPlatform}
-                  allowClear
-                >
-                  {platforms.map((platform) => (
-                    <Option key={platform} value={platform}>
-                      {platform}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
 
-              {/* City Filter (optional) */}
-              {/*
+                {/* Preferred Social Media Platform Filter */}
+                <div style={{ minWidth: 200 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Preferred Social Media Platform
+                  </div>
+                  <Select
+                    size="large"
+                    placeholder="Select Platform"
+                    style={{ width: "100%" }}
+                    value={selectedPlatform}
+                    onChange={setSelectedPlatform}
+                    allowClear
+                  >
+                    {platforms.map((platform) => (
+                      <Option key={platform} value={platform}>
+                        {platform}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* City Filter (optional) */}
+                {/*
               <div style={{ minWidth: 200 }}>
                 <div className="mb-1 text-xs text-gray-500 font-medium">
                   City
@@ -542,184 +567,195 @@ const BrandDiscovery = () => {
               </div>
               */}
 
-              {/* Sort by Date Joined */}
-              <div style={{ minWidth: 200 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Sort by Date Joined
+                {/* Sort by Date Joined */}
+                <div style={{ minWidth: 200 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Sort by Date Joined
+                  </div>
+                  <Select
+                    size="large"
+                    value={sortDateJoined}
+                    onChange={setSortDateJoined}
+                    style={{ width: "100%" }}
+                  >
+                    <Option value="newest">Latest Brands</Option>
+                    <Option value="oldest">Oldest First</Option>
+                  </Select>
                 </div>
-                <Select
-                  size="large"
-                  value={sortDateJoined}
-                  onChange={setSortDateJoined}
-                  style={{ width: "100%" }}
+
+                {/* Date Joined Range Filter */}
+                <div style={{ minWidth: 200 }}>
+                  <div className="mb-1 text-xs text-gray-500 font-medium">
+                    Date Joined Range
+                  </div>
+                  <Select
+                    size="large"
+                    value={dateJoinedRange}
+                    onChange={setDateJoinedRange}
+                    style={{ width: "100%" }}
+                  >
+                    <Option value="all">All time</Option>
+                    <Option value="7d">Last 7 days</Option>
+                    <Option value="30d">Last 30 days</Option>
+                    <Option value="90d">Last 90 days</Option>
+                    <Option value="1y">Within the Last year</Option>
+                  </Select>
+                </div>
+
+                <Button
+                  type="default"
+                  onClick={clearFilters}
+                  icon={<FilterOutlined />}
                 >
-                  <Option value="newest">Latest Brands</Option>
-                  <Option value="oldest">Oldest First</Option>
-                </Select>
+                  Clear Filters
+                </Button>
               </div>
 
-              {/* Date Joined Range Filter */}
-              <div style={{ minWidth: 200 }}>
-                <div className="mb-1 text-xs text-gray-500 font-medium">
-                  Date Joined Range
-                </div>
-                <Select
-                  size="large"
-                  value={dateJoinedRange}
-                  onChange={setDateJoinedRange}
-                  style={{ width: "100%" }}
-                >
-                  <Option value="all">All time</Option>
-                  <Option value="7d">Last 7 days</Option>
-                  <Option value="30d">Last 30 days</Option>
-                  <Option value="90d">Last 90 days</Option>
-                  <Option value="1y">Within the Last year</Option>
-                </Select>
+              {/* Active Filters Section */}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {searchText && (
+                  <Tag
+                    closable
+                    onClose={() => setSearchText("")}
+                    color="blue"
+                    className="flex items-center"
+                  >
+                    Search: {searchText}
+                  </Tag>
+                )}
+                {selectedIndustry && (
+                  <Tag
+                    closable
+                    onClose={() => setSelectedIndustry(undefined)}
+                    color="purple"
+                    className="flex items-center"
+                  >
+                    Industry: {selectedIndustry}
+                  </Tag>
+                )}
+                {selectedCountry && (
+                  <Tag
+                    closable
+                    onClose={() => setSelectedCountry(undefined)}
+                    color="geekblue"
+                    className="flex items-center"
+                  >
+                    Country: {selectedCountry}
+                  </Tag>
+                )}
+                {selectedPrefInfluencerCountry && (
+                  <Tag
+                    closable
+                    onClose={() => setSelectedPrefInfluencerCountry(undefined)}
+                    color="cyan"
+                    className="flex items-center"
+                  >
+                    Preferred Influencer Country:{" "}
+                    {selectedPrefInfluencerCountry}
+                  </Tag>
+                )}
+                {selectedPlatform && (
+                  <Tag
+                    closable
+                    onClose={() => setSelectedPlatform(undefined)}
+                    color="magenta"
+                    className="flex items-center"
+                  >
+                    Platform: {selectedPlatform}
+                  </Tag>
+                )}
+                {selectedCity && (
+                  <Tag
+                    closable
+                    onClose={() => setSelectedCity(undefined)}
+                    color="volcano"
+                    className="flex items-center"
+                  >
+                    City: {selectedCity}
+                  </Tag>
+                )}
+                {sortDateJoined !== "newest" && (
+                  <Tag
+                    closable
+                    onClose={() => setSortDateJoined("newest")}
+                    color="gold"
+                    className="flex items-center"
+                  >
+                    Sort: Oldest First
+                  </Tag>
+                )}
+                {dateJoinedRange !== "all" && (
+                  <Tag
+                    closable
+                    onClose={() => setDateJoinedRange("all")}
+                    color="lime"
+                    className="flex items-center"
+                  >
+                    Date Joined:{" "}
+                    {dateJoinedRange === "7d"
+                      ? "Last 7 days"
+                      : dateJoinedRange === "30d"
+                      ? "Last 30 days"
+                      : dateJoinedRange === "90d"
+                      ? "Last 90 days"
+                      : dateJoinedRange === "1y"
+                      ? "Last year"
+                      : ""}
+                  </Tag>
+                )}
               </div>
+            </Space>
+          </motion.div>
+        </div>
 
-              <Button
-                type="default"
-                onClick={clearFilters}
-                icon={<FilterOutlined />}
-              >
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading ? (
+            <div className="text-center py-20">
+              <Spin size="large" />
+            </div>
+          ) : paginatedBrands.length > 0 ? (
+            <>
+              <Row gutter={[24, 24]}>
+                {paginatedBrands.map((brand) => (
+                  <Col xs={24} sm={24} md={12} lg={8} xl={8} key={brand.id}>
+                    <BrandCard
+                      brand={brand}
+                      isFavorite={false}
+                      onFavoriteToggle={() => {}}
+                      menu={menu}
+                    />
+                  </Col>
+                ))}
+              </Row>
+
+              <div className="flex justify-center mt-8">
+                <Pagination
+                  current={currentPage}
+                  total={filteredBrands.length}
+                  pageSize={pageSize}
+                  onChange={setCurrentPage}
+                  showSizeChanger={false}
+                />
+              </div>
+            </>
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={
+                <Text className="text-gray-500">
+                  No brands found matching your criteria
+                </Text>
+              }
+            >
+              <Button type="primary" onClick={clearFilters}>
                 Clear Filters
               </Button>
-            </div>
-
-            {/* Active Filters Section */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {searchText && (
-                <Tag
-                  closable
-                  onClose={() => setSearchText("")}
-                  color="blue"
-                  className="flex items-center"
-                >
-                  Search: {searchText}
-                </Tag>
-              )}
-              {selectedIndustry && (
-                <Tag
-                  closable
-                  onClose={() => setSelectedIndustry(undefined)}
-                  color="purple"
-                  className="flex items-center"
-                >
-                  Industry: {selectedIndustry}
-                </Tag>
-              )}
-              {selectedCountry && (
-                <Tag
-                  closable
-                  onClose={() => setSelectedCountry(undefined)}
-                  color="geekblue"
-                  className="flex items-center"
-                >
-                  Country: {selectedCountry}
-                </Tag>
-              )}
-              {selectedPrefInfluencerCountry && (
-                <Tag
-                  closable
-                  onClose={() => setSelectedPrefInfluencerCountry(undefined)}
-                  color="cyan"
-                  className="flex items-center"
-                >
-                  Preferred Influencer Country: {selectedPrefInfluencerCountry}
-                </Tag>
-              )}
-              {selectedPlatform && (
-                <Tag
-                  closable
-                  onClose={() => setSelectedPlatform(undefined)}
-                  color="magenta"
-                  className="flex items-center"
-                >
-                  Platform: {selectedPlatform}
-                </Tag>
-              )}
-              {selectedCity && (
-                <Tag
-                  closable
-                  onClose={() => setSelectedCity(undefined)}
-                  color="volcano"
-                  className="flex items-center"
-                >
-                  City: {selectedCity}
-                </Tag>
-              )}
-              {sortDateJoined !== "newest" && (
-                <Tag
-                  closable
-                  onClose={() => setSortDateJoined("newest")}
-                  color="gold"
-                  className="flex items-center"
-                >
-                  Sort: Oldest First
-                </Tag>
-              )}
-              {dateJoinedRange !== "all" && (
-                <Tag
-                  closable
-                  onClose={() => setDateJoinedRange("all")}
-                  color="lime"
-                  className="flex items-center"
-                >
-                  Date Joined: {dateJoinedRange === "7d" ? "Last 7 days" : dateJoinedRange === "30d" ? "Last 30 days" : dateJoinedRange === "90d" ? "Last 90 days" : dateJoinedRange === "1y" ? "Last year" : ""}
-                </Tag>
-              )}
-            </div>
-          </Space>
-        </motion.div>
+            </Empty>
+          )}
+        </div>
       </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
-          <div className="text-center py-20">
-            <Spin size="large" />
-          </div>
-        ) : paginatedBrands.length > 0 ? (
-          <>
-            <Row gutter={[24, 24]}>
-              {paginatedBrands.map((brand) => (
-                <Col xs={24} sm={24} md={12} lg={8} xl={8} key={brand.id}>
-                  <BrandCard
-                    brand={brand}
-                    isFavorite={false}
-                    onFavoriteToggle={() => {}}
-                    menu={menu}
-                  />
-                </Col>
-              ))}
-            </Row>
-
-            <div className="flex justify-center mt-8">
-              <Pagination
-                current={currentPage}
-                total={filteredBrands.length}
-                pageSize={pageSize}
-                onChange={setCurrentPage}
-                showSizeChanger={false}
-              />
-            </div>
-          </>
-        ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={
-              <Text className="text-gray-500">
-                No brands found matching your criteria
-              </Text>
-            }
-          >
-            <Button type="primary" onClick={clearFilters}>
-              Clear Filters
-            </Button>
-          </Empty>
-        )}
-      </div>
-    </div>
+    </AuthGuard>
   );
 };
 

@@ -1,27 +1,35 @@
 "use client";
-import React, { useState, useRef, useEffect, useContext, useCallback,Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { message as antdMessage } from 'antd';
-import { authContext } from '@/assets/context/use-context';
-import { useAuth } from '@/assets/hooks/use-auth';
-import ChatLayout from '@/app/Components/Chat/ChatLayout';
-import ChatSidebar from '@/app/Components/Chat/ChatSidebar';
-import ChatMessages from '@/app/Components/Chat/ChatMessages';
-import ChatInput from '@/app/Components/Chat/ChatInput';
-import useWindowSize from '@/assets/hooks/use-window-size';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+  Suspense,
+} from "react";
+import { useSearchParams } from "next/navigation";
+import { message as antdMessage } from "antd";
+import { authContext } from "@/assets/context/use-context";
+import { useAuth } from "@/assets/hooks/use-auth";
+import ChatLayout from "@/app/Components/Chat/ChatLayout";
+import ChatSidebar from "@/app/Components/Chat/ChatSidebar";
+import ChatMessages from "@/app/Components/Chat/ChatMessages";
+import ChatInput from "@/app/Components/Chat/ChatInput";
+import useWindowSize from "@/assets/hooks/use-window-size";
+import AuthGuard from "@/assets/hooks/authGuard";
 
 const BrandChat = () => {
   // State management
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
-  const [inputMessage, setInputMessage] = useState('');
-  const [searchText, setSearchText] = useState('');
+  const [inputMessage, setInputMessage] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [showSidebar, setShowSidebar] = useState(true);
   const [selectedChatMessages, setSelectedChatMessages] = useState([]);
-  
+
   // Refs and context
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
@@ -35,31 +43,31 @@ const BrandChat = () => {
 
   // URL parameters
   const searchParams = useSearchParams();
-  const recipientId = searchParams.get('userId');
-  const recipientName = searchParams.get('fullName');
+  const recipientId = searchParams.get("userId");
+  const recipientName = searchParams.get("fullName");
 
   // Format time helper
   const formatTime = useCallback((timestamp) => {
-    if (!timestamp) return 'Just now';
+    if (!timestamp) return "Just now";
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }, []);
 
   // Initialize chat with recipient from URL params
   useEffect(() => {
     if (recipientId && recipientName) {
-      const existingChat = chats.find(chat => chat.id === recipientId);
+      const existingChat = chats.find((chat) => chat.id === recipientId);
       if (!existingChat) {
         const newChat = {
           id: recipientId,
           name: recipientName,
           avatar: recipientName.charAt(0),
-          lastMessage: '',
-          time: 'Just now',
+          lastMessage: "",
+          time: "Just now",
           unread: 0,
-          messages: []
+          messages: [],
         };
-        setChats(prev => [...prev, newChat]);
+        setChats((prev) => [...prev, newChat]);
         setActiveChat(recipientId);
       } else {
         setActiveChat(recipientId);
@@ -79,18 +87,20 @@ const BrandChat = () => {
       socketRef.current = ws;
 
       ws.onopen = () => {
-        setConnectionStatus('connected');
-        antdMessage.success('Connected to chat server');
-        
+        setConnectionStatus("connected");
+        antdMessage.success("Connected to chat server");
+
         // Request all chats on connection
-        ws.send(JSON.stringify({ type: 'chats.all' }));
-        
+        ws.send(JSON.stringify({ type: "chats.all" }));
+
         // Join specific chat if active
         if (activeChat) {
-          ws.send(JSON.stringify({
-            type: 'chat.join',
-            user_id: activeChat
-          }));
+          ws.send(
+            JSON.stringify({
+              type: "chat.join",
+              user_id: activeChat,
+            })
+          );
         }
       };
 
@@ -99,18 +109,18 @@ const BrandChat = () => {
           const data = JSON.parse(event.data);
           handleWebSocketMessage(data);
         } catch (error) {
-          console.error('Error parsing message:', error);
+          console.error("Error parsing message:", error);
         }
       };
 
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setConnectionStatus('disconnected');
-        antdMessage.error('Connection error');
+        console.error("WebSocket error:", error);
+        setConnectionStatus("disconnected");
+        antdMessage.error("Connection error");
       };
 
       ws.onclose = () => {
-        setConnectionStatus('disconnected');
+        setConnectionStatus("disconnected");
         setTimeout(connectWebSocket, 5000);
       };
     };
@@ -127,186 +137,224 @@ const BrandChat = () => {
   // WebSocket message handler
   const handleWebSocketMessage = useCallback((data) => {
     switch (data.type) {
-      case 'chat.history':
+      case "chat.history":
         handleChatHistory(data);
         break;
-      case 'chat.message':
+      case "chat.message":
         handleNewMessage(data);
         break;
-      case 'chats.all':
+      case "chats.all":
         handleAllChats(data);
         break;
       default:
-        console.warn('Unhandled message type:', data.type);
+        console.warn("Unhandled message type:", data.type);
     }
   }, []);
 
   // Message handlers
-  const handleChatHistory = useCallback((data) => {
+  const handleChatHistory = useCallback(
+    (data) => {
       if (!data.messages?.length) return;
 
       const sortedMessages = [...data.messages].sort(
         (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
       );
 
-    setSelectedChatMessages(sortedMessages);
-    
-    // Update last message in chat list
-            const lastMessage = sortedMessages[sortedMessages.length - 1];
-    setChats(prev => prev.map(chat => {
-      if (chat.id === activeChat) {
+      setSelectedChatMessages(sortedMessages);
+
+      // Update last message in chat list
+      const lastMessage = sortedMessages[sortedMessages.length - 1];
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id === activeChat) {
             return {
               ...chat,
-          lastMessage: lastMessage.message,
-          time: formatTime(lastMessage.timestamp)
+              lastMessage: lastMessage.message,
+              time: formatTime(lastMessage.timestamp),
             };
           }
           return chat;
-    }));
+        })
+      );
 
-    // Scroll to bottom
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
-  }, [activeChat, formatTime]);
+      // Scroll to bottom
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    },
+    [activeChat, formatTime]
+  );
 
-  const handleNewMessage = useCallback((data) => {
-    const messageData = data.body || data;
-    
-    // Skip if message is invalid
-    if (!messageData.sender || !messageData.recipient) {
-      console.error('Invalid message format:', messageData);
-      return;
-    }
+  const handleNewMessage = useCallback(
+    (data) => {
+      const messageData = data.body || data;
 
-    const isMe = messageData.sender === userId;
-    const chatId = isMe ? messageData.recipient : messageData.sender;
-
-    // Update messages if this is the active chat
-    if (chatId === activeChat) {
-      setSelectedChatMessages(prev => {
-        // Check for duplicates
-        const isDuplicate = prev.some(m => 
-          (m.id && m.id === messageData.id) || 
-          (m.tempId && messageData.temp_id && m.tempId === messageData.temp_id)
-        );
-        
-        if (isDuplicate) {
-          return prev.map(m => {
-            if ((m.tempId && m.tempId === messageData.temp_id) || m.id === messageData.id) {
-              return { ...m, status: 'delivered', id: messageData.id };
-            }
-            return m;
-          });
-        }
-        
-        return [...prev, {
-          ...messageData,
-          status: isMe ? 'delivered' : 'received'
-        }];
-      });
-    }
-
-    // Update chat list
-    setChats(prev => {
-      const existingChat = prev.find(chat => chat.id === chatId);
-      
-      if (!existingChat) {
-        // New chat
-        return [...prev, {
-          id: chatId,
-          name: isMe ? messageData.recipient_name : messageData.sender_name,
-          avatar: (isMe ? messageData.recipient_name : messageData.sender_name)?.charAt(0) || 'U',
-          lastMessage: messageData.message,
-          time: formatTime(messageData.timestamp),
-          unread: isMe ? 0 : 1
-        }];
+      // Skip if message is invalid
+      if (!messageData.sender || !messageData.recipient) {
+        console.error("Invalid message format:", messageData);
+        return;
       }
 
-      // Existing chat
-      return prev.map(chat => {
-        if (chat.id === chatId) {
+      const isMe = messageData.sender === userId;
+      const chatId = isMe ? messageData.recipient : messageData.sender;
+
+      // Update messages if this is the active chat
+      if (chatId === activeChat) {
+        setSelectedChatMessages((prev) => {
+          // Check for duplicates
+          const isDuplicate = prev.some(
+            (m) =>
+              (m.id && m.id === messageData.id) ||
+              (m.tempId &&
+                messageData.temp_id &&
+                m.tempId === messageData.temp_id)
+          );
+
+          if (isDuplicate) {
+            return prev.map((m) => {
+              if (
+                (m.tempId && m.tempId === messageData.temp_id) ||
+                m.id === messageData.id
+              ) {
+                return { ...m, status: "delivered", id: messageData.id };
+              }
+              return m;
+            });
+          }
+
+          return [
+            ...prev,
+            {
+              ...messageData,
+              status: isMe ? "delivered" : "received",
+            },
+          ];
+        });
+      }
+
+      // Update chat list
+      setChats((prev) => {
+        const existingChat = prev.find((chat) => chat.id === chatId);
+
+        if (!existingChat) {
+          // New chat
+          return [
+            ...prev,
+            {
+              id: chatId,
+              name: isMe ? messageData.recipient_name : messageData.sender_name,
+              avatar:
+                (isMe
+                  ? messageData.recipient_name
+                  : messageData.sender_name
+                )?.charAt(0) || "U",
+              lastMessage: messageData.message,
+              time: formatTime(messageData.timestamp),
+              unread: isMe ? 0 : 1,
+            },
+          ];
+        }
+
+        // Existing chat
+        return prev.map((chat) => {
+          if (chat.id === chatId) {
             return {
               ...chat,
               lastMessage: messageData.message,
               time: formatTime(messageData.timestamp),
-            unread: isMe || activeChat === chatId ? 0 : chat.unread + 1
+              unread: isMe || activeChat === chatId ? 0 : chat.unread + 1,
             };
           }
           return chat;
+        });
       });
-    });
 
-    // Scroll to bottom for new messages in active chat
-    if (chatId === activeChat) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [userId, activeChat, formatTime]);
+      // Scroll to bottom for new messages in active chat
+      if (chatId === activeChat) {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    },
+    [userId, activeChat, formatTime]
+  );
 
-  const handleAllChats = useCallback((data) => {
-    if (!data.messages?.length) {
-      antdMessage.info('No chat history yet');
+  const handleAllChats = useCallback(
+    (data) => {
+      if (!data.messages?.length) {
+        antdMessage.info("No chat history yet");
         return;
       }
 
-    const formattedChats = data.messages
-      .map(chatGroup => {
-        if (!chatGroup.user) return null;
+      const formattedChats = data.messages
+        .map((chatGroup) => {
+          if (!chatGroup.user) return null;
 
           return {
-          id: chatGroup.user.user_id,
-          name: chatGroup.user.user_name,
-          chatGroupId: chatGroup.chatGroupId,
-          avatar: chatGroup.user.user_photo || chatGroup.user.user_name?.charAt(0) || 'U',
-          lastMessage: '',
+            id: chatGroup.user.user_id,
+            name: chatGroup.user.user_name,
+            chatGroupId: chatGroup.chatGroupId,
+            avatar:
+              chatGroup.user.user_photo ||
+              chatGroup.user.user_name?.charAt(0) ||
+              "U",
+            lastMessage: "",
             time: formatTime(chatGroup.created_at),
             unread: 0,
-          messages: []
+            messages: [],
           };
         })
-      .filter(chat => chat !== null);
+        .filter((chat) => chat !== null);
 
       setChats(formattedChats);
-  }, [formatTime]);
+    },
+    [formatTime]
+  );
 
   // Chat actions
-  const handleChatSelect = useCallback((chatId) => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      antdMessage.warning('Connection not ready. Please try again.');
-      return;
-    }
+  const handleChatSelect = useCallback(
+    (chatId) => {
+      if (
+        !socketRef.current ||
+        socketRef.current.readyState !== WebSocket.OPEN
+      ) {
+        antdMessage.warning("Connection not ready. Please try again.");
+        return;
+      }
 
-    setActiveChat(chatId);
-    setSelectedChatMessages([]);
-    if (isMobile) setShowSidebar(false);
+      setActiveChat(chatId);
+      setSelectedChatMessages([]);
+      if (isMobile) setShowSidebar(false);
 
-    socketRef.current.send(JSON.stringify({
-      type: 'chat.join',
-      user_id: chatId
-    }));
-  }, [isMobile]);
+      socketRef.current.send(
+        JSON.stringify({
+          type: "chat.join",
+          user_id: chatId,
+        })
+      );
+    },
+    [isMobile]
+  );
 
   const handleSendMessage = useCallback(() => {
     if (!activeChat || (!inputMessage && !selectedPhoto)) return;
 
     if (socketRef.current?.readyState !== WebSocket.OPEN) {
-      antdMessage.error('Connection lost. Please try again.');
+      antdMessage.error("Connection lost. Please try again.");
       return;
     }
 
     const tempId = Date.now().toString();
     const messageData = {
-      type: 'chat.message',
+      type: "chat.message",
       user_id: activeChat,
       message: inputMessage,
       temp_id: tempId,
       sender: userId,
-      sender_name: user?.firstName || 'Me',
+      sender_name: user?.firstName || "Me",
       recipient: activeChat,
-      recipient_name: chats.find(c => c.id === activeChat)?.name || 'User',
-      timestamp: new Date().toISOString()
+      recipient_name: chats.find((c) => c.id === activeChat)?.name || "User",
+      timestamp: new Date().toISOString(),
     };
 
     // Add message to UI immediately
@@ -316,18 +364,18 @@ const BrandChat = () => {
       recipient: activeChat,
       message: inputMessage,
       timestamp: new Date().toISOString(),
-      status: 'sent'
+      status: "sent",
     };
 
-    setSelectedChatMessages(prev => [...prev, tempMessage]);
+    setSelectedChatMessages((prev) => [...prev, tempMessage]);
     socketRef.current.send(JSON.stringify(messageData));
-    
-    setInputMessage('');
+
+    setInputMessage("");
     if (selectedPhoto) setSelectedPhoto(null);
-    
+
     // Scroll to bottom
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [activeChat, inputMessage, selectedPhoto, userId, user, chats]);
 
@@ -386,8 +434,8 @@ const BrandChat = () => {
             <div className="flex-1 flex items-center justify-center text-gray-500">
               Select a chat to start messaging
             </div>
-                    )}
-                  </div>
+          )}
+        </div>
       }
       isMobile={isMobile}
       showSidebar={showSidebar}
@@ -398,10 +446,12 @@ const BrandChat = () => {
 
 export default function BrandChatPage() {
   return (
-    <Suspense fallback={
-        <div className="p-4 text-center">Loading Brand chat...</div>
-    }>
-      <BrandChat />
-    </Suspense>
+    <AuthGuard>
+      <Suspense
+        fallback={<div className="p-4 text-center">Loading Brand chat...</div>}
+      >
+        <BrandChat />
+      </Suspense>
+    </AuthGuard>
   );
 }
