@@ -42,7 +42,7 @@ const CreateCampaign = () => {
           {/* Progress Stepper Card */}
           <div className="">
             {/* Steps Row */}
-            <div className="flex flex-row w-full overflow-x-auto min-w-0 gap-x-6 sm:gap-x-10 items-center justify-between relative z-10">
+            <div className="flex flex-row w-full overflow-x-auto min-w-0 gap-x-6 sm:gap-x-10 items-center justify-between relative z-10 hide-scrollbar">
               {steps.map((step, index) => {
                 // Step states
                 const isCompleted = index < currentStep;
@@ -52,7 +52,7 @@ const CreateCampaign = () => {
                 return (
                   <div
                     key={index}
-                    className="flex-1 flex flex-col items-center min-w-0 min-w-[110px] flex-shrink-0"
+                    className="flex-1 flex flex-col items-center min-w-0 flex-shrink-0"
                   >
                     <div className="flex items-center space-x-2">
                       {/* Icon or Checkmark */}
