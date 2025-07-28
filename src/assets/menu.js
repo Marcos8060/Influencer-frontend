@@ -119,7 +119,7 @@ export const menu = [
     role: ["Influencer"],
   },
   {
-    label: "Settings",
+    label: "My Subscriptions",
     path: "/brand/settings",
     icon: <IoMdSettings />,
     role: ["Brand"],
