@@ -36,6 +36,7 @@ const Address = () => {
     influencerPhoneNumber: influencerData.influencerPhoneNumber || { code: "", number: "" },
     gender: influencerData.gender || undefined,
     dateOfBirth: influencerData.dateOfBirth || undefined,
+    influencerTown: influencerData.influencerTown || undefined,
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
@@ -50,6 +51,7 @@ const Address = () => {
   const selectedCountryCode = details.influencerCountry?.code || "";
   const [selectedCityName, setSelectedCityName] = useState(details.influencerCity || "");
   const [selectedCountyCode, setSelectedCountyCode] = useState(details.influencerState || "");
+  const [selectedTown, setSelectedTown] = useState(details.influencerTown || "");
 
   // Get all countries
   const countriesList = Country.getAllCountries();
@@ -92,7 +94,7 @@ const Address = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Autofill logic: also autofill influencerState if UK and county present
+  // Autofill logic: also autofill influencerTown if available
   useEffect(() => {
     if (location && !hasAutoFilled) {
       setDetails((prevDetails) => {
@@ -113,6 +115,7 @@ const Address = () => {
             influencerAddressLine2: location.addressLine2 || "",
             influencerCity: location.city || "",
             influencerState: location.stateCode || undefined,
+            influencerTown: location.town || "",
             influencerCountry: {
               name: location.country || "",
               code: countryCode,
@@ -226,7 +229,9 @@ const Address = () => {
     const missingFields = [];
     if (!details.influencerAddressLine1) missingFields.push("Address Line 1");
     if (selectedCountryCode === 'GB' && !details.influencerState) missingFields.push("County");
-    if (!details.influencerCity) missingFields.push("City");
+    if (selectedCountryCode === 'GB' && !details.influencerCity) missingFields.push("City");
+    if (selectedCountryCode === 'GB' && !details.influencerTown) missingFields.push("Town");
+    if (!details.influencerCity && selectedCountryCode !== 'GB') missingFields.push("City");
     if (!details.influencerCountry.name) missingFields.push("Country");
     if (!details.influencerZipCode) missingFields.push("Zip code");
     if (!details.influencerPhoneNumber.number)
@@ -386,12 +391,14 @@ const Address = () => {
                     onChange={value => {
                       setSelectedCityName("");
                       setSelectedCountyCode("");
+                      setSelectedTown("");
                       const countryObj = countriesList.find(c => c.isoCode === value);
                       const newDetails = {
                         ...details,
                         influencerCountry: { name: countryObj?.name || "", code: value },
                         influencerCity: "",
                         influencerState: undefined,
+                        influencerTown: "",
                       };
                       setDetails(newDetails);
                       dispatch(updateFormData(newDetails));
@@ -427,11 +434,13 @@ const Address = () => {
                         setSelectedUkCountry(value);
                         setSelectedCounty("");
                         setSelectedCity("");
+                        setSelectedTown("");
                         const newDetails = {
                           ...details,
                           influencerUkCountry: value,
                           influencerState: "",
                           influencerCity: "",
+                          influencerTown: "",
                         };
                         setDetails(newDetails);
                         dispatch(updateFormData(newDetails));
@@ -463,10 +472,12 @@ const Address = () => {
                       onChange={value => {
                         setSelectedCounty(value);
                         setSelectedCity("");
+                        setSelectedTown("");
                         const newDetails = {
                           ...details,
                           influencerState: value,
                           influencerCity: "",
+                          influencerTown: "",
                         };
                         setDetails(newDetails);
                         dispatch(updateFormData(newDetails));
@@ -497,9 +508,11 @@ const Address = () => {
                       value={selectedCity || undefined}
                       onChange={value => {
                         setSelectedCity(value);
+                        setSelectedTown("");
                         const newDetails = {
                           ...details,
                           influencerCity: value,
+                          influencerTown: "",
                         };
                         setDetails(newDetails);
                         dispatch(updateFormData(newDetails));
@@ -517,6 +530,28 @@ const Address = () => {
                         </Select.Option>
                       ))}
                     </Select>
+                  </div>
+                )}
+                {/* UK: Town Dropdown or Input */}
+                {selectedCountryCode === 'GB' && selectedUkCountry && selectedCounty && selectedCity && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Town <span className="text-red-500">*</span>
+                    </label>
+                    <InputComponent
+                      value={selectedTown || ""}
+                      onChange={e => {
+                        setSelectedTown(e.target.value);
+                        const newDetails = {
+                          ...details,
+                          influencerTown: e.target.value,
+                        };
+                        setDetails(newDetails);
+                        dispatch(updateFormData(newDetails));
+                      }}
+                      placeholder="Enter Town"
+                      className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    />
                   </div>
                 )}
                 {/* Non-UK: City Dropdown */}

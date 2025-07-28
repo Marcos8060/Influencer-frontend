@@ -36,6 +36,7 @@ const BrandDetails = () => {
     brandDescription: formData.brandDescription || undefined,
     brandUkCountry: formData.brandUkCountry || "",
     brandState: formData.brandState || "",
+    brandTown: formData.brandTown || "",
   });
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
@@ -55,6 +56,7 @@ const BrandDetails = () => {
   const [selectedCounty, setSelectedCounty] = useState(details.brandState || "");
   const [selectedCity, setSelectedCity] = useState(details.city || "");
   const [selectedUsState, setSelectedUsState] = useState(details.brandState || "");
+  const [selectedTown, setSelectedTown] = useState(details.brandTown || "");
 
   // Get all countries and cities (no states)
   const countriesList = Country.getAllCountries();
@@ -98,6 +100,7 @@ const BrandDetails = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Autofill logic: also autofill brandTown if available
   useEffect(() => {
     if (location && !hasAutoFilled) {
       setDetails((prev) => {
@@ -109,7 +112,6 @@ const BrandDetails = () => {
         ) {
           const countryCode = location.countryCode || "";
           setSelectedCityName(location.city || "");
-
           return {
             ...prev,
             address: location.addressLine1 || "",
@@ -119,6 +121,7 @@ const BrandDetails = () => {
               code: countryCode,
             },
             zipCode: location.zipCode || "",
+            brandTown: location.town || "",
           };
         }
         return prev;
@@ -190,6 +193,7 @@ const BrandDetails = () => {
               }`
             : prev.address,
           zipCode: location.address.postcode || prev.zipCode,
+          brandTown: location.address.town || "",
         }));
 
         // Show success message only if we actually got data
@@ -305,10 +309,11 @@ const BrandDetails = () => {
     if (!details.legalCompanyName) missingFields.push("Legal Company Name");
     if (!details.brandName) missingFields.push("Brand Name");
     if (!details.country.name) missingFields.push("Country");
-    // if (!details.state) missingFields.push("State");
-    // if (!details.city) missingFields.push("City");
+    if (selectedCountryCode === 'GB' && !details.brandState) missingFields.push("County");
+    if (selectedCountryCode === 'GB' && !details.city) missingFields.push("City");
+    if (selectedCountryCode === 'GB' && !details.brandTown) missingFields.push("Town");
+    if (!details.city && selectedCountryCode !== 'GB') missingFields.push("City");
     if (!details.address) missingFields.push("Address");
-    // if (!details.zipCode) missingFields.push("Zip Code");
     if (!details.brandDescription) missingFields.push("Brand Description");
     if (!details.phoneNumber.code) missingFields.push("Phone Country Code");
 
@@ -414,11 +419,14 @@ const BrandDetails = () => {
                   value={selectedCountryCode || undefined}
                   onChange={value => {
                     setSelectedCityName("");
+                    setSelectedTown("");
                     const countryObj = countriesList.find(c => c.isoCode === value);
                     const newDetails = {
                       ...details,
                       country: { name: countryObj?.name || "", code: value },
                       city: "",
+                      brandState: "",
+                      brandTown: "",
                     };
                     setDetails(newDetails);
                     dispatch(updateFormData(newDetails));
@@ -454,11 +462,13 @@ const BrandDetails = () => {
                       setSelectedUkCountry(value);
                       setSelectedCounty("");
                       setSelectedCity("");
+                      setSelectedTown("");
                       const newDetails = {
                         ...details,
                         brandUkCountry: value,
                         brandState: "",
                         city: "",
+                        brandTown: "",
                       };
                       setDetails(newDetails);
                       dispatch(updateFormData(newDetails));
@@ -490,10 +500,12 @@ const BrandDetails = () => {
                     onChange={value => {
                       setSelectedCounty(value);
                       setSelectedCity("");
+                      setSelectedTown("");
                       const newDetails = {
                         ...details,
                         brandState: value,
                         city: "",
+                        brandTown: "",
                       };
                       setDetails(newDetails);
                       dispatch(updateFormData(newDetails));
@@ -524,9 +536,11 @@ const BrandDetails = () => {
                     value={selectedCity || undefined}
                     onChange={value => {
                       setSelectedCity(value);
+                      setSelectedTown("");
                       const newDetails = {
                         ...details,
                         city: value,
+                        brandTown: "",
                       };
                       setDetails(newDetails);
                       dispatch(updateFormData(newDetails));
@@ -544,6 +558,28 @@ const BrandDetails = () => {
                       </Select.Option>
                     ))}
                   </Select>
+                </div>
+              )}
+              {/* UK: Town Dropdown or Input */}
+              {selectedCountryCode === 'GB' && selectedUkCountry && selectedCounty && selectedCity && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Town <span className="text-red-500">*</span>
+                  </label>
+                  <InputComponent
+                    value={selectedTown || ""}
+                    onChange={e => {
+                      setSelectedTown(e.target.value);
+                      const newDetails = {
+                        ...details,
+                        brandTown: e.target.value,
+                      };
+                      setDetails(newDetails);
+                      dispatch(updateFormData(newDetails));
+                    }}
+                    placeholder="Enter Town"
+                    className="w-full focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  />
                 </div>
               )}
               {/* US: State Dropdown */}

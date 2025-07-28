@@ -13,6 +13,7 @@ import SplashScreen from "./Components/SplashScreen";
 import { Inter } from 'next/font/google';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor } from '../redux/store';
+import { usStates, ukCitiesJson, ukCountiesJson, ukCountryParts } from "@/assets/utils/locations";
 
 // Location context
 export const LocationContext = createContext({
@@ -82,16 +83,42 @@ export default function RootLayout({ children }) {
 
             const data = await reverseGeocode(latitude, longitude);
             const address = data.address || {};
+            let ukCountry = "";
+            let county = "";
+            let city = "";
+            let town = "";
+            if (address.country_code && address.country_code.toUpperCase() === 'GB') {
+              // Determine UK country part
+              const lowerState = (address.state || "").toLowerCase();
+              if (lowerState.includes("england")) ukCountry = "England";
+              else if (lowerState.includes("scotland")) ukCountry = "Scotland";
+              else if (lowerState.includes("wales")) ukCountry = "Wales";
+              else if (lowerState.includes("northern ireland") || lowerState.includes("antrim") || lowerState.includes("armagh") || lowerState.includes("down") || lowerState.includes("fermanagh") || lowerState.includes("londonderry") || lowerState.includes("tyrone")) ukCountry = "Northern Ireland";
+              // County
+              // Try to match county from address.county or address.state_district
+              const possibleCounty = address.county || address.state_district || address.state || "";
+              const counties = ukCountiesJson[ukCountry] || [];
+              county = counties.find(c => possibleCounty.toLowerCase().includes(c.toLowerCase())) || possibleCounty;
+              // City
+              const possibleCity = address.city || address.town || address.village || address.hamlet || "";
+              const cities = ukCitiesJson[ukCountry] || [];
+              city = cities.find(c => possibleCity.toLowerCase().includes(c.toLowerCase())) || possibleCity;
+              // Town
+              town = address.town || address.village || address.hamlet || address.suburb || "";
+            }
             const loc = {
               addressLine1: address.road || "",
               addressLine2: address.neighbourhood || "",
-              city: address.city || address.town || address.village || "",
+              city: city || address.city || address.town || address.village || "",
               country: address.country || "",
               countryCode: address.country_code ? address.country_code.toUpperCase() : "",
               zipCode: address.postcode || "",
               lat: latitude,
               lon: longitude,
               raw: address,
+              ukCountry: ukCountry,
+              county: county,
+              town: town,
             };
             setLocation(loc);
           } catch (err) {
