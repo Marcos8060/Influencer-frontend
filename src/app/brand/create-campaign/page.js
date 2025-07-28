@@ -12,8 +12,6 @@ import { FiInfo, FiFileText, FiCheckCircle, FiEye } from "react-icons/fi";
 const CreateCampaign = () => {
   const { currentStep } = useSelector((store) => store.campaign);
 
-  if (!isAuthorized) return null;
-
   const steps = [
     {
       name: "Campaign Basics",
