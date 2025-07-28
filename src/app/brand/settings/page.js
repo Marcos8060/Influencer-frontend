@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, Tag, Button, Form, Input, message, Row, Col, Divider, Modal, Radio, Badge, Spin } from "antd";
+import { Card, Tag, Button, Form, Input, message, Row, Col, Divider, Modal, Radio, Badge, Spin, Empty } from "antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -9,37 +9,41 @@ import {
   CrownOutlined,
   StarOutlined,
   ReloadOutlined,
+  RocketOutlined,
+  GiftOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import AuthGuard from "@/assets/hooks/authGuard";
 
 // MOCK: Replace with real data fetch
 const mockSubscriptions = [
-  {
-    subscription_id: "sub_1RnNfVKf9rQfCgnfyhTRMaa6",
-    items: [
-      {
-        plan_nickname: "Local plan",
-        plan_amount: 4900,
-        plan_currency: "usd",
-        plan_interval: "month",
-        plan_metadata: {
-          "Advanced search filters": "true",
-          "Analytics": "Basic reach & views",
-          "Browse influencers": "true",
-          "Campaign creation": "Up to 3",
-          "Contact details access": "true",
-          "Creator collaborations": "Up to 5",
-          "Geographic targeting": "Region/City only",
-          "Monthly invites": "150"
-        },
-        current_period_end: 1755797908,
-      },
-    ],
-    cancel_at_period_end: false,
-    canceled_at: null,
-    collection_method: "charge_automatically",
-    default_payment_method: "pm_1RnNfTKf9rQfCgnff6Pe0TdD",
-  },
+  // Comment out or remove this to simulate no plan scenario
+  // {
+  //   subscription_id: "sub_1RnNfVKf9rQfCgnfyhTRMaa6",
+  //   items: [
+  //     {
+  //       plan_nickname: "Local plan",
+  //       plan_amount: 4900,
+  //       plan_currency: "usd",
+  //       plan_interval: "month",
+  //       plan_metadata: {
+  //         "Advanced search filters": "true",
+  //         "Analytics": "Basic reach & views",
+  //         "Browse influencers": "true",
+  //         "Campaign creation": "Up to 3",
+  //         "Contact details access": "true",
+  //         "Creator collaborations": "Up to 5",
+  //         "Geographic targeting": "Region/City only",
+  //         "Monthly invites": "150"
+  //       },
+  //       current_period_end: 1755797908,
+  //     },
+  //   ],
+  //   cancel_at_period_end: false,
+  //   canceled_at: null,
+  //   collection_method: "charge_automatically",
+  //   default_payment_method: "pm_1RnNfTKf9rQfCgnff6Pe0TdD",
+  // },
 ];
 
 // MOCK: Backend response structure
@@ -255,11 +259,17 @@ const SettingsPage = () => {
   const [switchingPlan, setSwitchingPlan] = useState(false);
   const [availablePlans, setAvailablePlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
+  const [hasNoPlan, setHasNoPlan] = useState(false); // New state for no plan scenario
 
   // Get current plan
   const currentPlan = mockSubscriptions[0]?.items[0];
-  const currentPlanId = "price_1RluESKf9rQfCgnfWMFyH9f7"; // Mock current plan ID
+  const currentPlanId = currentPlan ? "price_1RluESKf9rQfCgnfWMFyH9f7" : null; // Mock current plan ID
   let isCurrentPlan;
+
+  // Check if user has no plan
+  useEffect(() => {
+    setHasNoPlan(!mockSubscriptions.length || !currentPlan);
+  }, [currentPlan]);
 
   // Fetch available plans from backend
   const fetchAvailablePlans = async () => {
@@ -306,7 +316,7 @@ const SettingsPage = () => {
     
     setSwitchingPlan(true);
     try {
-      // TODO: Call API to switch plan
+      // TODO: Call API to switch plan or subscribe to new plan
       // const response = await fetch('/api/payment-service/switch-plan', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
@@ -316,12 +326,18 @@ const SettingsPage = () => {
       // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      message.success(`Successfully switched to ${selectedPlan.nickname}`);
+      const action = hasNoPlan ? 'subscribed to' : 'switched to';
+      message.success(`Successfully ${action} ${selectedPlan.nickname}`);
       setPlanModalVisible(false);
       setSelectedPlan(null);
       
       // TODO: Refresh user's subscription data
       // await refreshUserSubscriptions();
+      
+      // Update local state to reflect new subscription
+      if (hasNoPlan) {
+        setHasNoPlan(false);
+      }
       
     } catch (error) {
       console.error('Error switching plan:', error);
@@ -332,7 +348,8 @@ const SettingsPage = () => {
   };
 
   const isUpgrade = (selectedPlan) => {
-    if (!selectedPlan || !currentPlan) return false;
+    if (!selectedPlan) return false;
+    if (!currentPlan) return selectedPlan.unit_amount > 0; // Any paid plan is an upgrade from no plan
     return selectedPlan.unit_amount > currentPlan.plan_amount;
   };
 
@@ -342,9 +359,77 @@ const SettingsPage = () => {
   };
 
   const getPriceDifference = (selectedPlan) => {
-    if (!selectedPlan || !currentPlan) return 0;
+    if (!selectedPlan) return 0;
+    if (!currentPlan) return selectedPlan.unit_amount; // Full price for new subscription
     return selectedPlan.unit_amount - currentPlan.plan_amount;
   };
+
+  // Fallback component for users with no plan
+  const NoPlanFallback = () => (
+    <Card
+      className="shadow-md mb-4 border-dashed border-2 border-gray-300 bg-gradient-to-r from-blue-50 to-purple-50"
+      bordered={false}
+    >
+      <div className="text-center py-8">
+        <div className="mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
+            <RocketOutlined className="text-white text-2xl" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Ready to Get Started?
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Choose a plan to unlock the full potential of our influencer marketing platform. 
+            Start discovering and collaborating with influencers today!
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+            <GiftOutlined className="text-2xl text-green-500 mb-2" />
+            <h4 className="font-medium text-gray-800">Free Discovery</h4>
+            <p className="text-sm text-gray-600">Browse influencers and view profiles</p>
+          </div>
+          <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+            <StarOutlined className="text-2xl text-blue-500 mb-2" />
+            <h4 className="font-medium text-gray-800">Premium Features</h4>
+            <p className="text-sm text-gray-600">Advanced analytics and campaign tools</p>
+          </div>
+          <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+            <CrownOutlined className="text-2xl text-purple-500 mb-2" />
+            <h4 className="font-medium text-gray-800">Global Reach</h4>
+            <p className="text-sm text-gray-600">Access to worldwide influencer network</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => setPlanModalVisible(true)}
+            icon={<RocketOutlined />}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 border-0 hover:from-blue-600 hover:to-purple-700"
+          >
+            Choose Your Plan
+          </Button>
+          <Button
+            size="large"
+            onClick={() => setPlanModalVisible(true)}
+            icon={<InfoCircleOutlined />}
+          >
+            View All Plans
+          </Button>
+        </div>
+
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-center gap-2 text-sm text-blue-700">
+            <InfoCircleOutlined />
+            <span className="font-medium">New users get 14 days free trial on any paid plan!</span>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
 
   return (
     <AuthGuard>
@@ -356,75 +441,79 @@ const SettingsPage = () => {
           <div>
             <h2 className="text-lg sm:text-xl font-medium mb-4">Your Subscriptions</h2>
             
-            {mockSubscriptions.map((sub, idx) => {
-              const plan = sub.items[0];
-              return (
-                <Card
-                  key={sub.subscription_id}
-                  title={
-                    <div className="flex justify-between items-center">
-                      <span>{plan.plan_nickname || "Subscription"}</span>
-                      {sub.canceled_at ? (
-                        <Tag color="red" icon={<CloseCircleOutlined />}>Canceled</Tag>
-                      ) : (
-                        <Tag color="green" icon={<CheckCircleOutlined />}>Active</Tag>
-                      )}
-                    </div>
-                  }
-                  bordered={false}
-                  className="shadow-md mb-4"
-                  extra={
-                    <Button 
-                      type="primary" 
-                      size="small"
-                      onClick={() => setPlanModalVisible(true)}
-                      icon={<ReloadOutlined />}
-                    >
-                      Switch Plan
-                    </Button>
-                  }
-                >
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">
-                        {formatPrice(plan.plan_amount, plan.plan_currency)}
-                      </span>
-                      <span className="text-gray-500">/ {plan.plan_interval}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <CalendarOutlined />
-                      <span>Renews: {formatDate(plan.current_period_end)}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <CreditCardOutlined />
-                      <span>Auto-pay</span>
-                    </div>
-                    
-                    <Divider className="my-3" />
-                    
-                    <div>
-                      <span className="font-medium text-gray-700 text-sm">Features:</span>
-                      <div className="mt-2 grid grid-cols-1 gap-1">
-                        {plan.plan_metadata &&
-                          Object.entries(plan.plan_metadata).slice(0, 6).map(([k, v]) => (
-                            <div key={k} className="flex justify-between text-xs text-gray-600">
-                              <span className="font-medium">{k}:</span>
-                              <span>{v}</span>
-                            </div>
-                          ))}
-                        {Object.keys(plan.plan_metadata).length > 6 && (
-                          <div className="text-xs text-blue-600 mt-1">
-                            +{Object.keys(plan.plan_metadata).length - 6} more features
-                          </div>
+            {hasNoPlan ? (
+              <NoPlanFallback />
+            ) : (
+              mockSubscriptions.map((sub, idx) => {
+                const plan = sub.items[0];
+                return (
+                  <Card
+                    key={sub.subscription_id}
+                    title={
+                      <div className="flex justify-between items-center">
+                        <span>{plan.plan_nickname || "Subscription"}</span>
+                        {sub.canceled_at ? (
+                          <Tag color="red" icon={<CloseCircleOutlined />}>Canceled</Tag>
+                        ) : (
+                          <Tag color="green" icon={<CheckCircleOutlined />}>Active</Tag>
                         )}
                       </div>
+                    }
+                    bordered={false}
+                    className="shadow-md mb-4"
+                    extra={
+                      <Button 
+                        type="primary" 
+                        size="small"
+                        onClick={() => setPlanModalVisible(true)}
+                        icon={<ReloadOutlined />}
+                      >
+                        Switch Plan
+                      </Button>
+                    }
+                  >
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-lg font-semibold">
+                          {formatPrice(plan.plan_amount, plan.plan_currency)}
+                        </span>
+                        <span className="text-gray-500">/ {plan.plan_interval}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CalendarOutlined />
+                        <span>Renews: {formatDate(plan.current_period_end)}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CreditCardOutlined />
+                        <span>Auto-pay</span>
+                      </div>
+                      
+                      <Divider className="my-3" />
+                      
+                      <div>
+                        <span className="font-medium text-gray-700 text-sm">Features:</span>
+                        <div className="mt-2 grid grid-cols-1 gap-1">
+                          {plan.plan_metadata &&
+                            Object.entries(plan.plan_metadata).slice(0, 6).map(([k, v]) => (
+                              <div key={k} className="flex justify-between text-xs text-gray-600">
+                                <span className="font-medium">{k}:</span>
+                                <span>{v}</span>
+                              </div>
+                            ))}
+                          {Object.keys(plan.plan_metadata).length > 6 && (
+                            <div className="text-xs text-blue-600 mt-1">
+                              +{Object.keys(plan.plan_metadata).length - 6} more features
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
+                  </Card>
+                );
+              })
+            )}
           </div>
 
           {/* Right Column - Change Password */}
@@ -480,7 +569,7 @@ const SettingsPage = () => {
 
         {/* Plan Switching Modal */}
         <Modal
-          title="Switch Your Plan"
+          title={hasNoPlan ? "Choose Your Plan" : "Switch Your Plan"}
           open={planModalVisible}
           onCancel={() => {
             setPlanModalVisible(false);
@@ -492,16 +581,31 @@ const SettingsPage = () => {
         >
           <div className="mb-6">
             <p className="text-gray-600 mb-4">
-              Choose a plan that best fits your needs. You can upgrade or downgrade at any time.
+              {hasNoPlan 
+                ? "Choose a plan that best fits your needs. Start with our free Discovery plan or unlock premium features with our paid plans."
+                : "Choose a plan that best fits your needs. You can upgrade or downgrade at any time."
+              }
             </p>
             
             {/* Current Plan Badge */}
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <CheckCircleOutlined className="text-blue-600" />
-                <span className="font-medium text-blue-800">Current Plan: {currentPlan?.plan_nickname}</span>
+            {!hasNoPlan && currentPlan && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <CheckCircleOutlined className="text-blue-600" />
+                  <span className="font-medium text-blue-800">Current Plan: {currentPlan.plan_nickname}</span>
+                </div>
               </div>
-            </div>
+            )}
+            
+            {/* No Plan Badge */}
+            {hasNoPlan && (
+              <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <InfoCircleOutlined className="text-orange-600" />
+                  <span className="font-medium text-orange-800">No active subscription - Choose a plan to get started!</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {loadingPlans ? (
@@ -523,7 +627,9 @@ const SettingsPage = () => {
                           isSelected 
                             ? 'ring-2 ring-blue-500 shadow-lg' 
                             : 'hover:shadow-md'
-                        } ${isCurrentPlan ? 'border-blue-300 bg-blue-50' : ''}`}
+                        } ${isCurrentPlan ? 'border-blue-300 bg-blue-50' : ''} ${
+                          hasNoPlan && plan.unit_amount === 0 ? 'border-green-300 bg-green-50' : ''
+                        }`}
                         onClick={() => !isCurrentPlan && setSelectedPlan(plan)}
                       >
                         <div className="text-center">
@@ -556,6 +662,14 @@ const SettingsPage = () => {
                               className="mb-3"
                             />
                           )}
+                          
+                          {hasNoPlan && plan.unit_amount === 0 && (
+                            <Badge 
+                              status="success" 
+                              text="Recommended to Start" 
+                              className="mb-3"
+                            />
+                          )}
 
                           <div className="text-left">
                             <h4 className="font-medium text-gray-800 mb-2">Key Features:</h4>
@@ -581,7 +695,7 @@ const SettingsPage = () => {
                               disabled={!isSelected}
                             >
                               {isSelected ? (
-                                isUpgrade(plan) ? "Upgrade" : "Downgrade"
+                                hasNoPlan ? "Subscribe" : (isUpgrade(plan) ? "Upgrade" : "Downgrade")
                               ) : (
                                 "Select Plan"
                               )}
@@ -599,12 +713,14 @@ const SettingsPage = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h4 className="font-medium">
-                        Switch to {selectedPlan.nickname}
+                        {hasNoPlan ? `Subscribe to ${selectedPlan.nickname}` : `Switch to ${selectedPlan.nickname}`}
                       </h4>
                       <p className="text-sm text-gray-600">
-                        {isUpgrade(selectedPlan) 
-                          ? `You'll be charged ${formatPrice(getPriceDifference(selectedPlan), selectedPlan.currency)} immediately`
-                          : "Changes will take effect at your next billing cycle"
+                        {hasNoPlan 
+                          ? `You'll be charged ${formatPrice(getPriceDifference(selectedPlan), selectedPlan.currency)} monthly`
+                          : isUpgrade(selectedPlan) 
+                            ? `You'll be charged ${formatPrice(getPriceDifference(selectedPlan), selectedPlan.currency)} immediately`
+                            : "Changes will take effect at your next billing cycle"
                         }
                       </p>
                     </div>
@@ -614,7 +730,7 @@ const SettingsPage = () => {
                       onClick={handlePlanSwitch}
                       className="ml-4"
                     >
-                      {isUpgrade(selectedPlan) ? "Upgrade Now" : "Downgrade"}
+                      {hasNoPlan ? "Subscribe Now" : (isUpgrade(selectedPlan) ? "Upgrade Now" : "Downgrade")}
                     </Button>
                   </div>
                 </div>
