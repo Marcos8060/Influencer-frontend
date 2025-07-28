@@ -14,6 +14,21 @@ export const fetchPaymentPlans = async () => {
   }
 };
 
+export const fetchCustomerSubscriptions = async (customerId) => {
+  try {
+    const url = `${APP_API_URL.CUSTOMER_SUBSCRIPTIONS}`;
+
+    const response = await axios.get(url,{
+      params: { customerId }
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching payment plans:", error);
+    return error.response?.data || error.message;
+  }
+};
+
 export const createCheckoutSession = async (payload) => {
   try {
     const url = `${APP_API_URL.CREATE_CHECKOUT_SESSION}`;
