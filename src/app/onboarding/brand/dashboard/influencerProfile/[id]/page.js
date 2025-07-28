@@ -6,9 +6,7 @@ import {
   Row,
   Col,
   Tag,
-  Divider,
   Statistic,
-  List,
   Button,
   Tabs,
   Badge,
@@ -23,19 +21,11 @@ import {
   GlobalOutlined,
   TagOutlined,
   InstagramOutlined,
-  FacebookOutlined,
-  TwitterOutlined,
-  StarOutlined,
   LikeOutlined,
   VideoCameraOutlined,
-  TeamOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  LinkOutlined,
   BookOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
 import { FaTiktok } from "react-icons/fa";
 import Link from "next/link";
@@ -45,8 +35,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/assets/hooks/use-auth";
 import InstagramMetricsFilter from "@/app/Components/InstagramMetrics";
 
-const { Title, Text, Paragraph } = Typography;
-const { TabPane } = Tabs;
+const { Text, Paragraph } = Typography;
 
 export default function InfluencerProfile() {
   const [loading, setLoading] = useState(false);
@@ -478,7 +467,7 @@ export default function InfluencerProfile() {
               )}
 
               {/* Contact Information */}
-              <Card title="Contact Information">
+              {/* <Card title="Contact Information">
                 <List
                   itemLayout="horizontal"
                   dataSource={[
@@ -523,7 +512,7 @@ export default function InfluencerProfile() {
                     </List.Item>
                   )}
                 />
-              </Card>
+              </Card> */}
             </Col>
           </Row>
         </>

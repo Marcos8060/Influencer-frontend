@@ -203,9 +203,12 @@ const InstagramMetricsDashboard = ({ discoveryProfile }) => {
       );
       if (response.statusCode === 10) {
         toast.error("The Influencer has less than 100 engaged audience");
+      }else{
+        toast.error(response?.errorMessage[0])
       }
       //   setMetricsData(response.payload);
     } catch (error) {
+      console.log("ERROR ",error)
       toast.error(error.response?.data?.errorMessage?.[0] || "Filter failed");
     } finally {
       setLoading(false);
