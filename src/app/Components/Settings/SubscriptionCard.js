@@ -42,14 +42,13 @@ const SubscriptionCard = ({
       size={isHistory ? "small" : "default"}
       extra={
         !isHistory && (
-          <Button
-            type="primary"
-            size="small"
+          <button
             onClick={onSwitchPlan}
-            icon={<ReloadOutlined />}
+            className="bg-gradient-to-br text-xs from-primary to-secondary text-white rounded px-2 py-1 flex items-center gap-1"
           >
+            <ReloadOutlined />
             Switch Plan
-          </Button>
+          </button>
         )
       }
     >
