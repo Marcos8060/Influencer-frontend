@@ -43,7 +43,7 @@ export default function ImageUploadInline({
         }
       } catch (error) {
         setLoading(false);
-        toast.error("Upload failed");
+        // toast.error("Upload failed");
       }
     }
   };
