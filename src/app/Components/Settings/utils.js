@@ -7,9 +7,17 @@ import {
 // Utility functions for settings components
 
 export const formatPrice = (amount, currency) => {
+  // Handle undefined or null currency
+  const safeCurrency = currency || 'USD';
+  
+  // Handle undefined or null amount
+  if (amount === undefined || amount === null) {
+    return '$0.00';
+  }
+  
   return `${(amount / 100).toLocaleString(undefined, {
     style: "currency",
-    currency: currency.toUpperCase(),
+    currency: safeCurrency.toUpperCase(),
   })}`;
 };
 

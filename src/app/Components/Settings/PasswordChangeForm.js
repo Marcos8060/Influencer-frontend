@@ -66,10 +66,9 @@ const PasswordChangeForm = ({
         </Form.Item>
         <Form.Item className="mb-0">
           <Button
-            type="primary"
             htmlType="submit"
             loading={loading}
-            className="w-full"
+            className="w-full bg-gradient-to-br text-sm from-primary to-secondary text-white py-2 px-3 rounded border-0"
           >
             Change Password
           </Button>

@@ -1146,8 +1146,8 @@ const InfluencerProfilePage = () => {
                             <div className="flex items-center">
                               <FiPhone className="mr-2" />
                               <Text>
-                                {influencerProfile.phoneNumber.code}{" "}
-                                {influencerProfile.phoneNumber.number}
+                                {influencerProfile.phoneNumber?.code}{" "}
+                                {influencerProfile.phoneNumber?.number}
                               </Text>
                             </div>
                             <div className="flex items-center">
