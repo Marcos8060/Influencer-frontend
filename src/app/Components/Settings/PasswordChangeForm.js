@@ -65,13 +65,13 @@ const PasswordChangeForm = ({
           <Input.Password placeholder="Confirm new password" />
         </Form.Item>
         <Form.Item className="mb-0">
-          <button
+          <Button
             htmlType="submit"
             loading={loading}
-            className="w-full bg-gradient-to-br text-sm from-primary to-secondary text-white py-2 px-3 rounded"
+            className="w-full bg-gradient-to-br text-sm from-primary to-secondary text-white py-2 px-3 rounded border-0"
           >
             Change Password
-          </button>
+          </Button>
         </Form.Item>
       </Form>
     </Card>
